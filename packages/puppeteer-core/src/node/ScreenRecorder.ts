@@ -90,7 +90,7 @@ export interface ScreenRecorderOptions {
 export class ScreenRecorder extends PassThrough {
   #page: Page;
 
-  #process: ChildProcessWithoutNullStreams;
+  #process?: ChildProcessWithoutNullStreams;
 
   #controller = new AbortController();
   #lastFrame: Promise<readonly [Buffer, number]>;
@@ -171,54 +171,6 @@ export class ScreenRecorder extends PassThrough {
       fs.mkdirSync(dirname(path), {recursive: overwrite});
     }
 
-    this.#process = spawn(
-      ffmpegPath,
-      // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
-      [
-        ['-loglevel', 'error'],
-        // Reduces general buffering.
-        ['-avioflags', 'direct'],
-        // Reduces initial buffering while analyzing input fps and other stats.
-        [
-          '-fpsprobesize',
-          '0',
-          '-probesize',
-          '32',
-          '-analyzeduration',
-          '0',
-          '-fflags',
-          'nobuffer',
-        ],
-        // Forces input to be read from standard input, and forces png input
-        // image format. `-framerate` is an input option and must appear before
-        // `-i`; otherwise ffmpeg ignores it and the image2pipe demuxer falls
-        // back to its default 25fps, stretching the output timeline relative to
-        // the frames we feed it at `fps`.
-        // prettier-ignore
-        ['-framerate', `${fps}`, '-f', 'image2pipe', '-vcodec', 'png', '-i', 'pipe:0'],
-        // No audio
-        ['-an'],
-        // This drastically reduces stalling when cpu is overbooked. By default
-        // VP9 tries to use all available threads?
-        ['-threads', '1'],
-        // Disable bitrate.
-        ['-b:v', '0'],
-        // Specifies the encoding and format we are using.
-        formatArgs,
-        // Filters to ensure the images are piped correctly,
-        // combined with any format-specific filters.
-        ['-vf', filters.join()],
-        // Overwrite output, or exit immediately if file already exists.
-        [overwrite ? '-y' : '-n'],
-        'pipe:1',
-      ].flat(),
-      {stdio: ['pipe', 'pipe', 'pipe']},
-    );
-    this.#process.stdout.pipe(this);
-    this.#process.stderr.on('data', (data: Buffer) => {
-      debugFfmpeg?.(data.toString('utf8'));
-    });
-
     this.#page = page;
 
     const {client} = this.#page.mainFrame();
@@ -231,6 +183,14 @@ export class ScreenRecorder extends PassThrough {
     this.#lastFrame = lastValueFrom(
       fromEmitterEvent(client, 'Page.screencastFrame').pipe(
         tap(event => {
+          this.#startProcess(
+            ffmpegPath,
+            fps,
+            formatArgs,
+            filters,
+            overwrite,
+            new Date((event.metadata.timestamp ?? 0) * 1000).toISOString(),
+          );
           void client.send('Page.screencastFrameAck', {
             sessionId: event.sessionId,
           });
@@ -330,10 +290,74 @@ export class ScreenRecorder extends PassThrough {
     }
   }
 
+  #startProcess(
+    ffmpegPath: string,
+    fps: number,
+    formatArgs: string[],
+    filters: string[],
+    overwrite: boolean,
+    creationTime: string,
+  ) {
+    if (this.#process) {
+      return;
+    }
+    this.#process = spawn(
+      ffmpegPath,
+      // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
+      [
+        ['-loglevel', 'error'],
+        // Reduces general buffering.
+        ['-avioflags', 'direct'],
+        // Reduces initial buffering while analyzing input fps and other stats.
+        [
+          '-fpsprobesize',
+          '0',
+          '-probesize',
+          '32',
+          '-analyzeduration',
+          '0',
+          '-fflags',
+          'nobuffer',
+        ],
+        // Forces input to be read from standard input, and forces png input
+        // image format. `-framerate` is an input option and must appear before
+        // `-i`; otherwise ffmpeg ignores it and the image2pipe demuxer falls
+        // back to its default 25fps, stretching the output timeline relative to
+        // the frames we feed it at `fps`.
+        // prettier-ignore
+        ['-framerate', `${fps}`, '-f', 'image2pipe', '-vcodec', 'png', '-i', 'pipe:0'],
+        // No audio
+        ['-an'],
+        // This drastically reduces stalling when cpu is overbooked. By default
+        // VP9 tries to use all available threads?
+        ['-threads', '1'],
+        // Disable bitrate.
+        ['-b:v', '0'],
+        // Specifies the encoding and format we are using.
+        formatArgs,
+        ['-metadata', `creation_time=${creationTime}`],
+        // Filters to ensure the images are piped correctly,
+        // combined with any format-specific filters.
+        ['-vf', filters.join()],
+        // Overwrite output, or exit immediately if file already exists.
+        [overwrite ? '-y' : '-n'],
+        'pipe:1',
+      ].flat(),
+      {stdio: ['pipe', 'pipe', 'pipe']},
+    );
+    this.#process.stdout.pipe(this);
+    this.#process.stderr.on('data', (data: Buffer) => {
+      debugFfmpeg?.(data.toString('utf8'));
+    });
+  }
+
   @guarded()
   async #writeFrame(buffer: Buffer) {
+    if (!this.#process) {
+      return;
+    }
     const error = await new Promise<Error | null | undefined>(resolve => {
-      this.#process.stdin.write(buffer, resolve);
+      this.#process!.stdin.write(buffer, resolve);
     });
     if (error) {
       console.log(`ffmpeg failed to write: ${error.message}.`);
@@ -368,11 +392,15 @@ export class ScreenRecorder extends PassThrough {
         .map(this.#writeFrame.bind(this)),
     );
 
-    // Close stdin to notify FFmpeg we are done.
-    this.#process.stdin.end();
-    await new Promise(resolve => {
-      this.#process.once('close', resolve);
-    });
+    if (this.#process) {
+      // Close stdin to notify FFmpeg we are done.
+      this.#process.stdin.end();
+      await new Promise(resolve => {
+        this.#process!.once('close', resolve);
+      });
+    } else {
+      this.end();
+    }
   }
 
   override async [asyncDisposeSymbol](): Promise<void> {
