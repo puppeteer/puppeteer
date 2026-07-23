@@ -2,6 +2,33 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.3.0...puppeteer-v25.4.0) (2026-07-23)
+
+
+### 🎉 Features
+
+* expose Explicit Resource Management (`using`) ([#15027](https://github.com/puppeteer/puppeteer/issues/15027)) ([a1ca86b](https://github.com/puppeteer/puppeteer/commit/a1ca86b9df6036d76c055c94be2661b90e1d800c))
+* expose handled getter on Dialog ([#15225](https://github.com/puppeteer/puppeteer/issues/15225)) ([be6f726](https://github.com/puppeteer/puppeteer/commit/be6f72675587722e75b84edfc4bd813180ac1031))
+* roll to Chrome 151.0.7922.47 ([#15237](https://github.com/puppeteer/puppeteer/issues/15237)) ([06442ae](https://github.com/puppeteer/puppeteer/commit/06442aeb8b03fb9effb32bd261a9bffa0b45603a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 25.3.0 to 25.4.0
+
+
+### 🛠️ Fixes
+
+* combine duplicate BiDi response headers instead of overwriting ([#15203](https://github.com/puppeteer/puppeteer/issues/15203)) ([16ec165](https://github.com/puppeteer/puppeteer/commit/16ec165d4bdf498e3b0fd6a8a7f0a3f02bfc823b))
+* don't throw in checkVisibility for a detached text node ([#15197](https://github.com/puppeteer/puppeteer/issues/15197)) ([89683ac](https://github.com/puppeteer/puppeteer/commit/89683ac2da9522f7d99df9172b487a50e4cbeec1))
+* roll to Chrome 150.0.7871.115 ([#15223](https://github.com/puppeteer/puppeteer/issues/15223)) ([3232cd4](https://github.com/puppeteer/puppeteer/commit/3232cd4bd432107d2007e9d582fee5ade311a1df))
+* roll to Chrome 150.0.7871.46 ([#15196](https://github.com/puppeteer/puppeteer/issues/15196)) ([30d4100](https://github.com/puppeteer/puppeteer/commit/30d4100bca7512c8a227bc141cef580faee8bc5d))
+* roll to Chrome 150.0.7871.49 ([#15220](https://github.com/puppeteer/puppeteer/issues/15220)) ([633d55d](https://github.com/puppeteer/puppeteer/commit/633d55dc82cd0bd85dc012db736a42c44e7e890d))
+* roll to Firefox 152.0.5 ([#15219](https://github.com/puppeteer/puppeteer/issues/15219)) ([5de975a](https://github.com/puppeteer/puppeteer/commit/5de975a415e34455fb431e473205e281374162b7))
+
+
 ## [25.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.2.1...puppeteer-v25.3.0) (2026-07-01)
 
 
