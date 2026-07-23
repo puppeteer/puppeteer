@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {describe, it, mock, beforeEach, afterEach} from 'node:test';
+import {describe, it, mock, afterEach} from 'node:test';
 
 import expect from 'expect';
 
@@ -12,27 +12,26 @@ import {_connectToBrowser} from './BrowserConnector.js';
 
 describe('BrowserConnector', () => {
   describe('getWSEndpoint via browserURL', () => {
-    let originalFetch: typeof globalThis.fetch;
-
-    beforeEach(() => {
-      originalFetch = globalThis.fetch;
-    });
-
     afterEach(() => {
-      globalThis.fetch = originalFetch;
       mock.restoreAll();
     });
 
     it('should forward headers to the /json/version HTTP request', async () => {
       const capturedRequests: {url: string; init?: RequestInit}[] = [];
 
-      globalThis.fetch = async (url, init) => {
-        capturedRequests.push({url: String(url), init});
-        return new Response(
-          JSON.stringify({webSocketDebuggerUrl: 'ws://localhost:1234/devtools/browser/1'}),
-          {status: 200, headers: {'Content-Type': 'application/json'}},
-        );
-      };
+      mock.method(
+        globalThis,
+        'fetch',
+        async (url: string | URL | Request, init?: RequestInit) => {
+          capturedRequests.push({url: String(url), init});
+          return new Response(
+            JSON.stringify({
+              webSocketDebuggerUrl: 'ws://localhost:1234/devtools/browser/1',
+            }),
+            {status: 200, headers: {'Content-Type': 'application/json'}},
+          );
+        },
+      );
 
       // We expect this to fail when trying to open the WebSocket, which is fine —
       // we only care that fetch was called with the right headers.
