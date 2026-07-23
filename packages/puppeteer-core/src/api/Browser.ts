@@ -335,6 +335,108 @@ export interface ExtensionInstallOptions {
 }
 
 /**
+ * If the user prefers opening an installed web app in a standalone window or in
+ * a browser tab.
+ *
+ * @public
+ */
+export type PWADisplayMode = 'standalone' | 'browser';
+
+/**
+ * Options for {@link Browser.installPWA}.
+ *
+ * @public
+ */
+export interface InstallPWAOptions {
+  /**
+   * The id from the web app's manifest file, commonly the URL of the site
+   * installing the web app. See
+   * {@link https://web.dev/learn/pwa/web-app-manifest | Web app manifest}.
+   */
+  manifestId: string;
+  /**
+   * The URL used to install the app, or the URL of its signed web bundle.
+   *
+   * This is required because the browser-scoped CDP session has no associated
+   * page from which Chromium could derive an install URL.
+   */
+  installUrlOrBundleUrl: string;
+  /**
+   * Whether the app should open in a standalone window or a browser tab.
+   *
+   * @remarks
+   *
+   * `PWA.install` alone leaves the app at Chromium's default display mode
+   * (`browser`); setting this chains a `PWA.changeAppUserSettings` call to apply
+   * the preference.
+   */
+  displayMode?: PWADisplayMode;
+}
+
+/**
+ * Options for {@link Browser.uninstallPWA}.
+ *
+ * @public
+ */
+export interface UninstallPWAOptions {
+  /**
+   * The id from the web app's manifest file.
+   */
+  manifestId: string;
+}
+
+/**
+ * Options for {@link Browser.launchPWA}.
+ *
+ * @public
+ */
+export interface LaunchPWAOptions {
+  /**
+   * The id from the web app's manifest file.
+   */
+  manifestId: string;
+  /**
+   * An optional URL within the app's scope to launch. Defaults to the app's
+   * start URL.
+   */
+  url?: string;
+  /**
+   * Maximum time in milliseconds for launching the app and resolving its page.
+   * Defaults to 30 seconds. Pass `0` to disable the timeout.
+   */
+  timeout?: number;
+}
+
+/**
+ * Options for {@link Browser.getPWAState}.
+ *
+ * @public
+ */
+export interface GetPWAStateOptions {
+  /**
+   * The id from the web app's manifest file.
+   */
+  manifestId: string;
+}
+
+/**
+ * The OS-integration state of an installed web app, returned by
+ * {@link Browser.getPWAState}.
+ *
+ * @public
+ */
+export interface PWAState {
+  /**
+   * The current badge count shown on the app icon.
+   */
+  badgeCount: number;
+  /**
+   * The file handlers registered by the app with the OS.
+   */
+  fileHandlers: Protocol.PWA.FileHandler[];
+}
+
+/**
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
@@ -661,6 +763,59 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * Uninstalls an extension.
    */
   abstract uninstallExtension(id: string): Promise<void>;
+
+  /**
+   * Installs a Progressive Web App (PWA) and returns its manifest id.
+   *
+   * @remarks
+   *
+   * Only available when connected to the browser over a pipe connection. Set
+   * `pipe: true` in {@link PuppeteerNode.launch | puppeteer.launch}; the launch
+   * option defaults to `false`. The underlying `PWA` CDP domain is not exposed
+   * over a WebSocket connection.
+   *
+   * The returned manifest id echoes {@link InstallPWAOptions.manifestId}, so it
+   * can be passed directly to {@link Browser.launchPWA},
+   * {@link Browser.getPWAState}, or {@link Browser.uninstallPWA}.
+   */
+  abstract installPWA(options: InstallPWAOptions): Promise<string>;
+
+  /**
+   * Uninstalls a previously installed Progressive Web App (PWA).
+   *
+   * @remarks
+   *
+   * Only available over a pipe connection. See {@link Browser.installPWA}.
+   */
+  abstract uninstallPWA(options: UninstallPWAOptions): Promise<void>;
+
+  /**
+   * Launches an installed Progressive Web App (PWA) and resolves with the
+   * {@link Page | page} backing the app window.
+   *
+   * @remarks
+   *
+   * Only available over a pipe connection. See {@link Browser.installPWA}.
+   *
+   * `PWA.launch` resolves with the id of the launched _tab_ target. Puppeteer
+   * does not expose tab targets through {@link Browser.targets}; this method
+   * instead resolves with the tab's child page target (the app's web contents).
+   * If Chromium focuses an existing app window, this returns that window's
+   * existing page.
+   */
+  abstract launchPWA(options: LaunchPWAOptions): Promise<Page>;
+
+  /**
+   * Returns the OS-integration state of an installed Progressive Web App (PWA),
+   * such as its badge count and registered file handlers.
+   *
+   * @remarks
+   *
+   * Only available over a pipe connection. See {@link Browser.installPWA}.
+   * Meaningful only for an app that is currently installed; querying an
+   * unknown manifest id rejects.
+   */
+  abstract getPWAState(options: GetPWAStateOptions): Promise<PWAState>;
 
   /**
    * Gets a list of {@link ScreenInfo | screen information objects}.

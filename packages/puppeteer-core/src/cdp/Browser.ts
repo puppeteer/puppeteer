@@ -24,6 +24,11 @@ import {
   type AddScreenParams,
   type WindowBounds,
   type WindowId,
+  type InstallPWAOptions,
+  type UninstallPWAOptions,
+  type LaunchPWAOptions,
+  type GetPWAStateOptions,
+  type PWAState,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -31,6 +36,7 @@ import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
+import {TargetCloseError} from '../common/Errors.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -521,6 +527,99 @@ export class CdpBrowser extends BrowserBase {
     await Promise.all(targetDestroyedPromises);
 
     this.#extensions.delete(id);
+  }
+
+  override async installPWA(options: InstallPWAOptions): Promise<string> {
+    await this.#connection.send('PWA.install', {
+      manifestId: options.manifestId,
+      installUrlOrBundleUrl: options.installUrlOrBundleUrl,
+    });
+    if (options.displayMode) {
+      await this.#connection.send('PWA.changeAppUserSettings', {
+        manifestId: options.manifestId,
+        displayMode: options.displayMode,
+      });
+    }
+    return options.manifestId;
+  }
+
+  override async uninstallPWA(options: UninstallPWAOptions): Promise<void> {
+    await this.#connection.send('PWA.uninstall', {
+      manifestId: options.manifestId,
+    });
+  }
+
+  override async launchPWA(options: LaunchPWAOptions): Promise<Page> {
+    const timeout = options.timeout ?? 30_000;
+    const controller = new AbortController();
+    const timeoutDeferred = Deferred.create<Page>({
+      timeout,
+      message: `Timed out after waiting ${timeout}ms`,
+    });
+    const disconnectedDeferred = Deferred.create<Page, TargetCloseError>();
+    const onDisconnected = () => {
+      const error = new TargetCloseError('Browser disconnected');
+      controller.abort(error);
+      disconnectedDeferred.reject(error);
+    };
+    this.on(BrowserEvent.Disconnected, onDisconnected);
+
+    try {
+      return await Deferred.race([
+        (async () => {
+          // `PWA.launch` resolves with the id of the launched *tab* target (see
+          // the CDP `PWA.LaunchResponse` docs). Tab targets sit above page
+          // targets in the target hierarchy and are not exposed through
+          // `browser.targets()`, so the returned id can't be awaited directly.
+          const {targetId: tabTargetId} = await this.#connection.send(
+            'PWA.launch',
+            {
+              manifestId: options.manifestId,
+              url: options.url,
+            },
+            {timeout},
+          );
+          controller.signal.throwIfAborted();
+          const target = (await this.waitForTarget(
+            candidate => {
+              const tab = this.#targetManager
+                .getAvailableTargets()
+                .get(tabTargetId);
+              if (tab?.type() !== 'tab') {
+                return false;
+              }
+              for (const child of tab._childTargets()) {
+                if (child === candidate) {
+                  return true;
+                }
+              }
+              return false;
+            },
+            {timeout: 0, signal: controller.signal},
+          )) as CdpTarget;
+          const page = await target.page();
+          if (!page) {
+            throw new Error(
+              `Failed to create a page for the launched PWA (manifestId = ${options.manifestId})`,
+            );
+          }
+          return page;
+        })(),
+        timeoutDeferred,
+        disconnectedDeferred,
+      ]);
+    } finally {
+      this.off(BrowserEvent.Disconnected, onDisconnected);
+      controller.abort();
+    }
+  }
+
+  override async getPWAState(options: GetPWAStateOptions): Promise<PWAState> {
+    const {badgeCount, fileHandlers} = await this.#connection.send(
+      'PWA.getOsAppState',
+      {manifestId: options.manifestId},
+    );
+    return {badgeCount, fileHandlers};
   }
 
   override async screens(): Promise<ScreenInfo[]> {

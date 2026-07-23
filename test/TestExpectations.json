@@ -203,6 +203,27 @@
     "comment": "Chrome-specific test"
   },
   {
+    "testIdPattern": "[pwa.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Chrome-specific test (PWA CDP domain is Chromium-only)"
+  },
+  {
+    "testIdPattern": "[pwa.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "No PWA domain in WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[pwa.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDiOnly"],
+    "expectations": ["SKIP"],
+    "comment": "No PWA domain in WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[realms.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -835,6 +856,13 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[pwa.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "No PWA support in chrome-headless-shell"
   },
   {
     "testIdPattern": "[queryObjects.test] *",
