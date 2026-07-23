@@ -31,6 +31,42 @@ page.on('dialog', async dialog => {
 await page.evaluate(() => alert('1'));
 ```
 
+## Properties
+
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="handled">handled</span>
+
+</td><td>
+
+</td><td>
+
+boolean
+
+</td><td>
+
+A boolean value indicating whether the dialog has been handled.
+
+</td></tr>
+</tbody></table>
+
 ## Methods
 
 <table><thead><tr><th>
