@@ -36,6 +36,7 @@ import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
+import {TargetCloseError} from '../common/Errors.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -555,6 +556,13 @@ export class CdpBrowser extends BrowserBase {
       timeout,
       message: `Timed out after waiting ${timeout}ms`,
     });
+    const disconnectedDeferred = Deferred.create<Page, TargetCloseError>();
+    const onDisconnected = () => {
+      const error = new TargetCloseError('Browser disconnected');
+      controller.abort(error);
+      disconnectedDeferred.reject(error);
+    };
+    this.on(BrowserEvent.Disconnected, onDisconnected);
 
     try {
       return await Deferred.race([
@@ -598,8 +606,10 @@ export class CdpBrowser extends BrowserBase {
           return page;
         })(),
         timeoutDeferred,
+        disconnectedDeferred,
       ]);
     } finally {
+      this.off(BrowserEvent.Disconnected, onDisconnected);
       controller.abort();
     }
   }
