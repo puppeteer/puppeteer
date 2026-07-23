@@ -198,6 +198,7 @@ export abstract class BrowserLauncher {
             defaultViewport,
             acceptInsecureCerts,
             networkEnabled,
+            maxPayload: options.maxPayload,
             idGenerator,
           },
         );
@@ -214,6 +215,7 @@ export abstract class BrowserLauncher {
             timeout,
             protocolTimeout,
             slowMo,
+            maxPayload: options.maxPayload,
             idGenerator,
           });
         }
@@ -376,6 +378,7 @@ export abstract class BrowserLauncher {
       timeout: number;
       protocolTimeout: number | undefined;
       slowMo: number;
+      maxPayload?: number;
       idGenerator: GetIdFn;
     },
   ): Promise<Connection> {
@@ -383,7 +386,11 @@ export abstract class BrowserLauncher {
       CDP_WEBSOCKET_ENDPOINT_REGEX,
       opts.timeout,
     );
-    const transport = await WebSocketTransport.create(browserWSEndpoint);
+    const transport = await WebSocketTransport.create(
+      browserWSEndpoint,
+      undefined,
+      opts.maxPayload,
+    );
     return new Connection(
       browserWSEndpoint,
       transport,
@@ -464,6 +471,7 @@ export abstract class BrowserLauncher {
       timeout: number;
       protocolTimeout: number | undefined;
       slowMo: number;
+      maxPayload?: number;
       idGenerator: GetIdFn;
       defaultViewport: Viewport | null;
       acceptInsecureCerts?: boolean;
@@ -476,7 +484,11 @@ export abstract class BrowserLauncher {
         WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
         opts.timeout,
       )) + '/session';
-    const transport = await WebSocketTransport.create(browserWSEndpoint);
+    const transport = await WebSocketTransport.create(
+      browserWSEndpoint,
+      undefined,
+      opts.maxPayload,
+    );
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
     const bidiConnection = new BiDi.BidiConnection(
       browserWSEndpoint,
