@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
-import type {Browser, WindowId} from '../api/Browser.js';
+import type {Browser, PWADisplayMode, WindowId} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
@@ -494,6 +494,30 @@ export class CdpPage extends Page {
     const browser = this.browser() as CdpBrowser;
     const targetId = await browser._hasDevToolsTarget(this.target()._targetId);
     return Boolean(targetId);
+  }
+
+  async #getPWAAppId(): Promise<string> {
+    const {appId} = await this.#primaryTargetClient.send('Page.getAppId');
+    assert(appId, 'Page is not associated with a PWA');
+    return appId;
+  }
+
+  override async installAsPWA(options?: {
+    displayMode?: PWADisplayMode;
+  }): Promise<string> {
+    const manifestId = await this.#getPWAAppId();
+    const browser = this.browser() as CdpBrowser;
+    return await browser._installPWA(
+      {manifestId, ...options},
+      this.#primaryTargetClient,
+    );
+  }
+
+  override async openInPWA(): Promise<void> {
+    const manifestId = await this.#getPWAAppId();
+    await this.#primaryTargetClient.send('PWA.openCurrentPageInApp', {
+      manifestId,
+    });
   }
 
   override async waitForFileChooser(

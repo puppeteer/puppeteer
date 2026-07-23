@@ -9,7 +9,7 @@ import * as Bidi from 'webdriver-bidi-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
-import type {WindowId} from '../api/Browser.js';
+import type {PWADisplayMode, WindowId} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
@@ -248,6 +248,16 @@ export class BidiPage extends Page {
   }
 
   override hasDevTools(): Promise<boolean> {
+    throw new UnsupportedOperation();
+  }
+
+  override installAsPWA(_options?: {
+    displayMode?: PWADisplayMode;
+  }): Promise<string> {
+    throw new UnsupportedOperation();
+  }
+
+  override openInPWA(): Promise<void> {
     throw new UnsupportedOperation();
   }
 
