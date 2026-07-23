@@ -18,7 +18,11 @@ import type {
   NodeFor,
 } from '../common/types.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
-import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
+import {
+  debugError,
+  isString,
+  withSourcePuppeteerURLIfNone,
+} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
@@ -838,11 +842,13 @@ export abstract class ElementHandle<
       }
       return await page.mouse.drag(source, target);
     }
+    let pressedMouse = false;
     try {
       if (!page._isDragging) {
         page._isDragging = true;
         await this.hover();
         await page.mouse.down();
+        pressedMouse = true;
       }
       if (target instanceof ElementHandle) {
         await target.hover();
@@ -851,6 +857,13 @@ export abstract class ElementHandle<
       }
     } catch (error) {
       page._isDragging = false;
+      if (pressedMouse) {
+        // The mouse button was pressed for this drag, and `drop()` - the only
+        // thing that releases it - will never run. Releasing it here keeps the
+        // button from staying pressed for the rest of the session. It must not
+        // mask the error that got us here.
+        await page.mouse.up().catch(debugError);
+      }
       throw error;
     }
   }
@@ -921,7 +934,18 @@ export abstract class ElementHandle<
     } else {
       // Note if the rest errors, we still want dragging off because the errors
       // is most likely something implying the mouse is no longer dragging.
-      await dataOrElement.drag(this);
+      try {
+        await dataOrElement.drag(this);
+      } catch (error) {
+        // The preceding `drag()` pressed the mouse button down and this is the
+        // only place that releases it, so bailing out here would leave it
+        // pressed for the rest of the session: the next click would then fire
+        // twice, and moving the mouse would drag a selection across the page.
+        // Releasing must not mask the error that got us here.
+        page._isDragging = false;
+        await page.mouse.up().catch(debugError);
+        throw error;
+      }
       page._isDragging = false;
       await page.mouse.up();
     }
