@@ -4,13 +4,48 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {describe, it} from 'node:test';
+import {describe, it, mock, afterEach} from 'node:test';
 
 import expect from 'expect';
 
 import {_connectToBrowser} from './BrowserConnector.js';
 
 describe('BrowserConnector', () => {
+  describe('getWSEndpoint via browserURL', () => {
+    afterEach(() => {
+      mock.restoreAll();
+    });
+
+    it('should forward headers to the /json/version HTTP request', async () => {
+      const capturedRequests: {url: string; init?: RequestInit}[] = [];
+
+      mock.method(
+        globalThis,
+        'fetch',
+        async (url: string | URL | Request, init?: RequestInit) => {
+          capturedRequests.push({url: String(url), init});
+          return new Response(
+            JSON.stringify({
+              webSocketDebuggerUrl: 'ws://localhost:1234/devtools/browser/1',
+            }),
+            {status: 200, headers: {'Content-Type': 'application/json'}},
+          );
+        },
+      );
+
+      // We expect this to fail when trying to open the WebSocket, which is fine —
+      // we only care that fetch was called with the right headers.
+      await _connectToBrowser({
+        browserURL: 'http://localhost:1234',
+        headers: {Authorization: 'Bearer test-token'},
+      }).catch(() => {});
+
+      expect(capturedRequests).toHaveLength(1);
+      expect(capturedRequests[0]!.url).toContain('/json/version');
+      expect((capturedRequests[0]!.init?.headers as Record<string, string>)?.['Authorization']).toBe('Bearer test-token');
+    });
+  });
+
   describe('_connectToBrowser', () => {
     it('should throw an error when both blocklist and allowlist are specified', async () => {
       await expect(
