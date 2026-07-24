@@ -19,10 +19,9 @@ import {
   resolveSystemExecutablePaths,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
-import {debug} from './debug.js';
+import type {LoggerFunction} from './debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
-
-const debugLaunch = debug('puppeteer:browsers:launcher');
 
 /**
  * @public
@@ -195,6 +194,10 @@ export interface LaunchOptions {
    * If provided, the process will be killed when the signal is aborted.
    */
   signal?: AbortSignal;
+  /**
+   * Logger for the browser process.
+   */
+  logger?: Logger;
 }
 
 /**
@@ -203,7 +206,10 @@ export interface LaunchOptions {
  * @public
  */
 export function launch(opts: LaunchOptions): Process {
-  return new Process(opts);
+  return new Process({
+    ...opts,
+    logger: opts.logger ?? debug,
+  });
 }
 
 /**
@@ -277,6 +283,7 @@ function unsubscribeFromProcessEvent(
 export class Process {
   #executablePath;
   #args: string[];
+  #logger?: LoggerFunction;
   #browserProcess: childProcess.ChildProcess;
   #exited = false;
   // The browser process can be closed externally or from the driver process. We
@@ -296,6 +303,7 @@ export class Process {
   constructor(opts: LaunchOptions) {
     this.#executablePath = opts.executablePath;
     this.#args = opts.args ?? [];
+    this.#logger = opts.logger?.(DEBUG_PREFIXES.launcher);
 
     this.#signal = opts.signal;
     if (this.#signal?.aborted) {
@@ -321,19 +329,22 @@ export class Process {
 
     const env = opts.env || {};
 
-    debugLaunch?.(`Launching ${this.#executablePath} ${this.#args.join(' ')}`, {
-      detached: opts.detached,
-      env: Object.keys(env).reduce<Record<string, string | undefined>>(
-        (res, key) => {
-          if (key.toLowerCase().startsWith('puppeteer_')) {
-            res[key] = env[key];
-          }
-          return res;
-        },
-        {},
-      ),
-      stdio,
-    });
+    this.#logger?.(
+      `Launching ${this.#executablePath} ${this.#args.join(' ')}`,
+      {
+        detached: opts.detached,
+        env: Object.keys(env).reduce<Record<string, string | undefined>>(
+          (res, key) => {
+            if (key.toLowerCase().startsWith('puppeteer_')) {
+              res[key] = env[key];
+            }
+            return res;
+          },
+          {},
+        ),
+        stdio,
+      },
+    );
 
     this.#browserProcess = childProcess.spawn(
       this.#executablePath,
@@ -347,7 +358,7 @@ export class Process {
     this.#recordStream(this.#browserProcess.stderr!);
     this.#recordStream(this.#browserProcess.stdout!);
 
-    debugLaunch?.(`Launched ${this.#browserProcess.pid}`);
+    this.#logger?.(`Launched ${this.#browserProcess.pid}`);
     if (opts.dumpio) {
       this.#browserProcess.stderr?.pipe(process.stderr);
       this.#browserProcess.stdout?.pipe(process.stdout);
@@ -367,7 +378,7 @@ export class Process {
     }
     this.#browserProcessExiting = new Promise((resolve, reject) => {
       this.#browserProcess.once('exit', async () => {
-        debugLaunch?.(`Browser process ${this.#browserProcess.pid} onExit`);
+        this.#logger?.(`Browser process ${this.#browserProcess.pid} onExit`);
         this.#clearListeners();
         this.#exited = true;
         try {
@@ -438,7 +449,7 @@ export class Process {
   }
 
   kill(): void {
-    debugLaunch?.(`Trying to kill ${this.#browserProcess.pid}`);
+    this.#logger?.(`Trying to kill ${this.#browserProcess.pid}`);
     // If the process failed to launch (for example if the browser executable path
     // is invalid), then the process does not get a pid assigned. A call to
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
@@ -448,14 +459,14 @@ export class Process {
       pidExists(this.#browserProcess.pid)
     ) {
       try {
-        debugLaunch?.(`Browser process ${this.#browserProcess.pid} exists`);
+        this.#logger?.(`Browser process ${this.#browserProcess.pid} exists`);
         if (process.platform === 'win32') {
           try {
             childProcess.execSync(
               `taskkill /pid ${this.#browserProcess.pid} /T /F`,
             );
           } catch (error) {
-            debugLaunch?.(
+            this.#logger?.(
               `Killing ${this.#browserProcess.pid} using taskkill failed`,
               error,
             );
@@ -472,7 +483,7 @@ export class Process {
           try {
             process.kill(processGroupId, 'SIGKILL');
           } catch (error) {
-            debugLaunch?.(
+            this.#logger?.(
               `Killing ${this.#browserProcess.pid} using process.kill failed`,
               error,
             );

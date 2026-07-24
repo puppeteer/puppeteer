@@ -14,10 +14,8 @@ import {
   executablePathByBrowser,
   getVersionComparator,
 } from './browser-data/browser-data.js';
-import {debug} from './debug.js';
+import {DEBUG_PREFIXES, type Logger} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
-
-const debugCache = debug('puppeteer:browsers:cache');
 
 /**
  * @public
@@ -118,9 +116,11 @@ export interface Metadata {
  */
 export class Cache {
   #rootDir: string;
+  #logger?: (message: string, ...args: unknown[]) => void;
 
-  constructor(rootDir: string) {
+  constructor(rootDir: string, logger?: Logger) {
     this.#rootDir = rootDir;
+    this.#logger = logger?.(DEBUG_PREFIXES.cache);
   }
 
   /**
@@ -276,7 +276,7 @@ export class Cache {
       options.buildId =
         this.resolveAlias(options.browser, options.buildId) ?? options.buildId;
     } catch {
-      debugCache?.('could not read .metadata file for the browser');
+      this.#logger?.('could not read .metadata file for the browser');
     }
     const installationDir = this.installationDir(
       options.browser,

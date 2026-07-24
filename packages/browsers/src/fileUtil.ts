@@ -16,10 +16,9 @@ import {promisify} from 'node:util';
 
 import type {Entry, Options, ZipFile} from 'yauzl';
 
-import {debug} from './debug.js';
+import {DEBUG_PREFIXES, type Logger} from './debug.js';
 
 const execFileAsync = promisify(execFile);
-const debugFileUtil = debug('puppeteer:browsers:fileUtil');
 
 /**
  * @internal
@@ -27,15 +26,16 @@ const debugFileUtil = debug('puppeteer:browsers:fileUtil');
 export async function unpackArchive(
   archivePath: string,
   folderPath: string,
+  logger?: Logger,
 ): Promise<void> {
   if (!path.isAbsolute(folderPath)) {
     folderPath = path.resolve(process.cwd(), folderPath);
   }
   if (archivePath.endsWith('.zip')) {
     await mkdir(folderPath, {recursive: true});
-    await extractZip(archivePath, folderPath);
+    await extractZip(archivePath, folderPath, logger);
   } else if (archivePath.endsWith('.tar.bz2')) {
-    await extractTar(archivePath, folderPath, 'bzip2');
+    await extractTar(archivePath, folderPath, 'bzip2', logger);
   } else if (archivePath.endsWith('.dmg')) {
     await mkdir(folderPath);
     await installDMG(archivePath, folderPath);
@@ -119,6 +119,7 @@ async function extractTar(
   tarPath: string,
   folderPath: string,
   decompressUtilityName: keyof typeof internalConstantsForTesting,
+  logger?: Logger,
 ): Promise<void> {
   const {unpackTar} = await import('modern-tar/fs');
   return await new Promise<void>((fulfill, reject) => {
@@ -144,7 +145,9 @@ async function extractTar(
     )
       .once('error', handleError(decompressUtilityName))
       .once('exit', code => {
-        debugFileUtil?.(`${decompressUtilityName} exited, code=${code}`);
+        logger?.(DEBUG_PREFIXES.fileUtil)?.(
+          `${decompressUtilityName} exited, code=${code}`,
+        );
       });
 
     const tar = unpackTar(folderPath);
@@ -198,10 +201,11 @@ class ArchiverUnavailableError extends Error {}
 async function extractZip(
   archivePath: string,
   folderPath: string,
+  logger?: Logger,
 ): Promise<void> {
   for (const extract of [extractZipWithCli, extractZipWithYauzl]) {
     try {
-      await extract(archivePath, folderPath);
+      await extract(archivePath, folderPath, logger);
       return;
     } catch (error) {
       if (!(error instanceof ArchiverUnavailableError)) {
@@ -220,6 +224,7 @@ async function extractZip(
 export async function extractZipWithYauzl(
   archivePath: string,
   folderPath: string,
+  _logger?: Logger,
 ): Promise<void> {
   const {default: yauzl} = await import(
     /* webpackIgnore: true */ 'yauzl'
@@ -253,6 +258,7 @@ export async function extractZipWithYauzl(
 async function extractZipWithCli(
   archivePath: string,
   folderPath: string,
+  logger?: Logger,
 ): Promise<void> {
   try {
     if (process.platform === 'win32') {
@@ -266,7 +272,9 @@ async function extractZipWithCli(
         await execFileAsync(systemTar, ['-xf', archivePath, '-C', folderPath]);
         return;
       } catch (tarError) {
-        debugFileUtil?.(`tar.exe extraction failed: ${tarError}`);
+        logger?.(DEBUG_PREFIXES.fileUtil)?.(
+          `tar.exe extraction failed: ${tarError}`,
+        );
       }
       try {
         await execFileAsync('powershell.exe', [
@@ -279,7 +287,9 @@ async function extractZipWithCli(
         ]);
         return;
       } catch (powershellError) {
-        debugFileUtil?.(`powershell.exe extraction failed: ${powershellError}`);
+        logger?.(DEBUG_PREFIXES.fileUtil)?.(
+          `powershell.exe extraction failed: ${powershellError}`,
+        );
       }
       await execFileAsync('pwsh.exe', [
         '-NoProfile',
