@@ -17,7 +17,7 @@ import {
   downloadUrls,
 } from './browser-data/browser-data.js';
 import {Cache, InstalledBrowser} from './Cache.js';
-import {debug} from './debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from './debug.js';
 import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
@@ -25,14 +25,12 @@ import {downloadFile, headHttpRequest} from './httpUtil.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
-const debugInstall = debug('puppeteer:browsers:install');
-
 const times = new Map<string, [number, number]>();
 function debugTime(label: string) {
   times.set(label, process.hrtime());
 }
 
-function debugTimeEnd(label: string) {
+function debugTimeEnd(label: string, logger?: Logger) {
   const end = process.hrtime();
   const start = times.get(label);
   if (!start) {
@@ -40,7 +38,7 @@ function debugTimeEnd(label: string) {
   }
   const duration =
     end[0] * 1000 + end[1] / 1e6 - (start[0] * 1000 + start[1] / 1e6); // calculate duration in milliseconds
-  debugInstall?.(`Duration for ${label}: ${duration}ms`);
+  logger?.(DEBUG_PREFIXES.install)?.(`Duration for ${label}: ${duration}ms`);
 }
 
 /**
@@ -156,6 +154,7 @@ export interface InstallOptions {
    * ```
    */
   providers?: BrowserProvider[];
+  logger?: Logger;
 }
 
 /**
@@ -172,7 +171,8 @@ async function installWithProviders(
     throw new Error('Platform must be defined');
   }
 
-  const cache = new Cache(options.cacheDir);
+  const logger = options.logger;
+  const cache = new Cache(options.cacheDir, options.logger);
   const browserRoot = cache.browserRoot(options.browser);
 
   // Build provider list with proper fallback behavior
@@ -213,7 +213,7 @@ async function installWithProviders(
     try {
       // Check: does this provider support this browser/platform?
       if (!(await provider.supports(downloadOptions))) {
-        debugInstall?.(
+        logger?.(DEBUG_PREFIXES.install)?.(
           `Provider ${provider.getName()} does not support ${options.browser} on ${options.platform}`,
         );
         continue;
@@ -221,35 +221,39 @@ async function installWithProviders(
 
       // Warn if using non-default provider
       if (!(provider instanceof DefaultProvider)) {
-        debugInstall?.(`⚠️  Using custom downloader: ${provider.getName()}`);
-        debugInstall?.(
+        logger?.(DEBUG_PREFIXES.install)?.(
+          `⚠️  Using custom downloader: ${provider.getName()}`,
+        );
+        logger?.(DEBUG_PREFIXES.install)?.(
           `⚠️  Puppeteer does not guarantee compatibility with non-default providers`,
         );
       }
 
-      debugInstall?.(
+      logger?.(DEBUG_PREFIXES.install)?.(
         `Trying provider: ${provider.getName()} for ${options.browser} ${options.buildId}`,
       );
 
       // Get download URL from provider
       const url = await provider.getDownloadUrl(downloadOptions);
       if (!url) {
-        debugInstall?.(
+        logger?.(DEBUG_PREFIXES.install)?.(
           `Provider ${provider.getName()} returned no URL for ${options.browser} ${options.buildId}`,
         );
         continue;
       }
 
-      debugInstall?.(`Successfully got URL from ${provider.getName()}: ${url}`);
+      logger?.(DEBUG_PREFIXES.install)?.(
+        `Successfully got URL from ${provider.getName()}: ${url}`,
+      );
 
       if (!existsSync(browserRoot)) {
         await mkdir(browserRoot, {recursive: true});
       }
 
       // Download and install using the URL from the provider
-      return await installUrl(url, options, provider);
+      return await installUrl(url, options, provider, logger);
     } catch (err) {
-      debugInstall?.(
+      logger?.(DEBUG_PREFIXES.install)?.(
         `Provider ${provider.getName()} failed: ${(err as Error).message}`,
       );
       errors.push({
@@ -298,6 +302,7 @@ export async function install(
 ): Promise<InstalledBrowser | string> {
   options.platform ??= detectBrowserPlatform();
   options.unpack ??= true;
+  options.logger ??= debug;
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
@@ -309,7 +314,10 @@ export async function install(
   return await installWithProviders(options);
 }
 
-async function installDeps(installedBrowser: InstalledBrowser) {
+async function installDeps(
+  installedBrowser: InstalledBrowser,
+  logger?: Logger,
+) {
   if (
     process.platform !== 'linux' ||
     installedBrowser.platform !== BrowserPlatform.LINUX
@@ -322,7 +330,9 @@ async function installDeps(installedBrowser: InstalledBrowser) {
     'deb.deps',
   );
   if (!existsSync(depsPath)) {
-    debugInstall?.(`deb.deps file was not found at ${depsPath}`);
+    logger?.(DEBUG_PREFIXES.install)?.(
+      `deb.deps file was not found at ${depsPath}`,
+    );
     return;
   }
   const data = readFileSync(depsPath, 'utf-8').split('\n').join(',');
@@ -335,7 +345,7 @@ async function installDeps(installedBrowser: InstalledBrowser) {
       'Failed to install system dependencies: apt-get does not seem to be available',
     );
   }
-  debugInstall?.(`Trying to install dependencies: ${data}`);
+  logger?.(DEBUG_PREFIXES.install)?.(`Trying to install dependencies: ${data}`);
   result = spawnSync('apt-get', [
     'satisfy',
     '-y',
@@ -347,13 +357,14 @@ async function installDeps(installedBrowser: InstalledBrowser) {
       `Failed to install system dependencies: status=${result.status},error=${result.error},stdout=${result.stdout.toString('utf8')},stderr=${result.stderr.toString('utf8')}`,
     );
   }
-  debugInstall?.(`Installed system dependencies ${data}`);
+  logger?.(DEBUG_PREFIXES.install)?.(`Installed system dependencies ${data}`);
 }
 
 async function installUrl(
   url: URL,
   options: InstallOptions,
   provider: BrowserProvider,
+  logger?: Logger,
 ): Promise<InstalledBrowser | string> {
   if (!provider) {
     throw new Error('Provider is required for installation');
@@ -373,7 +384,7 @@ async function installUrl(
   }
   const fileName = decodeURIComponent(url.toString()).split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
-  const cache = new Cache(options.cacheDir);
+  const cache = new Cache(options.cacheDir, options.logger);
   const browserRoot = cache.browserRoot(options.browser);
   const archivePath = path.join(browserRoot, `${options.buildId}-${fileName}`);
   if (!existsSync(browserRoot)) {
@@ -381,7 +392,7 @@ async function installUrl(
   }
 
   if (options.expectedHash) {
-    debugInstall?.(
+    logger?.(DEBUG_PREFIXES.install)?.(
       `Using provided checksum for ${fileName}: ${options.expectedHash}`,
     );
   }
@@ -390,7 +401,7 @@ async function installUrl(
     if (existsSync(archivePath)) {
       return archivePath;
     }
-    debugInstall?.(`Downloading binary from ${url}`);
+    logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
     debugTime('download');
     await downloadFile(
       url,
@@ -398,7 +409,7 @@ async function installUrl(
       downloadProgressCallback,
       options.expectedHash,
     );
-    debugTimeEnd('download');
+    debugTimeEnd('download', logger);
     return archivePath;
   }
 
@@ -414,7 +425,7 @@ async function installUrl(
     buildId: options.buildId,
     platform: options.platform,
   });
-  debugInstall?.(
+  logger?.(DEBUG_PREFIXES.install)?.(
     `Using executable path from provider: ${relativeExecutablePath}`,
   );
 
@@ -442,16 +453,16 @@ async function installUrl(
           `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
         );
       }
-      await runSetup(installedBrowser);
+      await runSetup(installedBrowser, logger);
       if (options.installDeps) {
-        await installDeps(installedBrowser);
+        await installDeps(installedBrowser, logger);
       }
       return installedBrowser;
     }
 
     // Check if archive already exists (e.g., from a custom provider)
     if (!existsSync(archivePath)) {
-      debugInstall?.(`Downloading binary from ${url}`);
+      logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
       try {
         debugTime('download');
         await downloadFile(
@@ -461,18 +472,22 @@ async function installUrl(
           options.expectedHash,
         );
       } finally {
-        debugTimeEnd('download');
+        debugTimeEnd('download', logger);
       }
     } else {
-      debugInstall?.(`Using existing archive at ${archivePath}`);
+      logger?.(DEBUG_PREFIXES.install)?.(
+        `Using existing archive at ${archivePath}`,
+      );
     }
 
-    debugInstall?.(`Installing ${archivePath} to ${outputPath}`);
+    logger?.(DEBUG_PREFIXES.install)?.(
+      `Installing ${archivePath} to ${outputPath}`,
+    );
     try {
       debugTime('extract');
-      await unpackArchive(archivePath, outputPath);
+      await unpackArchive(archivePath, outputPath, options.logger);
     } finally {
-      debugTimeEnd('extract');
+      debugTimeEnd('extract', logger);
     }
 
     if (options.buildIdAlias) {
@@ -481,9 +496,9 @@ async function installUrl(
       installedBrowser.writeMetadata(metadata);
     }
 
-    await runSetup(installedBrowser);
+    await runSetup(installedBrowser, logger);
     if (options.installDeps) {
-      await installDeps(installedBrowser);
+      await installDeps(installedBrowser, logger);
     }
     return installedBrowser;
   } finally {
@@ -493,7 +508,10 @@ async function installUrl(
   }
 }
 
-async function runSetup(installedBrowser: InstalledBrowser): Promise<void> {
+async function runSetup(
+  installedBrowser: InstalledBrowser,
+  logger?: Logger,
+): Promise<void> {
   // On Windows for Chrome invoke setup.exe to configure sandboxes.
   if (
     (installedBrowser.platform === BrowserPlatform.WIN32 ||
@@ -518,7 +536,7 @@ async function runSetup(installedBrowser: InstalledBrowser): Promise<void> {
       // TODO: Handle error here. Currently the setup.exe sometimes
       // errors although it sets the permissions correctly.
     } finally {
-      debugTimeEnd('permissions');
+      debugTimeEnd('permissions', logger);
     }
   }
 }
