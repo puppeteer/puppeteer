@@ -401,7 +401,7 @@ export interface LaunchPWAOptions {
    */
   url?: string;
   /**
-   * Maximum time in milliseconds for launching the app and resolving its page.
+   * Maximum time in milliseconds to wait for the app's page target to appear.
    * Defaults to 30 seconds. Pass `0` to disable the timeout.
    */
   timeout?: number;

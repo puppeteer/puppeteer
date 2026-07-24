@@ -36,7 +36,6 @@ import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
-import {TargetCloseError} from '../common/Errors.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -550,68 +549,36 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async launchPWA(options: LaunchPWAOptions): Promise<Page> {
-    const timeout = options.timeout ?? 30_000;
-    const controller = new AbortController();
-    const timeoutDeferred = Deferred.create<Page>({
-      timeout,
-      message: `Timed out after waiting ${timeout}ms`,
+    // `PWA.launch` resolves with the id of the launched *tab* target (see the
+    // CDP `PWA.LaunchResponse` docs). Tab targets sit above page targets in the
+    // target hierarchy and are not exposed through `browser.targets()`, so the
+    // returned id can't be awaited directly.
+    const {targetId: tabTargetId} = await this.#connection.send('PWA.launch', {
+      manifestId: options.manifestId,
+      url: options.url,
     });
-    const disconnectedDeferred = Deferred.create<Page, TargetCloseError>();
-    const onDisconnected = () => {
-      const error = new TargetCloseError('Browser disconnected');
-      controller.abort(error);
-      disconnectedDeferred.reject(error);
-    };
-    this.on(BrowserEvent.Disconnected, onDisconnected);
-
-    try {
-      return await Deferred.race([
-        (async () => {
-          // `PWA.launch` resolves with the id of the launched *tab* target (see
-          // the CDP `PWA.LaunchResponse` docs). Tab targets sit above page
-          // targets in the target hierarchy and are not exposed through
-          // `browser.targets()`, so the returned id can't be awaited directly.
-          const {targetId: tabTargetId} = await this.#connection.send(
-            'PWA.launch',
-            {
-              manifestId: options.manifestId,
-              url: options.url,
-            },
-            {timeout},
-          );
-          controller.signal.throwIfAborted();
-          const target = (await this.waitForTarget(
-            candidate => {
-              const tab = this.#targetManager
-                .getAvailableTargets()
-                .get(tabTargetId);
-              if (tab?.type() !== 'tab') {
-                return false;
-              }
-              for (const child of tab._childTargets()) {
-                if (child === candidate) {
-                  return true;
-                }
-              }
-              return false;
-            },
-            {timeout: 0, signal: controller.signal},
-          )) as CdpTarget;
-          const page = await target.page();
-          if (!page) {
-            throw new Error(
-              `Failed to create a page for the launched PWA (manifestId = ${options.manifestId})`,
-            );
+    const target = (await this.waitForTarget(
+      candidate => {
+        const tab = this.#targetManager.getAvailableTargets().get(tabTargetId);
+        if (tab?.type() !== 'tab') {
+          return false;
+        }
+        for (const child of tab._childTargets()) {
+          if (child === candidate) {
+            return true;
           }
-          return page;
-        })(),
-        timeoutDeferred,
-        disconnectedDeferred,
-      ]);
-    } finally {
-      this.off(BrowserEvent.Disconnected, onDisconnected);
-      controller.abort();
+        }
+        return false;
+      },
+      {timeout: options.timeout},
+    )) as CdpTarget;
+    const page = await target.page();
+    if (!page) {
+      throw new Error(
+        `Failed to create a page for the launched PWA (manifestId = ${options.manifestId})`,
+      );
     }
+    return page;
   }
 
   override async getPWAState(options: GetPWAStateOptions): Promise<PWAState> {
