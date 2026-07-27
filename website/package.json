@@ -27,15 +27,15 @@
     "clsx": "2.1.1",
     "docusaurus-plugin-copy-page-button": "0.8.4",
     "prism-react-renderer": "2.4.1",
-    "react": "19.2.7",
+    "react": "19.2.8",
     "react-cookie-consent": "10.0.1",
-    "react-dom": "19.2.7",
+    "react-dom": "19.2.8",
     "semver": "7.8.5"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@swc/core": "1.15.43",
+    "@swc/core": "1.15.46",
     "swc-loader": "0.2.7"
   },
   "browserslist": {
