@@ -957,7 +957,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * Experimental API for {@link https://github.com/webmachinelearning/webmcp| WebMCP}.
-   * Requires Chrome 150+ with the `--enable-features=WebMCP` flag enabled.
+   * Requires Chrome 151+ with the `--enable-features=WebMCP` flag enabled.
    *
    * @experimental
    */
