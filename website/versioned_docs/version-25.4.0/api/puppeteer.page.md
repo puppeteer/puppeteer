@@ -273,6 +273,24 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.page._asyncdisposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.page._disposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="_">[$(selector)](./puppeteer.page._.md)</span>
 
 </td><td>
