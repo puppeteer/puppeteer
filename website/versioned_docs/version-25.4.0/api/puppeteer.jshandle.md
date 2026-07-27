@@ -94,6 +94,24 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.jshandle._asyncdisposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.jshandle._disposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="aselement">[asElement()](./puppeteer.jshandle.aselement.md)</span>
 
 </td><td>

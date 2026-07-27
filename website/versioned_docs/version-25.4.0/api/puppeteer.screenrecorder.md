@@ -33,6 +33,15 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.screenrecorder._asyncdisposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="stop">[stop()](./puppeteer.screenrecorder.stop.md)</span>
 
 </td><td>

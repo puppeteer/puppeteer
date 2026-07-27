@@ -113,6 +113,24 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.browsercontext._asyncdisposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.browsercontext._disposesymbol_.md)</span>
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="browser">[browser()](./puppeteer.browsercontext.browser.md)</span>
 
 </td><td>
