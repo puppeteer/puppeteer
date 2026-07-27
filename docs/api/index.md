@@ -1089,6 +1089,15 @@ Device in a request prompt.
 </td></tr>
 <tr><td>
 
+<span id="getpwastateoptions">[GetPWAStateOptions](./puppeteer.getpwastateoptions.md)</span>
+
+</td><td>
+
+Options for [Browser.getPWAState()](./puppeteer.browser.getpwastate.md).
+
+</td></tr>
+<tr><td>
+
 <span id="gotooptions">[GoToOptions](./puppeteer.gotooptions.md)</span>
 
 </td><td>
@@ -1101,6 +1110,15 @@ Device in a request prompt.
 </td><td>
 
 Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md).
+
+</td></tr>
+<tr><td>
+
+<span id="installpwaoptions">[InstallPWAOptions](./puppeteer.installpwaoptions.md)</span>
+
+</td><td>
+
+Options for [Browser.installPWA()](./puppeteer.browser.installpwa.md).
 
 </td></tr>
 <tr><td>
@@ -1165,6 +1183,15 @@ Set of configurable options for JS coverage.
 </td><td>
 
 Generic launch options that can be passed when launching any browser.
+
+</td></tr>
+<tr><td>
+
+<span id="launchpwaoptions">[LaunchPWAOptions](./puppeteer.launchpwaoptions.md)</span>
+
+</td><td>
+
+Options for [Browser.launchPWA()](./puppeteer.browser.launchpwa.md).
 
 </td></tr>
 <tr><td>
@@ -1312,6 +1339,15 @@ A bluetooth peripheral to be simulated.
 </td></tr>
 <tr><td>
 
+<span id="pwastate">[PWAState](./puppeteer.pwastate.md)</span>
+
+</td><td>
+
+The OS-integration state of an installed web app, returned by [Browser.getPWAState()](./puppeteer.browser.getpwastate.md).
+
+</td></tr>
+<tr><td>
+
 <span id="queryoptions">[QueryOptions](./puppeteer.queryoptions.md)</span>
 
 </td><td>
@@ -1423,6 +1459,15 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 <span id="tracingoptions">[TracingOptions](./puppeteer.tracingoptions.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="uninstallpwaoptions">[UninstallPWAOptions](./puppeteer.uninstallpwaoptions.md)</span>
+
+</td><td>
+
+Options for [Browser.uninstallPWA()](./puppeteer.browser.uninstallpwa.md).
 
 </td></tr>
 <tr><td>
@@ -1961,6 +2006,15 @@ in favor of .
 <span id="puppeteerlifecycleevent">[PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="pwadisplaymode">[PWADisplayMode](./puppeteer.pwadisplaymode.md)</span>
+
+</td><td>
+
+If the user prefers opening an installed web app in a standalone window or in a browser tab.
 
 </td></tr>
 <tr><td>
