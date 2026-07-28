@@ -289,7 +289,7 @@ export class Process {
   #maxLogLinesSize = 1000;
   #lineEmitter = new EventEmitter();
   #onAbort = (): void => {
-    this.kill();
+    void this.#killWithHooks();
   };
   #signal?: AbortSignal;
 
@@ -410,13 +410,13 @@ export class Process {
   }
 
   #onDriverProcessExit = (_code: number) => {
-    this.kill();
+    void this.#killWithHooks();
   };
 
   #onDriverProcessSignal = (signal: string): void => {
     switch (signal) {
       case 'SIGINT':
-        this.kill();
+        void this.#killWithHooks();
         process.exitCode = 130;
         break;
       case 'SIGTERM':
@@ -426,12 +426,16 @@ export class Process {
     }
   };
 
-  async close(): Promise<void> {
+  async #killWithHooks(): Promise<void> {
     await this.#runHooks();
+    this.kill();
+  }
+
+  async close(): Promise<void> {
     if (!this.#exited) {
-      this.kill();
+      await this.#killWithHooks();
     }
-    return await this.#browserProcessExiting;
+    await this.#browserProcessExiting;
   }
 
   hasClosed(): Promise<void> {
