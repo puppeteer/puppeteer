@@ -54,7 +54,7 @@ jobs:
           cache: npm
           node-version-file: '.nvmrc'
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           python-version: '3.11'
       - name: Disable AppArmor
@@ -68,13 +68,21 @@ jobs:
         run: npm run build
       - name: Run bisect (Non-Linux)
         if: ${{ inputs.os != 'ubuntu-latest' }}
-        run: node packages/browsers/lib/main-cli.js bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
+        run: node packages/browsers/lib/main-cli.js bisect "$SCRIPT" -g "$GOOD" -b "$BAD" "$CFT"
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: 3
+          SCRIPT: ${{ inputs.script }}
+          GOOD: ${{ inputs.good }}
+          BAD: ${{ inputs.bad }}
+          CFT: ${{ inputs.cft && '--cft' || '--no-cft' }}
       - name: Run bisect (Linux)
         if: ${{ inputs.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum node packages/browsers/lib/main-cli.js bisect ${{ inputs.script }} -g ${{ inputs.good }} -b ${{ inputs.bad }} ${{ inputs.cft && '--cft' || '--no-cft' }}
+        run: xvfb-run --auto-servernum node packages/browsers/lib/main-cli.js bisect "$SCRIPT" -g "$GOOD" -b "$BAD" "$CFT"
         env:
           PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
           PUPPETEER_DEFLAKE_RETRIES: 3
+          SCRIPT: ${{ inputs.script }}
+          GOOD: ${{ inputs.good }}
+          BAD: ${{ inputs.bad }}
+          CFT: ${{ inputs.cft && '--cft' || '--no-cft' }}
