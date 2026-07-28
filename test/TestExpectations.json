@@ -1109,6 +1109,13 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
+    "testIdPattern": "[dialog.test] Page.Events.Dialog should see dialogs handled by other connections",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome can't connect when run with pipe"
+  },
+  {
     "testIdPattern": "[download.test] Download Browser.createBrowserContext should download to configured location",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
