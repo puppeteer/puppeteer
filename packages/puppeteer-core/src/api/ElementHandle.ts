@@ -833,22 +833,25 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     target: Point | ElementHandle<Element>,
   ): Promise<Protocol.Input.DragData | void> {
-    await this.scrollIntoViewIfNeeded();
     const page = this.frame.page();
     if (page.isDragInterceptionEnabled()) {
+      await this.scrollIntoViewIfNeeded();
       const source = await this.clickablePoint();
       if (target instanceof ElementHandle) {
         target = await target.clickablePoint();
       }
       return await page.mouse.drag(source, target);
     }
-    let pressedMouse = false;
+    // The button is down either because an earlier `drag()` pressed it, or
+    // because this call is about to.
+    let isMouseDown = page._isDragging;
     try {
+      await this.scrollIntoViewIfNeeded();
       if (!page._isDragging) {
         page._isDragging = true;
         await this.hover();
         await page.mouse.down();
-        pressedMouse = true;
+        isMouseDown = true;
       }
       if (target instanceof ElementHandle) {
         await target.hover();
@@ -857,11 +860,10 @@ export abstract class ElementHandle<
       }
     } catch (error) {
       page._isDragging = false;
-      if (pressedMouse) {
-        // The mouse button was pressed for this drag, and `drop()` - the only
-        // thing that releases it - will never run. Releasing it here keeps the
-        // button from staying pressed for the rest of the session. It must not
-        // mask the error that got us here.
+      if (isMouseDown) {
+        // `drop()` is the only thing that releases the button and it will never
+        // run now, so without this the button stays pressed for the rest of the
+        // session. It must not mask the error that got us here.
         await page.mouse.up().catch(debugError);
       }
       throw error;
@@ -934,18 +936,7 @@ export abstract class ElementHandle<
     } else {
       // Note if the rest errors, we still want dragging off because the errors
       // is most likely something implying the mouse is no longer dragging.
-      try {
-        await dataOrElement.drag(this);
-      } catch (error) {
-        // The preceding `drag()` pressed the mouse button down and this is the
-        // only place that releases it, so bailing out here would leave it
-        // pressed for the rest of the session: the next click would then fire
-        // twice, and moving the mouse would drag a selection across the page.
-        // Releasing must not mask the error that got us here.
-        page._isDragging = false;
-        await page.mouse.up().catch(debugError);
-        throw error;
-      }
+      await dataOrElement.drag(this);
       page._isDragging = false;
       await page.mouse.up();
     }
