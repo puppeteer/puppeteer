@@ -1962,7 +1962,7 @@
   {
     "testIdPattern": "[dialog.test] Page.Events.Dialog should see dialogs handled by other connections",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "headless", "webDriverBiDi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox does not support multiple active BiDi sessions."
   },
