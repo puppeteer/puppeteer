@@ -669,6 +669,9 @@ export interface PageEvents extends Record<EventType, unknown> {
  * @public
  */
 export interface NewDocumentScriptEvaluation {
+  /**
+   * REVERT, here to test Puppteer
+   */
   identifier: string;
 }
 
