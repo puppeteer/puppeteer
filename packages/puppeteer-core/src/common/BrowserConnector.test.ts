@@ -17,7 +17,7 @@ describe('BrowserConnector', () => {
     });
 
     it('should forward headers to the /json/version HTTP request', async () => {
-      const capturedRequests: {url: string; init?: RequestInit}[] = [];
+      const capturedRequests: Array<{url: string; init?: RequestInit}> = [];
 
       mock.method(
         globalThis,
@@ -42,7 +42,11 @@ describe('BrowserConnector', () => {
 
       expect(capturedRequests).toHaveLength(1);
       expect(capturedRequests[0]!.url).toContain('/json/version');
-      expect((capturedRequests[0]!.init?.headers as Record<string, string>)?.['Authorization']).toBe('Bearer test-token');
+      expect(
+        (capturedRequests[0]!.init?.headers as Record<string, string>)?.[
+          'Authorization'
+        ],
+      ).toBe('Bearer test-token');
     });
   });
 
