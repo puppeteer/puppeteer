@@ -443,7 +443,7 @@ export class Process {
   }
 
   /**
-   * Kills the browser process. Without running any hooks.
+   * Kills the browser process without running any hooks.
    */
   kill(): void {
     debugLaunch?.(`Trying to kill ${this.#browserProcess.pid}`);
