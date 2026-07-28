@@ -4,7 +4,7 @@ sidebar_label: Process.kill
 
 # Process.kill() method
 
-Kills the browser process. Without running any hooks.
+Kills the browser process without running any hooks.
 
 ### Signature
 
