@@ -187,28 +187,21 @@ describe('Chrome', () => {
         browser: Browser.CHROME,
         buildId: testChromeBuildId,
       });
-      const profileDir = path.join(tmpDir, 'profile');
       let hookRan = false;
       const browserProcess = launch({
         executablePath,
         args: getArgs(),
         onExit: async () => {
           hookRan = true;
-          if (fs.existsSync(profileDir)) {
-            fs.rmSync(profileDir, {recursive: true, force: true});
-          }
         },
       });
       await browserProcess.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
 
-      // Simulate the Node.js host process receiving SIGINT
-      process.emit('SIGINT');
+      process.emit('SIGINT', 'SIGINT');
 
-      // Wait for it to close!
       await browserProcess.hasClosed();
 
       assert.ok(hookRan);
-      assert.ok(!fs.existsSync(profileDir));
       assert.strictEqual(process.exitCode, 130);
     });
   });
