@@ -442,6 +442,9 @@ export class Process {
     return this.#browserProcessExiting;
   }
 
+  /**
+   * Kills the browser process. Without running any hooks.
+   */
   kill(): void {
     debugLaunch?.(`Trying to kill ${this.#browserProcess.pid}`);
     // If the process failed to launch (for example if the browser executable path
