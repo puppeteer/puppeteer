@@ -23,6 +23,8 @@ export class CdpDialog extends Dialog {
   ) {
     super(type, message, defaultValue);
     this.#client = client;
+
+    client.once('Page.javascriptDialogClosed', this.#onDialogClosed);
   }
 
   override async handle(options: {
@@ -33,5 +35,10 @@ export class CdpDialog extends Dialog {
       accept: options.accept,
       promptText: options.text,
     });
+    this.#client.off('Page.javascriptDialogClosed', this.#onDialogClosed);
   }
+
+  #onDialogClosed = () => {
+    this.handled = true;
+  };
 }

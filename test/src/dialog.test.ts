@@ -61,4 +61,50 @@ describe('Page.Events.Dialog', function () {
     });
     expect(result).toBe(null);
   });
+  it('should see dialogs handled by other connections', async () => {
+    const {page, server, browser, puppeteer, defaultBrowserOptions} =
+      await getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+
+    using browser2 = await puppeteer.connect({
+      browserWSEndpoint: browser.wsEndpoint(),
+      protocol: defaultBrowserOptions.protocol,
+    });
+    const page2 = await browser2.pages().then(pages => {
+      return pages.find(p => {
+        return p.url() === server.EMPTY_PAGE;
+      });
+    });
+    if (!page2) {
+      throw new Error('Could not find page2');
+    }
+
+    const dialog1Promise = new Promise<any>(resolve => {
+      page.once('dialog', resolve);
+    });
+    const dialog2Promise = new Promise<any>(resolve => {
+      page2.once('dialog', resolve);
+    });
+
+    const evaluatePromise = page2.evaluate(() => {
+      return prompt('question?', 'yes.');
+    });
+
+    const dialog1 = await dialog1Promise;
+    const dialog2 = await dialog2Promise;
+
+    await dialog2.accept('answer!');
+
+    const result = await evaluatePromise;
+    expect(result).toBe('answer!');
+
+    // Wait for the event to be processed by the first connection.
+    await page.evaluate(() => {
+      return 1;
+    });
+
+    expect(dialog1.handled).toBe(true);
+    expect(dialog2.handled).toBe(true);
+  });
 });
