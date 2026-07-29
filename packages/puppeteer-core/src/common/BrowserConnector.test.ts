@@ -4,13 +4,42 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {describe, it} from 'node:test';
+import {afterEach, describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {_connectToBrowser} from './BrowserConnector.js';
+import {_connectToBrowser, getWSEndpoint} from './BrowserConnector.js';
 
 describe('BrowserConnector', () => {
+  describe('getWSEndpoint', () => {
+    const originalFetch = globalThis.fetch;
+
+    afterEach(() => {
+      globalThis.fetch = originalFetch;
+    });
+
+    it('preserves path prefixes when fetching the JSON version endpoint', async () => {
+      let requestedURL = '';
+      globalThis.fetch = async (url: string | URL | Request) => {
+        requestedURL = url.toString();
+
+        return new Response(
+          JSON.stringify({
+            webSocketDebuggerUrl: 'ws://example.com/devtools/browser/id',
+          }),
+        );
+      };
+
+      await expect(
+        getWSEndpoint('http://example.com/t/session?token=secret'),
+      ).resolves.toBe('ws://example.com/devtools/browser/id');
+
+      expect(requestedURL).toBe(
+        'http://example.com/t/session/json/version?token=secret',
+      );
+    });
+  });
+
   describe('_connectToBrowser', () => {
     it('should throw an error when both blocklist and allowlist are specified', async () => {
       await expect(
