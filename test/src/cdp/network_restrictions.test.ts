@@ -514,6 +514,74 @@ describe('Network Restrictions', function () {
     });
   });
 
+  describe('PWA validation', () => {
+    describe('blocklist', () => {
+      const state = setupSeparateTestBrowserHooks({
+        blocklist: ['*://*:*/empty.html'],
+        pipe: true,
+      });
+
+      it('should throw when calling PWA APIs', async () => {
+        const {browser, server} = state;
+        const manifestId = `${server.PREFIX}/pwa/`;
+
+        await expect(
+          browser.installPWA({
+            manifestId,
+            installUrlOrBundleUrl: `${server.PREFIX}/pwa/index.html`,
+          }),
+        ).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+
+        await expect(browser.launchPWA({manifestId})).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+
+        await expect(browser.uninstallPWA({manifestId})).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+
+        await expect(browser.getPWAState({manifestId})).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+      });
+    });
+
+    describe('allowlist', () => {
+      const state = setupSeparateTestBrowserHooks({
+        allowlist: ['*://*:*/empty.html'],
+        pipe: true,
+      });
+
+      it('should throw when calling PWA APIs', async () => {
+        const {browser, server} = state;
+        const manifestId = `${server.PREFIX}/pwa/`;
+
+        await expect(
+          browser.installPWA({
+            manifestId,
+            installUrlOrBundleUrl: `${server.PREFIX}/pwa/index.html`,
+          }),
+        ).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+
+        await expect(browser.launchPWA({manifestId})).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+
+        await expect(browser.uninstallPWA({manifestId})).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+
+        await expect(browser.getPWAState({manifestId})).rejects.toThrow(
+          'PWA APIs are not supported when network restrictions are configured.',
+        );
+      });
+    });
+  });
+
   it('should detach from targets violating blocklist when connecting to a running browser', async () => {
     const {browser: originalBrowser, server} = await getTestState({
       skipContextCreation: true,
