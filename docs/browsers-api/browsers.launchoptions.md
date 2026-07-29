@@ -195,6 +195,25 @@ Handles SIGTERM in the Node process and tries to gracefully close the browser pr
 </td></tr>
 <tr><td>
 
+<span id="logger">logger</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+Logger
+
+</td><td>
+
+Replace the default internal logger with a custom one.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="onexit">onExit</span>
 
 </td><td>

@@ -195,7 +195,7 @@ export interface LaunchOptions {
    */
   signal?: AbortSignal;
   /**
-   * Logger for the browser process.
+   * Replace the default internal logger with a custom one.
    */
   logger?: Logger;
 }
