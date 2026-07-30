@@ -41,12 +41,37 @@ describe('BrowserConnector', () => {
       }).catch(() => {});
 
       expect(capturedRequests).toHaveLength(1);
-      expect(capturedRequests[0]!.url).toContain('/json/version');
+      expect(capturedRequests[0]!.url).toBe(
+        'http://localhost:1234/json/version',
+      );
       expect(
         (capturedRequests[0]!.init?.headers as Record<string, string>)?.[
           'Authorization'
         ],
       ).toBe('Bearer test-token');
+    });
+
+    it('should preserve path prefixes in the /json/version request', async () => {
+      const capturedUrls: string[] = [];
+
+      mock.method(globalThis, 'fetch', async (url: string | URL | Request) => {
+        capturedUrls.push(String(url));
+        return new Response(
+          JSON.stringify({
+            webSocketDebuggerUrl: 'ws://localhost:1234/devtools/browser/1',
+          }),
+          {status: 200, headers: {'Content-Type': 'application/json'}},
+        );
+      });
+
+      await _connectToBrowser({
+        browserURL:
+          'http://localhost:1234/gateway/session?token=secret#fragment',
+      }).catch(() => {});
+
+      expect(capturedUrls).toEqual([
+        'http://localhost:1234/gateway/session/json/version',
+      ]);
     });
   });
 
