@@ -285,6 +285,14 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   async #applyUserAgent(client: CDPSession) {
+    if (
+      this.#userAgent === undefined &&
+      this.#userAgentMetadata === undefined &&
+      this.#acceptLanguage === undefined &&
+      this.#platform === undefined
+    ) {
+      return;
+    }
     const userAgent =
       this.#userAgent ??
       (await this.#frameManager.page().browser().userAgent());

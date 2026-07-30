@@ -1542,6 +1542,21 @@ describe('NetworkManager', () => {
     ).toEqual([200, 302, 200]);
   });
 
+  it('should not override the user agent when nothing is emulated', async () => {
+    const commands: string[] = [];
+    const mockCDPSession = new MockCDPSession();
+    mockCDPSession.send = (async (method: string) => {
+      commands.push(method);
+    }) as any;
+    const manager = createNetworkManager();
+
+    await manager.addClient(mockCDPSession);
+    expect(commands).not.toContain('Network.setUserAgentOverride');
+
+    await manager.setUserAgent('custom-user-agent');
+    expect(commands).toContain('Network.setUserAgentOverride');
+  });
+
   describe('error handling', () => {
     function createMockSession<E extends ErrorConstructor>(
       ErrorCls: E,
