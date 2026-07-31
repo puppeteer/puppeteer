@@ -291,10 +291,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#userAgentMetadata === undefined &&
       this.#acceptLanguage === undefined &&
       this.#platform === undefined;
-    // Skip only when nothing is emulated and no override has ever been applied.
-    // If an override was applied earlier (e.g. an emulated locale that is now
-    // being cleared), we still need to send the command once to reset the
-    // browser back to its defaults.
+    // Still need to send once to reset a previously-applied override.
     if (nothingToEmulate && !this.#userAgentOverrideApplied) {
       return;
     }
