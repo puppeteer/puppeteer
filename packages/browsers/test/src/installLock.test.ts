@@ -166,4 +166,77 @@ describe('installLock', function () {
     assert.strictEqual(fs.existsSync(lockPath), false);
     assert.strictEqual(fs.existsSync(lockParent), true);
   });
+
+  it('revalidates heartbeat-less stale locks after acquiring the reaper', async () => {
+    fs.mkdirSync(lockPath, {recursive: true});
+    const staleTime = new Date(Date.now() - 20000);
+    fs.utimesSync(lockPath, staleTime, staleTime);
+
+    const bothObservedStaleLock = Promise.withResolvers<void>();
+    const firstTaskEntered = Promise.withResolvers<void>();
+    const releaseFirstTask = Promise.withResolvers<void>();
+    const firstLockFinished = Promise.withResolvers<void>();
+    const secondTaskEntered = Promise.withResolvers<void>();
+    let staleLockObservations = 0;
+    let activeTasks = 0;
+    let maxActiveTasks = 0;
+
+    const waitUntilBothObservedStaleLock = async () => {
+      staleLockObservations++;
+      if (staleLockObservations === 2) {
+        bothObservedStaleLock.resolve();
+      }
+      await bothObservedStaleLock.promise;
+    };
+
+    const firstLock = withInstallLock(
+      lockPath,
+      async () => {
+        activeTasks++;
+        maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+        firstTaskEntered.resolve();
+        await releaseFirstTask.promise;
+        activeTasks--;
+      },
+      {
+        ...testLockOptions,
+        beforeStaleLockClaim: waitUntilBothObservedStaleLock,
+      },
+    );
+    void firstLock.then(firstLockFinished.resolve, firstLockFinished.resolve);
+    const secondLock = withInstallLock(
+      lockPath,
+      async () => {
+        activeTasks++;
+        maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+        secondTaskEntered.resolve();
+        await firstLockFinished.promise;
+        activeTasks--;
+      },
+      {
+        ...testLockOptions,
+        beforeStaleLockClaim: async () => {
+          await waitUntilBothObservedStaleLock();
+          await firstTaskEntered.promise;
+        },
+      },
+    );
+
+    await firstTaskEntered.promise;
+    const secondEnteredWhileFirstWasActive = await Promise.race([
+      secondTaskEntered.promise.then(() => {
+        return true;
+      }),
+      sleep(100).then(() => {
+        return false;
+      }),
+    ]);
+    releaseFirstTask.resolve();
+    await Promise.all([firstLock, secondLock]);
+
+    assert.strictEqual(secondEnteredWhileFirstWasActive, false);
+    assert.strictEqual(maxActiveTasks, 1);
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(lockParent), true);
+  });
 });

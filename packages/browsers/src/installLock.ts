@@ -22,6 +22,10 @@ interface InstallLockOptions {
   retryDelay?: number;
   staleThreshold?: number;
   heartbeatInterval?: number;
+  /**
+   * @internal
+   */
+  beforeStaleLockClaim?: () => Promise<void>;
 }
 
 export function installLockPath(
@@ -90,6 +94,7 @@ function canClaimInstallLock(
 async function claimStaleInstallLock(
   lockPath: string,
   staleThreshold: number,
+  beforeStaleLockClaim?: () => Promise<void>,
 ): Promise<boolean> {
   const reaperPath = path.join(lockPath, 'reaper');
   try {
@@ -97,6 +102,7 @@ async function claimStaleInstallLock(
     if (!canClaimInstallLock(lockStats, staleThreshold)) {
       return false;
     }
+    await beforeStaleLockClaim?.();
     debugInstall?.(`Claiming stale browser install lock at ${lockPath}`);
     try {
       await mkdir(reaperPath);
@@ -158,7 +164,13 @@ export async function withInstallLock<T>(
       if (!isErrorWithCode(error, 'EEXIST')) {
         throw error;
       }
-      if (await claimStaleInstallLock(lockPath, staleThreshold)) {
+      if (
+        await claimStaleInstallLock(
+          lockPath,
+          staleThreshold,
+          options.beforeStaleLockClaim,
+        )
+      ) {
         break;
       }
       await sleep(retryDelay);
