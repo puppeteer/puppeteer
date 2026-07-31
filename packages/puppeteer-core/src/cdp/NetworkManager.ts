@@ -85,6 +85,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
   #platform?: string;
   #acceptLanguage?: string;
+  #userAgentOverrideApplied = false;
 
   readonly #handlers = [
     ['Fetch.requestPaused', this.#onRequestPaused],
@@ -285,12 +286,16 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   async #applyUserAgent(client: CDPSession) {
-    if (
+    const nothingToEmulate =
       this.#userAgent === undefined &&
       this.#userAgentMetadata === undefined &&
       this.#acceptLanguage === undefined &&
-      this.#platform === undefined
-    ) {
+      this.#platform === undefined;
+    // Skip only when nothing is emulated and no override has ever been applied.
+    // If an override was applied earlier (e.g. an emulated locale that is now
+    // being cleared), we still need to send the command once to reset the
+    // browser back to its defaults.
+    if (nothingToEmulate && !this.#userAgentOverrideApplied) {
       return;
     }
     const userAgent =
@@ -306,6 +311,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         userAgentMetadata: this.#userAgentMetadata,
         platform: this.#platform,
       });
+      this.#userAgentOverrideApplied = !nothingToEmulate;
     } catch (error) {
       if (this.#canIgnoreError(error)) {
         return;
