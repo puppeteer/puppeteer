@@ -239,4 +239,43 @@ describe('installLock', function () {
     assert.strictEqual(fs.existsSync(lockPath), false);
     assert.strictEqual(fs.existsSync(lockParent), true);
   });
+
+  it('does not claim a recreated heartbeat-less lock using stale stats', async () => {
+    fs.mkdirSync(lockPath, {recursive: true});
+    const staleTime = new Date(Date.now() - 20000);
+    fs.utimesSync(lockPath, staleTime, staleTime);
+    const lockRecreated = Promise.withResolvers<void>();
+    let taskEntered = false;
+    let recreatedLock = false;
+
+    const lock = withInstallLock(
+      lockPath,
+      async () => {
+        taskEntered = true;
+      },
+      {
+        ...testLockOptions,
+        beforeStaleLockClaim: async () => {
+          if (recreatedLock) {
+            return;
+          }
+          recreatedLock = true;
+          fs.rmSync(lockPath, {recursive: true});
+          fs.mkdirSync(lockPath);
+          lockRecreated.resolve();
+        },
+      },
+    );
+
+    await lockRecreated.promise;
+    await sleep(100);
+    assert.strictEqual(taskEntered, false);
+
+    fs.rmSync(lockPath, {recursive: true});
+    await lock;
+
+    assert.strictEqual(taskEntered, true);
+    assert.strictEqual(fs.existsSync(lockPath), false);
+    assert.strictEqual(fs.existsSync(lockParent), true);
+  });
 });

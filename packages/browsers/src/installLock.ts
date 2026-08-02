@@ -28,6 +28,19 @@ interface InstallLockOptions {
   beforeStaleLockClaim?: () => Promise<void>;
 }
 
+interface InstallLockIdentity {
+  dev: bigint;
+  ino: bigint;
+  birthtimeNs: bigint;
+}
+
+interface InstallLockStats {
+  mtimeMs: number;
+  hasHeartbeat: boolean;
+  ownerPid?: number;
+  lockIdentity?: InstallLockIdentity;
+}
+
 export function installLockPath(
   cache: Cache,
   browser: Browser,
@@ -50,9 +63,7 @@ function isErrorWithCode(error: unknown, code: string): boolean {
   );
 }
 
-async function installLockStats(
-  lockPath: string,
-): Promise<{mtimeMs: number; hasHeartbeat: boolean; ownerPid?: number}> {
+async function installLockStats(lockPath: string): Promise<InstallLockStats> {
   const heartbeatPath = path.join(lockPath, 'heartbeat');
   try {
     const heartbeat = await readFile(heartbeatPath, 'utf8');
@@ -68,9 +79,32 @@ async function installLockStats(
     if (!isErrorWithCode(error, 'ENOENT')) {
       throw error;
     }
-    const stats = await stat(lockPath);
-    return {mtimeMs: stats.mtimeMs, hasHeartbeat: false};
+    const stats = await stat(lockPath, {bigint: true});
+    return {
+      mtimeMs: Number(stats.mtimeMs),
+      hasHeartbeat: false,
+      lockIdentity: {
+        dev: stats.dev,
+        ino: stats.ino,
+        birthtimeNs: stats.birthtimeNs,
+      },
+    };
   }
+}
+
+function isSameInstallLock(
+  before: InstallLockStats,
+  after: InstallLockStats,
+): boolean {
+  const beforeIdentity = before.lockIdentity;
+  const afterIdentity = after.lockIdentity;
+  return (
+    beforeIdentity !== undefined &&
+    afterIdentity !== undefined &&
+    beforeIdentity.dev === afterIdentity.dev &&
+    beforeIdentity.ino === afterIdentity.ino &&
+    beforeIdentity.birthtimeNs === afterIdentity.birthtimeNs
+  );
 }
 
 function canClaimInstallLock(
@@ -119,10 +153,12 @@ async function claimStaleInstallLock(
       }
       throw error;
     }
-    const claimedLockStats = lockStats.hasHeartbeat
-      ? await installLockStats(lockPath)
-      : lockStats;
-    if (!canClaimInstallLock(claimedLockStats, staleThreshold)) {
+    const currentLockStats = await installLockStats(lockPath);
+    const canStillClaim = currentLockStats.hasHeartbeat
+      ? canClaimInstallLock(currentLockStats, staleThreshold)
+      : isSameInstallLock(lockStats, currentLockStats) &&
+        canClaimInstallLock(lockStats, staleThreshold);
+    if (!canStillClaim) {
       await rm(reaperPath, {recursive: true, force: true});
       return false;
     }
