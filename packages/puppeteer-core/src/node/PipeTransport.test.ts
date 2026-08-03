@@ -124,5 +124,15 @@ describe('PipeTransport', () => {
       expect(messages[1]).toBe('Second');
       expect(messages[2]).toBe('Third');
     });
+
+    it('should invoke onclose when the pipe emits an error', async () => {
+      const closed = new Promise<void>(resolve => {
+        transport.onclose = () => {
+          resolve();
+        };
+      });
+      myReadable.emit('error', new Error('boom'));
+      await closed;
+    });
   });
 });
