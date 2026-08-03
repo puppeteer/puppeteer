@@ -15,7 +15,7 @@
     "archive": "node archive.js"
   },
   "dependencies": {
-    "@docsearch/react": "4.6.3",
+    "@docsearch/react": "4.7.0",
     "@docusaurus/core": "3.10.2",
     "@docusaurus/plugin-client-redirects": "3.10.2",
     "@docusaurus/plugin-content-docs": "3.10.2",
@@ -35,7 +35,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@swc/core": "1.15.46",
+    "@swc/core": "1.15.47",
     "swc-loader": "0.2.7"
   },
   "browserslist": {
