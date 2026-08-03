@@ -38,11 +38,14 @@ export class PipeTransport implements ConnectionTransport {
       return this.#dispatch(buffer);
     });
     pipeReadEmitter.on('close', () => {
-      if (this.onclose) {
-        this.onclose.call(null);
-      }
+      this.#handleClose();
     });
-    pipeReadEmitter.on('error', debugCatchError);
+    // Transport errors leave CDP callbacks hanging unless we close the
+    // connection (see #13054).
+    pipeReadEmitter.on('error', error => {
+      debugCatchError(error);
+      this.#handleClose();
+    });
     const pipeWriteEmitter = this.#subscriptions.use(
       // NodeJS event emitters don't support `*` so we need to typecast
       // As long as we don't use it we should be OK.
@@ -50,7 +53,20 @@ export class PipeTransport implements ConnectionTransport {
         pipeWrite as unknown as EventEmitter<Record<string, any>>,
       ),
     );
-    pipeWriteEmitter.on('error', debugCatchError);
+    pipeWriteEmitter.on('error', error => {
+      debugCatchError(error);
+      this.#handleClose();
+    });
+  }
+
+  #handleClose(): void {
+    if (this.#isClosed) {
+      return;
+    }
+    this.#isClosed = true;
+    if (this.onclose) {
+      this.onclose.call(null);
+    }
   }
 
   send(message: string): void {
@@ -89,7 +105,7 @@ export class PipeTransport implements ConnectionTransport {
   }
 
   close(): void {
-    this.#isClosed = true;
+    this.#handleClose();
     this.#subscriptions.dispose();
   }
 }

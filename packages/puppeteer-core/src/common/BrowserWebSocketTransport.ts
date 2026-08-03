@@ -25,6 +25,8 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
   onmessage?: (message: string) => void;
   onclose?: () => void;
 
+  #closed = false;
+
   constructor(ws: WebSocket) {
     this.#ws = ws;
     this.#ws.addEventListener('message', event => {
@@ -33,16 +35,34 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
       }
     });
     this.#ws.addEventListener('close', () => {
-      if (this.onclose) {
-        this.onclose.call(null);
-      }
+      this.#handleClose();
     });
-    // Silently log all errors - we don't know what to do with them.
-    this.#ws.addEventListener('error', debugCatchError);
+    // Transport errors leave CDP callbacks hanging unless we close the
+    // connection (see #13054). Log then tear down like a normal close.
+    this.#ws.addEventListener('error', event => {
+      debugCatchError(event);
+      this.#handleClose();
+    });
+  }
+
+  #handleClose(): void {
+    if (this.#closed) {
+      return;
+    }
+    this.#closed = true;
+    if (this.onclose) {
+      this.onclose.call(null);
+    }
   }
 
   send(message: string): void {
-    this.#ws.send(message);
+    try {
+      this.#ws.send(message);
+    } catch (error) {
+      debugCatchError(error);
+      this.#handleClose();
+      throw error;
+    }
   }
 
   close(): void {
