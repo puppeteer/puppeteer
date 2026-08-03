@@ -85,6 +85,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
   #platform?: string;
   #acceptLanguage?: string;
+  #userAgentOverrideApplied = false;
 
   readonly #handlers = [
     ['Fetch.requestPaused', this.#onRequestPaused],
@@ -285,6 +286,15 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   async #applyUserAgent(client: CDPSession) {
+    const nothingToEmulate =
+      this.#userAgent === undefined &&
+      this.#userAgentMetadata === undefined &&
+      this.#acceptLanguage === undefined &&
+      this.#platform === undefined;
+    // Still need to send once to reset a previously-applied override.
+    if (nothingToEmulate && !this.#userAgentOverrideApplied) {
+      return;
+    }
     const userAgent =
       this.#userAgent ??
       (await this.#frameManager.page().browser().userAgent());
@@ -298,6 +308,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         userAgentMetadata: this.#userAgentMetadata,
         platform: this.#platform,
       });
+      this.#userAgentOverrideApplied = !nothingToEmulate;
     } catch (error) {
       if (this.#canIgnoreError(error)) {
         return;

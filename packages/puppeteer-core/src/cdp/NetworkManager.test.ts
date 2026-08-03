@@ -1542,6 +1542,49 @@ describe('NetworkManager', () => {
     ).toEqual([200, 302, 200]);
   });
 
+  it('should not override the user agent when nothing is emulated', async () => {
+    const commands: string[] = [];
+    const mockCDPSession = new MockCDPSession();
+    mockCDPSession.send = (async (method: string) => {
+      commands.push(method);
+    }) as any;
+    const manager = createNetworkManager();
+
+    await manager.addClient(mockCDPSession);
+    expect(commands).not.toContain('Network.setUserAgentOverride');
+
+    await manager.setUserAgent('custom-user-agent');
+    expect(commands).toContain('Network.setUserAgentOverride');
+  });
+
+  it('should reset the override when the emulated accept-language is cleared', async () => {
+    const commands: string[] = [];
+    const mockCDPSession = new MockCDPSession();
+    mockCDPSession.send = (async (method: string) => {
+      commands.push(method);
+    }) as any;
+    const manager = createNetworkManager();
+
+    await manager.addClient(mockCDPSession);
+    expect(commands).not.toContain('Network.setUserAgentOverride');
+
+    await manager.setAcceptLanguage('fr-FR');
+    expect(
+      commands.filter(command => {
+        return command === 'Network.setUserAgentOverride';
+      }),
+    ).toHaveLength(1);
+
+    // Clearing the emulated accept-language must still send an override so the
+    // browser is reset back to its defaults instead of keeping the stale value.
+    await manager.setAcceptLanguage(undefined);
+    expect(
+      commands.filter(command => {
+        return command === 'Network.setUserAgentOverride';
+      }),
+    ).toHaveLength(2);
+  });
+
   describe('error handling', () => {
     function createMockSession<E extends ErrorConstructor>(
       ErrorCls: E,
