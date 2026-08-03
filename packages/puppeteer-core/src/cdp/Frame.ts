@@ -286,8 +286,9 @@ export class CdpFrame extends Frame {
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
     } = options;
 
-    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-    // lifecycle event. @see https://crrev.com/608658
+    // Page.setDocumentContent resets frame lifecycle (same role document.open
+    // played) without using document.write, which triggers Chromium's
+    // parser-blocking cross-site script console error (#12476).
     await this.setFrameContent(html);
 
     const watcher = new LifecycleWatcher(
@@ -304,6 +305,16 @@ export class CdpFrame extends Frame {
     if (error) {
       throw error;
     }
+  }
+
+  /**
+   * @internal
+   */
+  override async setFrameContent(content: string): Promise<void> {
+    await this.#client.send('Page.setDocumentContent', {
+      frameId: this._id,
+      html: content,
+    });
   }
 
   override url(): string {
