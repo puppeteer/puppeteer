@@ -27,6 +27,16 @@ export const DEBUG_PREFIXES = {
 export type DebugPrefix = (typeof DEBUG_PREFIXES)[keyof typeof DEBUG_PREFIXES];
 
 /**
+ * @public
+ * @experimental
+ */
+export type LoggerFunction = (...args: unknown[]) => void;
+/**
+ * @public
+ * @experimental
+ */
+export type Logger = (prefix: string) => LoggerFunction | undefined;
+/**
  * A debug function that can be used in any environment.
  *
  * @remarks
@@ -64,9 +74,7 @@ export type DebugPrefix = (typeof DEBUG_PREFIXES)[keyof typeof DEBUG_PREFIXES];
  *
  * @internal
  */
-export const debug = (
-  prefix: DebugPrefix,
-): ((...args: unknown[]) => void) | undefined => {
+export const debug: Logger = (prefix): LoggerFunction | undefined => {
   if (isNode) {
     const nodeDebug = environment.value.debuglog?.(prefix);
     if (!nodeDebug || !nodeDebug.enabled) {
@@ -77,7 +85,7 @@ export const debug = (
       if (captureLogs) {
         capturedLogs.push(prefix + logArgs);
       }
-      (nodeDebug as (...args: any[]) => void)(...logArgs);
+      (nodeDebug as LoggerFunction)(...logArgs);
     };
   }
 

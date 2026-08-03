@@ -15,7 +15,7 @@ import {
 } from '../api/CDPSession.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
@@ -25,9 +25,6 @@ import {
 } from '../util/incremental-id-generator.js';
 
 import {CdpCDPSession} from './CdpSession.js';
-
-const debugProtocolSend = debug(DEBUG_PREFIXES.cdpSend);
-const debugProtocolReceive = debug(DEBUG_PREFIXES.cdpReceive);
 
 /**
  * @public
@@ -44,7 +41,12 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #callbacks: CallbackRegistry;
   #rawErrors = false;
   #idGenerator: GetIdFn;
+  #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
+  #debugProtocolReceive: ((...args: unknown[]) => void) | undefined;
 
+  /**
+   * @internal
+   */
   constructor(
     url: string,
     transport: ConnectionTransport,
@@ -52,12 +54,15 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     timeout?: number,
     rawErrors = false,
     idGenerator: () => number = createIncrementalIdGenerator(),
+    logger: Logger = debug,
   ) {
     super();
     this.#rawErrors = rawErrors;
     this.#idGenerator = idGenerator;
     this.#callbacks = new CallbackRegistry(idGenerator);
     this.#url = url;
+    this.#debugProtocolSend = logger(DEBUG_PREFIXES.cdpSend);
+    this.#debugProtocolReceive = logger(DEBUG_PREFIXES.cdpReceive);
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
 
@@ -176,7 +181,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         id,
         sessionId,
       });
-      debugProtocolSend?.(stringifiedMessage);
+      this.#debugProtocolSend?.(stringifiedMessage);
       this.#transport.send(stringifiedMessage);
     }) as Promise<ProtocolMapping.Commands[T]['returnType']>;
   }
@@ -197,7 +202,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         return setTimeout(r, this.#delay);
       });
     }
-    debugProtocolReceive?.(message);
+    this.#debugProtocolReceive?.(message);
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;

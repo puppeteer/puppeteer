@@ -9,7 +9,7 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ConnectionClosedError} from '../common/Errors.js';
 import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -22,9 +22,6 @@ import type {
   Commands as BidiCommands,
   Connection,
 } from './core/Connection.js';
-
-const debugProtocolSend = debug(DEBUG_PREFIXES.bidiSend);
-const debugProtocolReceive = debug(DEBUG_PREFIXES.bidiReceive);
 
 export type CdpEvent = ChromiumBidi.Cdp.Event;
 
@@ -60,6 +57,8 @@ export class BidiConnection
   #closed = false;
   #callbacks: CallbackRegistry;
   #emitters: Array<EventEmitter<any>> = [];
+  #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
+  #debugProtocolReceive: ((...args: unknown[]) => void) | undefined;
 
   constructor(
     url: string,
@@ -67,12 +66,16 @@ export class BidiConnection
     idGenerator: GetIdFn,
     delay = 0,
     timeout?: number,
+    logger: Logger = debug,
   ) {
     super();
     this.#url = url;
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
     this.#callbacks = new CallbackRegistry(idGenerator);
+
+    this.#debugProtocolSend = logger(DEBUG_PREFIXES.bidiSend);
+    this.#debugProtocolReceive = logger(DEBUG_PREFIXES.bidiReceive);
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);
@@ -131,7 +134,7 @@ export class BidiConnection
         method,
         params,
       } as Bidi.Command);
-      debugProtocolSend?.(stringifiedMessage);
+      this.#debugProtocolSend?.(stringifiedMessage);
       this.#transport.send(stringifiedMessage);
     }) as Promise<{result: Commands[T]['returnType']}>;
   }
@@ -145,7 +148,7 @@ export class BidiConnection
         return setTimeout(f, this.#delay);
       });
     }
-    debugProtocolReceive?.(message);
+    this.#debugProtocolReceive?.(message);
     const object: Bidi.Message | CdpEvent = JSON.parse(message);
     if ('type' in object) {
       switch (object.type) {

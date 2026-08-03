@@ -9,24 +9,25 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
-import {debug, type DebugPrefix} from '../common/Debug.js';
+import {debug, type DebugPrefix, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 
 import {BidiConnection} from './Connection.js';
-
-const bidiServerLogger = (
-  prefix: string,
-): ((...args: unknown[]) => void) | undefined => {
-  return debug(`bidi:${prefix}` as DebugPrefix);
-};
 
 /**
  * @internal
  */
 export async function connectBidiOverCdp(
   cdp: CdpConnection,
+  logger: Logger = debug,
 ): Promise<BidiConnection> {
+  const bidiServerLogger = (
+    prefix: string,
+  ): ((...args: unknown[]) => void) | undefined => {
+    return logger(`bidi:${prefix}` as DebugPrefix);
+  };
+
   const transportBiDi = new NoOpTransport();
   const cdpConnectionAdapter = new CdpConnectionAdapter(cdp);
   const pptrTransport = {
@@ -53,6 +54,7 @@ export async function connectBidiOverCdp(
     cdp._idGenerator,
     cdp.delay,
     cdp.timeout,
+    logger,
   );
   const bidiServer = await BidiMapper.BidiServer.createAndStart(
     transportBiDi,
