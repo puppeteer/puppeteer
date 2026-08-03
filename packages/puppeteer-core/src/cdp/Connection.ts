@@ -15,7 +15,7 @@ import {
 } from '../api/CDPSession.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
@@ -26,8 +26,8 @@ import {
 
 import {CdpCDPSession} from './CdpSession.js';
 
-const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
-const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
+const debugProtocolSend = debug(DEBUG_PREFIXES.cdpSend);
+const debugProtocolReceive = debug(DEBUG_PREFIXES.cdpReceive);
 
 /**
  * @public

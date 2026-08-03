@@ -9,7 +9,7 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {ConnectionClosedError} from '../common/Errors.js';
 import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -23,8 +23,8 @@ import type {
   Connection,
 } from './core/Connection.js';
 
-const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
-const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
+const debugProtocolSend = debug(DEBUG_PREFIXES.bidiSend);
+const debugProtocolReceive = debug(DEBUG_PREFIXES.bidiReceive);
 
 export type CdpEvent = ChromiumBidi.Cdp.Event;
 

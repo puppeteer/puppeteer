@@ -21,7 +21,7 @@ import {assert} from '../util/assert.js';
 import {mergeUint8Arrays, stringToTypedArray} from '../util/encoding.js';
 import {packageVersion} from '../util/version.js';
 
-import {debug} from './Debug.js';
+import {debug, DEBUG_PREFIXES} from './Debug.js';
 import {TimeoutError} from './Errors.js';
 import type {EventEmitter, EventType} from './EventEmitter.js';
 import type {
@@ -34,7 +34,7 @@ import {paperFormats} from './PDFOptions.js';
 /**
  * @internal
  */
-export const debugError = debug('puppeteer:error');
+export const debugError = debug(DEBUG_PREFIXES.error);
 
 /**
  * @internal

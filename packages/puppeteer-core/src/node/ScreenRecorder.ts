@@ -26,7 +26,7 @@ import {
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page, VideoFormat} from '../api/Page.js';
-import {debug} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {fromEmitterEvent, debugCatchError} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -34,7 +34,7 @@ import {asyncDisposeSymbol} from '../util/disposable.js';
 const CRF_VALUE = 30;
 const DEFAULT_FPS = 30;
 
-const debugFfmpeg = debug('puppeteer:ffmpeg');
+const debugFfmpeg = debug(DEBUG_PREFIXES.ffmpeg);
 
 /**
  * Computes how many encoder frames to emit for a captured frame that spans
