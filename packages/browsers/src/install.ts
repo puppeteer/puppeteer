@@ -22,6 +22,7 @@ import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {withInstallLock} from './installLock.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
@@ -446,66 +447,71 @@ async function installUrl(
     );
   }
 
-  try {
-    if (existsSync(outputPath)) {
-      if (!existsSync(installedBrowser.executablePath)) {
-        throw new Error(
-          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
+  // Serialize concurrent installs of the same browser/buildId so parallel
+  // `npm install` / install.js runs cannot corrupt the shared cache (#14417).
+  const lockPath = `${outputPath}.install-lock`;
+  return await withInstallLock(lockPath, async () => {
+    try {
+      if (existsSync(outputPath)) {
+        if (!existsSync(installedBrowser.executablePath)) {
+          throw new Error(
+            `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
+          );
+        }
+        await runSetup(installedBrowser, logger);
+        if (options.installDeps) {
+          await installDeps(installedBrowser, logger);
+        }
+        return installedBrowser;
+      }
+
+      // Check if archive already exists (e.g., from a custom provider)
+      if (!existsSync(archivePath)) {
+        logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
+        try {
+          debugTime('download');
+          await downloadFile(
+            url,
+            archivePath,
+            downloadProgressCallback,
+            options.expectedHash,
+          );
+        } finally {
+          debugTimeEnd('download', logger);
+        }
+      } else {
+        logger?.(DEBUG_PREFIXES.install)?.(
+          `Using existing archive at ${archivePath}`,
         );
       }
+
+      logger?.(DEBUG_PREFIXES.install)?.(
+        `Installing ${archivePath} to ${outputPath}`,
+      );
+      try {
+        debugTime('extract');
+        await unpackArchive(archivePath, outputPath, options.logger);
+      } finally {
+        debugTimeEnd('extract', logger);
+      }
+
+      if (options.buildIdAlias) {
+        const metadata = installedBrowser.readMetadata();
+        metadata.aliases[options.buildIdAlias] = options.buildId;
+        installedBrowser.writeMetadata(metadata);
+      }
+
       await runSetup(installedBrowser, logger);
       if (options.installDeps) {
         await installDeps(installedBrowser, logger);
       }
       return installedBrowser;
-    }
-
-    // Check if archive already exists (e.g., from a custom provider)
-    if (!existsSync(archivePath)) {
-      logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
-      try {
-        debugTime('download');
-        await downloadFile(
-          url,
-          archivePath,
-          downloadProgressCallback,
-          options.expectedHash,
-        );
-      } finally {
-        debugTimeEnd('download', logger);
-      }
-    } else {
-      logger?.(DEBUG_PREFIXES.install)?.(
-        `Using existing archive at ${archivePath}`,
-      );
-    }
-
-    logger?.(DEBUG_PREFIXES.install)?.(
-      `Installing ${archivePath} to ${outputPath}`,
-    );
-    try {
-      debugTime('extract');
-      await unpackArchive(archivePath, outputPath, options.logger);
     } finally {
-      debugTimeEnd('extract', logger);
+      if (existsSync(archivePath)) {
+        await unlink(archivePath);
+      }
     }
-
-    if (options.buildIdAlias) {
-      const metadata = installedBrowser.readMetadata();
-      metadata.aliases[options.buildIdAlias] = options.buildId;
-      installedBrowser.writeMetadata(metadata);
-    }
-
-    await runSetup(installedBrowser, logger);
-    if (options.installDeps) {
-      await installDeps(installedBrowser, logger);
-    }
-    return installedBrowser;
-  } finally {
-    if (existsSync(archivePath)) {
-      await unlink(archivePath);
-    }
-  }
+  });
 }
 
 async function runSetup(
