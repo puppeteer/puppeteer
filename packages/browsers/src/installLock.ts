@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type {Stats} from 'node:fs';
 import {mkdir, readFile, rm, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
@@ -34,12 +35,17 @@ interface InstallLockIdentity {
   birthtimeNs: bigint;
 }
 
-interface InstallLockStats {
-  mtimeMs: number;
-  hasHeartbeat: boolean;
-  ownerPid?: number;
-  lockIdentity?: InstallLockIdentity;
-}
+type InstallLockSnapshot =
+  | {
+      fromHeartbeat: true;
+      mtimeMs: number;
+      ownerPid?: number;
+    }
+  | {
+      fromHeartbeat: false;
+      mtimeMs: number;
+      lockIdentity: InstallLockIdentity;
+    };
 
 export function installLockPath(
   cache: Cache,
@@ -63,62 +69,95 @@ function isErrorWithCode(error: unknown, code: string): boolean {
   );
 }
 
-async function installLockStats(lockPath: string): Promise<InstallLockStats> {
-  const heartbeatPath = path.join(lockPath, 'heartbeat');
+async function installLockIdentity(
+  lockPath: string,
+): Promise<InstallLockIdentity> {
+  const stats = await stat(lockPath, {bigint: true});
+  return {
+    dev: stats.dev,
+    ino: stats.ino,
+    birthtimeNs: stats.birthtimeNs,
+  };
+}
+
+async function statHeartbeat(lockPath: string): Promise<Stats | undefined> {
   try {
-    const heartbeat = await readFile(heartbeatPath, 'utf8');
-    const stats = await stat(heartbeatPath);
-    const ownerPid = Number(heartbeat.trim());
-    return {
-      mtimeMs: stats.mtimeMs,
-      hasHeartbeat: true,
-      ownerPid:
-        Number.isSafeInteger(ownerPid) && ownerPid > 0 ? ownerPid : undefined,
-    };
+    return await stat(path.join(lockPath, 'heartbeat'));
   } catch (error) {
-    if (!isErrorWithCode(error, 'ENOENT')) {
-      throw error;
+    if (isErrorWithCode(error, 'ENOENT')) {
+      return;
     }
-    const stats = await stat(lockPath, {bigint: true});
-    return {
-      mtimeMs: Number(stats.mtimeMs),
-      hasHeartbeat: false,
-      lockIdentity: {
-        dev: stats.dev,
-        ino: stats.ino,
-        birthtimeNs: stats.birthtimeNs,
-      },
-    };
+    throw error;
   }
 }
 
+/**
+ * Returns undefined when a fresh heartbeat rules out this claim attempt.
+ */
+async function inspectInstallLock(
+  lockPath: string,
+  staleThreshold: number,
+): Promise<InstallLockSnapshot | undefined> {
+  const heartbeatPath = path.join(lockPath, 'heartbeat');
+  const heartbeatStats = await statHeartbeat(lockPath);
+  if (heartbeatStats !== undefined) {
+    if (Date.now() - heartbeatStats.mtimeMs <= staleThreshold) {
+      return;
+    }
+    try {
+      const ownerPidText = await readFile(heartbeatPath, 'utf8');
+      const recheckedHeartbeatStats = await stat(heartbeatPath);
+      if (Date.now() - recheckedHeartbeatStats.mtimeMs <= staleThreshold) {
+        return;
+      }
+      const ownerPid = Number(ownerPidText.trim());
+      return {
+        fromHeartbeat: true,
+        mtimeMs: recheckedHeartbeatStats.mtimeMs,
+        ownerPid:
+          Number.isSafeInteger(ownerPid) && ownerPid > 0 ? ownerPid : undefined,
+      };
+    } catch (error) {
+      if (!isErrorWithCode(error, 'ENOENT')) {
+        throw error;
+      }
+    }
+  }
+  const lockStats = await stat(lockPath, {bigint: true});
+  return {
+    fromHeartbeat: false,
+    mtimeMs: Number(lockStats.mtimeMs),
+    lockIdentity: {
+      dev: lockStats.dev,
+      ino: lockStats.ino,
+      birthtimeNs: lockStats.birthtimeNs,
+    },
+  };
+}
+
 function isSameInstallLock(
-  before: InstallLockStats,
-  after: InstallLockStats,
+  before: InstallLockIdentity,
+  after: InstallLockIdentity,
 ): boolean {
-  const beforeIdentity = before.lockIdentity;
-  const afterIdentity = after.lockIdentity;
   return (
-    beforeIdentity !== undefined &&
-    afterIdentity !== undefined &&
-    beforeIdentity.dev === afterIdentity.dev &&
-    beforeIdentity.ino === afterIdentity.ino &&
-    beforeIdentity.birthtimeNs === afterIdentity.birthtimeNs
+    before.dev === after.dev &&
+    before.ino === after.ino &&
+    before.birthtimeNs === after.birthtimeNs
   );
 }
 
 function canClaimInstallLock(
-  lockStats: {mtimeMs: number; ownerPid?: number},
+  snapshot: {mtimeMs: number; ownerPid?: number},
   staleThreshold: number,
 ): boolean {
-  if (Date.now() - lockStats.mtimeMs <= staleThreshold) {
+  if (Date.now() - snapshot.mtimeMs <= staleThreshold) {
     return false;
   }
-  if (lockStats.ownerPid === undefined) {
+  if (snapshot.ownerPid === undefined) {
     return true;
   }
   try {
-    process.kill(lockStats.ownerPid, 0);
+    process.kill(snapshot.ownerPid, 0);
     return false;
   } catch (error) {
     return isErrorWithCode(error, 'ESRCH');
@@ -132,8 +171,11 @@ async function claimStaleInstallLock(
 ): Promise<boolean> {
   const reaperPath = path.join(lockPath, 'reaper');
   try {
-    const lockStats = await installLockStats(lockPath);
-    if (!canClaimInstallLock(lockStats, staleThreshold)) {
+    const initialSnapshot = await inspectInstallLock(lockPath, staleThreshold);
+    if (
+      initialSnapshot === undefined ||
+      !canClaimInstallLock(initialSnapshot, staleThreshold)
+    ) {
       return false;
     }
     await beforeStaleLockClaim?.();
@@ -153,18 +195,39 @@ async function claimStaleInstallLock(
       }
       throw error;
     }
-    const currentLockStats = await installLockStats(lockPath);
-    const canStillClaim = currentLockStats.hasHeartbeat
-      ? canClaimInstallLock(currentLockStats, staleThreshold)
-      : isSameInstallLock(lockStats, currentLockStats) &&
-        canClaimInstallLock(lockStats, staleThreshold);
-    if (!canStillClaim) {
+    try {
+      if (initialSnapshot.fromHeartbeat) {
+        const currentSnapshot = await inspectInstallLock(
+          lockPath,
+          staleThreshold,
+        );
+        if (
+          currentSnapshot === undefined ||
+          !canClaimInstallLock(currentSnapshot, staleThreshold)
+        ) {
+          return false;
+        }
+      } else {
+        const currentHeartbeatStats = await statHeartbeat(lockPath);
+        if (currentHeartbeatStats !== undefined) {
+          return false;
+        }
+        const currentLockIdentity = await installLockIdentity(lockPath);
+        if (
+          !isSameInstallLock(
+            initialSnapshot.lockIdentity,
+            currentLockIdentity,
+          ) ||
+          !canClaimInstallLock(initialSnapshot, staleThreshold)
+        ) {
+          return false;
+        }
+      }
+      await refreshInstallLock(lockPath);
+      return true;
+    } finally {
       await rm(reaperPath, {recursive: true, force: true});
-      return false;
     }
-    await refreshInstallLock(lockPath);
-    await rm(reaperPath, {recursive: true, force: true});
-    return true;
   } catch (error) {
     if (isErrorWithCode(error, 'ENOENT')) {
       return false;
