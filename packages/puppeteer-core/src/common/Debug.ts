@@ -27,11 +27,13 @@ export const DEBUG_PREFIXES = {
 export type DebugPrefix = (typeof DEBUG_PREFIXES)[keyof typeof DEBUG_PREFIXES];
 
 /**
- * @internal
+ * @public
+ * @experimental
  */
 export type LoggerFunction = (...args: unknown[]) => void;
 /**
- * @internal
+ * @public
+ * @experimental
  */
 export type Logger = (prefix: string) => LoggerFunction | undefined;
 /**

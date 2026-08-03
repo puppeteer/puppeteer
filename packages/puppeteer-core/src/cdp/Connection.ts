@@ -44,6 +44,9 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
   #debugProtocolReceive: ((...args: unknown[]) => void) | undefined;
 
+  /**
+   * @internal
+   */
   constructor(
     url: string,
     transport: ConnectionTransport,

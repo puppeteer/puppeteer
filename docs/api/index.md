@@ -108,6 +108,10 @@ The constructor for this class is marked as internal. Third-party code should no
 
 </td><td>
 
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Connection` class.
+
 </td></tr>
 <tr><td>
 
@@ -1897,6 +1901,24 @@ All the valid keys that can be passed to functions that take user input, such as
 <span id="locatorclickoptions">[LocatorClickOptions](./puppeteer.locatorclickoptions.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="logger">[Logger](./puppeteer.logger.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
+
+</td></tr>
+<tr><td>
+
+<span id="loggerfunction">[LoggerFunction](./puppeteer.loggerfunction.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
 
 </td></tr>
 <tr><td>
