@@ -1628,5 +1628,32 @@ describe('NetworkManager', () => {
       });
       await manager.addClient(mockCDPSession);
     });
+
+    it('should not send Network.setUserAgentOverride unless an override is set', async () => {
+      const sent: string[] = [];
+      class TrackingSession extends EventEmitter<CDPSessionEvents> {
+        async send(method: string): Promise<any> {
+          sent.push(method);
+        }
+        connection() {
+          return undefined;
+        }
+        readonly detached = false;
+        async detach() {}
+        id() {
+          return '1';
+        }
+        parentSession() {
+          return undefined;
+        }
+      }
+      const mockCDPSession = new TrackingSession();
+      const manager = createNetworkManager();
+      await manager.addClient(mockCDPSession);
+      expect(sent).not.toContain('Network.setUserAgentOverride');
+
+      await manager.setUserAgent('custom-agent');
+      expect(sent).toContain('Network.setUserAgentOverride');
+    });
   });
 });
