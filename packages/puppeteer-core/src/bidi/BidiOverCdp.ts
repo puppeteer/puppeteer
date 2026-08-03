@@ -9,7 +9,7 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
-import {debug} from '../common/Debug.js';
+import {debug, type DebugPrefix} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 
@@ -18,7 +18,7 @@ import {BidiConnection} from './Connection.js';
 const bidiServerLogger = (
   prefix: string,
 ): ((...args: unknown[]) => void) | undefined => {
-  return debug(`bidi:${prefix}`);
+  return debug(`bidi:${prefix}` as DebugPrefix);
 };
 
 /**

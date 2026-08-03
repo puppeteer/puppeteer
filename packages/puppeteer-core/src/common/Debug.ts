@@ -10,6 +10,23 @@ declare global {
   const __PUPPETEER_DEBUG: string;
 }
 /**
+ * @internal
+ */
+export const DEBUG_PREFIXES = {
+  cdpSend: 'puppeteer:protocol:SEND ►',
+  cdpReceive: 'puppeteer:protocol:RECV ◀',
+  bidiSend: 'puppeteer:webDriverBiDi:SEND ►',
+  bidiReceive: 'puppeteer:webDriverBiDi:RECV ◀',
+  error: 'puppeteer:error',
+  ffmpeg: 'puppeteer:ffmpeg',
+} as const;
+
+/**
+ * @internal
+ */
+export type DebugPrefix = (typeof DEBUG_PREFIXES)[keyof typeof DEBUG_PREFIXES];
+
+/**
  * A debug function that can be used in any environment.
  *
  * @remarks
@@ -36,7 +53,7 @@ declare global {
  * @example
  *
  * ```
- * const log = debug('Page');
+ * const log = debug(DEBUG_PREFIXES.error);
  *
  * log('new page created')
  * // logs "Page: new page created"
@@ -48,7 +65,7 @@ declare global {
  * @internal
  */
 export const debug = (
-  prefix: string,
+  prefix: DebugPrefix,
 ): ((...args: unknown[]) => void) | undefined => {
   if (isNode) {
     const nodeDebug = environment.value.debuglog?.(prefix);
