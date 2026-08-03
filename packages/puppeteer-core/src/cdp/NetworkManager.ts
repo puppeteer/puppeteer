@@ -285,6 +285,18 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   async #applyUserAgent(client: CDPSession) {
+    // Do not call Network.setUserAgentOverride unless the user asked for an
+    // override. Sending only `userAgent` (with userAgentMetadata omitted)
+    // clears User-Agent Client Hints from Chrome 114+; see
+    // https://github.com/puppeteer/puppeteer/issues/15273 and crbug 40270800.
+    if (
+      this.#userAgent === undefined &&
+      this.#userAgentMetadata === undefined &&
+      this.#acceptLanguage === undefined &&
+      this.#platform === undefined
+    ) {
+      return;
+    }
     const userAgent =
       this.#userAgent ??
       (await this.#frameManager.page().browser().userAgent());
