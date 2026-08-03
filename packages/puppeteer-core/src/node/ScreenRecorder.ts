@@ -26,15 +26,13 @@ import {
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page, VideoFormat} from '../api/Page.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {fromEmitterEvent, debugCatchError} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
 
 const CRF_VALUE = 30;
 const DEFAULT_FPS = 30;
-
-const debugFfmpeg = debug(DEBUG_PREFIXES.ffmpeg);
 
 /**
  * Computes how many encoder frames to emit for a captured frame that spans
@@ -96,6 +94,7 @@ export class ScreenRecorder extends PassThrough {
   #lastFrame: Promise<readonly [Buffer, number]>;
 
   #fps: number;
+  #debugFfmpeg: ((...args: unknown[]) => void) | undefined;
 
   /**
    * @internal
@@ -118,8 +117,11 @@ export class ScreenRecorder extends PassThrough {
       path,
       overwrite,
     }: ScreenRecorderOptions = {},
+    logger: Logger = debug,
   ) {
     super({allowHalfOpen: false});
+
+    this.#debugFfmpeg = logger(DEBUG_PREFIXES.ffmpeg);
 
     ffmpegPath ??= 'ffmpeg';
     format ??= 'webm';
@@ -216,7 +218,7 @@ export class ScreenRecorder extends PassThrough {
     );
     this.#process.stdout.pipe(this);
     this.#process.stderr.on('data', (data: Buffer) => {
-      debugFfmpeg?.(data.toString('utf8'));
+      this.#debugFfmpeg?.(data.toString('utf8'));
     });
 
     this.#page = page;
