@@ -185,7 +185,12 @@ async function getWSEndpoint(
   browserURL: string,
   headers?: Record<string, string>,
 ): Promise<string> {
-  const endpointURL = new URL('/json/version', browserURL);
+  // Append json/version to any path prefix on browserURL. Using
+  // `new URL('/json/version', browserURL)` would replace the pathname and
+  // drop reverse-proxy / tunnel prefixes (see #15250).
+  const endpointURL = new URL(browserURL);
+  endpointURL.pathname =
+    endpointURL.pathname.replace(/\/?$/, '/') + 'json/version';
 
   try {
     const result = await globalThis.fetch(endpointURL.toString(), {
