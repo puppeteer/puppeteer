@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.6...browsers-v3.1.0) (2026-08-04)
+
+
+### 🎉 Features
+
+* **browsers:** support custom logger ([#15259](https://github.com/puppeteer/puppeteer/issues/15259)) ([02da11a](https://github.com/puppeteer/puppeteer/commit/02da11ade14250fe6d1ed2d7676c6d07b96e1a3e))
+
+
+### 🛠️ Fixes
+
+* disable WebUIOmniboxPopup and WebUIOmniboxAimPopup features ([#15278](https://github.com/puppeteer/puppeteer/issues/15278)) ([5dc2964](https://github.com/puppeteer/puppeteer/commit/5dc2964de9fd5d22ee02d2f5c81284f4d6500431))
+* run hooks even if we try to kill the process ([#15249](https://github.com/puppeteer/puppeteer/issues/15249)) ([49353ca](https://github.com/puppeteer/puppeteer/commit/49353ca922bdd5bf788bf10a67396567776ad9cc))
+
 ## [3.0.6](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.5...browsers-v3.0.6) (2026-07-01)
 
 
