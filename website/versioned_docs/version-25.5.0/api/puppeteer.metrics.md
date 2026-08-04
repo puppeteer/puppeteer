@@ -47,6 +47,8 @@ number
 
 </td><td>
 
+Number of documents in the page.
+
 </td><td>
 
 </td></tr>
@@ -63,6 +65,8 @@ number
 number
 
 </td><td>
+
+Number of frames in the page.
 
 </td><td>
 
@@ -81,6 +85,8 @@ number
 
 </td><td>
 
+Number of events in the page.
+
 </td><td>
 
 </td></tr>
@@ -97,6 +103,8 @@ number
 number
 
 </td><td>
+
+Total JavaScript heap size, in bytes.
 
 </td><td>
 
@@ -115,6 +123,8 @@ number
 
 </td><td>
 
+Used JavaScript heap size, in bytes.
+
 </td><td>
 
 </td></tr>
@@ -131,6 +141,8 @@ number
 number
 
 </td><td>
+
+Total number of full or partial page layouts.
 
 </td><td>
 
@@ -149,6 +161,8 @@ number
 
 </td><td>
 
+Combined duration of all page layouts, in seconds.
+
 </td><td>
 
 </td></tr>
@@ -165,6 +179,8 @@ number
 number
 
 </td><td>
+
+Number of DOM nodes in the page.
 
 </td><td>
 
@@ -183,6 +199,8 @@ number
 
 </td><td>
 
+Total number of page style recalculations.
+
 </td><td>
 
 </td></tr>
@@ -199,6 +217,8 @@ number
 number
 
 </td><td>
+
+Combined duration of all page style recalculations, in seconds.
 
 </td><td>
 
@@ -217,6 +237,8 @@ number
 
 </td><td>
 
+Combined duration of JavaScript execution, in seconds.
+
 </td><td>
 
 </td></tr>
@@ -234,6 +256,8 @@ number
 
 </td><td>
 
+Combined duration of all tasks performed by the browser, in seconds.
+
 </td><td>
 
 </td></tr>
@@ -250,6 +274,8 @@ number
 number
 
 </td><td>
+
+The timestamp when the metrics sample was taken, in monotonic time (seconds since an arbitrary point in the past).
 
 </td><td>
 

@@ -12,33 +12,9 @@ export declare class Connection extends EventEmitter<CDPSessionEvents>
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[CDPSessionEvents](./puppeteer.cdpsessionevents.md)&gt;
 
-## Constructors
+## Remarks
 
-<table><thead><tr><th>
-
-Constructor
-
-</th><th>
-
-Modifiers
-
-</th><th>
-
-Description
-
-</th></tr></thead>
-<tbody><tr><td>
-
-<span id="_constructor_">[(constructor)(url, transport, delay, timeout, rawErrors, idGenerator)](./puppeteer.connection._constructor_.md)</span>
-
-</td><td>
-
-</td><td>
-
-Constructs a new instance of the `Connection` class
-
-</td></tr>
-</tbody></table>
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Connection` class.
 
 ## Properties
 

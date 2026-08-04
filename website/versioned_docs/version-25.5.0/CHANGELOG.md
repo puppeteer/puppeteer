@@ -2,6 +2,41 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.4.0...puppeteer-v25.5.0) (2026-08-04)
+
+### ♻️ Chores
+
+- **puppeteer:** Synchronize puppeteer versions
+
+### Dependencies
+
+- The following workspace dependencies were updated
+  - dependencies
+    - @puppeteer/browsers bumped from 3.0.6 to 3.1.0
+
+### 🎉 Features
+
+- roll to Firefox 153.0 ([#15258](https://github.com/puppeteer/puppeteer/issues/15258)) ([6a54140](https://github.com/puppeteer/puppeteer/commit/6a541408972cffff21bab4a7b45e64507bb50835))
+- track dialog status ([#15266](https://github.com/puppeteer/puppeteer/issues/15266)) ([9a6f646](https://github.com/puppeteer/puppeteer/commit/9a6f6461996dcd1918f87e018e1916417e531628))
+
+### 🛠️ Fixes
+
+- disable WebUIOmniboxPopup and WebUIOmniboxAimPopup features ([#15278](https://github.com/puppeteer/puppeteer/issues/15278)) ([5dc2964](https://github.com/puppeteer/puppeteer/commit/5dc2964de9fd5d22ee02d2f5c81284f4d6500431))
+- do not override the user agent when nothing is emulated ([#15274](https://github.com/puppeteer/puppeteer/issues/15274)) ([39c4653](https://github.com/puppeteer/puppeteer/commit/39c4653fae57e412e788f844db7932881c7dc9d3))
+- forward headers to browserURL HTTP discovery and WebSocket connection ([#15238](https://github.com/puppeteer/puppeteer/issues/15238)) ([948d870](https://github.com/puppeteer/puppeteer/commit/948d8703080e4da25904e970872468cdcc7115d4))
+- reject PWA access if network conditions are configured ([#15271](https://github.com/puppeteer/puppeteer/issues/15271)) ([6eb2b8c](https://github.com/puppeteer/puppeteer/commit/6eb2b8c341bcf330e6e93ddfa3b03fe9c7ece09d))
+- roll to Chrome 151.0.7922.71 ([#15272](https://github.com/puppeteer/puppeteer/issues/15272)) ([a7f07db](https://github.com/puppeteer/puppeteer/commit/a7f07dbab0e5e900c0a8e2858a94fbb8ccb26c5c))
+- roll to Firefox 153.0.1 ([#15269](https://github.com/puppeteer/puppeteer/issues/15269)) ([dd365cc](https://github.com/puppeteer/puppeteer/commit/dd365cc473c2064423e70805b9cc3b0ce6184838))
+
+### 📄 Documentation
+
+- document units in page.metrics() ([#15221](https://github.com/puppeteer/puppeteer/issues/15221)) ([eae2b9a](https://github.com/puppeteer/puppeteer/commit/eae2b9a6eef9de65dfef95232657d032d647f0a3))
+
+### 🏗️ Refactor
+
+- move some of the logger to constructor ([#15282](https://github.com/puppeteer/puppeteer/issues/15282)) ([67d1467](https://github.com/puppeteer/puppeteer/commit/67d1467d8d7d0101988df3a9a46249c65e8cc7d3))
+- use a enum to manage the prefixes ([#15281](https://github.com/puppeteer/puppeteer/issues/15281)) ([c8faa53](https://github.com/puppeteer/puppeteer/commit/c8faa53225f96a0f3a0e4d18958c3405e3ee4d57))
+
 ## [25.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.3.0...puppeteer-v25.4.0) (2026-07-27)
 
 ### 🎉 Features
