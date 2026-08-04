@@ -126,8 +126,6 @@ Get recent logs (stderr + stdout) emitted by the browser.
 
 </td><td>
 
-Kills the browser process without running any hooks.
-
 </td></tr>
 <tr><td>
 
