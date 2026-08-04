@@ -296,7 +296,7 @@ export class Process {
   #maxLogLinesSize = 1000;
   #lineEmitter = new EventEmitter();
   #onAbort = (): void => {
-    void this.#killWithHooks();
+    this.kill();
   };
   #signal?: AbortSignal;
 
@@ -421,15 +421,14 @@ export class Process {
   }
 
   #onDriverProcessExit = (_code: number) => {
-    void this.#killWithHooks();
+    this.kill();
   };
 
   #onDriverProcessSignal = (signal: string): void => {
     switch (signal) {
       case 'SIGINT':
-        void this.#killWithHooks();
-        process.exitCode = 130;
-        break;
+        this.kill();
+        process.exit(130);
       case 'SIGTERM':
       case 'SIGHUP':
         void this.close();
@@ -437,25 +436,18 @@ export class Process {
     }
   };
 
-  async #killWithHooks(): Promise<void> {
-    await this.#runHooks();
-    this.kill();
-  }
-
   async close(): Promise<void> {
+    await this.#runHooks();
     if (!this.#exited) {
-      await this.#killWithHooks();
+      this.kill();
     }
-    await this.#browserProcessExiting;
+    return await this.#browserProcessExiting;
   }
 
   hasClosed(): Promise<void> {
     return this.#browserProcessExiting;
   }
 
-  /**
-   * Kills the browser process without running any hooks.
-   */
   kill(): void {
     this.#logger?.(`Trying to kill ${this.#browserProcess.pid}`);
     // If the process failed to launch (for example if the browser executable path

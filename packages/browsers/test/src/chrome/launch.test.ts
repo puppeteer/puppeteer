@@ -175,34 +175,5 @@ describe('Chrome', () => {
       controller.abort();
       await process.hasClosed();
     });
-
-    afterEach(() => {
-      // Reset exitCode so mocha doesn't fail the whole test run
-      process.exitCode = 0;
-    });
-
-    it('should run onExit hook if the host process receives SIGINT', async () => {
-      const executablePath = computeExecutablePath({
-        cacheDir: tmpDir,
-        browser: Browser.CHROME,
-        buildId: testChromeBuildId,
-      });
-      let hookRan = false;
-      const browserProcess = launch({
-        executablePath,
-        args: getArgs(),
-        onExit: async () => {
-          hookRan = true;
-        },
-      });
-      await browserProcess.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
-
-      process.emit('SIGINT', 'SIGINT');
-
-      await browserProcess.hasClosed();
-
-      assert.ok(hookRan);
-      assert.strictEqual(process.exitCode, 130);
-    });
   });
 });
