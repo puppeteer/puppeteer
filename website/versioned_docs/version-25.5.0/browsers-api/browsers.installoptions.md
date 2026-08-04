@@ -189,6 +189,23 @@ Only supported for Chrome on Debian or Ubuntu. Requires system-level privileges 
 </td></tr>
 <tr><td>
 
+<span id="logger">logger</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+Logger
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="platform">platform</span>
 
 </td><td>
