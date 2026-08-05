@@ -15,6 +15,7 @@ import {
 import type {Browser} from '../api/Browser.js';
 import type {Configuration} from '../common/Configuration.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
+import {debug} from '../common/Debug.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
@@ -152,9 +153,9 @@ export class PuppeteerNode extends Puppeteer {
     }
     switch (browser) {
       case 'chrome':
-        return new ChromeLauncher(this);
+        return new ChromeLauncher(this, debug);
       case 'firefox':
-        return new FirefoxLauncher(this);
+        return new FirefoxLauncher(this, debug);
       default:
         throw new Error(`Unknown product: ${browser}`);
     }

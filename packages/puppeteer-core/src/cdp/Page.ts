@@ -42,6 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
+import {debug} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -162,7 +163,7 @@ export class CdpPage extends Page {
   #userDragInterceptionEnabled = false;
 
   constructor(client: CdpCDPSession, target: CdpTarget) {
-    super();
+    super(debug);
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
     assert(this.#tabTargetClient, 'Tab target session is not defined.');

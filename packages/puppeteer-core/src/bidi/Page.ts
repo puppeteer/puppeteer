@@ -47,6 +47,7 @@ import type {
   CookieSameSite,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
+import {debug} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -116,7 +117,7 @@ export class BidiPage extends Page {
     browserContext: BidiBrowserContext,
     browsingContext: BrowsingContext,
   ) {
-    super();
+    super(debug);
     this.#browserContext = browserContext;
     this.#frame = BidiFrame.from(this, browsingContext);
 

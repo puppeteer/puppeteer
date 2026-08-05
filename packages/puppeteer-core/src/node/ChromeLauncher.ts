@@ -14,6 +14,7 @@ import {
 } from '@puppeteer/browsers';
 
 import type {Browser} from '../api/Browser.js';
+import type {Logger} from '../common/Debug.js';
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
@@ -30,8 +31,8 @@ import {rm} from './util/fs.js';
  * @internal
  */
 export class ChromeLauncher extends BrowserLauncher {
-  constructor(puppeteer: PuppeteerNode) {
-    super(puppeteer, 'chrome');
+  constructor(puppeteer: PuppeteerNode, logger?: Logger) {
+    super(puppeteer, 'chrome', logger);
   }
 
   override async launch(options: LaunchOptions = {}): Promise<Browser> {

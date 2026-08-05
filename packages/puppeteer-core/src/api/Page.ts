@@ -41,7 +41,7 @@ import type {
   CookieParam,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
-import {debug} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
@@ -784,8 +784,14 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
-  constructor() {
+  logger?: Logger;
+
+  /**
+   * @internal
+   */
+  constructor(logger?: Logger) {
     super();
+    this.logger = logger;
 
     fromEmitterEvent(this, PageEvent.Request)
       .pipe(
@@ -2606,7 +2612,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
         ...options,
         crop,
       },
-      debug,
+      this.logger,
     );
     try {
       await this._startScreencast();
