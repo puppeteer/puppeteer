@@ -37,6 +37,21 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="logger">logger</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[Logger](./puppeteer.logger.md) \| undefined
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="timeout">timeout</span>
 
 </td><td>
