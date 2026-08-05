@@ -2,7 +2,8 @@
 
 name: 'Update the pinned browsers'
 
-permissions: read-all
+permissions:
+  contents: read
 
 on:
   schedule:

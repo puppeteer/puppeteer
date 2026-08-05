@@ -1,6 +1,7 @@
 name: Bisect Chrome for Testing
 
-permissions: read-all
+permissions:
+  contents: read
 
 concurrency:
   group: bisect-${{ github.head_ref || github.run_id }}
