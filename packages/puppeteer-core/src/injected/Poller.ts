@@ -16,6 +16,12 @@ export interface Poller<T> {
   result(): Promise<T>;
 }
 
+const MUTATION_OBSERVER_OPTIONS: MutationObserverInit = {
+  childList: true,
+  subtree: true,
+  attributes: true,
+};
+
 /**
  * @internal
  */
@@ -25,6 +31,7 @@ export class MutationPoller<T> implements Poller<T> {
   #root: Node;
 
   #observer?: MutationObserver;
+  #observedRoots = new WeakSet<Node>();
   #deferred?: Deferred<T>;
   constructor(fn: () => Promise<T>, root: Node) {
     this.#fn = fn;
@@ -39,7 +46,13 @@ export class MutationPoller<T> implements Poller<T> {
       return;
     }
 
-    this.#observer = new MutationObserver(async () => {
+    this.#observedRoots = new WeakSet();
+    this.#observer = new MutationObserver(async mutations => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          this.#observeShadowRoots(node);
+        }
+      }
       const result = await this.#fn();
       if (!result) {
         return;
@@ -47,11 +60,34 @@ export class MutationPoller<T> implements Poller<T> {
       deferred.resolve(result);
       await this.stop();
     });
-    this.#observer.observe(this.#root, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-    });
+    this.#observe(this.#root);
+  }
+
+  /**
+   * A `subtree` observation does not cross shadow boundaries, so every shadow
+   * root needs to be observed on its own.
+   */
+  #observe(root: Node): void {
+    if (!this.#observer || this.#observedRoots.has(root)) {
+      return;
+    }
+    this.#observedRoots.add(root);
+    this.#observer.observe(root, MUTATION_OBSERVER_OPTIONS);
+    this.#observeShadowRoots(root);
+  }
+
+  /**
+   * Attaching a shadow root does not emit a mutation, so shadow roots are
+   * instead picked up from the trees they arrive in.
+   */
+  #observeShadowRoots(root: Node): void {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+    do {
+      const {shadowRoot} = walker.currentNode as Element;
+      if (shadowRoot) {
+        this.#observe(shadowRoot);
+      }
+    } while (walker.nextNode());
   }
 
   async stop(): Promise<void> {
