@@ -41,6 +41,7 @@ import type {
   CookieParam,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
+import {debug} from '../common/Debug.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
@@ -2597,10 +2598,16 @@ export abstract class Page extends EventEmitter<PageEvents> {
       throw new Error(`\`scale\` must be greater than 0.`);
     }
 
-    const recorder = new ScreenRecorder(this, width, height, {
-      ...options,
-      crop,
-    });
+    const recorder = new ScreenRecorder(
+      this,
+      width,
+      height,
+      {
+        ...options,
+        crop,
+      },
+      debug,
+    );
     try {
       await this._startScreencast();
     } catch (error) {

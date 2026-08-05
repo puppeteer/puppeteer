@@ -27,6 +27,7 @@ import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
+import {debug} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {debugError, DEFAULT_VIEWPORT} from '../common/util.js';
@@ -391,6 +392,7 @@ export abstract class BrowserLauncher {
       opts.protocolTimeout,
       /* rawErrors */ false,
       opts.idGenerator,
+      debug,
     );
   }
 
@@ -420,6 +422,7 @@ export abstract class BrowserLauncher {
       opts.protocolTimeout,
       /* rawErrors */ false,
       opts.idGenerator,
+      debug,
     );
   }
 
@@ -439,7 +442,7 @@ export abstract class BrowserLauncher {
   ): Promise<Browser> {
     const bidiOnly = process.env['PUPPETEER_WEBDRIVER_BIDI_ONLY'] === 'true';
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
-    const bidiConnection = await BiDi.connectBidiOverCdp(cdpConnection);
+    const bidiConnection = await BiDi.connectBidiOverCdp(cdpConnection, debug);
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,
       // Do not provide CDP connection to Browser, if BiDi-only mode is enabled. This
@@ -484,6 +487,7 @@ export abstract class BrowserLauncher {
       opts.idGenerator,
       opts.slowMo,
       opts.protocolTimeout,
+      debug,
     );
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,

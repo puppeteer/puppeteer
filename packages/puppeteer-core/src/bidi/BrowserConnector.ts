@@ -8,6 +8,7 @@ import type {BrowserCloseCallback} from '../api/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
+import {debug} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {DEFAULT_VIEWPORT, debugCatchError} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
@@ -82,6 +83,7 @@ async function getBiDiConnection(
     idGenerator,
     slowMo,
     protocolTimeout,
+    debug,
   );
   try {
     const result = await pureBidiConnection.send('session.status', {});
@@ -113,6 +115,7 @@ async function getBiDiConnection(
     protocolTimeout,
     /* rawErrors= */ true,
     idGenerator,
+    debug,
   );
 
   const version = await cdpConnection.send('Browser.getVersion');
@@ -122,7 +125,10 @@ async function getBiDiConnection(
     );
   }
 
-  const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(cdpConnection);
+  const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(
+    cdpConnection,
+    debug,
+  );
   return {
     cdpConnection,
     bidiConnection: bidiOverCdpConnection,
