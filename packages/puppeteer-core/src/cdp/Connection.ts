@@ -43,7 +43,6 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #idGenerator: GetIdFn;
   #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
   #debugProtocolReceive: ((...args: unknown[]) => void) | undefined;
-  #logger?: Logger;
 
   /**
    * @internal
@@ -62,7 +61,6 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     this.#idGenerator = idGenerator;
     this.#callbacks = new CallbackRegistry(idGenerator);
     this.#url = url;
-    this.#logger = logger;
     this.#debugProtocolSend = logger?.(DEBUG_PREFIXES.cdpSend);
     this.#debugProtocolReceive = logger?.(DEBUG_PREFIXES.cdpReceive);
     this.#delay = delay;
@@ -75,10 +73,6 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
 
   static fromSession(session: CDPSession): Connection | undefined {
     return session.connection();
-  }
-
-  get logger(): Logger | undefined {
-    return this.#logger;
   }
 
   /**
