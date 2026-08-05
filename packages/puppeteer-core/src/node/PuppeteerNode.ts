@@ -95,6 +95,7 @@ export class PuppeteerNode extends Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   override connect(options: ConnectOptions): Promise<Browser> {
+    options.logger ??= debug;
     return super.connect(options);
   }
 
@@ -135,6 +136,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Options to configure launching behavior.
    */
   async launch(options: LaunchOptions = {}): Promise<Browser> {
+    options.logger ??= debug;
     const {browser = await this.defaultBrowser()} = options;
     this.#lastLaunchedBrowser = browser;
     if (!['chrome', 'firefox'].includes(browser)) {
@@ -153,9 +155,9 @@ export class PuppeteerNode extends Puppeteer {
     }
     switch (browser) {
       case 'chrome':
-        return new ChromeLauncher(this, debug);
+        return new ChromeLauncher(this);
       case 'firefox':
-        return new FirefoxLauncher(this, debug);
+        return new FirefoxLauncher(this);
       default:
         throw new Error(`Unknown product: ${browser}`);
     }

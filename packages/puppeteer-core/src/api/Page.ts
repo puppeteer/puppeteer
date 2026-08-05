@@ -784,7 +784,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
-  logger?: Logger;
+  protected logger?: Logger;
 
   /**
    * @internal

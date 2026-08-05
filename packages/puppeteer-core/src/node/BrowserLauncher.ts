@@ -78,24 +78,17 @@ export abstract class BrowserLauncher {
   /**
    * @internal
    */
+  /**
+   * @internal
+   */
   puppeteer: PuppeteerNode;
 
   /**
    * @internal
    */
-  logger?: Logger;
-
-  /**
-   * @internal
-   */
-  constructor(
-    puppeteer: PuppeteerNode,
-    browser: SupportedBrowser,
-    logger?: Logger,
-  ) {
+  constructor(puppeteer: PuppeteerNode, browser: SupportedBrowser) {
     this.puppeteer = puppeteer;
     this.#browser = browser;
-    this.logger = logger;
   }
 
   get browser(): SupportedBrowser {
@@ -210,6 +203,7 @@ export abstract class BrowserLauncher {
             acceptInsecureCerts,
             networkEnabled,
             idGenerator,
+            logger: options.logger,
           },
         );
       } else {
@@ -219,6 +213,7 @@ export abstract class BrowserLauncher {
             protocolTimeout,
             slowMo,
             idGenerator,
+            logger: options.logger,
           });
         } else {
           cdpConnection = await this.createCdpSocketConnection(browserProcess, {
@@ -226,6 +221,7 @@ export abstract class BrowserLauncher {
             protocolTimeout,
             slowMo,
             idGenerator,
+            logger: options.logger,
           });
         }
 
@@ -239,6 +235,7 @@ export abstract class BrowserLauncher {
               acceptInsecureCerts,
               networkEnabled,
               issuesEnabled,
+              logger: options.logger,
             },
           );
         } else {
@@ -388,6 +385,7 @@ export abstract class BrowserLauncher {
       protocolTimeout: number | undefined;
       slowMo: number;
       idGenerator: GetIdFn;
+      logger?: Logger;
     },
   ): Promise<Connection> {
     const browserWSEndpoint = await browserProcess.waitForLineOutput(
@@ -402,7 +400,7 @@ export abstract class BrowserLauncher {
       opts.protocolTimeout,
       /* rawErrors */ false,
       opts.idGenerator,
-      this.logger,
+      opts.logger,
     );
   }
 
@@ -416,6 +414,7 @@ export abstract class BrowserLauncher {
       protocolTimeout: number | undefined;
       slowMo: number;
       idGenerator: GetIdFn;
+      logger?: Logger;
     },
   ): Promise<Connection> {
     // stdio was assigned during start(), and the 'pipe' option there adds the
@@ -432,7 +431,7 @@ export abstract class BrowserLauncher {
       opts.protocolTimeout,
       /* rawErrors */ false,
       opts.idGenerator,
-      this.logger,
+      opts.logger,
     );
   }
 
@@ -448,13 +447,14 @@ export abstract class BrowserLauncher {
       acceptInsecureCerts?: boolean;
       networkEnabled: boolean;
       issuesEnabled: boolean;
+      logger?: Logger;
     },
   ): Promise<Browser> {
     const bidiOnly = process.env['PUPPETEER_WEBDRIVER_BIDI_ONLY'] === 'true';
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
     const bidiConnection = await BiDi.connectBidiOverCdp(
       cdpConnection,
-      this.logger,
+      opts.logger,
     );
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,
@@ -485,6 +485,7 @@ export abstract class BrowserLauncher {
       acceptInsecureCerts?: boolean;
       networkEnabled?: boolean;
       issuesEnabled?: boolean;
+      logger?: Logger;
     },
   ): Promise<Browser> {
     const browserWSEndpoint =
@@ -500,7 +501,7 @@ export abstract class BrowserLauncher {
       opts.idGenerator,
       opts.slowMo,
       opts.protocolTimeout,
-      this.logger,
+      opts.logger,
     );
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,

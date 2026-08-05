@@ -59,6 +59,7 @@ export class BidiConnection
   #emitters: Array<EventEmitter<any>> = [];
   #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
   #debugProtocolReceive: ((...args: unknown[]) => void) | undefined;
+  #logger?: Logger;
 
   constructor(
     url: string,
@@ -73,6 +74,7 @@ export class BidiConnection
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
     this.#callbacks = new CallbackRegistry(idGenerator);
+    this.#logger = logger;
 
     this.#debugProtocolSend = logger?.(DEBUG_PREFIXES.bidiSend);
     this.#debugProtocolReceive = logger?.(DEBUG_PREFIXES.bidiReceive);
@@ -88,6 +90,10 @@ export class BidiConnection
 
   get url(): string {
     return this.#url;
+  }
+
+  get logger(): Logger | undefined {
+    return this.#logger;
   }
 
   pipeTo<Events extends BidiEvents>(emitter: EventEmitter<Events>): void {
