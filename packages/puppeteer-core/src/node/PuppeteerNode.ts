@@ -15,6 +15,7 @@ import {
 import type {Browser} from '../api/Browser.js';
 import type {Configuration} from '../common/Configuration.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
+import {debug} from '../common/Debug.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
@@ -94,6 +95,7 @@ export class PuppeteerNode extends Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   override connect(options: ConnectOptions): Promise<Browser> {
+    options.logger ??= debug;
     return super.connect(options);
   }
 
@@ -134,6 +136,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Options to configure launching behavior.
    */
   async launch(options: LaunchOptions = {}): Promise<Browser> {
+    options.logger ??= debug;
     const {browser = await this.defaultBrowser()} = options;
     this.#lastLaunchedBrowser = browser;
     if (!['chrome', 'firefox'].includes(browser)) {

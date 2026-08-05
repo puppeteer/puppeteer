@@ -42,6 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
+import type {Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -119,8 +120,9 @@ export class CdpPage extends Page {
     client: CdpCDPSession,
     target: CdpTarget,
     defaultViewport: Viewport | null,
+    logger?: Logger,
   ): Promise<CdpPage> {
-    const page = new CdpPage(client, target);
+    const page = new CdpPage(client, target, logger);
     await page.#initialize();
     if (defaultViewport) {
       try {
@@ -161,8 +163,8 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(client: CdpCDPSession, target: CdpTarget) {
-    super();
+  constructor(client: CdpCDPSession, target: CdpTarget, logger?: Logger) {
+    super(logger);
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
     assert(this.#tabTargetClient, 'Tab target session is not defined.');

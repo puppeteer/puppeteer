@@ -12,6 +12,7 @@ import type {
 } from '../api/Browser.js';
 
 import type {ConnectionTransport} from './ConnectionTransport.js';
+import type {Logger} from './Debug.js';
 import type {DownloadBehavior} from './DownloadBehavior.js';
 import type {Viewport} from './Viewport.js';
 
@@ -233,4 +234,8 @@ export interface ConnectOptions {
    * @experimental
    */
   allowlist?: string[];
+  /**
+   * @internal
+   */
+  logger?: Logger;
 }

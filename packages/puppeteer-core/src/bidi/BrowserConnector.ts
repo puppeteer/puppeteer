@@ -82,6 +82,7 @@ async function getBiDiConnection(
     idGenerator,
     slowMo,
     protocolTimeout,
+    options.logger,
   );
   try {
     const result = await pureBidiConnection.send('session.status', {});
@@ -113,6 +114,7 @@ async function getBiDiConnection(
     protocolTimeout,
     /* rawErrors= */ true,
     idGenerator,
+    options.logger,
   );
 
   const version = await cdpConnection.send('Browser.getVersion');
@@ -122,7 +124,10 @@ async function getBiDiConnection(
     );
   }
 
-  const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(cdpConnection);
+  const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(
+    cdpConnection,
+    options.logger,
+  );
   return {
     cdpConnection,
     bidiConnection: bidiOverCdpConnection,

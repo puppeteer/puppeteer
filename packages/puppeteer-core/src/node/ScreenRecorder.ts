@@ -26,7 +26,7 @@ import {
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page, VideoFormat} from '../api/Page.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {fromEmitterEvent, debugCatchError} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -117,11 +117,11 @@ export class ScreenRecorder extends PassThrough {
       path,
       overwrite,
     }: ScreenRecorderOptions = {},
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super({allowHalfOpen: false});
 
-    this.#debugFfmpeg = logger(DEBUG_PREFIXES.ffmpeg);
+    this.#debugFfmpeg = logger?.(DEBUG_PREFIXES.ffmpeg);
 
     ffmpegPath ??= 'ffmpeg';
     format ??= 'webm';

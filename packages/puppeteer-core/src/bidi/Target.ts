@@ -5,6 +5,7 @@
  */
 
 import {Target, TargetType} from '../api/Target.js';
+import type {Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {CDPSession} from '../puppeteer-core.js';
 
@@ -92,8 +93,8 @@ export class BidiFrameTarget extends Target {
   #frame: BidiFrame;
   #page: BidiPage | undefined;
 
-  constructor(frame: BidiFrame) {
-    super();
+  constructor(frame: BidiFrame, logger?: Logger) {
+    super(logger);
     this.#frame = frame;
   }
 
@@ -102,6 +103,7 @@ export class BidiFrameTarget extends Target {
       this.#page = BidiPage.from(
         this.browserContext(),
         this.#frame.browsingContext,
+        this.logger,
       );
     }
     return this.#page;
