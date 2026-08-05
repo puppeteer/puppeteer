@@ -1,7 +1,8 @@
 name: DevTools CI
 
 # Declare default permissions as read only.
-permissions: read-all
+permissions:
+  contents: read
 
 on:
   pull_request:
