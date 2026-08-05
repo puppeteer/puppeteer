@@ -6,7 +6,6 @@
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
-import {debug} from '../common/Debug.js';
 import {DEFAULT_VIEWPORT, debugCatchError} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
@@ -47,7 +46,7 @@ export async function _connectToCdpBrowser(
     protocolTimeout,
     /* rawErrors */ false,
     idGenerator,
-    debug,
+    options.logger,
   );
 
   const {browserContextIds} = await connection.send(

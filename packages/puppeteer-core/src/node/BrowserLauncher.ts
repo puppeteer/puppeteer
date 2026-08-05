@@ -176,6 +176,7 @@ export abstract class BrowserLauncher {
       pipe: usePipe,
       onExit: onProcessExit,
       signal: options.signal,
+      logger: options.logger,
     });
 
     let browser: Browser;
