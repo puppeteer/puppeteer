@@ -27,7 +27,7 @@ import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
@@ -74,10 +74,6 @@ export function getBrowserTypeDisplayName(
  */
 export abstract class BrowserLauncher {
   #browser: SupportedBrowser;
-  /**
-   * @internal
-   */
-  logger?: Logger;
 
   /**
    * @internal
@@ -342,7 +338,7 @@ export abstract class BrowserLauncher {
         await cdpConnection.closeBrowser();
         await browserProcess.hasClosed();
       } catch (error) {
-        this.logger?.(DEBUG_PREFIXES.error)?.(error);
+        debug?.(DEBUG_PREFIXES.error)?.(error);
         await browserProcess.close();
       }
     } else {
