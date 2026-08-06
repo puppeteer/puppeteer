@@ -6,7 +6,7 @@
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
@@ -23,6 +23,7 @@ export async function _connectToCdpBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
   options: ConnectOptions,
+  logger: Logger = debug,
 ): Promise<CdpBrowser> {
   const {
     acceptInsecureCerts = false,
@@ -62,7 +63,7 @@ export async function _connectToCdpBrowser(
     undefined,
     () => {
       return connection.send('Browser.close').catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        logger?.(DEBUG_PREFIXES.error)?.(error);
       });
     },
     targetFilter,

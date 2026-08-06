@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import {JSHandle} from '../api/JSHandle.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
@@ -17,14 +17,17 @@ export class Binding {
   #name: string;
   #fn: (...args: unknown[]) => unknown;
   #initSource: string;
+  #logger: Logger;
   constructor(
     name: string,
     fn: (...args: unknown[]) => unknown,
     initSource: string,
+    logger: Logger = debug,
   ) {
     this.#name = name;
     this.#fn = fn;
     this.#initSource = initSource;
+    this.#logger = logger;
   }
 
   get name(): string {
@@ -113,7 +116,7 @@ export class Binding {
             error.stack,
           )
           .catch(error => {
-            debug?.(DEBUG_PREFIXES.error)?.(error);
+            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
           });
       } else {
         await context
@@ -129,7 +132,7 @@ export class Binding {
             error,
           )
           .catch(error => {
-            debug?.(DEBUG_PREFIXES.error)?.(error);
+            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
           });
       }
     }

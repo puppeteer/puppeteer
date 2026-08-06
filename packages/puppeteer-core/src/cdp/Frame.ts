@@ -13,7 +13,7 @@ import type {SetContentWaitForOptions, WaitForOptions} from '../api/Frame.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
@@ -54,12 +54,14 @@ export class CdpFrame extends Frame {
 
   worlds: IsolatedWorldChart;
   extensionWorlds: Record<string, IsolatedWorld> = {};
+  #logger: Logger;
 
   constructor(
     frameManager: FrameManager,
     frameId: string,
     parentFrameId: string | undefined,
     client: CDPSession,
+    logger: Logger = debug,
   ) {
     super();
     this._frameManager = frameManager;
@@ -68,6 +70,7 @@ export class CdpFrame extends Frame {
     this._parentId = parentFrameId;
     this.#detached = false;
     this.#client = client;
+    this.#logger = logger;
 
     this._loaderId = '';
     this.worlds = {
@@ -83,7 +86,11 @@ export class CdpFrame extends Frame {
       ),
     };
 
-    this.accessibility = new Accessibility(this.worlds[MAIN_WORLD], frameId);
+    this.accessibility = new Accessibility(
+      this.worlds[MAIN_WORLD],
+      frameId,
+      logger,
+    );
 
     this.on(FrameEvent.FrameSwappedByActivation, () => {
       // Emulate loading process for swapped frames.
@@ -352,7 +359,7 @@ export class CdpFrame extends Frame {
         name: CDP_BINDING_PREFIX + binding.name,
       }),
       this.evaluate(binding.initSource).catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }),
     ]);
   }
@@ -373,7 +380,7 @@ export class CdpFrame extends Frame {
         // @ts-expect-error: In a different context.
         globalThis[name] = undefined;
       }, binding.name).catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }),
     ]);
   }

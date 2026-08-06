@@ -10,7 +10,7 @@ import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyf
 import type {TargetFilterCallback} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -109,6 +109,7 @@ export class TargetManager
   #initialAttachDone = false;
   #blocklist: Array<{pattern: URLPattern; rule: string}> = [];
   #allowlist: Array<{pattern: URLPattern; rule: string}> = [];
+  #logger: Logger;
 
   constructor(
     connection: Connection,
@@ -117,8 +118,9 @@ export class TargetManager
     waitForInitiallyDiscoveredTargets = true,
     blocklist?: string[],
     allowlist?: string[],
+    logger: Logger = debug,
   ) {
-    super();
+    super(undefined, logger);
     if (blocklist && allowlist) {
       throw new Error('Cannot specify both blockList and allowList');
     }
@@ -127,6 +129,7 @@ export class TargetManager
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
     this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
+    this.#logger = logger;
 
     this.#blocklist = this.#mapPatterns(blocklist);
     this.#allowlist = this.#mapPatterns(allowlist);
@@ -230,7 +233,7 @@ export class TargetManager
     parentSession: Connection | CDPSession,
   ): Promise<void> => {
     await session.send('Runtime.runIfWaitingForDebugger').catch(error => {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
     // We don't use `session.detach()` because that dispatches all commands on
     // the connection instead of the parent session.
@@ -239,7 +242,7 @@ export class TargetManager
         sessionId: session.id(),
       })
       .catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       });
   };
 
@@ -370,7 +373,7 @@ export class TargetManager
           this.#maybeSetupNetworkConditions(session, targetInfo),
           session.send('Runtime.runIfWaitingForDebugger'),
         ]).catch(error => {
-          debug?.(DEBUG_PREFIXES.error)?.(error);
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         });
         return;
       }
@@ -453,7 +456,7 @@ export class TargetManager
       this.#maybeSetupNetworkConditions(session, targetInfo),
       session.send('Runtime.runIfWaitingForDebugger'),
     ]).catch(error => {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   };
 
@@ -582,7 +585,7 @@ export class TargetManager
       }),
     );
     await Promise.all(promises).catch(error => {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   };
 }

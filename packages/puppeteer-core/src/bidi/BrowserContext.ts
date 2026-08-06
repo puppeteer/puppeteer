@@ -18,7 +18,7 @@ import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -56,8 +56,14 @@ export class BidiBrowserContext extends BrowserContext {
     browser: BidiBrowser,
     userContext: UserContext,
     options: BidiBrowserContextOptions,
+    logger: Logger = debug,
   ): BidiBrowserContext {
-    const context = new BidiBrowserContext(browser, userContext, options);
+    const context = new BidiBrowserContext(
+      browser,
+      userContext,
+      options,
+      logger,
+    );
     context.#initialize();
     return context;
   }
@@ -79,16 +85,19 @@ export class BidiBrowserContext extends BrowserContext {
   >();
 
   #overrides: Array<{origin: string; permission: Permission}> = [];
+  #logger: Logger;
 
   private constructor(
     browser: BidiBrowser,
     userContext: UserContext,
     options: BidiBrowserContextOptions,
+    logger: Logger = debug,
   ) {
-    super();
+    super(logger);
     this.#browser = browser;
     this.userContext = userContext;
     this.#defaultViewport = options.defaultViewport;
+    this.#logger = logger;
   }
 
   #initialize() {
@@ -214,7 +223,7 @@ export class BidiBrowserContext extends BrowserContext {
         await page.setViewport(this.#defaultViewport);
       } catch (error) {
         // Tolerate not supporting `browsingContext.setViewport`. Only log it.
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }
     }
     if (options?.type === 'window' && options?.windowBounds !== undefined) {
@@ -225,7 +234,7 @@ export class BidiBrowserContext extends BrowserContext {
         );
       } catch (error) {
         // Tolerate not supporting `browser.setClientWindowState`. Only log it.
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }
     }
 
@@ -241,7 +250,7 @@ export class BidiBrowserContext extends BrowserContext {
     try {
       await this.userContext.remove();
     } catch (error) {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
 
     this.#targets.clear();
@@ -288,7 +297,7 @@ export class BidiBrowserContext extends BrowserContext {
           // not work.
           if (!permissionsSet.has(permission)) {
             return result.catch(error => {
-              debug?.(DEBUG_PREFIXES.error)?.(error);
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
             });
           }
           return result;
@@ -348,7 +357,7 @@ export class BidiBrowserContext extends BrowserContext {
           Bidi.Permissions.PermissionState.Prompt,
         )
         .catch(error => {
-          debug?.(DEBUG_PREFIXES.error)?.(error);
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         });
     });
     this.#overrides = [];

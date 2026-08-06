@@ -8,7 +8,7 @@ import type {BrowserCloseCallback} from '../api/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
@@ -28,6 +28,7 @@ export async function _connectToBiDiBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
   options: ConnectOptions,
+  logger: Logger = debug,
 ): Promise<BidiBrowser> {
   const {
     acceptInsecureCerts = false,
@@ -37,7 +38,7 @@ export async function _connectToBiDiBrowser(
   } = options;
 
   const {bidiConnection, cdpConnection, closeCallback} =
-    await getBiDiConnection(connectionTransport, url, options);
+    await getBiDiConnection(connectionTransport, url, options, logger);
   const BiDi = await import(/* webpackIgnore: true */ './bidi.js');
   const bidiBrowser = await BiDi.BidiBrowser.create({
     connection: bidiConnection,
@@ -64,6 +65,7 @@ async function getBiDiConnection(
   connectionTransport: ConnectionTransport,
   url: string,
   options: ConnectOptions,
+  logger: Logger = debug,
 ): Promise<{
   cdpConnection?: Connection;
   bidiConnection: BidiConnection;
@@ -93,7 +95,7 @@ async function getBiDiConnection(
         bidiConnection: pureBidiConnection,
         closeCallback: async () => {
           await pureBidiConnection.send('browser.close', {}).catch(error => {
-            debug?.(DEBUG_PREFIXES.error)?.(error);
+            logger?.(DEBUG_PREFIXES.error)?.(error);
           });
         },
       };
@@ -135,7 +137,7 @@ async function getBiDiConnection(
     closeCallback: async () => {
       // In case of BiDi over CDP, we need to close browser via CDP.
       await cdpConnection.send('Browser.close').catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        logger?.(DEBUG_PREFIXES.error)?.(error);
       });
     },
   };

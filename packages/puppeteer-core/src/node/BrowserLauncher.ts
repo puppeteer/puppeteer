@@ -74,6 +74,7 @@ export function getBrowserTypeDisplayName(
  */
 export abstract class BrowserLauncher {
   #browser: SupportedBrowser;
+  #logger: Logger;
 
   /**
    * @internal
@@ -86,9 +87,14 @@ export abstract class BrowserLauncher {
   /**
    * @internal
    */
-  constructor(puppeteer: PuppeteerNode, browser: SupportedBrowser) {
+  constructor(
+    puppeteer: PuppeteerNode,
+    browser: SupportedBrowser,
+    logger: Logger = debug,
+  ) {
     this.puppeteer = puppeteer;
     this.#browser = browser;
+    this.#logger = logger;
   }
 
   get browser(): SupportedBrowser {
@@ -338,7 +344,7 @@ export abstract class BrowserLauncher {
         await cdpConnection.closeBrowser();
         await browserProcess.hasClosed();
       } catch (error) {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         await browserProcess.close();
       }
     } else {

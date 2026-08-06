@@ -10,7 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -81,15 +81,18 @@ export class ExecutionContext
   #name?: string;
 
   readonly #disposables = new DisposableStack();
+  #logger: Logger;
 
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     world: IsolatedWorld,
+    logger: Logger = debug,
   ) {
-    super();
+    super(undefined, logger);
     this.#client = client;
     this.#world = world;
+    this.#logger = logger;
     this.#id = contextPayload.id;
     if (contextPayload.name) {
       this.#name = contextPayload.name;
@@ -158,7 +161,7 @@ export class ExecutionContext
           return;
         }
       }
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
   }
 
@@ -191,7 +194,7 @@ export class ExecutionContext
       const binding = this.#bindings.get(name);
       await binding?.run(this, seq, args, isTrivial);
     } catch (err) {
-      debug?.(DEBUG_PREFIXES.error)?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 
@@ -238,7 +241,7 @@ export class ExecutionContext
     } catch (err) {
       // If the binding cannot be added, the context is broken. We cannot
       // recover so we ignore the error.
-      debug?.(DEBUG_PREFIXES.error)?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 
