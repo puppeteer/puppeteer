@@ -8,8 +8,9 @@ import type {BrowserCloseCallback} from '../api/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
-import {DEFAULT_VIEWPORT, debugCatchError} from '../common/util.js';
+import {DEFAULT_VIEWPORT} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import type {BidiBrowser} from './Browser.js';
@@ -91,9 +92,9 @@ async function getBiDiConnection(
       return {
         bidiConnection: pureBidiConnection,
         closeCallback: async () => {
-          await pureBidiConnection
-            .send('browser.close', {})
-            .catch(debugCatchError);
+          await pureBidiConnection.send('browser.close', {}).catch(error => {
+            debug?.(DEBUG_PREFIXES.error)?.(error);
+          });
         },
       };
     }
@@ -133,7 +134,9 @@ async function getBiDiConnection(
     bidiConnection: bidiOverCdpConnection,
     closeCallback: async () => {
       // In case of BiDi over CDP, we need to close browser via CDP.
-      await cdpConnection.send('Browser.close').catch(debugCatchError);
+      await cdpConnection.send('Browser.close').catch(error => {
+        debug?.(DEBUG_PREFIXES.error)?.(error);
+      });
     },
   };
 }

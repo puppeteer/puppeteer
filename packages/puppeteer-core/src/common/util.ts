@@ -38,14 +38,6 @@ export const debugError = debug(DEBUG_PREFIXES.error);
 
 /**
  * @internal
- *
- * Use this instead of debugError so the catch functions
- * don't re-throw the error.
- */
-export const debugCatchError = debugError ?? (() => {});
-
-/**
- * @internal
  */
 export const DEFAULT_VIEWPORT = Object.freeze({width: 800, height: 600});
 

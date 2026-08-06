@@ -20,6 +20,7 @@ import type {
   CookieData,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -27,7 +28,6 @@ import {
   filterAsync,
   timeout,
   fromAbortSignal,
-  debugCatchError,
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
@@ -846,7 +846,9 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   abstract get connected(): boolean;
 
   override [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugCatchError);
+    return void this[asyncDisposeSymbol]().catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   override async [asyncDisposeSymbol](): Promise<void> {
