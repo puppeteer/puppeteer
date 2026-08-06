@@ -34,11 +34,6 @@ import {paperFormats} from './PDFOptions.js';
 /**
  * @internal
  */
-export const debugError = debug(DEBUG_PREFIXES.error);
-
-/**
- * @internal
- */
 export const DEFAULT_VIEWPORT = Object.freeze({width: 800, height: 600});
 
 /**
@@ -230,7 +225,7 @@ export async function getReadableAsTypedArray(
     }
     return concat;
   } catch (error) {
-    debugError?.(error);
+    debug?.(DEBUG_PREFIXES.error)?.(error);
     return null;
   }
 }

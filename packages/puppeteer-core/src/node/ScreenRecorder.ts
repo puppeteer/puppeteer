@@ -26,7 +26,6 @@ import {
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page, VideoFormat} from '../api/Page.js';
-import type {LoggerFunction} from '../common/Debug.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
@@ -95,8 +94,7 @@ export class ScreenRecorder extends PassThrough {
   #lastFrame: Promise<readonly [Buffer, number]>;
 
   #fps: number;
-  #debugFfmpeg?: LoggerFunction;
-  #debugError?: LoggerFunction;
+  #logger?: Logger;
 
   /**
    * @internal
@@ -123,8 +121,7 @@ export class ScreenRecorder extends PassThrough {
   ) {
     super({allowHalfOpen: false});
 
-    this.#debugFfmpeg = logger?.(DEBUG_PREFIXES.ffmpeg);
-    this.#debugError = logger?.(DEBUG_PREFIXES.error);
+    this.#logger = logger;
 
     ffmpegPath ??= 'ffmpeg';
     format ??= 'webm';
@@ -221,7 +218,7 @@ export class ScreenRecorder extends PassThrough {
     );
     this.#process.stdout.pipe(this);
     this.#process.stderr.on('data', (data: Buffer) => {
-      this.#debugFfmpeg?.(data.toString('utf8'));
+      this.#logger?.(DEBUG_PREFIXES.ffmpeg)?.(data.toString('utf8'));
     });
 
     this.#page = page;
@@ -229,7 +226,7 @@ export class ScreenRecorder extends PassThrough {
     const {client} = this.#page.mainFrame();
     client.once(CDPSessionEvent.Disconnected, () => {
       void this.stop().catch(err => {
-        this.#debugError?.(err);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(err);
       });
     });
 
@@ -359,7 +356,7 @@ export class ScreenRecorder extends PassThrough {
     }
     // Stopping the screencast will flush the frames.
     await this.#page._stopScreencast().catch(err => {
-      this.#debugError?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
 
     this.#controller.abort();
