@@ -6,15 +6,15 @@
 
 import type * as Bidi from 'webdriver-bidi-protocol';
 
-import {debugError} from '../common/util.js';
-
+import type {Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES} from '../common/Debug.js';
 /**
  * @internal
  */
 export class BidiDeserializer {
-  static deserialize(result: Bidi.Script.RemoteValue): any {
+  static deserialize(result: Bidi.Script.RemoteValue, logger?: Logger): any {
     if (!result) {
-      debugError?.('Service did not produce a result.');
+      logger?.(DEBUG_PREFIXES.error)?.('Service did not produce a result.');
       return undefined;
     }
 
@@ -58,7 +58,9 @@ export class BidiDeserializer {
         return result.value;
     }
 
-    debugError?.(`Deserialization of type ${result.type} not supported.`);
+    logger?.(DEBUG_PREFIXES.error)?.(
+      `Deserialization of type ${result.type} not supported.`,
+    );
     return undefined;
   }
 

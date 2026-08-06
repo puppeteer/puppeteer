@@ -306,6 +306,7 @@ export class WorkerTarget extends CdpTarget {
           this.type(),
           () => {} /* exceptionThrown */,
           undefined /* networkManager */,
+          this.logger,
         );
       });
     }

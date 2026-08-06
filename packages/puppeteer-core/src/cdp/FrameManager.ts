@@ -9,10 +9,10 @@ import type {Protocol} from 'devtools-protocol';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {
-  debugError,
   PuppeteerURL,
   UTILITY_WORLD_NAME,
   debugCatchError,
@@ -614,7 +614,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         const extId = this.#extractExtensionId(origin);
 
         if (!extId) {
-          debugError?.('Error while parsing extension id');
+          debug?.(DEBUG_PREFIXES.error)?.('Error while parsing extension id');
           return;
         }
 

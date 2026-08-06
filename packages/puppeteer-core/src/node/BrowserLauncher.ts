@@ -27,11 +27,7 @@ import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
-import {
-  DEBUG_PREFIXES,
-  type Logger,
-  type LoggerFunction,
-} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
@@ -81,7 +77,7 @@ export abstract class BrowserLauncher {
   /**
    * @internal
    */
-  debugLogger?: LoggerFunction;
+  logger?: Logger;
 
   /**
    * @internal
@@ -104,7 +100,6 @@ export abstract class BrowserLauncher {
   }
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
-    this.debugLogger = options.logger?.(DEBUG_PREFIXES.error);
     const {
       dumpio = false,
       enableExtensions = false,
@@ -347,7 +342,7 @@ export abstract class BrowserLauncher {
         await cdpConnection.closeBrowser();
         await browserProcess.hasClosed();
       } catch (error) {
-        this.debugLogger?.(error);
+        this.logger?.(DEBUG_PREFIXES.error)?.(error);
         await browserProcess.close();
       }
     } else {

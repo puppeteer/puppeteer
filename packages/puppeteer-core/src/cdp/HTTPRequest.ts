@@ -16,7 +16,7 @@ import {
   STATUS_TEXTS,
   handleError,
 } from '../api/HTTPRequest.js';
-import {debugError} from '../common/util.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {
   mergeUint8Arrays,
   stringToBase64,
@@ -157,7 +157,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       });
       return result.postData;
     } catch (err) {
-      debugError?.(err);
+      debug?.(DEBUG_PREFIXES.error)?.(err);
       return;
     }
   }

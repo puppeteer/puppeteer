@@ -9,7 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Realm} from '../api/Realm.js';
 import type {CdpFrame} from '../cdp/Frame.js';
-import {debugError} from '../common/util.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
@@ -281,7 +281,7 @@ export class Accessibility {
           root.iframeSnapshot = iframeSnapshot ?? undefined;
         } catch (error) {
           // Frames can get detached at any time resulting in errors.
-          debugError?.(error);
+          debug?.(DEBUG_PREFIXES.error)?.(error);
         }
       }
       await Promise.all(

@@ -13,7 +13,6 @@ import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ConnectionClosedError} from '../common/Errors.js';
 import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
 import type {GetIdFn} from '../util/incremental-id-generator.js';
 
 import {BidiCdpSession} from './CDPSession.js';
@@ -55,6 +54,7 @@ export class BidiConnection
   #delay: number;
   #timeout = 0;
   #closed = false;
+  #logger?: Logger;
   #callbacks: CallbackRegistry;
   #emitters: Array<EventEmitter<any>> = [];
   #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
@@ -186,7 +186,7 @@ export class BidiConnection
         object.message,
       );
     }
-    debugError?.(object);
+    this.#logger?.(DEBUG_PREFIXES.error)?.(object);
   }
 
   /**

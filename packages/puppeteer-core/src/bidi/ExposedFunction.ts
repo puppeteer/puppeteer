@@ -6,9 +6,9 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Awaitable, FlattenHandle} from '../common/types.js';
-import {debugError, debugCatchError} from '../common/util.js';
 import {DisposableStack} from '../util/disposable.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
@@ -119,7 +119,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
         } catch (error) {
           // If it errors, the frame probably doesn't support call function. We
           // fail gracefully.
-          debugError?.(error);
+          debug?.(DEBUG_PREFIXES.error)?.(error);
         }
       }),
     );
@@ -192,7 +192,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
           }, error);
         }
       } catch (error) {
-        debugError?.(error);
+        debug?.(DEBUG_PREFIXES.error)?.(error);
       }
       return;
     }
@@ -202,7 +202,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
         resolve(result);
       }, result);
     } catch (error) {
-      debugError?.(error);
+      debug?.(DEBUG_PREFIXES.error)?.(error);
     }
   };
 
@@ -227,7 +227,9 @@ export class ExposableFunction<Args extends unknown[], Ret> {
   }
 
   [Symbol.dispose](): void {
-    void this[Symbol.asyncDispose]().catch(debugCatchError);
+    void this[Symbol.asyncDispose]().catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   async [Symbol.asyncDispose](): Promise<void> {
@@ -248,7 +250,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
             frame.browsingContext.removePreloadScript(script),
           ]);
         } catch (error) {
-          debugError?.(error);
+          debug?.(DEBUG_PREFIXES.error)?.(error);
         }
       }),
     );

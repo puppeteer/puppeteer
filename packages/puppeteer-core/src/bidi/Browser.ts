@@ -27,9 +27,9 @@ import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {bubble} from '../util/decorators.js';
 
@@ -131,7 +131,7 @@ export class BidiBrowser extends Browser {
             });
           } catch (err) {
             if (err instanceof ProtocolError) {
-              debugError?.(err);
+              debug?.(DEBUG_PREFIXES.error)?.(err);
             } else {
               throw err;
             }
@@ -150,6 +150,7 @@ export class BidiBrowser extends Browser {
 
   #process?: ChildProcess;
   #closeCallback?: BrowserCloseCallback;
+
   #browserCore: BrowserCore;
   #defaultViewport: Viewport | null;
   #browserContexts = new WeakMap<UserContext, BidiBrowserContext>();
@@ -251,7 +252,7 @@ export class BidiBrowser extends Browser {
       await this.#closeCallback?.call(null);
     } catch (error) {
       // Fail silently.
-      debugError?.(error);
+      debug?.(DEBUG_PREFIXES.error)?.(error);
     } finally {
       this.connection.dispose();
     }
@@ -381,7 +382,7 @@ export class BidiBrowser extends Browser {
       await this.#browserCore.session.end();
     } catch (error) {
       // Fail silently.
-      debugError?.(error);
+      debug?.(DEBUG_PREFIXES.error)?.(error);
     } finally {
       this.connection.dispose();
     }

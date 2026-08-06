@@ -10,12 +10,12 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {
-  debugError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
@@ -266,10 +266,10 @@ export abstract class BidiRealm extends Realm {
       return;
     }
 
-    await this.realm.disown(handleIds).catch(error => {
+    void this.realm.disown(handleIds).catch(error => {
       // Exceptions might happen in case of a page been navigated or closed.
       // Swallow these since they are harmless and we don't leak anything in this case.
-      debugError?.(error);
+      debug?.(DEBUG_PREFIXES.error)?.(error);
     });
   }
 

@@ -5,7 +5,7 @@
  */
 import type {Page, Target, WebWorker} from '../api/api.js';
 import {Extension} from '../api/api.js';
-import {debugError} from '../common/util.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {CdpBrowser} from './Browser.js';
@@ -47,7 +47,7 @@ export class CdpExtension extends Extension {
           return await target.worker();
         } catch (err) {
           if (this.#canIgnoreError(err)) {
-            debugError?.(err);
+            debug?.(DEBUG_PREFIXES.error)?.(err);
             return null;
           }
           throw err;
@@ -77,7 +77,7 @@ export class CdpExtension extends Extension {
           return await target.asPage();
         } catch (err) {
           if (this.#canIgnoreError(err)) {
-            debugError?.(err);
+            debug?.(DEBUG_PREFIXES.error)?.(err);
             return null;
           }
           throw err;

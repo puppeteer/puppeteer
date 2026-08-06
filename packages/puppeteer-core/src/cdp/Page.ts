@@ -176,7 +176,7 @@ export class CdpPage extends Page {
     this.#mouse = new CdpMouse(client, this.#keyboard);
     this.#touchscreen = new CdpTouchscreen(client, this.#keyboard);
     this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
-    this.#emulationManager = new EmulationManager(client);
+    this.#emulationManager = new EmulationManager(client, this.logger);
     this.#tracing = new Tracing(client);
     this.#webmcp = new WebMCP(client, this.#frameManager);
     this.#coverage = new Coverage(client);
@@ -564,7 +564,7 @@ export class CdpPage extends Page {
       event.entry;
     if (args) {
       args.map(arg => {
-        void releaseObject(this.#primaryTargetClient, arg);
+        void releaseObject(this.#primaryTargetClient, arg, this.logger);
       });
     }
     if (source !== 'worker') {
