@@ -7,6 +7,15 @@ updates:
       day: 'sunday'
       time: '02:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
+      exclude:
+        - devtools-protocol
+        - chromium-bidi
+        - '@angular-devkit/*'
+        - '@angular/*'
+        - '@schematics/angular'
+        - '@types/chrome'
     ignore:
       - dependency-name: devtools-protocol
       - dependency-name: chromium-bidi
