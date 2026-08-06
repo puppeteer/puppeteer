@@ -50,7 +50,6 @@ import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {BindingPayload, HandleFor} from '../common/types.js';
 import {
-  debugError,
   evaluationString,
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
@@ -129,7 +128,7 @@ export class CdpPage extends Page {
         await page.setViewport(defaultViewport);
       } catch (err) {
         if (isErrorLike(err) && isTargetClosedError(err)) {
-          debugError?.(err);
+          page.debugLogger?.(err);
         } else {
           throw err;
         }
@@ -407,7 +406,7 @@ export class CdpPage extends Page {
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {
-        debugError?.(err);
+        this.debugLogger?.(err);
       } else {
         throw err;
       }

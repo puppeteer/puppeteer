@@ -41,7 +41,11 @@ import type {
   CookieParam,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
-import type {Logger} from '../common/Debug.js';
+import {
+  DEBUG_PREFIXES,
+  type Logger,
+  type LoggerFunction,
+} from '../common/Debug.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
@@ -785,6 +789,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @internal
    */
   protected logger?: Logger;
+  /**
+   * @internal
+   */
+  protected debugLogger?: LoggerFunction;
 
   /**
    * @internal
@@ -792,6 +800,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
   constructor(logger?: Logger) {
     super();
     this.logger = logger;
+    this.debugLogger = logger?.(DEBUG_PREFIXES.error);
 
     fromEmitterEvent(this, PageEvent.Request)
       .pipe(

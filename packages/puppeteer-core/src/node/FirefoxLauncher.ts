@@ -11,7 +11,6 @@ import path from 'node:path';
 
 import {Browser as SupportedBrowsers, createProfile} from '@puppeteer/browsers';
 
-import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
@@ -141,7 +140,7 @@ export class FirefoxLauncher extends BrowserLauncher {
       try {
         await rm(userDataDir);
       } catch (error) {
-        debugError?.(error);
+        this.debugLogger?.(error);
         throw error;
       }
     } else {
@@ -165,7 +164,7 @@ export class FirefoxLauncher extends BrowserLauncher {
           }
         }
       } catch (error) {
-        debugError?.(error);
+        this.debugLogger?.(error);
       }
     }
   }
