@@ -42,7 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
-import type {Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -128,7 +128,7 @@ export class CdpPage extends Page {
         await page.setViewport(defaultViewport);
       } catch (err) {
         if (isErrorLike(err) && isTargetClosedError(err)) {
-          page.debugLogger?.(err);
+          page.logger?.(DEBUG_PREFIXES.error)?.(err);
         } else {
           throw err;
         }
@@ -406,7 +406,7 @@ export class CdpPage extends Page {
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {
-        this.debugLogger?.(err);
+        this.logger?.(DEBUG_PREFIXES.error)?.(err);
       } else {
         throw err;
       }
