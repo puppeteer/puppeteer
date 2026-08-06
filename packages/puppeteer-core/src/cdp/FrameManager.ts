@@ -282,22 +282,39 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return this._frameTree.getById(frameId) || null;
   }
 
-  async addExposedFunctionBinding(binding: Binding): Promise<void> {
-    this.#bindings.add(binding);
+  async #forEachFrame(
+    action: (frame: CdpFrame) => Promise<unknown>,
+  ): Promise<void> {
     await Promise.all(
       this.frames().map(async frame => {
-        return await frame.addExposedFunctionBinding(binding);
+        try {
+          await action(frame);
+        } catch (error) {
+          // Only an out-of-process frame has a session of its own to lose.
+          if (
+            frame._client() === this.#client ||
+            !isErrorLike(error) ||
+            !isTargetClosedError(error)
+          ) {
+            throw error;
+          }
+        }
       }),
     );
   }
 
+  async addExposedFunctionBinding(binding: Binding): Promise<void> {
+    this.#bindings.add(binding);
+    await this.#forEachFrame(frame => {
+      return frame.addExposedFunctionBinding(binding);
+    });
+  }
+
   async removeExposedFunctionBinding(binding: Binding): Promise<void> {
     this.#bindings.delete(binding);
-    await Promise.all(
-      this.frames().map(async frame => {
-        return await frame.removeExposedFunctionBinding(binding);
-      }),
-    );
+    await this.#forEachFrame(frame => {
+      return frame.removeExposedFunctionBinding(binding);
+    });
   }
 
   async evaluateOnNewDocument(
@@ -317,11 +334,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
     this.#scriptsToEvaluateOnNewDocument.set(identifier, preloadScript);
 
-    await Promise.all(
-      this.frames().map(async frame => {
-        return await frame.addPreloadScript(preloadScript);
-      }),
-    );
+    await this.#forEachFrame(frame => {
+      return frame.addPreloadScript(preloadScript);
+    });
 
     return {identifier};
   }
