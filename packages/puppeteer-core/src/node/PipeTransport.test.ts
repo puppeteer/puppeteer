@@ -8,8 +8,6 @@ import {describe, it, beforeEach, afterEach} from 'node:test';
 
 import expect from 'expect';
 
-import {debug} from '../common/Debug.js';
-
 import {PipeTransport} from './PipeTransport.js';
 
 describe('PipeTransport', () => {
@@ -50,7 +48,9 @@ describe('PipeTransport', () => {
         // No-op as we will push data manually.
       },
     });
-    transport = new PipeTransport(myWritable, myReadable, debug);
+    transport = new PipeTransport(myWritable, myReadable, () => {
+      return undefined;
+    });
   });
 
   afterEach(() => {

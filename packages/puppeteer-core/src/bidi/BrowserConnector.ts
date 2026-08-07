@@ -8,7 +8,7 @@ import type {BrowserCloseCallback} from '../api/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
@@ -28,7 +28,7 @@ export async function _connectToBiDiBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
   options: ConnectOptions,
-  logger: Logger = debug,
+  logger: Logger,
 ): Promise<BidiBrowser> {
   const {
     acceptInsecureCerts = false,
@@ -50,6 +50,7 @@ export async function _connectToBiDiBrowser(
     networkEnabled,
     issuesEnabled,
     capabilities: options.capabilities,
+    logger,
   });
   return bidiBrowser;
 }
@@ -65,7 +66,7 @@ async function getBiDiConnection(
   connectionTransport: ConnectionTransport,
   url: string,
   options: ConnectOptions,
-  logger: Logger = debug,
+  logger: Logger,
 ): Promise<{
   cdpConnection?: Connection;
   bidiConnection: BidiConnection;
@@ -129,7 +130,7 @@ async function getBiDiConnection(
 
   const bidiOverCdpConnection = await BiDi.connectBidiOverCdp(
     cdpConnection,
-    options.logger,
+    logger,
   );
   return {
     cdpConnection,
