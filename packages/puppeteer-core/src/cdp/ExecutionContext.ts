@@ -10,7 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -39,31 +39,6 @@ import {
   valueFromPrimitiveRemoteObject,
 } from './utils.js';
 
-const ariaQuerySelectorBinding = new Binding(
-  '__ariaQuerySelector',
-  ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
-  '', // custom init
-  debug,
-);
-
-const ariaQuerySelectorAllBinding = new Binding(
-  '__ariaQuerySelectorAll',
-  (async (
-    element: ElementHandle<Node>,
-    selector: string,
-  ): Promise<JSHandle<Node[]>> => {
-    const results = ARIAQueryHandler.queryAll(element, selector);
-    return await element.realm.evaluateHandle(
-      (...elements) => {
-        return elements;
-      },
-      ...(await AsyncIterableUtil.collect(results)),
-    );
-  }) as (...args: unknown[]) => unknown,
-  '', // custom init
-  debug,
-);
-
 /**
  * @internal
  */
@@ -77,6 +52,37 @@ export class ExecutionContext
   }>
   implements Disposable
 {
+  static #ariaQuerySelectorBinding?: Binding;
+  static getOrCreateAriaQuerySelectorBinding(logger?: Logger): Binding {
+    return (this.#ariaQuerySelectorBinding ??= new Binding(
+      '__ariaQuerySelector',
+      ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
+      '', // custom init
+      logger,
+    ));
+  }
+
+  static #ariaQuerySelectorAllBinding?: Binding;
+  static getOrCreateAriaQuerySelectorAllBinding(logger?: Logger): Binding {
+    return (this.#ariaQuerySelectorAllBinding ??= new Binding(
+      '__ariaQuerySelectorAll',
+      (async (
+        element: ElementHandle<Node>,
+        selector: string,
+      ): Promise<JSHandle<Node[]>> => {
+        const results = ARIAQueryHandler.queryAll(element, selector);
+        return await element.realm.evaluateHandle(
+          (...elements) => {
+            return elements;
+          },
+          ...(await AsyncIterableUtil.collect(results)),
+        );
+      }) as (...args: unknown[]) => unknown,
+      '', // custom init
+      logger,
+    ));
+  }
+
   #client: CDPSession;
   #world: IsolatedWorld;
   #id: number;
@@ -217,8 +223,12 @@ export class ExecutionContext
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
       promise = Promise.all([
-        this.#addBindingWithoutThrowing(ariaQuerySelectorBinding),
-        this.#addBindingWithoutThrowing(ariaQuerySelectorAllBinding),
+        this.#addBindingWithoutThrowing(
+          ExecutionContext.getOrCreateAriaQuerySelectorBinding(this.#logger),
+        ),
+        this.#addBindingWithoutThrowing(
+          ExecutionContext.getOrCreateAriaQuerySelectorAllBinding(this.#logger),
+        ),
       ]);
       this.#bindingsInstalled = true;
     }
