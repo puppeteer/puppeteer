@@ -58,6 +58,21 @@ Used for nominally typing [Locator](./puppeteer.locator.md).
 </td></tr>
 <tr><td>
 
+<span id="logger">logger</span>
+
+</td><td>
+
+`protected, readonly`
+
+</td><td>
+
+[Logger](./puppeteer.logger.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="timeout">timeout</span>
 
 </td><td>
