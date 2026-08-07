@@ -41,11 +41,11 @@ Description
 
 </td><td>
 
-`protected`
+`protected, optional`
 
 </td><td>
 
-[Logger](./puppeteer.logger.md)
+[Logger](./puppeteer.logger.md) \| undefined
 
 </td><td>
 
