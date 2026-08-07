@@ -16,6 +16,10 @@ export declare abstract class Locator<T> extends EventEmitter<LocatorEvents>
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[LocatorEvents](./puppeteer.locatorevents.md)&gt;
 
+## Remarks
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Locator` class.
+
 ## Properties
 
 <table><thead><tr><th>
