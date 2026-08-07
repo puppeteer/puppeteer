@@ -20,7 +20,7 @@ import type {
   CookieData,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -476,12 +476,12 @@ export interface PWAState {
  * @public
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
-  #logger: Logger;
+  #logger?: Logger;
 
   /**
    * @internal
    */
-  constructor(logger: Logger = debug) {
+  constructor(logger?: Logger) {
     super(undefined, logger);
     this.#logger = logger;
   }

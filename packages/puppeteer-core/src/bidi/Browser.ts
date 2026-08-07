@@ -27,7 +27,7 @@ import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -159,12 +159,12 @@ export class BidiBrowser extends Browser {
   #cdpConnection?: CdpConnection;
   #networkEnabled: boolean;
   #issuesEnabled: boolean;
-  #logger: Logger;
+  #logger?: Logger;
 
   private constructor(
     browserCore: BrowserCore,
     opts: BidiBrowserOptions,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(logger);
     this.#process = opts.process;

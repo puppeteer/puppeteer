@@ -21,7 +21,7 @@ import {assert} from '../util/assert.js';
 import {mergeUint8Arrays, stringToTypedArray} from '../util/encoding.js';
 import {packageVersion} from '../util/version.js';
 
-import {debug, DEBUG_PREFIXES, type Logger} from './Debug.js';
+import {DEBUG_PREFIXES, type Logger} from './Debug.js';
 import {TimeoutError} from './Errors.js';
 import type {EventEmitter, EventType} from './EventEmitter.js';
 import type {
@@ -192,7 +192,7 @@ export function evaluationString(
 export async function getReadableAsTypedArray(
   readable: ReadableStream<Uint8Array>,
   path?: string,
-  logger: Logger = debug,
+  logger?: Logger,
 ): Promise<Uint8Array | null> {
   const buffers: Uint8Array[] = [];
   const reader = readable.getReader();

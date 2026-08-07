@@ -6,7 +6,7 @@
 
 import type Protocol from 'devtools-protocol';
 
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {moveable, throwIfDisposed} from '../util/decorators.js';
@@ -45,12 +45,12 @@ export abstract class JSHandle<T = unknown> {
    */
   declare _?: T;
 
-  #logger: Logger;
+  #logger?: Logger;
 
   /**
    * @internal
    */
-  constructor(logger: Logger = debug) {
+  constructor(logger?: Logger) {
     this.#logger = logger;
   }
 
