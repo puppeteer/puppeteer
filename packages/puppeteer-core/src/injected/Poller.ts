@@ -22,6 +22,30 @@ const MUTATION_OBSERVER_OPTIONS: MutationObserverInit = {
   attributes: true,
 };
 
+function canHostShadowRoots(node: Node): boolean {
+  return (
+    node.nodeType === Node.ELEMENT_NODE ||
+    node.nodeType === Node.DOCUMENT_FRAGMENT_NODE
+  );
+}
+
+/**
+ * A shadow root has no parent, so the walk up continues through its host to
+ * stay inside the tree the node was added to.
+ */
+function parentOf(node: Node): Node | null {
+  return node.parentNode ?? (node as ShadowRoot).host ?? null;
+}
+
+function hasAncestorIn(node: Node, nodes: Set<Node>): boolean {
+  for (let parent = parentOf(node); parent; parent = parentOf(parent)) {
+    if (nodes.has(parent)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /**
  * @internal
  */
@@ -48,11 +72,7 @@ export class MutationPoller<T> implements Poller<T> {
 
     this.#observedRoots = new WeakSet();
     this.#observer = new MutationObserver(async mutations => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          this.#observeShadowRoots(node);
-        }
-      }
+      this.#observeAddedShadowRoots(mutations);
       const result = await this.#fn();
       if (!result) {
         return;
@@ -74,6 +94,27 @@ export class MutationPoller<T> implements Poller<T> {
     this.#observedRoots.add(root);
     this.#observer.observe(root, MUTATION_OBSERVER_OPTIONS);
     this.#observeShadowRoots(root);
+  }
+
+  /**
+   * A batch can report a subtree and nodes inside it, so the added nodes are
+   * pruned to the top-most ones and each tree is walked once.
+   */
+  #observeAddedShadowRoots(mutations: MutationRecord[]): void {
+    const addedNodes = new Set<Node>();
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (!canHostShadowRoots(node)) {
+          continue;
+        }
+        addedNodes.add(node);
+      }
+    }
+    for (const node of addedNodes) {
+      if (!hasAncestorIn(node, addedNodes)) {
+        this.#observeShadowRoots(node);
+      }
+    }
   }
 
   /**
