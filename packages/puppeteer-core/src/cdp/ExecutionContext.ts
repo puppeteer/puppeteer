@@ -10,7 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -81,13 +81,13 @@ export class ExecutionContext
   #name?: string;
 
   readonly #disposables = new DisposableStack();
-  #logger: Logger;
+  #logger?: Logger;
 
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     world: IsolatedWorld,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(undefined, logger);
     this.#client = client;

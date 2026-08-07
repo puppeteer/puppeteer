@@ -13,7 +13,7 @@ import type {SetContentWaitForOptions, WaitForOptions} from '../api/Frame.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
@@ -54,14 +54,14 @@ export class CdpFrame extends Frame {
 
   worlds: IsolatedWorldChart;
   extensionWorlds: Record<string, IsolatedWorld> = {};
-  #logger: Logger;
+  #logger?: Logger;
 
   constructor(
     frameManager: FrameManager,
     frameId: string,
     parentFrameId: string | undefined,
     client: CDPSession,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super();
     this._frameManager = frameManager;

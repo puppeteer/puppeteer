@@ -35,6 +35,7 @@ import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
+import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
@@ -83,6 +84,7 @@ export class CdpBrowser extends BrowserBase {
     handleDevToolsAsPage = false,
     blocklist?: string[],
     allowlist?: string[],
+    logger?: Logger,
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
       connection,
@@ -98,6 +100,7 @@ export class CdpBrowser extends BrowserBase {
       handleDevToolsAsPage,
       blocklist,
       allowlist,
+      logger,
     );
 
     if (allowlist) {
@@ -148,8 +151,9 @@ export class CdpBrowser extends BrowserBase {
     handleDevToolsAsPage = false,
     blocklist?: string[],
     allowlist?: string[],
+    logger?: Logger,
   ) {
-    super();
+    super(logger);
     this.#networkEnabled = networkEnabled;
     this.#issuesEnabled = issuesEnabled;
     this.#defaultViewport = defaultViewport;

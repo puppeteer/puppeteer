@@ -10,7 +10,7 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -52,12 +52,12 @@ import type {BidiWebWorker} from './WebWorker.js';
  */
 export abstract class BidiRealm extends Realm {
   readonly realm: BidiRealmCore;
-  #logger: Logger;
+  #logger?: Logger;
 
   constructor(
     realm: BidiRealmCore,
     timeoutSettings: TimeoutSettings,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(timeoutSettings);
     this.realm = realm;

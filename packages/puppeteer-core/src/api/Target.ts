@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {debug, type Logger} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -40,7 +40,7 @@ export abstract class Target {
   /**
    * @internal
    */
-  protected constructor(protected logger: Logger = debug) {}
+  protected constructor(protected logger?: Logger) {}
 
   /**
    * If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
