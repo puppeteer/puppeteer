@@ -32,7 +32,7 @@ import {
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
 import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, HandleFor} from '../common/types.js';
@@ -63,7 +63,7 @@ export class BidiFrame extends Frame {
   static from(
     parent: BidiPage | BidiFrame,
     browsingContext: BrowsingContext,
-    logger: Logger = debug,
+    logger: Logger,
   ): BidiFrame {
     const frame = new BidiFrame(parent, browsingContext, logger);
     frame.#initialize();
@@ -83,7 +83,7 @@ export class BidiFrame extends Frame {
   private constructor(
     parent: BidiPage | BidiFrame,
     browsingContext: BrowsingContext,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super(logger);
     this.#parent = parent;
@@ -214,7 +214,7 @@ export class BidiFrame extends Frame {
     });
 
     this.browsingContext.on('worker', realm => {
-      const worker = BidiWebWorker.from(this, realm);
+      const worker = BidiWebWorker.from(this, realm, this.#logger);
       realm.on('destroyed', () => {
         this.page().trustedEmitter.emit(PageEvent.WorkerDestroyed, worker);
       });
@@ -223,7 +223,7 @@ export class BidiFrame extends Frame {
   }
 
   #createFrameTarget(browsingContext: BrowsingContext) {
-    const frame = BidiFrame.from(this, browsingContext);
+    const frame = BidiFrame.from(this, browsingContext, this.#logger);
     this.#frames.set(browsingContext, frame);
     this.page().trustedEmitter.emit(PageEvent.FrameAttached, frame);
 
@@ -477,7 +477,13 @@ export class BidiFrame extends Frame {
         `Failed to add page binding with name ${name}: globalThis['${name}'] already exists!`,
       );
     }
-    const exposable = await ExposableFunction.from(this, name, apply);
+    const exposable = await ExposableFunction.from(
+      this,
+      name,
+      apply,
+      false,
+      this.#logger,
+    );
     this.#exposedFunctions.set(name, exposable);
   }
 

@@ -6,7 +6,7 @@
 import NodeWebSocket from 'ws';
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {packageVersion} from '../util/version.js';
 
 /**
@@ -15,8 +15,8 @@ import {packageVersion} from '../util/version.js';
 export class NodeWebSocketTransport implements ConnectionTransport {
   static create(
     url: string,
-    headers: Record<string, string> | undefined = undefined,
-    logger: Logger = debug,
+    headers: Record<string, string> | undefined,
+    logger: Logger,
   ): Promise<NodeWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {

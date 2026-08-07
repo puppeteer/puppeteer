@@ -15,7 +15,7 @@ import {
 } from '../api/CDPSession.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
@@ -52,10 +52,10 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     url: string,
     transport: ConnectionTransport,
     delay = 0,
-    timeout?: number,
+    timeout: number | undefined = undefined,
     rawErrors = false,
     idGenerator: () => number = createIncrementalIdGenerator(),
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super();
     this.#logger = logger;

@@ -12,7 +12,7 @@ import {
   ElementHandle,
   type AutofillData,
 } from '../api/ElementHandle.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {environment} from '../environment.js';
 import {assert} from '../util/assert.js';
@@ -43,7 +43,7 @@ export class CdpElementHandle<
   constructor(
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super(new CdpJSHandle(world, remoteObject, logger), logger);
     this.#logger = logger;

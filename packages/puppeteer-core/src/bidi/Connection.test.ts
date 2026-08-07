@@ -9,6 +9,7 @@ import {describe, it} from 'node:test';
 import expect from 'expect';
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
+import {debug} from '../common/Debug.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import {BidiConnection} from './Connection.js';
@@ -33,6 +34,9 @@ describe('WebDriver BiDi Connection', () => {
       'ws://127.0.0.1',
       transport,
       createIncrementalIdGenerator(),
+      0,
+      undefined,
+      debug,
     );
     const responsePromise = connection.send('session.new', {
       capabilities: {},
