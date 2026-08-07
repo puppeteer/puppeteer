@@ -45,10 +45,6 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #debugProtocolReceive: ((...args: unknown[]) => void) | undefined;
   #logger?: Logger;
 
-  get _logger(): Logger | undefined {
-    return this.#logger;
-  }
-
   /**
    * @internal
    */
@@ -218,6 +214,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         sessionId,
         object.sessionId,
         this.#rawErrors,
+        this.#logger,
       );
       this.#sessions.set(sessionId, session);
       this.emit(CDPSessionEvent.SessionAttached, session);

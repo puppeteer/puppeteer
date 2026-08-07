@@ -12,6 +12,7 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Extension} from '../api/Extension.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import type {Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
@@ -72,15 +73,18 @@ export class IsolatedWorld extends Realm {
   #origin?: string;
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
+  #logger?: Logger;
 
   constructor(
     frameOrWorker: CdpFrame | CdpWebWorker,
     timeoutSettings: TimeoutSettings,
     worldId: string | symbol,
+    logger?: Logger,
   ) {
     super(timeoutSettings);
     this.#frameOrWorker = frameOrWorker;
     this.#worldId = worldId;
+    this.#logger = logger;
   }
 
   get environment(): CdpFrame | CdpWebWorker {
@@ -257,11 +261,10 @@ export class IsolatedWorld extends Realm {
   createCdpHandle(
     remoteObject: Protocol.Runtime.RemoteObject,
   ): JSHandle | ElementHandle<Node> {
-    const logger = (this.#frameOrWorker as CdpFrame)._logger;
     if (remoteObject.subtype === 'node') {
-      return new CdpElementHandle(this, remoteObject, logger);
+      return new CdpElementHandle(this, remoteObject, this.#logger);
     }
-    return new CdpJSHandle(this, remoteObject, logger);
+    return new CdpJSHandle(this, remoteObject, this.#logger);
   }
 
   override [disposeSymbol](): void {

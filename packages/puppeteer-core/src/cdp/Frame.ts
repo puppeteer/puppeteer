@@ -56,10 +56,6 @@ export class CdpFrame extends Frame {
   extensionWorlds: Record<string, IsolatedWorld> = {};
   #logger?: Logger;
 
-  get _logger(): Logger | undefined {
-    return this.#logger;
-  }
-
   constructor(
     frameManager: FrameManager,
     frameId: string,
@@ -82,11 +78,13 @@ export class CdpFrame extends Frame {
         this,
         this._frameManager.timeoutSettings,
         MAIN_WORLD,
+        logger,
       ),
       [PUPPETEER_WORLD]: new IsolatedWorld(
         this,
         this._frameManager.timeoutSettings,
         PUPPETEER_WORLD,
+        logger,
       ),
     };
 
