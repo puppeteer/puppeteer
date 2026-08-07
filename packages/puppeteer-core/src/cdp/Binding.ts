@@ -17,12 +17,12 @@ export class Binding {
   #name: string;
   #fn: (...args: unknown[]) => unknown;
   #initSource: string;
-  #logger?: Logger;
+  #logger: Logger;
   constructor(
     name: string,
     fn: (...args: unknown[]) => unknown,
     initSource: string,
-    logger?: Logger,
+    logger: Logger,
   ) {
     this.#name = name;
     this.#fn = fn;

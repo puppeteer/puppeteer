@@ -476,17 +476,17 @@ export interface PWAState {
  * @public
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
-  #logger?: Logger;
+  #logger: Logger;
 
   /**
    * @internal
    */
-  constructor(logger?: Logger) {
+  constructor(logger: Logger) {
     super(undefined, logger);
     this.#logger = logger;
   }
 
-  protected get logger(): Logger | undefined {
+  protected get logger(): Logger {
     return this.#logger;
   }
 

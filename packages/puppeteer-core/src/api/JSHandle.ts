@@ -45,13 +45,17 @@ export abstract class JSHandle<T = unknown> {
    */
   declare _?: T;
 
-  #logger?: Logger;
+  #logger: Logger;
 
   /**
    * @internal
    */
-  constructor(logger?: Logger) {
+  constructor(logger: Logger) {
     this.#logger = logger;
+  }
+
+  protected get logger(): Logger {
+    return this.#logger;
   }
 
   /**

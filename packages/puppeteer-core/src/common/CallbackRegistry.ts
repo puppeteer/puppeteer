@@ -19,9 +19,9 @@ import {ProtocolError, TargetCloseError} from './Errors.js';
 export class CallbackRegistry {
   readonly #callbacks = new Map<number, Callback>();
   readonly #idGenerator: GetIdFn;
-  #logger?: Logger;
+  #logger: Logger;
 
-  constructor(idGenerator: GetIdFn, logger?: Logger) {
+  constructor(idGenerator: GetIdFn, logger: Logger) {
     this.#idGenerator = idGenerator;
     this.#logger = logger;
   }

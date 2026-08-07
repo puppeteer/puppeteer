@@ -228,7 +228,7 @@ export class BidiHTTPRequest extends HTTPRequest {
       })
       .catch(error => {
         this.interception.handled = false;
-        return handleError(error);
+        return handleError(error, (this.#frame as any).logger);
       });
   }
 

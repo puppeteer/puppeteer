@@ -230,7 +230,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       })
       .catch(error => {
         this.interception.handled = false;
-        return handleError(error);
+        return handleError(error, (this.frame() as any).logger);
       });
   }
 
@@ -282,7 +282,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       })
       .catch(error => {
         this.interception.handled = false;
-        return handleError(error);
+        return handleError(error, (this.frame() as any).logger);
       });
   }
 
@@ -300,6 +300,8 @@ export class CdpHTTPRequest extends HTTPRequest {
         requestId: this._interceptionId,
         errorReason: errorReason || 'Failed',
       })
-      .catch(handleError);
+      .catch(error => {
+        return handleError(error, (this.frame() as any).logger);
+      });
   }
 }

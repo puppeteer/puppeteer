@@ -10,7 +10,7 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -52,19 +52,19 @@ import type {BidiWebWorker} from './WebWorker.js';
  */
 export abstract class BidiRealm extends Realm {
   readonly realm: BidiRealmCore;
-  #logger?: Logger;
+  #logger: Logger;
 
   constructor(
     realm: BidiRealmCore,
     timeoutSettings: TimeoutSettings,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     super(timeoutSettings);
     this.realm = realm;
     this.#logger = logger;
   }
 
-  protected get logger(): Logger | undefined {
+  protected get logger(): Logger {
     return this.#logger;
   }
 
@@ -316,7 +316,7 @@ export class BidiFrameRealm extends BidiRealm {
   static from(
     realm: WindowRealm,
     frame: BidiFrame,
-    logger?: Logger,
+    logger: Logger = debug,
   ): BidiFrameRealm {
     const frameRealm = new BidiFrameRealm(realm, frame, logger);
     frameRealm.#initialize();
@@ -326,7 +326,11 @@ export class BidiFrameRealm extends BidiRealm {
 
   readonly #frame: BidiFrame;
 
-  private constructor(realm: WindowRealm, frame: BidiFrame, logger?: Logger) {
+  private constructor(
+    realm: WindowRealm,
+    frame: BidiFrame,
+    logger: Logger = debug,
+  ) {
     super(realm, frame.timeoutSettings, logger);
     this.#frame = frame;
   }
@@ -369,6 +373,7 @@ export class BidiFrameRealm extends BidiRealm {
             );
           },
           !!this.sandbox,
+          this.logger,
         ),
       ]);
       this.#bindingsInstalled = true;
@@ -414,7 +419,7 @@ export class BidiWorkerRealm extends BidiRealm {
   static from(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
     worker: BidiWebWorker,
-    logger?: Logger,
+    logger: Logger = debug,
   ): BidiWorkerRealm {
     const workerRealm = new BidiWorkerRealm(realm, worker, logger);
     workerRealm.initialize();
@@ -427,7 +432,7 @@ export class BidiWorkerRealm extends BidiRealm {
   private constructor(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
     frame: BidiWebWorker,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     super(realm, frame.timeoutSettings, logger);
     this.#worker = frame;
