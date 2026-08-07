@@ -32,15 +32,11 @@ import {
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
 import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, HandleFor} from '../common/types.js';
-import {
-  debugError,
-  fromAbortSignal,
-  fromEmitterEvent,
-  timeout,
-} from '../common/util.js';
+import {fromAbortSignal, fromEmitterEvent, timeout} from '../common/util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {BidiCdpSession} from './CDPSession.js';
@@ -198,7 +194,7 @@ export class BidiFrame extends Frame {
         error.stack = [...messageLines, ...stackLines].join('\n');
         this.page().trustedEmitter.emit(PageEvent.PageError, error);
       } else {
-        debugError?.(
+        debug?.(DEBUG_PREFIXES.error)?.(
           `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`,
         );
       }

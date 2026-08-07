@@ -792,7 +792,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
   constructor(logger?: Logger) {
     super();
     this.logger = logger;
-
     fromEmitterEvent(this, PageEvent.Request)
       .pipe(
         mergeMap(originalRequest => {

@@ -10,6 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -17,7 +18,6 @@ import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
 import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
-  debugError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
@@ -158,8 +158,7 @@ export class ExecutionContext
           return;
         }
       }
-
-      debugError?.(error);
+      debug?.(DEBUG_PREFIXES.error)?.(error);
     }
   }
 
@@ -192,7 +191,7 @@ export class ExecutionContext
       const binding = this.#bindings.get(name);
       await binding?.run(this, seq, args, isTrivial);
     } catch (err) {
-      debugError?.(err);
+      debug?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 
@@ -239,7 +238,7 @@ export class ExecutionContext
     } catch (err) {
       // If the binding cannot be added, the context is broken. We cannot
       // recover so we ignore the error.
-      debugError?.(err);
+      debug?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 

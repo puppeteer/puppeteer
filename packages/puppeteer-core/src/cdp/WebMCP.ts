@@ -10,8 +10,8 @@ import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
 import type {ConsoleMessageLocation} from '../common/ConsoleMessage.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError, debugCatchError} from '../common/util.js';
 
 import type {CdpFrame} from './Frame.js';
 import type {FrameManager} from './FrameManager.js';
@@ -165,7 +165,7 @@ export class WebMCPToolCall {
       this.input = JSON.parse(input);
     } catch (error) {
       this.input = {};
-      debugError?.(error);
+      debug?.(DEBUG_PREFIXES.error)?.(error);
     }
   }
 }
@@ -330,7 +330,9 @@ export class WebMCP extends EventEmitter<{
    * @internal
    */
   async initialize(): Promise<void> {
-    return await this.#client.send('WebMCP.enable').catch(debugCatchError);
+    return await this.#client.send('WebMCP.enable').catch(err => {
+      debug?.(DEBUG_PREFIXES.error)?.(err);
+    });
   }
 
   /**

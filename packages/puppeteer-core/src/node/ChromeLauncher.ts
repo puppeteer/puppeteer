@@ -14,7 +14,7 @@ import {
 } from '@puppeteer/browsers';
 
 import type {Browser} from '../api/Browser.js';
-import {debugError} from '../common/util.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {assert} from '../util/assert.js';
 
 import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
@@ -159,7 +159,7 @@ export class ChromeLauncher extends BrowserLauncher {
       try {
         await rm(path);
       } catch (error) {
-        debugError?.(error);
+        debug?.(DEBUG_PREFIXES.error)?.(error);
         throw error;
       }
     }

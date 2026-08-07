@@ -12,8 +12,8 @@ import {
   ElementHandle,
   type AutofillData,
 } from '../api/ElementHandle.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import type {AwaitableIterable} from '../common/types.js';
-import {debugError} from '../common/util.js';
 import {environment} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
@@ -92,7 +92,7 @@ export class CdpElementHandle<
         objectId: this.id,
       });
     } catch (error) {
-      debugError?.(error);
+      debug?.(DEBUG_PREFIXES.error)?.(error);
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
       await super.scrollIntoView();
     }

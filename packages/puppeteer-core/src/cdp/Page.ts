@@ -42,7 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
-import type {Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -50,7 +50,6 @@ import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {BindingPayload, HandleFor} from '../common/types.js';
 import {
-  debugError,
   evaluationString,
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
@@ -129,7 +128,7 @@ export class CdpPage extends Page {
         await page.setViewport(defaultViewport);
       } catch (err) {
         if (isErrorLike(err) && isTargetClosedError(err)) {
-          debugError?.(err);
+          page.logger?.(DEBUG_PREFIXES.error)?.(err);
         } else {
           throw err;
         }
@@ -177,7 +176,7 @@ export class CdpPage extends Page {
     this.#mouse = new CdpMouse(client, this.#keyboard);
     this.#touchscreen = new CdpTouchscreen(client, this.#keyboard);
     this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
-    this.#emulationManager = new EmulationManager(client);
+    this.#emulationManager = new EmulationManager(client, this.logger);
     this.#tracing = new Tracing(client);
     this.#webmcp = new WebMCP(client, this.#frameManager);
     this.#coverage = new Coverage(client);
@@ -407,7 +406,7 @@ export class CdpPage extends Page {
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {
-        debugError?.(err);
+        this.logger?.(DEBUG_PREFIXES.error)?.(err);
       } else {
         throw err;
       }
@@ -565,7 +564,7 @@ export class CdpPage extends Page {
       event.entry;
     if (args) {
       args.map(arg => {
-        void releaseObject(this.#primaryTargetClient, arg);
+        void releaseObject(this.#primaryTargetClient, arg, this.logger);
       });
     }
     if (source !== 'worker') {

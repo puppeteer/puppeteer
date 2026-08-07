@@ -27,7 +27,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_constructor_">[(constructor)(client)](./puppeteer.csscoverage._constructor_.md)</span>
+<span id="_constructor_">[(constructor)(client, logger)](./puppeteer.csscoverage._constructor_.md)</span>
 
 </td><td>
 

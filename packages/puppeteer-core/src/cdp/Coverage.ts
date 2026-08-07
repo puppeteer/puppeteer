@@ -7,8 +7,10 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
+import {DEBUG_PREFIXES} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError, PuppeteerURL} from '../common/util.js';
+import {PuppeteerURL} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
 
@@ -199,10 +201,13 @@ export class JSCoverage {
   #reportAnonymousScripts = false;
   #includeRawScriptCoverage = false;
 
+  #logger?: Logger;
+
   /**
    * @internal
    */
-  constructor(client: CDPSession) {
+  constructor(client: CDPSession, logger?: Logger) {
+    this.#logger = logger;
     this.#client = client;
   }
 
@@ -281,7 +286,7 @@ export class JSCoverage {
       this.#scriptSources.set(event.scriptId, response.scriptSource);
     } catch (error) {
       // This might happen if the page has already navigated away.
-      debugError?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
   }
 
@@ -336,7 +341,10 @@ export class CSSCoverage {
   #eventListeners?: DisposableStack;
   #resetOnNavigation = false;
 
-  constructor(client: CDPSession) {
+  #logger?: Logger;
+
+  constructor(client: CDPSession, logger?: Logger) {
+    this.#logger = logger;
     this.#client = client;
   }
 
@@ -393,7 +401,7 @@ export class CSSCoverage {
       this.#stylesheetSources.set(header.styleSheetId, response.text);
     } catch (error) {
       // This might happen if the page has already navigated away.
-      debugError?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
   }
 
