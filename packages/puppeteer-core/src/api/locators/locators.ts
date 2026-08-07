@@ -117,6 +117,9 @@ export interface LocatorEvents extends Record<EventType, unknown> {
 export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   #logger: Logger;
 
+  /**
+   * @internal
+   */
   constructor(logger: Logger = debug) {
     super(undefined, logger);
     this.#logger = logger;

@@ -391,6 +391,10 @@ Locators describe a strategy of locating objects and performing an action on the
 
 See [https://pptr.dev/guides/page-interactions\#locators](https://pptr.dev/guides/page-interactions#locators) for details.
 
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Locator` class.
+
 </td></tr>
 <tr><td>
 

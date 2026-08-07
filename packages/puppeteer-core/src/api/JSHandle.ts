@@ -43,6 +43,8 @@ export abstract class JSHandle<T = unknown> {
   /**
    * Used for nominally typing {@link JSHandle}.
    */
+  declare _?: T;
+
   #logger: Logger;
 
   /**
