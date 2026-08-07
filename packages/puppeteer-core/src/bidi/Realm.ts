@@ -10,7 +10,7 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
@@ -52,10 +52,16 @@ import type {BidiWebWorker} from './WebWorker.js';
  */
 export abstract class BidiRealm extends Realm {
   readonly realm: BidiRealmCore;
+  #logger: Logger;
 
-  constructor(realm: BidiRealmCore, timeoutSettings: TimeoutSettings) {
+  constructor(
+    realm: BidiRealmCore,
+    timeoutSettings: TimeoutSettings,
+    logger: Logger = debug,
+  ) {
     super(timeoutSettings);
     this.realm = realm;
+    this.#logger = logger;
   }
 
   protected initialize(): void {
@@ -269,7 +275,7 @@ export abstract class BidiRealm extends Realm {
     void this.realm.disown(handleIds).catch(error => {
       // Exceptions might happen in case of a page been navigated or closed.
       // Swallow these since they are harmless and we don't leak anything in this case.
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   }
 

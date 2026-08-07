@@ -22,14 +22,17 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
   readonly #remoteObject: Protocol.Runtime.RemoteObject;
   readonly #world: IsolatedWorld;
+  #logger: Logger;
 
   constructor(
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
+    logger: Logger = debug,
   ) {
-    super();
+    super(logger);
     this.#world = world;
     this.#remoteObject = remoteObject;
+    this.#logger = logger;
   }
 
   override get disposed(): boolean {
@@ -70,7 +73,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
       return;
     }
     this.#disposed = true;
-    await releaseObject(this.client, this.#remoteObject);
+    await releaseObject(this.client, this.#remoteObject, this.#logger);
   }
 
   override toString(): string {

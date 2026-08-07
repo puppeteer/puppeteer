@@ -30,7 +30,7 @@ import {
   tap,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
-import {debug, DEBUG_PREFIXES} from '../../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../../common/Debug.js';
 import type {EventType} from '../../common/EventEmitter.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import type {Awaitable, HandleFor, NodeFor} from '../../common/types.js';
@@ -115,6 +115,15 @@ export interface LocatorEvents extends Record<EventType, unknown> {
  * @public
  */
 export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
+  #logger: Logger;
+
+  /**
+   * @internal
+   */
+  constructor(logger: Logger = debug) {
+    super(undefined, logger);
+    this.#logger = logger;
+  }
   /**
    * Creates a race between multiple locators trying to locate elements in
    * parallel but ensures that only a single element receives the action.
@@ -402,7 +411,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
         return from(handle.click(options)).pipe(
           catchError(err => {
             void handle.dispose().catch(error => {
-              debug?.(DEBUG_PREFIXES.error)?.(error);
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
             });
             throw err;
           }),
@@ -599,7 +608,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
           .pipe(
             catchError(err => {
               void handle.dispose().catch(error => {
-                debug?.(DEBUG_PREFIXES.error)?.(error);
+                this.#logger?.(DEBUG_PREFIXES.error)?.(error);
               });
               throw err;
             }),
@@ -630,7 +639,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
         return from(handle.hover()).pipe(
           catchError(err => {
             void handle.dispose().catch(error => {
-              debug?.(DEBUG_PREFIXES.error)?.(error);
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
             });
             throw err;
           }),
@@ -674,7 +683,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
         ).pipe(
           catchError(err => {
             void handle.dispose().catch(error => {
-              debug?.(DEBUG_PREFIXES.error)?.(error);
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
             });
             throw err;
           }),

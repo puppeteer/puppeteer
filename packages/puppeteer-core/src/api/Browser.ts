@@ -20,7 +20,7 @@ import type {
   CookieData,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
@@ -476,11 +476,14 @@ export interface PWAState {
  * @public
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
+  #logger: Logger;
+
   /**
    * @internal
    */
-  constructor() {
-    super();
+  constructor(logger: Logger = debug) {
+    super(undefined, logger);
+    this.#logger = logger;
   }
 
   /**
@@ -847,7 +850,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
 
   override [disposeSymbol](): void {
     return void this[asyncDisposeSymbol]().catch(error => {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   }
 

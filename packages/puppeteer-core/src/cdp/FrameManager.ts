@@ -9,7 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
@@ -65,6 +65,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   >();
 
   #frameTreeHandled?: Deferred<void>;
+  #logger: Logger;
 
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
@@ -82,19 +83,22 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     client: CdpCDPSession,
     page: CdpPage,
     timeoutSettings: TimeoutSettings,
+    logger: Logger = debug,
   ) {
-    super();
+    super(undefined, logger);
     this.#client = client;
     this.#page = page;
     this.#networkManager = new NetworkManager(
       this,
       page.browser().isNetworkEnabled(),
+      logger,
     );
     this.#timeoutSettings = timeoutSettings;
+    this.#logger = logger;
     this.setupEventListeners(this.#client);
     client.once(CDPSessionEvent.Disconnected, () => {
       void this.#onClientDisconnect(client).catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       });
     });
   }
@@ -164,7 +168,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     this.setupEventListeners(client);
     client.once(CDPSessionEvent.Disconnected, () => {
       void this.#onClientDisconnect(client).catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       });
     });
     await this.initialize(client, frame);
@@ -363,7 +367,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
             identifier,
           })
           .catch(error => {
-            debug?.(DEBUG_PREFIXES.error)?.(error);
+            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
           });
       }),
     );
@@ -380,7 +384,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
     this.setupEventListeners(target._session()!);
     void this.initialize(target._session()!, frame).catch(error => {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   }
 
@@ -536,7 +540,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
               grantUniveralAccess: true,
             })
             .catch(error => {
-              debug?.(DEBUG_PREFIXES.error)?.(error);
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
             });
         }),
     );
@@ -620,7 +624,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         const extId = this.#extractExtensionId(origin);
 
         if (!extId) {
-          debug?.(DEBUG_PREFIXES.error)?.('Error while parsing extension id');
+          this.#logger?.(DEBUG_PREFIXES.error)?.(
+            'Error while parsing extension id',
+          );
           return;
         }
 

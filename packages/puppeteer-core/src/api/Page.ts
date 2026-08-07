@@ -789,8 +789,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
-  constructor(logger?: Logger) {
-    super();
+  constructor(logger: Logger = debug) {
+    super(undefined, logger);
     this.logger = logger;
     fromEmitterEvent(this, PageEvent.Request)
       .pipe(
@@ -2676,7 +2676,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       await this.setViewport({...viewport, deviceScaleFactor: 0});
       stack.defer(() => {
         void this.setViewport(viewport).catch(error => {
-          debug?.(DEBUG_PREFIXES.error)?.(error);
+          this.logger?.(DEBUG_PREFIXES.error)?.(error);
         });
       });
     }
@@ -2802,7 +2802,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
           });
           stack.defer(async () => {
             await this.setViewport(viewport).catch(error => {
-              debug?.(DEBUG_PREFIXES.error)?.(error);
+              this.logger?.(DEBUG_PREFIXES.error)?.(error);
             });
           });
         }
@@ -3293,7 +3293,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   override [disposeSymbol](): void {
     return void this[asyncDisposeSymbol]().catch(error => {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   }
 

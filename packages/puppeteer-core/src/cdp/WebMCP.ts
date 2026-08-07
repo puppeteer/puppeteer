@@ -10,7 +10,7 @@ import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
 import type {ConsoleMessageLocation} from '../common/ConsoleMessage.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 
 import type {CdpFrame} from './Frame.js';
@@ -155,17 +155,25 @@ export class WebMCPToolCall {
    */
   input: object;
 
+  #logger: Logger;
+
   /**
    * @internal
    */
-  constructor(invocationId: string, tool: WebMCPTool, input: string) {
+  constructor(
+    invocationId: string,
+    tool: WebMCPTool,
+    input: string,
+    logger: Logger = debug,
+  ) {
     this.id = invocationId;
     this.tool = tool;
+    this.#logger = logger;
     try {
       this.input = JSON.parse(input);
     } catch (error) {
       this.input = {};
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
   }
 }
@@ -235,6 +243,7 @@ export class WebMCP extends EventEmitter<{
   #frameManager: FrameManager;
   #tools = new Map<string, Map<string, WebMCPTool>>();
   #pendingCalls = new Map<string, WebMCPToolCall>();
+  #logger: Logger;
 
   #onToolsAdded = (event: Protocol.WebMCP.ToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
@@ -319,10 +328,15 @@ export class WebMCP extends EventEmitter<{
   /**
    * @internal
    */
-  constructor(client: CDPSession, frameManager: FrameManager) {
-    super();
+  constructor(
+    client: CDPSession,
+    frameManager: FrameManager,
+    logger: Logger = debug,
+  ) {
+    super(undefined, logger);
     this.#client = client;
     this.#frameManager = frameManager;
+    this.#logger = logger;
     this.#bindListeners();
   }
 
@@ -331,7 +345,7 @@ export class WebMCP extends EventEmitter<{
    */
   async initialize(): Promise<void> {
     return await this.#client.send('WebMCP.enable').catch(err => {
-      debug?.(DEBUG_PREFIXES.error)?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
   }
 

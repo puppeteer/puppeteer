@@ -6,7 +6,7 @@
 import NodeWebSocket from 'ws';
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {packageVersion} from '../util/version.js';
 
 /**
@@ -16,6 +16,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
   static create(
     url: string,
     headers?: Record<string, string>,
+    logger: Logger = debug,
   ): Promise<NodeWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
@@ -30,18 +31,20 @@ export class NodeWebSocketTransport implements ConnectionTransport {
       });
 
       ws.addEventListener('open', () => {
-        return resolve(new NodeWebSocketTransport(ws));
+        return resolve(new NodeWebSocketTransport(ws, logger));
       });
       ws.addEventListener('error', reject);
     });
   }
 
   #ws: NodeWebSocket;
+  #logger: Logger;
   onmessage?: (message: NodeWebSocket.Data) => void;
   onclose?: () => void;
 
-  constructor(ws: NodeWebSocket) {
+  constructor(ws: NodeWebSocket, logger: Logger = debug) {
     this.#ws = ws;
+    this.#logger = logger;
     this.#ws.addEventListener('message', event => {
       if (this.onmessage) {
         this.onmessage.call(null, event.data);
@@ -54,7 +57,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
     });
     // Silently log all errors - we don't know what to do with them.
     this.#ws.addEventListener('error', err => {
-      debug?.(DEBUG_PREFIXES.error)?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
   }
 

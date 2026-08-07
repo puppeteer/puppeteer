@@ -16,7 +16,7 @@ import {
   STATUS_TEXTS,
   handleError,
 } from '../api/HTTPRequest.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {
   mergeUint8Arrays,
   stringToBase64,
@@ -45,6 +45,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #headers: Record<string, string> = {};
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
+  #logger: Logger;
 
   override get client(): CDPSession {
     return this.#client;
@@ -86,9 +87,12 @@ export class CdpHTTPRequest extends HTTPRequest {
       type?: Protocol.Network.ResourceType;
     },
     redirectChain: CdpHTTPRequest[],
+    logger: Logger = debug,
   ) {
     super();
+    this.#logger = logger;
     this.#client = client;
+    this.#logger = logger;
     this.id = data.requestId;
     this.#isNavigationRequest =
       data.requestId === data.loaderId && data.type === 'Document';
@@ -157,7 +161,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       });
       return result.postData;
     } catch (err) {
-      debug?.(DEBUG_PREFIXES.error)?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
       return;
     }
   }

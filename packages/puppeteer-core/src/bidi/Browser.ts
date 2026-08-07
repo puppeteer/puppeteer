@@ -27,7 +27,7 @@ import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -53,6 +53,7 @@ export interface BidiBrowserOptions {
   capabilities?: SupportedWebDriverCapabilities;
   networkEnabled: boolean;
   issuesEnabled: boolean;
+  logger?: Logger;
 }
 
 /**
@@ -131,7 +132,7 @@ export class BidiBrowser extends Browser {
             });
           } catch (err) {
             if (err instanceof ProtocolError) {
-              debug?.(DEBUG_PREFIXES.error)?.(err);
+              opts.logger?.(DEBUG_PREFIXES.error)?.(err);
             } else {
               throw err;
             }
@@ -140,7 +141,7 @@ export class BidiBrowser extends Browser {
       ),
     );
 
-    const browser = new BidiBrowser(session.browser, opts);
+    const browser = new BidiBrowser(session.browser, opts, opts.logger);
     browser.#initialize();
     return browser;
   }
@@ -158,9 +159,14 @@ export class BidiBrowser extends Browser {
   #cdpConnection?: CdpConnection;
   #networkEnabled: boolean;
   #issuesEnabled: boolean;
+  #logger: Logger;
 
-  private constructor(browserCore: BrowserCore, opts: BidiBrowserOptions) {
-    super();
+  private constructor(
+    browserCore: BrowserCore,
+    opts: BidiBrowserOptions,
+    logger: Logger = debug,
+  ) {
+    super(logger);
     this.#process = opts.process;
     this.#closeCallback = opts.closeCallback;
     this.#browserCore = browserCore;
@@ -168,6 +174,7 @@ export class BidiBrowser extends Browser {
     this.#cdpConnection = opts.cdpConnection;
     this.#networkEnabled = opts.networkEnabled;
     this.#issuesEnabled = opts.issuesEnabled;
+    this.#logger = logger;
   }
 
   #initialize() {
@@ -252,7 +259,7 @@ export class BidiBrowser extends Browser {
       await this.#closeCallback?.call(null);
     } catch (error) {
       // Fail silently.
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     } finally {
       this.connection.dispose();
     }
@@ -382,7 +389,7 @@ export class BidiBrowser extends Browser {
       await this.#browserCore.session.end();
     } catch (error) {
       // Fail silently.
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     } finally {
       this.connection.dispose();
     }

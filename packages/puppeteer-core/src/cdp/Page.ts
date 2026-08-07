@@ -161,7 +161,11 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(client: CdpCDPSession, target: CdpTarget, logger?: Logger) {
+  constructor(
+    client: CdpCDPSession,
+    target: CdpTarget,
+    logger: Logger = debug,
+  ) {
     super(logger);
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
@@ -174,7 +178,12 @@ export class CdpPage extends Page {
     this.#keyboard = new CdpKeyboard(client);
     this.#mouse = new CdpMouse(client, this.#keyboard);
     this.#touchscreen = new CdpTouchscreen(client, this.#keyboard);
-    this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
+    this.#frameManager = new FrameManager(
+      client,
+      this,
+      this._timeoutSettings,
+      logger,
+    );
     this.#emulationManager = new EmulationManager(client, this.logger);
     this.#tracing = new Tracing(client);
     this.#webmcp = new WebMCP(client, this.#frameManager);
@@ -259,7 +268,7 @@ export class CdpPage extends Page {
         this.#closed = true;
       })
       .catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.logger?.(DEBUG_PREFIXES.error)?.(error);
       });
 
     this.#setupPrimaryTargetListeners();
@@ -313,12 +322,12 @@ export class CdpPage extends Page {
       return;
     }
     void this.#frameManager.registerSpeculativeSession(session).catch(error => {
-      debug?.(DEBUG_PREFIXES.error)?.(error);
+      this.logger?.(DEBUG_PREFIXES.error)?.(error);
     });
     void this.#emulationManager
       .registerSpeculativeSession(session)
       .catch(error => {
-        debug?.(DEBUG_PREFIXES.error)?.(error);
+        this.logger?.(DEBUG_PREFIXES.error)?.(error);
       });
   }
 
@@ -386,7 +395,7 @@ export class CdpPage extends Page {
           // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
           for (const arg of message.args()) {
             void arg.dispose().catch(error => {
-              debug?.(DEBUG_PREFIXES.error)?.(error);
+              this.logger?.(DEBUG_PREFIXES.error)?.(error);
             });
           }
           return;
@@ -960,7 +969,7 @@ export class CdpPage extends Page {
         // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
         for (const value of values) {
           void value.dispose().catch(error => {
-            debug?.(DEBUG_PREFIXES.error)?.(error);
+            this.logger?.(DEBUG_PREFIXES.error)?.(error);
           });
         }
       }
@@ -1169,7 +1178,7 @@ export class CdpPage extends Page {
         await this.#emulationManager
           .resetDefaultBackgroundColor()
           .catch(error => {
-            debug?.(DEBUG_PREFIXES.error)?.(error);
+            this.logger?.(DEBUG_PREFIXES.error)?.(error);
           });
       });
     }
