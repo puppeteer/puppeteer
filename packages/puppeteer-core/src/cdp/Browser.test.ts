@@ -11,7 +11,6 @@ import sinon from 'sinon';
 
 import type {CDPSessionEvents, CommandOptions} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
-import {debug} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -56,7 +55,9 @@ describe('CdpBrowser', function () {
         undefined,
         undefined,
         undefined,
-        debug,
+        () => {
+          return undefined;
+        },
       );
       const page = {} as Page;
       const target = {

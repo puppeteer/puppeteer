@@ -7,8 +7,6 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {debug} from '../common/Debug.js';
-
 import {
   ChromeLauncher,
   getFeatures,
@@ -71,7 +69,9 @@ describe('removeMatchingFlags', () => {
 
 describe('ChromeLauncher', () => {
   it('removes disabled features if they are enabled explicitly', () => {
-    const launcher = new ChromeLauncher({} as any, debug);
+    const launcher = new ChromeLauncher({} as any, () => {
+      return undefined;
+    });
     const args = launcher.defaultArgs({
       args: ['--enable-features=Translate'],
     });
