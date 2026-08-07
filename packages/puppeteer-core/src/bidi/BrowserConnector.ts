@@ -8,7 +8,7 @@ import type {BrowserCloseCallback} from '../api/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
@@ -28,7 +28,7 @@ export async function _connectToBiDiBrowser(
   connectionTransport: ConnectionTransport,
   url: string,
   options: ConnectOptions,
-  logger?: Logger,
+  logger: Logger = debug,
 ): Promise<BidiBrowser> {
   const {
     acceptInsecureCerts = false,
@@ -65,7 +65,7 @@ async function getBiDiConnection(
   connectionTransport: ConnectionTransport,
   url: string,
   options: ConnectOptions,
-  logger?: Logger,
+  logger: Logger = debug,
 ): Promise<{
   cdpConnection?: Connection;
   bidiConnection: BidiConnection;
@@ -85,7 +85,7 @@ async function getBiDiConnection(
     idGenerator,
     slowMo,
     protocolTimeout,
-    options.logger,
+    options.logger ?? logger,
   );
   try {
     const result = await pureBidiConnection.send('session.status', {});
@@ -117,7 +117,7 @@ async function getBiDiConnection(
     protocolTimeout,
     /* rawErrors= */ true,
     idGenerator,
-    options.logger,
+    options.logger ?? logger,
   );
 
   const version = await cdpConnection.send('Browser.getVersion');

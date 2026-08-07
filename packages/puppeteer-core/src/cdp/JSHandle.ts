@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
@@ -26,7 +26,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
   constructor(
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super(logger);
     this.#world = world;

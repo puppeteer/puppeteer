@@ -42,7 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -118,7 +118,7 @@ export class CdpPage extends Page {
     client: CdpCDPSession,
     target: CdpTarget,
     defaultViewport: Viewport | null,
-    logger?: Logger,
+    logger: Logger,
   ): Promise<CdpPage> {
     const page = new CdpPage(client, target, logger);
     await page.#initialize();
@@ -161,11 +161,7 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(
-    client: CdpCDPSession,
-    target: CdpTarget,
-    logger: Logger = debug,
-  ) {
+  constructor(client: CdpCDPSession, target: CdpTarget, logger: Logger) {
     super(logger);
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;

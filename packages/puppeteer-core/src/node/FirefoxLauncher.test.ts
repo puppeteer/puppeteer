@@ -8,6 +8,8 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {debug} from '../common/Debug.js';
+
 import {FirefoxLauncher} from './FirefoxLauncher.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
 
@@ -25,7 +27,7 @@ describe('FirefoxLauncher', function () {
 
   describe('launch', function () {
     it('should reject blocklist for the default Firefox WebDriver BiDi protocol', async () => {
-      const launcher = new FirefoxLauncher({} as PuppeteerNode);
+      const launcher = new FirefoxLauncher({} as PuppeteerNode, debug);
 
       await expect(
         launcher.launch({

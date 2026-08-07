@@ -14,6 +14,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {ConnectionTransport} from './ConnectionTransport.js';
 import type {ConnectOptions} from './ConnectOptions.js';
+import {debug} from './Debug.js';
 
 const getWebSocketTransportClass = async () => {
   return isNode
@@ -109,7 +110,11 @@ async function getConnectionTransport(
   } else if (browserWSEndpoint) {
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(browserWSEndpoint, headers);
+      await WebSocketClass.create(
+        browserWSEndpoint,
+        headers,
+        options.logger ?? debug,
+      );
     return {
       connectionTransport: connectionTransport,
       endpointUrl: browserWSEndpoint,
@@ -118,7 +123,11 @@ async function getConnectionTransport(
     const connectionURL = await getWSEndpoint(browserURL, headers);
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(connectionURL, headers);
+      await WebSocketClass.create(
+        connectionURL,
+        headers,
+        options.logger ?? debug,
+      );
     return {
       connectionTransport: connectionTransport,
       endpointUrl: connectionURL,
@@ -164,6 +173,7 @@ async function getConnectionTransport(
       const connectionTransport = await WebSocketClass.create(
         browserWSEndpoint,
         headers,
+        options.logger ?? debug,
       );
       return {
         connectionTransport: connectionTransport,

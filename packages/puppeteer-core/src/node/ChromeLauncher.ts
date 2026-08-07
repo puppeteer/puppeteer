@@ -14,7 +14,7 @@ import {
 } from '@puppeteer/browsers';
 
 import type {Browser} from '../api/Browser.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {assert} from '../util/assert.js';
 
 import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
@@ -30,7 +30,7 @@ import {rm} from './util/fs.js';
  * @internal
  */
 export class ChromeLauncher extends BrowserLauncher {
-  constructor(puppeteer: PuppeteerNode, logger: Logger = debug) {
+  constructor(puppeteer: PuppeteerNode, logger: Logger) {
     super(puppeteer, 'chrome', logger);
   }
 
