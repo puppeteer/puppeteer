@@ -5,7 +5,7 @@
  */
 import type {Page, Target, WebWorker} from '../api/api.js';
 import {Extension} from '../api/api.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {CdpBrowser} from './Browser.js';
@@ -14,7 +14,7 @@ import {isTargetClosedError} from './Connection.js';
 export class CdpExtension extends Extension {
   // needed to access the CDPSession to trigger an extension action.
   #browser: CdpBrowser;
-  #logger: Logger;
+  #logger?: Logger;
 
   /*
    * @internal
@@ -26,7 +26,7 @@ export class CdpExtension extends Extension {
     path: string,
     enabled: boolean,
     browser: CdpBrowser,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(id, version, name, path, enabled);
     this.#browser = browser;

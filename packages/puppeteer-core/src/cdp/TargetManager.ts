@@ -10,7 +10,7 @@ import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyf
 import type {TargetFilterCallback} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -109,7 +109,7 @@ export class TargetManager
   #initialAttachDone = false;
   #blocklist: Array<{pattern: URLPattern; rule: string}> = [];
   #allowlist: Array<{pattern: URLPattern; rule: string}> = [];
-  #logger: Logger;
+  #logger?: Logger;
 
   constructor(
     connection: Connection,
@@ -118,7 +118,7 @@ export class TargetManager
     waitForInitiallyDiscoveredTargets = true,
     blocklist?: string[],
     allowlist?: string[],
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(undefined, logger);
     if (blocklist && allowlist) {

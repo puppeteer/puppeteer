@@ -42,7 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -161,11 +161,7 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(
-    client: CdpCDPSession,
-    target: CdpTarget,
-    logger: Logger = debug,
-  ) {
+  constructor(client: CdpCDPSession, target: CdpTarget, logger?: Logger) {
     super(logger);
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
@@ -186,7 +182,7 @@ export class CdpPage extends Page {
     );
     this.#emulationManager = new EmulationManager(client, this.logger);
     this.#tracing = new Tracing(client);
-    this.#webmcp = new WebMCP(client, this.#frameManager);
+    this.#webmcp = new WebMCP(client, this.#frameManager, logger);
     this.#coverage = new Coverage(client);
     this.#viewport = null;
 
@@ -810,6 +806,7 @@ export class CdpPage extends Page {
           name,
           pptrFunction as (...args: unknown[]) => unknown,
           source,
+          this.logger,
         );
         break;
       default:
@@ -817,6 +814,7 @@ export class CdpPage extends Page {
           name,
           pptrFunction.default as (...args: unknown[]) => unknown,
           source,
+          this.logger,
         );
         break;
     }

@@ -10,7 +10,7 @@ import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
 import type {ConsoleMessageLocation} from '../common/ConsoleMessage.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 
 import type {CdpFrame} from './Frame.js';
@@ -155,7 +155,7 @@ export class WebMCPToolCall {
    */
   input: object;
 
-  #logger: Logger;
+  #logger?: Logger;
 
   /**
    * @internal
@@ -164,7 +164,7 @@ export class WebMCPToolCall {
     invocationId: string,
     tool: WebMCPTool,
     input: string,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     this.id = invocationId;
     this.tool = tool;
@@ -243,7 +243,7 @@ export class WebMCP extends EventEmitter<{
   #frameManager: FrameManager;
   #tools = new Map<string, Map<string, WebMCPTool>>();
   #pendingCalls = new Map<string, WebMCPToolCall>();
-  #logger: Logger;
+  #logger?: Logger;
 
   #onToolsAdded = (event: Protocol.WebMCP.ToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
@@ -284,7 +284,12 @@ export class WebMCP extends EventEmitter<{
     if (!tool) {
       return;
     }
-    const call = new WebMCPToolCall(event.invocationId, tool, event.input);
+    const call = new WebMCPToolCall(
+      event.invocationId,
+      tool,
+      event.input,
+      this.#logger,
+    );
     this.#pendingCalls.set(call.id, call);
     tool.emit('toolinvoked', call);
     this.emit('toolinvoked', call);
@@ -328,11 +333,7 @@ export class WebMCP extends EventEmitter<{
   /**
    * @internal
    */
-  constructor(
-    client: CDPSession,
-    frameManager: FrameManager,
-    logger: Logger = debug,
-  ) {
+  constructor(client: CDPSession, frameManager: FrameManager, logger?: Logger) {
     super(undefined, logger);
     this.#client = client;
     this.#frameManager = frameManager;

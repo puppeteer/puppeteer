@@ -9,7 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type {Logger} from '../common/Debug.js';
-import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {DEBUG_PREFIXES} from '../common/Debug.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
@@ -22,12 +22,12 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
   readonly #remoteObject: Protocol.Runtime.RemoteObject;
   readonly #world: IsolatedWorld;
-  #logger: Logger;
+  #logger?: Logger;
 
   constructor(
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(logger);
     this.#world = world;
@@ -116,7 +116,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
 export async function releaseObject(
   client: CDPSession,
   remoteObject: Protocol.Runtime.RemoteObject,
-  logger: Logger = debug,
+  logger?: Logger,
 ): Promise<void> {
   if (!remoteObject.objectId) {
     return;

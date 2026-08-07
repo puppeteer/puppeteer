@@ -27,7 +27,7 @@ import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -155,16 +155,16 @@ export class BidiBrowser extends Browser {
   #browserCore: BrowserCore;
   #defaultViewport: Viewport | null;
   #browserContexts = new WeakMap<UserContext, BidiBrowserContext>();
-  #target = new BidiBrowserTarget(this);
+  #target: BidiBrowserTarget;
   #cdpConnection?: CdpConnection;
   #networkEnabled: boolean;
   #issuesEnabled: boolean;
-  #logger: Logger;
+  #logger?: Logger;
 
   private constructor(
     browserCore: BrowserCore,
     opts: BidiBrowserOptions,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(logger);
     this.#process = opts.process;
@@ -175,6 +175,7 @@ export class BidiBrowser extends Browser {
     this.#networkEnabled = opts.networkEnabled;
     this.#issuesEnabled = opts.issuesEnabled;
     this.#logger = logger;
+    this.#target = new BidiBrowserTarget(this, logger);
   }
 
   #initialize() {
@@ -213,9 +214,14 @@ export class BidiBrowser extends Browser {
   }
 
   #createBrowserContext(userContext: UserContext) {
-    const browserContext = BidiBrowserContext.from(this, userContext, {
-      defaultViewport: this.#defaultViewport,
-    });
+    const browserContext = BidiBrowserContext.from(
+      this,
+      userContext,
+      {
+        defaultViewport: this.#defaultViewport,
+      },
+      this.#logger,
+    );
     this.#browserContexts.set(userContext, browserContext);
 
     browserContext.trustedEmitter.on(
