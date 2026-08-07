@@ -56,6 +56,10 @@ export class CdpFrame extends Frame {
   extensionWorlds: Record<string, IsolatedWorld> = {};
   #logger?: Logger;
 
+  get _logger(): Logger | undefined {
+    return this.#logger;
+  }
+
   constructor(
     frameManager: FrameManager,
     frameId: string,

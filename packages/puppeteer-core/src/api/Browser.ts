@@ -486,6 +486,10 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
     this.#logger = logger;
   }
 
+  protected get logger(): Logger | undefined {
+    return this.#logger;
+  }
+
   /**
    * Gets the associated
    * {@link https://nodejs.org/api/child_process.html#class-childprocess | ChildProcess}.

@@ -284,7 +284,12 @@ export class WebMCP extends EventEmitter<{
     if (!tool) {
       return;
     }
-    const call = new WebMCPToolCall(event.invocationId, tool, event.input);
+    const call = new WebMCPToolCall(
+      event.invocationId,
+      tool,
+      event.input,
+      this.#logger,
+    );
     this.#pendingCalls.set(call.id, call);
     tool.emit('toolinvoked', call);
     this.emit('toolinvoked', call);

@@ -10,7 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -43,6 +43,7 @@ const ariaQuerySelectorBinding = new Binding(
   '__ariaQuerySelector',
   ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
   '', // custom init
+  debug,
 );
 
 const ariaQuerySelectorAllBinding = new Binding(
@@ -60,6 +61,7 @@ const ariaQuerySelectorAllBinding = new Binding(
     );
   }) as (...args: unknown[]) => unknown,
   '', // custom init
+  debug,
 );
 
 /**

@@ -46,7 +46,10 @@ export class CdpCDPSession extends CDPSession {
     super();
     this.#connection = connection;
     this.#targetType = targetType;
-    this.#callbacks = new CallbackRegistry(connection._idGenerator);
+    this.#callbacks = new CallbackRegistry(
+      connection._idGenerator,
+      connection._logger,
+    );
     this.#sessionId = sessionId;
     this.#parentSessionId = parentSessionId;
     this.#rawErrors = rawErrors;

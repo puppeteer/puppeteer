@@ -72,7 +72,7 @@ export class BidiConnection
     this.#url = url;
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
-    this.#callbacks = new CallbackRegistry(idGenerator);
+    this.#callbacks = new CallbackRegistry(idGenerator, logger);
 
     this.#debugProtocolSend = logger?.(DEBUG_PREFIXES.bidiSend);
     this.#debugProtocolReceive = logger?.(DEBUG_PREFIXES.bidiReceive);

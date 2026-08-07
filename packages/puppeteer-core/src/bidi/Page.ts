@@ -121,7 +121,7 @@ export class BidiPage extends Page {
   ) {
     super(logger);
     this.#browserContext = browserContext;
-    this.#frame = BidiFrame.from(this, browsingContext);
+    this.#frame = BidiFrame.from(this, browsingContext, logger);
 
     this.#cdpEmulationManager = new EmulationManager(this.#frame.client);
     this.tracing = new Tracing(this.#frame.client);

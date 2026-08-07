@@ -93,15 +93,24 @@ export class BidiFrame extends Frame {
     this._id = browsingContext.id;
     this.client = new BidiCdpSession(this);
     this.realms = {
-      default: BidiFrameRealm.from(this.browsingContext.defaultRealm, this),
+      default: BidiFrameRealm.from(
+        this.browsingContext.defaultRealm,
+        this,
+        logger,
+      ),
       internal: BidiFrameRealm.from(
         this.browsingContext.createWindowRealm(
           `__puppeteer_internal_${Math.ceil(Math.random() * 10000)}`,
         ),
         this,
+        logger,
       ),
     };
-    this.accessibility = new Accessibility(this.realms.default, this._id);
+    this.accessibility = new Accessibility(
+      this.realms.default,
+      this._id,
+      logger,
+    );
   }
 
   #initialize(): void {

@@ -155,7 +155,7 @@ export class BidiBrowser extends Browser {
   #browserCore: BrowserCore;
   #defaultViewport: Viewport | null;
   #browserContexts = new WeakMap<UserContext, BidiBrowserContext>();
-  #target = new BidiBrowserTarget(this);
+  #target: BidiBrowserTarget;
   #cdpConnection?: CdpConnection;
   #networkEnabled: boolean;
   #issuesEnabled: boolean;
@@ -175,6 +175,7 @@ export class BidiBrowser extends Browser {
     this.#networkEnabled = opts.networkEnabled;
     this.#issuesEnabled = opts.issuesEnabled;
     this.#logger = logger;
+    this.#target = new BidiBrowserTarget(this, logger);
   }
 
   #initialize() {
@@ -213,9 +214,14 @@ export class BidiBrowser extends Browser {
   }
 
   #createBrowserContext(userContext: UserContext) {
-    const browserContext = BidiBrowserContext.from(this, userContext, {
-      defaultViewport: this.#defaultViewport,
-    });
+    const browserContext = BidiBrowserContext.from(
+      this,
+      userContext,
+      {
+        defaultViewport: this.#defaultViewport,
+      },
+      this.#logger,
+    );
     this.#browserContexts.set(userContext, browserContext);
 
     browserContext.trustedEmitter.on(
