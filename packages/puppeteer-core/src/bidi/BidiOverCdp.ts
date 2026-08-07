@@ -9,7 +9,7 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
-import {debug, type DebugPrefix, type Logger} from '../common/Debug.js';
+import type {DebugPrefix, Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
 
@@ -20,7 +20,7 @@ import {BidiConnection} from './Connection.js';
  */
 export async function connectBidiOverCdp(
   cdp: CdpConnection,
-  logger: Logger = debug,
+  logger: Logger,
 ): Promise<BidiConnection> {
   const bidiServerLogger = logger
     ? (prefix: string): ((...args: unknown[]) => void) | undefined => {

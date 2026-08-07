@@ -60,6 +60,7 @@ export function assertSupportedUrlRestrictions(options: {
 export async function _connectToBrowser(
   options: ConnectOptions,
 ): Promise<Browser> {
+  options.logger ??= debug;
   assertSupportedUrlRestrictions(options);
   const {connectionTransport, endpointUrl} =
     await getConnectionTransport(options);
@@ -69,6 +70,7 @@ export async function _connectToBrowser(
       connectionTransport,
       endpointUrl,
       options,
+      options.logger,
     );
     return bidiBrowser;
   } else {
@@ -76,6 +78,7 @@ export async function _connectToBrowser(
       connectionTransport,
       endpointUrl,
       options,
+      options.logger,
     );
     return cdpBrowser;
   }

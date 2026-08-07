@@ -465,7 +465,7 @@ export abstract class BrowserLauncher {
       acceptInsecureCerts?: boolean;
       networkEnabled: boolean;
       issuesEnabled: boolean;
-      logger?: Logger;
+      logger: Logger;
     },
   ): Promise<Browser> {
     const bidiOnly = process.env['PUPPETEER_WEBDRIVER_BIDI_ONLY'] === 'true';
@@ -485,6 +485,7 @@ export abstract class BrowserLauncher {
       acceptInsecureCerts: opts.acceptInsecureCerts,
       networkEnabled: opts.networkEnabled,
       issuesEnabled: opts.issuesEnabled,
+      logger: opts.logger,
     });
   }
 
@@ -533,6 +534,7 @@ export abstract class BrowserLauncher {
       acceptInsecureCerts: opts.acceptInsecureCerts,
       networkEnabled: opts.networkEnabled ?? true,
       issuesEnabled: opts.issuesEnabled ?? true,
+      logger: opts.logger,
     });
   }
 

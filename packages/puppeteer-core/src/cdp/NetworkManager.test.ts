@@ -11,7 +11,6 @@ import expect from 'expect';
 import type {CDPSessionEvents} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
-import {debug} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -41,7 +40,9 @@ function createNetworkManager() {
       },
     },
     true,
-    debug,
+    () => {
+      return undefined;
+    },
   );
 }
 
@@ -1676,7 +1677,9 @@ describe('NetworkManager', () => {
           },
         },
         true,
-        debug,
+        () => {
+          return undefined;
+        },
       );
       await manager.addClient(mockCDPSession);
     });
