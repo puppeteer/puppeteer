@@ -9,6 +9,8 @@ import expect from 'expect';
 import type {WebSocket} from 'ws';
 import {WebSocketServer} from 'ws';
 
+import {debug} from '../common/Debug.js';
+
 import {NodeWebSocketTransport} from './NodeWebSocketTransport.js';
 
 describe('NodeWebSocketTransport', () => {
@@ -21,7 +23,11 @@ describe('NodeWebSocketTransport', () => {
     wss.on('connection', c => {
       connection = c;
     });
-    transport = await NodeWebSocketTransport.create('ws://127.0.0.1:8080');
+    transport = await NodeWebSocketTransport.create(
+      'ws://127.0.0.1:8080',
+      undefined,
+      debug,
+    );
   });
 
   afterEach(() => {

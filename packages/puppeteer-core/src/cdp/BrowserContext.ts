@@ -16,7 +16,7 @@ import {
 import {BrowserContext} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
-import {debug, type Logger} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {assert} from '../util/assert.js';
 
@@ -39,8 +39,8 @@ export class CdpBrowserContext extends BrowserContext {
   constructor(
     connection: Connection,
     browser: CdpBrowser,
-    contextId?: string,
-    logger: Logger = debug,
+    contextId: string | undefined = undefined,
+    logger: Logger,
   ) {
     super(logger);
     this.#connection = connection;

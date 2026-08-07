@@ -11,6 +11,7 @@ import sinon from 'sinon';
 
 import type {CDPSessionEvents, CommandOptions} from '../api/CDPSession.js';
 import type {Page} from '../api/Page.js';
+import {debug} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -41,7 +42,22 @@ describe('CdpBrowser', function () {
   describe('launchPWA', function () {
     it('should apply the timeout while waiting for the page target', async () => {
       const connection = new MockConnection();
-      const browser = new CdpBrowser(connection as unknown as Connection, []);
+      const browser = new CdpBrowser(
+        connection as unknown as Connection,
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        debug,
+      );
       const page = {} as Page;
       const target = {
         page: async () => {

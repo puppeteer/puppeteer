@@ -9,7 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
@@ -83,7 +83,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     client: CdpCDPSession,
     page: CdpPage,
     timeoutSettings: TimeoutSettings,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super(undefined, logger);
     this.#client = client;
@@ -639,7 +639,12 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         if (frame.extensionWorlds[extId]) {
           world = frame.extensionWorlds[extId];
         } else {
-          world = new IsolatedWorld(frame, this.timeoutSettings, extId);
+          world = new IsolatedWorld(
+            frame,
+            this.timeoutSettings,
+            extId,
+            this.#logger,
+          );
           frame.extensionWorlds[extId] = world;
           frame.registerWorldListeners(world);
           world.origin = origin;
@@ -656,6 +661,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       frame?.client || this.#client,
       contextPayload,
       world,
+      this.#logger,
     );
     world.setContext(context);
   }

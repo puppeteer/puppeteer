@@ -11,7 +11,7 @@ import path from 'node:path';
 
 import {Browser as SupportedBrowsers, createProfile} from '@puppeteer/browsers';
 
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {assert} from '../util/assert.js';
 
 import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
@@ -23,7 +23,7 @@ import {rm} from './util/fs.js';
  * @internal
  */
 export class FirefoxLauncher extends BrowserLauncher {
-  constructor(puppeteer: PuppeteerNode, logger: Logger = debug) {
+  constructor(puppeteer: PuppeteerNode, logger: Logger) {
     super(puppeteer, 'firefox', logger);
   }
 

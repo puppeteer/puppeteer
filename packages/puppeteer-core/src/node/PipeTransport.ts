@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
@@ -26,7 +26,7 @@ export class PipeTransport implements ConnectionTransport {
   constructor(
     pipeWrite: NodeJS.WritableStream,
     pipeRead: NodeJS.ReadableStream,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     this.#pipeWrite = pipeWrite;
     this.#logger = logger;

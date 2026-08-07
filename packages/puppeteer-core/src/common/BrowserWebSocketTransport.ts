@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {ConnectionTransport} from './ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES, type Logger} from './Debug.js';
+import {DEBUG_PREFIXES, type Logger} from './Debug.js';
 
 /**
  * @internal
@@ -12,8 +12,8 @@ import {debug, DEBUG_PREFIXES, type Logger} from './Debug.js';
 export class BrowserWebSocketTransport implements ConnectionTransport {
   static create(
     url: string,
-    _headers: Record<string, string> | undefined = undefined,
-    logger: Logger = debug,
+    _headers: Record<string, string> | undefined,
+    logger: Logger,
   ): Promise<BrowserWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url);

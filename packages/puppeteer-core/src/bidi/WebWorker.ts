@@ -5,6 +5,7 @@
  */
 
 import {WebWorker} from '../api/WebWorker.js';
+import type {Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {CDPSession} from '../puppeteer-core.js';
 
@@ -19,8 +20,9 @@ export class BidiWebWorker extends WebWorker {
   static from(
     frame: BidiFrame,
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
+    logger: Logger,
   ): BidiWebWorker {
-    const worker = new BidiWebWorker(frame, realm);
+    const worker = new BidiWebWorker(frame, realm, logger);
     return worker;
   }
 
@@ -29,10 +31,11 @@ export class BidiWebWorker extends WebWorker {
   private constructor(
     frame: BidiFrame,
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
+    logger: Logger,
   ) {
     super(realm.origin);
     this.#frame = frame;
-    this.#realm = BidiWorkerRealm.from(realm, this);
+    this.#realm = BidiWorkerRealm.from(realm, this, logger);
   }
 
   get frame(): BidiFrame {

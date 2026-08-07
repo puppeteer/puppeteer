@@ -6,7 +6,7 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Awaitable, FlattenHandle} from '../common/types.js';
 import {DisposableStack} from '../util/disposable.js';
@@ -34,7 +34,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     name: string,
     apply: (...args: Args) => Awaitable<Ret>,
     isolate = false,
-    logger: Logger = debug,
+    logger: Logger,
   ): Promise<ExposableFunction<Args, Ret>> {
     const func = new ExposableFunction(frame, name, apply, isolate, logger);
     await func.#initialize();
@@ -58,7 +58,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     name: string,
     apply: (...args: Args) => Awaitable<Ret>,
     isolate = false,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     this.#frame = frame;
     this.name = name;
@@ -80,7 +80,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     };
 
     const connectionEmitter = this.#disposables.use(
-      new EventEmitter(connection),
+      new EventEmitter(connection, this.#logger),
     );
     connectionEmitter.on('script.message', this.#handleMessage);
 
