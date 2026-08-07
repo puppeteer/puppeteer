@@ -6,7 +6,8 @@
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
-import {DEFAULT_VIEWPORT, debugCatchError} from '../common/util.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
+import {DEFAULT_VIEWPORT} from '../common/util.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
 import {CdpBrowser} from './Browser.js';
@@ -60,7 +61,9 @@ export async function _connectToCdpBrowser(
     downloadBehavior,
     undefined,
     () => {
-      return connection.send('Browser.close').catch(debugCatchError);
+      return connection.send('Browser.close').catch(error => {
+        debug?.(DEBUG_PREFIXES.error)?.(error);
+      });
     },
     targetFilter,
     isPageTarget,

@@ -42,6 +42,7 @@ import type {
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
 import type {Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
@@ -69,7 +70,6 @@ import {
   timeout,
   withSourcePuppeteerURLIfNone,
   fromAbortSignal,
-  debugCatchError,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
@@ -2675,7 +2675,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
     if (viewport && viewport.deviceScaleFactor !== 0) {
       await this.setViewport({...viewport, deviceScaleFactor: 0});
       stack.defer(() => {
-        void this.setViewport(viewport).catch(debugCatchError);
+        void this.setViewport(viewport).catch(error => {
+          debug?.(DEBUG_PREFIXES.error)?.(error);
+        });
       });
     }
     return await this.mainFrame()
@@ -2799,7 +2801,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
             ...scrollDimensions,
           });
           stack.defer(async () => {
-            await this.setViewport(viewport).catch(debugCatchError);
+            await this.setViewport(viewport).catch(error => {
+              debug?.(DEBUG_PREFIXES.error)?.(error);
+            });
           });
         }
       } else {
@@ -3288,7 +3292,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract windowId(): Promise<WindowId>;
 
   override [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugCatchError);
+    return void this[asyncDisposeSymbol]().catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   override async [asyncDisposeSymbol](): Promise<void> {

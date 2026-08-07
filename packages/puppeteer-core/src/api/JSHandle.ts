@@ -6,8 +6,9 @@
 
 import type Protocol from 'devtools-protocol';
 
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import type {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
-import {withSourcePuppeteerURLIfNone, debugCatchError} from '../common/util.js';
+import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {moveable, throwIfDisposed} from '../util/decorators.js';
 import {disposeSymbol, asyncDisposeSymbol} from '../util/disposable.js';
 
@@ -194,7 +195,9 @@ export abstract class JSHandle<T = unknown> {
   abstract remoteObject(): Protocol.Runtime.RemoteObject;
 
   [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugCatchError);
+    return void this[asyncDisposeSymbol]().catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   [asyncDisposeSymbol](): Promise<void> {

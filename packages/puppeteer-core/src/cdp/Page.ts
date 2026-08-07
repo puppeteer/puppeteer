@@ -42,7 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -56,7 +56,6 @@ import {
   parsePDFOptions,
   timeout,
   validateDialogType,
-  debugCatchError,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
@@ -259,7 +258,9 @@ export class CdpPage extends Page {
         this.emit(PageEvent.Close, undefined);
         this.#closed = true;
       })
-      .catch(debugCatchError);
+      .catch(error => {
+        debug?.(DEBUG_PREFIXES.error)?.(error);
+      });
 
     this.#setupPrimaryTargetListeners();
     this.#attachExistingTargets();
@@ -311,12 +312,14 @@ export class CdpPage extends Page {
     if (session.target()._subtype() !== 'prerender') {
       return;
     }
-    void this.#frameManager
-      .registerSpeculativeSession(session)
-      .catch(debugCatchError);
+    void this.#frameManager.registerSpeculativeSession(session).catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
     void this.#emulationManager
       .registerSpeculativeSession(session)
-      .catch(debugCatchError);
+      .catch(error => {
+        debug?.(DEBUG_PREFIXES.error)?.(error);
+      });
   }
 
   /**
@@ -382,7 +385,9 @@ export class CdpPage extends Page {
           // eslint-disable-next-line max-len -- The comment is long.
           // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
           for (const arg of message.args()) {
-            void arg.dispose().catch(debugCatchError);
+            void arg.dispose().catch(error => {
+              debug?.(DEBUG_PREFIXES.error)?.(error);
+            });
           }
           return;
         }
@@ -954,7 +959,9 @@ export class CdpPage extends Page {
         // eslint-disable-next-line max-len -- The comment is long.
         // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
         for (const value of values) {
-          void value.dispose().catch(debugCatchError);
+          void value.dispose().catch(error => {
+            debug?.(DEBUG_PREFIXES.error)?.(error);
+          });
         }
       }
       return;
@@ -1161,7 +1168,9 @@ export class CdpPage extends Page {
       stack.defer(async () => {
         await this.#emulationManager
           .resetDefaultBackgroundColor()
-          .catch(debugCatchError);
+          .catch(error => {
+            debug?.(DEBUG_PREFIXES.error)?.(error);
+          });
       });
     }
 

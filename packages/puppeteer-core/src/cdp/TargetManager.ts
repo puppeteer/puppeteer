@@ -10,8 +10,8 @@ import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyf
 import type {TargetFilterCallback} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
+import {debug, DEBUG_PREFIXES} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugCatchError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -229,16 +229,18 @@ export class TargetManager
     session: CdpCDPSession,
     parentSession: Connection | CDPSession,
   ): Promise<void> => {
-    await session
-      .send('Runtime.runIfWaitingForDebugger')
-      .catch(debugCatchError);
+    await session.send('Runtime.runIfWaitingForDebugger').catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
     // We don't use `session.detach()` because that dispatches all commands on
     // the connection instead of the parent session.
     await parentSession
       .send('Target.detachFromTarget', {
         sessionId: session.id(),
       })
-      .catch(debugCatchError);
+      .catch(error => {
+        debug?.(DEBUG_PREFIXES.error)?.(error);
+      });
   };
 
   #getParentTarget = (
@@ -367,7 +369,9 @@ export class TargetManager
         await Promise.all([
           this.#maybeSetupNetworkConditions(session, targetInfo),
           session.send('Runtime.runIfWaitingForDebugger'),
-        ]).catch(debugCatchError);
+        ]).catch(error => {
+          debug?.(DEBUG_PREFIXES.error)?.(error);
+        });
         return;
       }
       await this.#silentDetach(session, parentSession);
@@ -448,7 +452,9 @@ export class TargetManager
       }),
       this.#maybeSetupNetworkConditions(session, targetInfo),
       session.send('Runtime.runIfWaitingForDebugger'),
-    ]).catch(debugCatchError);
+    ]).catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
   };
 
   #finishInitializationIfReady(targetId?: string): void {
@@ -575,6 +581,8 @@ export class TargetManager
         matchedNetworkConditions,
       }),
     );
-    await Promise.all(promises).catch(debugCatchError);
+    await Promise.all(promises).catch(error => {
+      debug?.(DEBUG_PREFIXES.error)?.(error);
+    });
   };
 }
