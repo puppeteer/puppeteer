@@ -37,6 +37,8 @@ updates:
       day: 'sunday'
       time: '03:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -48,6 +50,8 @@ updates:
       day: 'sunday'
       time: '04:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -59,6 +63,8 @@ updates:
       day: 'sunday'
       time: '05:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: node
         versions:
