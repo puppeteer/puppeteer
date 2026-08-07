@@ -257,10 +257,11 @@ export class IsolatedWorld extends Realm {
   createCdpHandle(
     remoteObject: Protocol.Runtime.RemoteObject,
   ): JSHandle | ElementHandle<Node> {
+    const logger = (this.#frameOrWorker as CdpFrame)._logger;
     if (remoteObject.subtype === 'node') {
-      return new CdpElementHandle(this, remoteObject);
+      return new CdpElementHandle(this, remoteObject, logger);
     }
-    return new CdpJSHandle(this, remoteObject);
+    return new CdpJSHandle(this, remoteObject, logger);
   }
 
   override [disposeSymbol](): void {

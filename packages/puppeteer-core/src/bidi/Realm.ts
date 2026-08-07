@@ -64,6 +64,10 @@ export abstract class BidiRealm extends Realm {
     this.#logger = logger;
   }
 
+  protected get logger(): Logger | undefined {
+    return this.#logger;
+  }
+
   protected initialize(): void {
     this.realm.on('destroyed', reason => {
       this.taskManager.terminateAll(new Error(reason));
@@ -309,8 +313,12 @@ export abstract class BidiRealm extends Realm {
  * @internal
  */
 export class BidiFrameRealm extends BidiRealm {
-  static from(realm: WindowRealm, frame: BidiFrame): BidiFrameRealm {
-    const frameRealm = new BidiFrameRealm(realm, frame);
+  static from(
+    realm: WindowRealm,
+    frame: BidiFrame,
+    logger?: Logger,
+  ): BidiFrameRealm {
+    const frameRealm = new BidiFrameRealm(realm, frame, logger);
     frameRealm.#initialize();
     return frameRealm;
   }
@@ -318,8 +326,8 @@ export class BidiFrameRealm extends BidiRealm {
 
   readonly #frame: BidiFrame;
 
-  private constructor(realm: WindowRealm, frame: BidiFrame) {
-    super(realm, frame.timeoutSettings);
+  private constructor(realm: WindowRealm, frame: BidiFrame, logger?: Logger) {
+    super(realm, frame.timeoutSettings, logger);
     this.#frame = frame;
   }
 
@@ -343,6 +351,7 @@ export class BidiFrameRealm extends BidiRealm {
           '__ariaQuerySelector',
           ARIAQueryHandler.queryOne,
           !!this.sandbox,
+          this.logger,
         ),
         ExposableFunction.from(
           this.environment,
@@ -405,8 +414,9 @@ export class BidiWorkerRealm extends BidiRealm {
   static from(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
     worker: BidiWebWorker,
+    logger?: Logger,
   ): BidiWorkerRealm {
-    const workerRealm = new BidiWorkerRealm(realm, worker);
+    const workerRealm = new BidiWorkerRealm(realm, worker, logger);
     workerRealm.initialize();
     return workerRealm;
   }
@@ -417,8 +427,9 @@ export class BidiWorkerRealm extends BidiRealm {
   private constructor(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
     frame: BidiWebWorker,
+    logger?: Logger,
   ) {
-    super(realm, frame.timeoutSettings);
+    super(realm, frame.timeoutSettings, logger);
     this.#worker = frame;
   }
 

@@ -127,20 +127,20 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   #createPage(browsingContext: BrowsingContext): BidiPage {
-    const page = BidiPage.from(this, browsingContext);
+    const page = BidiPage.from(this, browsingContext, this.#logger);
     this.#pages.set(browsingContext, page);
     page.trustedEmitter.on(PageEvent.Close, () => {
       this.#pages.delete(browsingContext);
     });
 
     // -- Target stuff starts here --
-    const pageTarget = new BidiPageTarget(page);
+    const pageTarget = new BidiPageTarget(page, this.#logger);
     const pageTargets = new Map();
     this.#targets.set(page, [pageTarget, pageTargets]);
 
     page.trustedEmitter.on(PageEvent.FrameAttached, frame => {
       const bidiFrame = frame as BidiFrame;
-      const target = new BidiFrameTarget(bidiFrame);
+      const target = new BidiFrameTarget(bidiFrame, this.#logger);
       pageTargets.set(bidiFrame, target);
       this.trustedEmitter.emit(BrowserContextEvent.TargetCreated, target);
     });
@@ -166,7 +166,7 @@ export class BidiBrowserContext extends BrowserContext {
 
     page.trustedEmitter.on(PageEvent.WorkerCreated, worker => {
       const bidiWorker = worker as BidiWebWorker;
-      const target = new BidiWorkerTarget(bidiWorker);
+      const target = new BidiWorkerTarget(bidiWorker, this.#logger);
       pageTargets.set(bidiWorker, target);
       this.trustedEmitter.emit(BrowserContextEvent.TargetCreated, target);
     });

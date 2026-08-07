@@ -473,7 +473,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return;
     }
 
-    frame = new CdpFrame(this, frameId, parentFrameId, session);
+    frame = new CdpFrame(this, frameId, parentFrameId, session, this.#logger);
     this._frameTree.addFrame(frame);
     this.emit(FrameManagerEvent.FrameAttached, frame);
   }
@@ -502,7 +502,13 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         frame._id = frameId;
       } else {
         // Initial main frame navigation.
-        frame = new CdpFrame(this, frameId, undefined, this.#client);
+        frame = new CdpFrame(
+          this,
+          frameId,
+          undefined,
+          this.#client,
+          this.#logger,
+        );
       }
       this._frameTree.addFrame(frame);
     }

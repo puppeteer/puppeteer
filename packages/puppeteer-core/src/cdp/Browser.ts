@@ -180,12 +180,18 @@ export class CdpBrowser extends BrowserBase {
       waitForInitiallyDiscoveredTargets,
       blocklist,
       allowlist,
+      logger,
     );
-    this.#defaultContext = new CdpBrowserContext(this.#connection, this);
+    this.#defaultContext = new CdpBrowserContext(
+      this.#connection,
+      this,
+      undefined,
+      logger,
+    );
     for (const contextId of contextIds) {
       this.#contexts.set(
         contextId,
-        new CdpBrowserContext(this.#connection, this, contextId),
+        new CdpBrowserContext(this.#connection, this, contextId, logger),
       );
     }
   }
@@ -281,6 +287,7 @@ export class CdpBrowser extends BrowserBase {
       this.#connection,
       this,
       browserContextId,
+      this.logger,
     );
     if (downloadBehavior) {
       await context.setDownloadBehavior(downloadBehavior);
@@ -330,6 +337,7 @@ export class CdpBrowser extends BrowserBase {
       context,
       this.#targetManager,
       createSession,
+      this.logger,
     );
     if (targetInfo.url && isDevToolsPageTarget(targetInfo.url)) {
       return new DevToolsTarget(
@@ -339,6 +347,7 @@ export class CdpBrowser extends BrowserBase {
         this.#targetManager,
         createSession,
         this.#defaultViewport ?? null,
+        this.logger,
       );
     }
     if (this.#isPageTargetCallback(otherTarget)) {
@@ -349,6 +358,7 @@ export class CdpBrowser extends BrowserBase {
         this.#targetManager,
         createSession,
         this.#defaultViewport ?? null,
+        this.logger,
       );
     }
     if (
@@ -361,6 +371,7 @@ export class CdpBrowser extends BrowserBase {
         context,
         this.#targetManager,
         createSession,
+        this.logger,
       );
     }
     return otherTarget;
@@ -749,6 +760,7 @@ export class CdpBrowser extends BrowserBase {
           currExtension.path,
           currExtension.enabled,
           this,
+          this.logger,
         );
 
         extensionsMap.set(currExtension.id, newExtension);

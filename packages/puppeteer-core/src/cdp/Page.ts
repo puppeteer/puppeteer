@@ -182,7 +182,7 @@ export class CdpPage extends Page {
     );
     this.#emulationManager = new EmulationManager(client, this.logger);
     this.#tracing = new Tracing(client);
-    this.#webmcp = new WebMCP(client, this.#frameManager);
+    this.#webmcp = new WebMCP(client, this.#frameManager, logger);
     this.#coverage = new Coverage(client);
     this.#viewport = null;
 
@@ -806,6 +806,7 @@ export class CdpPage extends Page {
           name,
           pptrFunction as (...args: unknown[]) => unknown,
           source,
+          this.logger,
         );
         break;
       default:
@@ -813,6 +814,7 @@ export class CdpPage extends Page {
           name,
           pptrFunction.default as (...args: unknown[]) => unknown,
           source,
+          this.logger,
         );
         break;
     }
