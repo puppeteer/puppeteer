@@ -12,9 +12,6 @@ updates:
       exclude:
         - devtools-protocol
         - chromium-bidi
-        - '@angular-devkit/*'
-        - '@angular/*'
-        - '@schematics/angular'
         - '@types/chrome'
     ignore:
       - dependency-name: devtools-protocol
