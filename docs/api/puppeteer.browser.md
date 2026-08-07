@@ -121,7 +121,7 @@ Currently, includes pending protocol calls. In the future, we might add more inf
 
 </td><td>
 
-[Logger](./puppeteer.logger.md) \| undefined
+[Logger](./puppeteer.logger.md)
 
 </td><td>
 

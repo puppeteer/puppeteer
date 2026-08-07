@@ -27,7 +27,7 @@ import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
@@ -74,7 +74,7 @@ export function getBrowserTypeDisplayName(
  */
 export abstract class BrowserLauncher {
   #browser: SupportedBrowser;
-  #logger?: Logger;
+  #logger: Logger;
 
   /**
    * @internal
@@ -90,11 +90,15 @@ export abstract class BrowserLauncher {
   constructor(
     puppeteer: PuppeteerNode,
     browser: SupportedBrowser,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     this.puppeteer = puppeteer;
     this.#browser = browser;
     this.#logger = logger;
+  }
+
+  protected get logger(): Logger {
+    return this.#logger;
   }
 
   get browser(): SupportedBrowser {
@@ -102,6 +106,7 @@ export abstract class BrowserLauncher {
   }
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
+    options.logger ??= this.#logger ?? debug;
     const {
       dumpio = false,
       enableExtensions = false,
@@ -392,14 +397,18 @@ export abstract class BrowserLauncher {
       protocolTimeout: number | undefined;
       slowMo: number;
       idGenerator: GetIdFn;
-      logger?: Logger;
+      logger: Logger;
     },
   ): Promise<Connection> {
     const browserWSEndpoint = await browserProcess.waitForLineOutput(
       CDP_WEBSOCKET_ENDPOINT_REGEX,
       opts.timeout,
     );
-    const transport = await WebSocketTransport.create(browserWSEndpoint);
+    const transport = await WebSocketTransport.create(
+      browserWSEndpoint,
+      undefined,
+      opts.logger,
+    );
     return new Connection(
       browserWSEndpoint,
       transport,
@@ -421,7 +430,7 @@ export abstract class BrowserLauncher {
       protocolTimeout: number | undefined;
       slowMo: number;
       idGenerator: GetIdFn;
-      logger?: Logger;
+      logger: Logger;
     },
   ): Promise<Connection> {
     // stdio was assigned during start(), and the 'pipe' option there adds the
@@ -430,6 +439,7 @@ export abstract class BrowserLauncher {
     const transport = new PipeTransport(
       pipeWrite as NodeJS.WritableStream,
       pipeRead as NodeJS.ReadableStream,
+      opts.logger,
     );
     return new Connection(
       '',

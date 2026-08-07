@@ -10,7 +10,7 @@ import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -37,7 +37,7 @@ export class CdpTarget extends Target {
   #targetManager?: TargetManager;
   #sessionFactory:
     ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined;
-  #logger?: Logger;
+  #logger: Logger;
   #childTargets = new Set<CdpTarget>();
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
@@ -58,7 +58,7 @@ export class CdpTarget extends Target {
     targetManager: TargetManager | undefined,
     sessionFactory:
       ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     super(logger);
     this.#session = session;

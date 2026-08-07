@@ -43,7 +43,7 @@ export class CdpCDPSession extends CDPSession {
     sessionId: string,
     parentSessionId: string | undefined,
     rawErrors: boolean,
-    logger?: Logger,
+    logger: Logger,
   ) {
     super();
     this.#connection = connection;

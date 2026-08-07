@@ -195,6 +195,9 @@ describe('Target.createCDPSession', function () {
       'fake-session-id',
       undefined,
       false,
+      () => {
+        return undefined;
+      },
     );
     connection._sessions.set('fake-session-id', fakeSession);
 

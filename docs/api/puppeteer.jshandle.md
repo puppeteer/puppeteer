@@ -64,6 +64,21 @@ Used for nominally typing [JSHandle](./puppeteer.jshandle.md).
 </td></tr>
 <tr><td>
 
+<span id="logger">logger</span>
+
+</td><td>
+
+`protected, readonly`
+
+</td><td>
+
+[Logger](./puppeteer.logger.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="move">move</span>
 
 </td><td>

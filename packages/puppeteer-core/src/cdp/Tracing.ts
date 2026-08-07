@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {CDPSession} from '../api/CDPSession.js';
+import {debug, type Logger} from '../common/Debug.js';
 import {
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
@@ -41,12 +42,14 @@ export class Tracing {
   #client: CDPSession;
   #recording = false;
   #path?: string;
+  #logger: Logger;
 
   /**
    * @internal
    */
-  constructor(client: CDPSession) {
+  constructor(client: CDPSession, logger: Logger = debug) {
     this.#client = client;
+    this.#logger = logger;
   }
 
   /**
@@ -123,7 +126,11 @@ export class Tracing {
           this.#client,
           event.stream,
         );
-        const typedArray = await getReadableAsTypedArray(readable, this.#path);
+        const typedArray = await getReadableAsTypedArray(
+          readable,
+          this.#path,
+          this.#logger,
+        );
         contentDeferred.resolve(typedArray ?? undefined);
       } catch (error) {
         if (isErrorLike(error)) {
