@@ -41,7 +41,7 @@ export class CdpWebWorker extends WebWorker {
   #client: CDPSession;
   readonly #id: string;
   readonly #targetType: TargetType;
-  #logger?: Logger;
+  #logger: Logger;
   readonly #emitter: EventEmitter<WebWorkerEvents>;
   #workerLoaded = new Deferred<void>();
 
@@ -55,16 +55,21 @@ export class CdpWebWorker extends WebWorker {
     targetId: string,
     targetType: TargetType,
     exceptionThrown: ExceptionThrownCallback,
-    networkManager?: NetworkManager,
-    logger?: Logger,
+    networkManager: NetworkManager | undefined,
+    logger: Logger,
   ) {
     super(url);
     this.#id = targetId;
     this.#client = client;
     this.#logger = logger;
     this.#targetType = targetType;
-    this.#world = new IsolatedWorld(this, new TimeoutSettings(), MAIN_WORLD);
-    this.#emitter = new EventEmitter<WebWorkerEvents>();
+    this.#world = new IsolatedWorld(
+      this,
+      new TimeoutSettings(),
+      MAIN_WORLD,
+      logger,
+    );
+    this.#emitter = new EventEmitter<WebWorkerEvents>(undefined, logger);
 
     this.#client.once('Runtime.executionContextCreated', async event => {
       this.#world.setContext(

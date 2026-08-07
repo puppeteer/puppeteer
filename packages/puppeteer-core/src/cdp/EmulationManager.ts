@@ -7,8 +7,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import type {GeolocationOptions, MediaFeature} from '../api/Page.js';
-import {DEBUG_PREFIXES} from '../common/Debug.js';
-import type {Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {invokeAtMostOnceForArguments} from '../util/decorators.js';
@@ -222,9 +221,9 @@ export class EmulationManager implements ClientProvider {
 
   #secondaryClients = new Set<CDPSession>();
 
-  #logger?: Logger;
+  #logger: Logger;
 
-  constructor(client: CDPSession, logger?: Logger) {
+  constructor(client: CDPSession, logger: Logger = debug) {
     this.#logger = logger;
     this.#client = client;
   }

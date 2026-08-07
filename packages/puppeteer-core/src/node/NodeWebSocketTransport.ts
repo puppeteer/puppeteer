@@ -6,7 +6,7 @@
 import NodeWebSocket from 'ws';
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {packageVersion} from '../util/version.js';
 
 /**
@@ -15,8 +15,8 @@ import {packageVersion} from '../util/version.js';
 export class NodeWebSocketTransport implements ConnectionTransport {
   static create(
     url: string,
-    headers?: Record<string, string>,
-    logger?: Logger,
+    headers: Record<string, string> | undefined = undefined,
+    logger: Logger = debug,
   ): Promise<NodeWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
@@ -38,11 +38,11 @@ export class NodeWebSocketTransport implements ConnectionTransport {
   }
 
   #ws: NodeWebSocket;
-  #logger?: Logger;
+  #logger: Logger;
   onmessage?: (message: NodeWebSocket.Data) => void;
   onclose?: () => void;
 
-  constructor(ws: NodeWebSocket, logger?: Logger) {
+  constructor(ws: NodeWebSocket, logger: Logger) {
     this.#ws = ws;
     this.#logger = logger;
     this.#ws.addEventListener('message', event => {

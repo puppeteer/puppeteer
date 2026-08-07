@@ -191,8 +191,8 @@ export function evaluationString(
  */
 export async function getReadableAsTypedArray(
   readable: ReadableStream<Uint8Array>,
-  path?: string,
-  logger?: Logger,
+  path: string | undefined,
+  logger: Logger,
 ): Promise<Uint8Array | null> {
   const buffers: Uint8Array[] = [];
   const reader = readable.getReader();

@@ -9,7 +9,7 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ConnectionClosedError} from '../common/Errors.js';
 import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -66,7 +66,7 @@ export class BidiConnection
     idGenerator: GetIdFn,
     delay = 0,
     timeout?: number,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     super();
     this.#url = url;

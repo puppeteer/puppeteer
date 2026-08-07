@@ -40,7 +40,7 @@ export abstract class Target {
   /**
    * @internal
    */
-  protected constructor(protected logger?: Logger) {}
+  protected constructor(protected logger: Logger) {}
 
   /**
    * If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.

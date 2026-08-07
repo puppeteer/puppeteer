@@ -54,16 +54,16 @@ export class CdpFrame extends Frame {
 
   worlds: IsolatedWorldChart;
   extensionWorlds: Record<string, IsolatedWorld> = {};
-  #logger?: Logger;
+  #logger: Logger;
 
   constructor(
     frameManager: FrameManager,
     frameId: string,
     parentFrameId: string | undefined,
     client: CDPSession,
-    logger?: Logger,
+    logger: Logger,
   ) {
-    super();
+    super(logger);
     this._frameManager = frameManager;
     this.#url = '';
     this._id = frameId;

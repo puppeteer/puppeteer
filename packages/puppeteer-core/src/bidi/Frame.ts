@@ -32,7 +32,7 @@ import {
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
 import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, HandleFor} from '../common/types.js';
@@ -63,7 +63,7 @@ export class BidiFrame extends Frame {
   static from(
     parent: BidiPage | BidiFrame,
     browsingContext: BrowsingContext,
-    logger?: Logger,
+    logger: Logger = debug,
   ): BidiFrame {
     const frame = new BidiFrame(parent, browsingContext, logger);
     frame.#initialize();
@@ -74,7 +74,7 @@ export class BidiFrame extends Frame {
   readonly browsingContext: BrowsingContext;
   readonly #frames = new WeakMap<BrowsingContext, BidiFrame>();
   readonly realms: {default: BidiFrameRealm; internal: BidiFrameRealm};
-  #logger?: Logger;
+  #logger: Logger;
 
   override readonly _id: string;
   override readonly client: BidiCdpSession;
@@ -83,9 +83,9 @@ export class BidiFrame extends Frame {
   private constructor(
     parent: BidiPage | BidiFrame,
     browsingContext: BrowsingContext,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
-    super();
+    super(logger);
     this.#parent = parent;
     this.browsingContext = browsingContext;
     this.#logger = logger;

@@ -146,10 +146,10 @@ export class PuppeteerNode extends Puppeteer {
     return await this.#launcher.launch(options);
   }
 
-  /**
-   * @internal
-   */
-  #getLauncher(browser: SupportedBrowser, logger?: Logger): BrowserLauncher {
+  #getLauncher(
+    browser: SupportedBrowser,
+    logger: Logger = debug,
+  ): BrowserLauncher {
     if (this.#launcher && this.#launcher.browser === browser) {
       return this.#launcher;
     }
