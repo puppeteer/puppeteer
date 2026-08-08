@@ -6,7 +6,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {CLI, Browser} from '@puppeteer/browsers';
+import {Browser} from '@puppeteer/browsers';
+import {CLI} from '@puppeteer/browsers/lib/CLI.js';
 import type {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 import {packageVersion} from 'puppeteer-core/internal/util/version.js';

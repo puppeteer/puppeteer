@@ -202,13 +202,6 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="cli">[CLI](./browsers.cli.md)</span>
-
-</td><td>
-
-</td></tr>
-<tr><td>
-
 <span id="defaultprovider">[DefaultProvider](./browsers.defaultprovider.md)</span>
 
 </td><td>

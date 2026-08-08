@@ -41,7 +41,6 @@ export {
   getVersionComparator,
   resolveDefaultUserDataDir,
 } from './browser-data/browser-data.js';
-export {CLI} from './CLI.js';
 export {
   Cache,
   InstalledBrowser,
