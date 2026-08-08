@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, unlink} from 'node:fs/promises';
+import {mkdir, rm, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -22,6 +22,7 @@ import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {installLockPath, withInstallLock} from './installLock.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
@@ -375,6 +376,7 @@ async function installUrl(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
+  const platform = options.platform;
   let downloadProgressCallback = options.downloadProgressCallback;
   if (downloadProgressCallback === 'default') {
     downloadProgressCallback = await makeProgressCallback(
@@ -387,6 +389,12 @@ async function installUrl(
   const cache = new Cache(options.cacheDir, options.logger);
   const browserRoot = cache.browserRoot(options.browser);
   const archivePath = path.join(browserRoot, `${options.buildId}-${fileName}`);
+  const lockPath = installLockPath(
+    cache,
+    options.browser,
+    platform,
+    options.buildId,
+  );
   if (!existsSync(browserRoot)) {
     await mkdir(browserRoot, {recursive: true});
   }
@@ -398,70 +406,10 @@ async function installUrl(
   }
 
   if (!options.unpack) {
-    if (existsSync(archivePath)) {
-      return archivePath;
-    }
-    logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
-    debugTime('download');
-    await downloadFile(
-      url,
-      archivePath,
-      downloadProgressCallback,
-      options.expectedHash,
-    );
-    debugTimeEnd('download', logger);
-    return archivePath;
-  }
-
-  const outputPath = cache.installationDir(
-    options.browser,
-    options.platform,
-    options.buildId,
-  );
-
-  // Get executable path from provider once (used for both cached and new installations)
-  const relativeExecutablePath = await provider.getExecutablePath({
-    browser: options.browser,
-    buildId: options.buildId,
-    platform: options.platform,
-  });
-  logger?.(DEBUG_PREFIXES.install)?.(
-    `Using executable path from provider: ${relativeExecutablePath}`,
-  );
-
-  const installedBrowser = new InstalledBrowser(
-    cache,
-    options.browser,
-    options.buildId,
-    options.platform,
-  );
-
-  // Write metadata for the installation (only for non-default providers)
-  if (!(provider instanceof DefaultProvider)) {
-    cache.writeExecutablePath(
-      options.browser,
-      options.platform,
-      options.buildId,
-      relativeExecutablePath,
-    );
-  }
-
-  try {
-    if (existsSync(outputPath)) {
-      if (!existsSync(installedBrowser.executablePath)) {
-        throw new Error(
-          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
-        );
+    return await withInstallLock(lockPath, async () => {
+      if (existsSync(archivePath)) {
+        return archivePath;
       }
-      await runSetup(installedBrowser, logger);
-      if (options.installDeps) {
-        await installDeps(installedBrowser, logger);
-      }
-      return installedBrowser;
-    }
-
-    // Check if archive already exists (e.g., from a custom provider)
-    if (!existsSync(archivePath)) {
       logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
       try {
         debugTime('download');
@@ -471,41 +419,110 @@ async function installUrl(
           downloadProgressCallback,
           options.expectedHash,
         );
+      } catch (error) {
+        await rm(archivePath, {force: true});
+        throw error;
       } finally {
         debugTimeEnd('download', logger);
       }
-    } else {
-      logger?.(DEBUG_PREFIXES.install)?.(
-        `Using existing archive at ${archivePath}`,
+      return archivePath;
+    });
+  }
+
+  const outputPath = cache.installationDir(
+    options.browser,
+    platform,
+    options.buildId,
+  );
+
+  // Get executable path from provider once (used for both cached and new installations)
+  const relativeExecutablePath = await provider.getExecutablePath({
+    browser: options.browser,
+    buildId: options.buildId,
+    platform,
+  });
+  logger?.(DEBUG_PREFIXES.install)?.(
+    `Using executable path from provider: ${relativeExecutablePath}`,
+  );
+
+  return await withInstallLock(lockPath, async () => {
+    // Write metadata for the installation (only for non-default providers)
+    if (!(provider instanceof DefaultProvider)) {
+      cache.writeExecutablePath(
+        options.browser,
+        platform,
+        options.buildId,
+        relativeExecutablePath,
       );
     }
-
-    logger?.(DEBUG_PREFIXES.install)?.(
-      `Installing ${archivePath} to ${outputPath}`,
+    const installedBrowser = new InstalledBrowser(
+      cache,
+      options.browser,
+      options.buildId,
+      platform,
     );
+
     try {
-      debugTime('extract');
-      await unpackArchive(archivePath, outputPath, options.logger);
+      if (existsSync(outputPath)) {
+        if (!existsSync(installedBrowser.executablePath)) {
+          throw new Error(
+            `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
+          );
+        }
+        await runSetup(installedBrowser, logger);
+        if (options.installDeps) {
+          await installDeps(installedBrowser, logger);
+        }
+        return installedBrowser;
+      }
+
+      // Check if archive already exists (e.g., from a custom provider)
+      if (!existsSync(archivePath)) {
+        logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
+        try {
+          debugTime('download');
+          await downloadFile(
+            url,
+            archivePath,
+            downloadProgressCallback,
+            options.expectedHash,
+          );
+        } finally {
+          debugTimeEnd('download', logger);
+        }
+      } else {
+        logger?.(DEBUG_PREFIXES.install)?.(
+          `Using existing archive at ${archivePath}`,
+        );
+      }
+
+      logger?.(DEBUG_PREFIXES.install)?.(
+        `Installing ${archivePath} to ${outputPath}`,
+      );
+      try {
+        debugTime('extract');
+        await unpackArchive(archivePath, outputPath, options.logger);
+      } finally {
+        debugTimeEnd('extract', logger);
+      }
+
+      if (options.buildIdAlias) {
+        const metadata = installedBrowser.readMetadata();
+        metadata.aliases[options.buildIdAlias] = options.buildId;
+        installedBrowser.writeMetadata(metadata);
+      }
+
+      await runSetup(installedBrowser, logger);
+      if (options.installDeps) {
+        await installDeps(installedBrowser, logger);
+      }
+      return installedBrowser;
     } finally {
-      debugTimeEnd('extract', logger);
+      if (existsSync(archivePath)) {
+        await unlink(archivePath);
+      }
     }
-
-    if (options.buildIdAlias) {
-      const metadata = installedBrowser.readMetadata();
-      metadata.aliases[options.buildIdAlias] = options.buildId;
-      installedBrowser.writeMetadata(metadata);
-    }
-
-    await runSetup(installedBrowser, logger);
-    if (options.installDeps) {
-      await installDeps(installedBrowser, logger);
-    }
-    return installedBrowser;
-  } finally {
-    if (existsSync(archivePath)) {
-      await unlink(archivePath);
-    }
-  }
+  });
 }
 
 async function runSetup(
