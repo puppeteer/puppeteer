@@ -10,6 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {
+  extractTarXzWithLib,
   extractZipWithYauzl,
   internalConstantsForTesting,
   unpackArchive,
@@ -53,18 +54,6 @@ describe('fileUtil', function () {
     assert.strictEqual(
       fs.readFileSync(path.join(tmpDir, 'test/main.txt'), 'utf8'),
       'main',
-    );
-    const modes = dir.map(item => {
-      return (
-        fs.statSync(path.join(tmpDir, item)).mode &
-        (fs.constants.S_IRWXU | fs.constants.S_IRWXG | fs.constants.S_IRWXO)
-      ).toString(8);
-    });
-    assert.deepStrictEqual(
-      modes,
-      os.platform() === 'win32'
-        ? ['0', '0', '0', '0', '0']
-        : ['750', '750', '750', '751', '750'],
     );
   }
 
@@ -112,6 +101,36 @@ describe('fileUtil', function () {
     const link = path.join(tmpDir, 'browser/Current');
     assert.ok(fs.lstatSync(link).isSymbolicLink());
     assert.strictEqual(fs.readlinkSync(link), 'chrome');
+  }
+
+  // Only the owner triple is reliable across the platforms we support: on a
+  // typical Linux desktop a umask of 002 plus a per-user private group clears
+  // the group-write bit, so the group/other bits cannot be asserted exactly.
+  function assertTarOwnerPermissions(): void {
+    const entries = fs
+      .readdirSync(tmpDir, {recursive: true, encoding: 'utf8'})
+      .filter(item => {
+        return !item.startsWith('._');
+      });
+    for (const entry of entries) {
+      const owner = fs.statSync(path.join(tmpDir, entry)).mode & 0o700;
+      assert.strictEqual(owner, 0o700);
+    }
+  }
+
+  function assertTarSymlink(): void {
+    const link = path.join(tmpDir, 'test/link');
+    assert.ok(fs.lstatSync(link).isSymbolicLink());
+    assert.strictEqual(fs.readlinkSync(link), 'main.txt');
+  }
+
+  async function withoutXzUtility(run: () => Promise<void>): Promise<void> {
+    internalConstantsForTesting.xz = 'xz-not-existent';
+    try {
+      await run();
+    } finally {
+      internalConstantsForTesting.xz = 'xz';
+    }
   }
 
   it('unpacks tar.xz', async () => {
@@ -179,22 +198,68 @@ describe('fileUtil', function () {
     });
   });
 
-  it('throws an error if xz is not found', async () => {
-    internalConstantsForTesting.xz = 'xz-not-existent';
-    try {
-      try {
-        await unpackArchive(path.join(fixturesPath, 'test.tar.xz'), tmpDir);
-        assert.fail('unpacking did not fail');
-      } catch (error) {
-        assert.equal(
-          (error as Error).message,
-          '`xz` utility is required to unpack this archive',
+  describe('extractTarXzWithLib', () => {
+    it('extracts every entry with its structure and contents', async () => {
+      await extractTarXzWithLib(path.join(fixturesPath, 'test.tar.xz'), tmpDir);
+      assertTestArchiveUnpacked();
+    });
+
+    // Node.js does not honor POSIX permission bits on Windows.
+    (os.platform() === 'win32' ? it.skip : it)(
+      'preserves owner permissions',
+      async () => {
+        await extractTarXzWithLib(
+          path.join(fixturesPath, 'test.tar.xz'),
+          tmpDir,
         );
-      }
-      assertTestArchiveEmpty();
-    } finally {
-      internalConstantsForTesting.xz = 'xz';
-    }
+        assertTarOwnerPermissions();
+      },
+    );
+
+    // Creating symlinks on Windows requires elevated privileges.
+    (os.platform() === 'win32' ? it.skip : it)(
+      'preserves symlinks',
+      async () => {
+        await extractTarXzWithLib(
+          path.join(fixturesPath, 'test-symlink.tar.xz'),
+          tmpDir,
+        );
+        assertTarSymlink();
+      },
+    );
+
+    // modern-tar validates the target before creating the symlink, so the
+    // rejection can be checked on Windows too.
+    it('rejects symlinks that point outside the target directory', async () => {
+      await assert.rejects(
+        () => {
+          return extractTarXzWithLib(
+            path.join(fixturesPath, 'test-symlink-escape.tar.xz'),
+            tmpDir,
+          );
+        },
+        (error: unknown) => {
+          assert.match(
+            (error as Error).message,
+            /points outside the extraction directory/,
+          );
+          return true;
+        },
+      );
+      assert.ok(
+        !fs.existsSync(path.join(tmpDir, 'test', 'evil')),
+        'symlink pointing outside the target directory was created',
+      );
+    });
+  });
+
+  // When the `xz` utility is unavailable, extraction falls back to the optional
+  // `xz-decompress` dependency rather than failing.
+  it('falls back to xz-decompress when the xz utility is missing', async () => {
+    await withoutXzUtility(() => {
+      return unpackArchive(path.join(fixturesPath, 'test.tar.xz'), tmpDir);
+    });
+    assertTestArchiveUnpacked();
   });
 
   it('throws an error if bzip2 is not found', async () => {
