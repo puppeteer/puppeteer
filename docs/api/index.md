@@ -1606,6 +1606,15 @@ Description
 </td></tr>
 <tr><td>
 
+<span id="debug_prefixes">[DEBUG\_PREFIXES](./puppeteer.debug_prefixes.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
+
+</td></tr>
+<tr><td>
+
 <span id="default_intercept_resolution_priority">[DEFAULT\_INTERCEPT\_RESOLUTION\_PRIORITY](./puppeteer.default_intercept_resolution_priority.md)</span>
 
 </td><td>
@@ -1784,6 +1793,15 @@ Represents the source scheme of the origin that originally set the cookie. A val
 </td></tr>
 <tr><td>
 
+<span id="debugprefix">[DebugPrefix](./puppeteer.debugprefix.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
+
+</td></tr>
+<tr><td>
+
 <span id="downloadpolicy">[DownloadPolicy](./puppeteer.downloadpolicy.md)</span>
 
 </td><td>
@@ -1913,7 +1931,7 @@ All the valid keys that can be passed to functions that take user input, such as
 
 </td><td>
 
-**_(Experimental)_**
+**_(Experimental)_** A logger factory function that receives a debug channel prefix and returns a [LoggerFunction](./puppeteer.loggerfunction.md) to emit logs for that channel, or `undefined` if logging is disabled for that channel.
 
 </td></tr>
 <tr><td>
@@ -1922,7 +1940,7 @@ All the valid keys that can be passed to functions that take user input, such as
 
 </td><td>
 
-**_(Experimental)_**
+**_(Experimental)_** A function called by Puppeteer to output debug messages.
 
 </td></tr>
 <tr><td>

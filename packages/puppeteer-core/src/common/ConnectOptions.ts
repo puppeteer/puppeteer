@@ -235,7 +235,22 @@ export interface ConnectOptions {
    */
   allowlist?: string[];
   /**
-   * @internal
+   * When provided, Puppeteer calls the logger with a debug channel prefix
+   * {@link DebugPrefix}. If the logger returns a
+   * {@link LoggerFunction}, Puppeteer uses it to log details for that channel.
+   *
+   * @example
+   *
+   * ```ts
+   * const browser = await puppeteer.connect({
+   *   browserWSEndpoint,
+   *   logger: prefix => {
+   *     return (...args) => console.log(`[${prefix}]`, ...args);
+   *   },
+   * });
+   * ```
+   *
+   * @experimental The API may change in future releases.
    */
   logger?: Logger;
 }
