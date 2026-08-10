@@ -8,15 +8,15 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {debug} from '../common/Debug.js';
-
 import {HTTPRequest} from './HTTPRequest.js';
 import {Page, PageEvent} from './Page.js';
 
 // @ts-expect-error no need to implement all methods
 class MockPage extends Page {
   constructor() {
-    super(debug);
+    super(() => {
+      return undefined;
+    });
   }
 }
 
