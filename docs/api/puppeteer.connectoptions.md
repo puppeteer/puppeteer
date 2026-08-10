@@ -309,6 +309,25 @@ boolean
 </td></tr>
 <tr><td>
 
+<span id="logger">logger</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[Logger](./puppeteer.logger.md)
+
+</td><td>
+
+**_(Experimental)_** When provided, Puppeteer calls the logger with a debug channel prefix [DebugPrefix](./puppeteer.debugprefix.md). If the logger returns a [LoggerFunction](./puppeteer.loggerfunction.md), Puppeteer uses it to log details for that channel.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="networkenabled">networkEnabled</span>
 
 </td><td>
