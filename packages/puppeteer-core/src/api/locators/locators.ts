@@ -125,6 +125,9 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
     this.#logger = logger;
   }
 
+  /**
+   * @internal
+   */
   protected get logger(): Logger {
     return this.#logger;
   }

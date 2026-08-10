@@ -38,6 +38,9 @@ describe('BrowserConnector', () => {
       await _connectToBrowser({
         browserURL: 'http://localhost:1234',
         headers: {Authorization: 'Bearer test-token'},
+        logger: () => {
+          return undefined;
+        },
       }).catch(() => {});
 
       expect(capturedRequests).toHaveLength(1);
@@ -57,6 +60,9 @@ describe('BrowserConnector', () => {
           browserWSEndpoint: 'ws://localhost:1234',
           blocklist: ['test'],
           allowlist: ['test'],
+          logger: () => {
+            return undefined;
+          },
         }),
       ).rejects.toThrow('Cannot specify both blocklist and allowlist');
     });
@@ -67,6 +73,9 @@ describe('BrowserConnector', () => {
           browserWSEndpoint: 'ws://localhost:1234',
           protocol: 'webDriverBiDi',
           blocklist: ['https://example.com/*'],
+          logger: () => {
+            return undefined;
+          },
         }),
       ).rejects.toThrow(
         'blocklist and allowlist are only supported with the CDP protocol',
@@ -79,6 +88,9 @@ describe('BrowserConnector', () => {
           browserWSEndpoint: 'ws://localhost:1234',
           protocol: 'webDriverBiDi',
           allowlist: ['https://example.com/*'],
+          logger: () => {
+            return undefined;
+          },
         }),
       ).rejects.toThrow(
         'blocklist and allowlist are only supported with the CDP protocol',

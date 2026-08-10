@@ -111,21 +111,6 @@ Whether Puppeteer is connected to this [browser](./puppeteer.browser.md).
 Currently, includes pending protocol calls. In the future, we might add more info.
 
 </td></tr>
-<tr><td>
-
-<span id="logger">logger</span>
-
-</td><td>
-
-`protected, readonly`
-
-</td><td>
-
-[Logger](./puppeteer.logger.md)
-
-</td><td>
-
-</td></tr>
 </tbody></table>
 
 ## Methods
