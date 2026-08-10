@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import {JSHandle} from '../api/JSHandle.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
@@ -17,12 +17,12 @@ export class Binding {
   #name: string;
   #fn: (...args: unknown[]) => unknown;
   #initSource: string;
-  #logger: Logger;
+  #logger?: Logger;
   constructor(
     name: string,
     fn: (...args: unknown[]) => unknown,
     initSource: string,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     this.#name = name;
     this.#fn = fn;

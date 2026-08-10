@@ -15,7 +15,7 @@ import {
 import type {Browser} from '../api/Browser.js';
 import type {Configuration} from '../common/Configuration.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
-import {debug} from '../common/Debug.js';
+import {debug, type Logger} from '../common/Debug.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
@@ -142,22 +142,22 @@ export class PuppeteerNode extends Puppeteer {
     if (!['chrome', 'firefox'].includes(browser)) {
       throw new Error(`Unknown product: ${browser}`);
     }
-    this.#launcher = this.#getLauncher(browser);
+    this.#launcher = this.#getLauncher(browser, options.logger);
     return await this.#launcher.launch(options);
   }
 
   /**
    * @internal
    */
-  #getLauncher(browser: SupportedBrowser): BrowserLauncher {
+  #getLauncher(browser: SupportedBrowser, logger?: Logger): BrowserLauncher {
     if (this.#launcher && this.#launcher.browser === browser) {
       return this.#launcher;
     }
     switch (browser) {
       case 'chrome':
-        return new ChromeLauncher(this);
+        return new ChromeLauncher(this, logger);
       case 'firefox':
-        return new FirefoxLauncher(this);
+        return new FirefoxLauncher(this, logger);
       default:
         throw new Error(`Unknown product: ${browser}`);
     }

@@ -7,7 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
-import {debug, type Logger} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import type {
@@ -235,7 +235,7 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  constructor(handle: JSHandle<ElementType>, logger: Logger = debug) {
+  constructor(handle: JSHandle<ElementType>, logger?: Logger) {
     super(logger);
     this.handle = handle;
     this[_isElementHandle] = true;

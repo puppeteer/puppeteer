@@ -8,7 +8,7 @@ import {Deferred} from '../util/Deferred.js';
 import {rewriteError} from '../util/ErrorLike.js';
 import type {GetIdFn} from '../util/incremental-id-generator.js';
 
-import {debug, DEBUG_PREFIXES, type Logger} from './Debug.js';
+import {DEBUG_PREFIXES, type Logger} from './Debug.js';
 import {ProtocolError, TargetCloseError} from './Errors.js';
 
 /**
@@ -19,9 +19,9 @@ import {ProtocolError, TargetCloseError} from './Errors.js';
 export class CallbackRegistry {
   readonly #callbacks = new Map<number, Callback>();
   readonly #idGenerator: GetIdFn;
-  #logger: Logger;
+  #logger?: Logger;
 
-  constructor(idGenerator: GetIdFn, logger: Logger = debug) {
+  constructor(idGenerator: GetIdFn, logger?: Logger) {
     this.#idGenerator = idGenerator;
     this.#logger = logger;
   }

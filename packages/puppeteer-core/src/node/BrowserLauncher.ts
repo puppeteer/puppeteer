@@ -27,7 +27,7 @@ import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {DEFAULT_VIEWPORT} from '../common/util.js';
@@ -74,7 +74,7 @@ export function getBrowserTypeDisplayName(
  */
 export abstract class BrowserLauncher {
   #browser: SupportedBrowser;
-  #logger: Logger;
+  #logger?: Logger;
 
   /**
    * @internal
@@ -90,7 +90,7 @@ export abstract class BrowserLauncher {
   constructor(
     puppeteer: PuppeteerNode,
     browser: SupportedBrowser,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     this.puppeteer = puppeteer;
     this.#browser = browser;

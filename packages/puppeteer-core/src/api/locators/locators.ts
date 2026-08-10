@@ -30,7 +30,7 @@ import {
   tap,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../../common/Debug.js';
 import type {EventType} from '../../common/EventEmitter.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import type {Awaitable, HandleFor, NodeFor} from '../../common/types.js';
@@ -115,12 +115,12 @@ export interface LocatorEvents extends Record<EventType, unknown> {
  * @public
  */
 export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
-  #logger: Logger;
+  #logger?: Logger;
 
   /**
    * @internal
    */
-  constructor(logger: Logger = debug) {
+  constructor(logger?: Logger) {
     super(undefined, logger);
     this.#logger = logger;
   }

@@ -43,6 +43,7 @@ const ariaQuerySelectorBinding = new Binding(
   '__ariaQuerySelector',
   ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
   '', // custom init
+  debug,
 );
 
 const ariaQuerySelectorAllBinding = new Binding(
@@ -60,6 +61,7 @@ const ariaQuerySelectorAllBinding = new Binding(
     );
   }) as (...args: unknown[]) => unknown,
   '', // custom init
+  debug,
 );
 
 /**
@@ -81,13 +83,13 @@ export class ExecutionContext
   #name?: string;
 
   readonly #disposables = new DisposableStack();
-  #logger: Logger;
+  #logger?: Logger;
 
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     world: IsolatedWorld,
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super(undefined, logger);
     this.#client = client;

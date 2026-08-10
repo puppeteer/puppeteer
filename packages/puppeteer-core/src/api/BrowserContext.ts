@@ -15,7 +15,7 @@ import type {
   CookieData,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {fromEmitterEvent, filterAsync, timeout} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
@@ -107,12 +107,12 @@ export interface BrowserContextEvents extends Record<EventType, unknown> {
  */
 
 export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> {
-  #logger: Logger;
+  #logger?: Logger;
 
   /**
    * @internal
    */
-  constructor(logger: Logger = debug) {
+  constructor(logger?: Logger) {
     super(undefined, logger);
     this.#logger = logger;
   }

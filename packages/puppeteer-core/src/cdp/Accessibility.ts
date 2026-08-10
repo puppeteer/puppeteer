@@ -9,7 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Realm} from '../api/Realm.js';
 import type {CdpFrame} from '../cdp/Frame.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
@@ -188,12 +188,12 @@ export interface SnapshotOptions {
 export class Accessibility {
   #realm: Realm;
   #frameId: string;
-  #logger: Logger;
+  #logger?: Logger;
 
   /**
    * @internal
    */
-  constructor(realm: Realm, frameId = '', logger: Logger = debug) {
+  constructor(realm: Realm, frameId = '', logger?: Logger) {
     this.#realm = realm;
     this.#frameId = frameId;
     this.#logger = logger;
