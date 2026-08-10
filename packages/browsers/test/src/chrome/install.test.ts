@@ -64,7 +64,7 @@ describe('Chrome install', () => {
     );
   });
 
-  it('should re-install a build with a missing executable', async function () {
+  it('can detect missing executables', async function () {
     this.timeout(60000);
     const expectedOutputPath = path.join(
       tmpDir,
@@ -72,29 +72,38 @@ describe('Chrome install', () => {
       `${BrowserPlatform.LINUX}-${testChromeBuildId}`,
     );
     fs.mkdirSync(expectedOutputPath, {recursive: true});
-    fs.writeFileSync(path.join(expectedOutputPath, 'partial'), '');
-    const browser = await install({
-      cacheDir: tmpDir,
-      browser: Browser.CHROME,
-      platform: BrowserPlatform.LINUX,
-      buildId: testChromeBuildId,
-      baseUrl: getServerUrl(),
-    });
-    assert.strictEqual(browser.path, expectedOutputPath);
-    assert.strictEqual(
-      browser.executablePath,
-      computeExecutablePath({
+    assert.strictEqual(fs.existsSync(expectedOutputPath), true);
+    async function installThatThrows(): Promise<Error | undefined> {
+      try {
+        await install({
+          cacheDir: tmpDir,
+          browser: Browser.CHROME,
+          platform: BrowserPlatform.LINUX,
+          buildId: testChromeBuildId,
+        });
+        return undefined;
+      } catch (err) {
+        return err as Error;
+      }
+    }
+    const error = await installThatThrows();
+    const expectedMessage = `The browser folder (${expectedOutputPath}) exists but the executable (${computeExecutablePath(
+      {
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: testChromeBuildId,
-      }),
+      },
+    )}) is missing`;
+    assert.ok(
+      error?.message.includes(expectedMessage),
+      `Expected error message to contain "${expectedMessage}" but got "${error?.message}"`,
     );
-    assert.ok(fs.existsSync(browser.executablePath));
-    assert.strictEqual(
-      fs.existsSync(path.join(expectedOutputPath, 'partial')),
-      false,
+    assert.ok(
+      error?.message.includes('npx puppeteer browsers clear'),
+      `Expected error message to tell the user how to recover but got "${error?.message}"`,
     );
+    assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
 
   it('should download a buildId that is a zip archive', async function () {

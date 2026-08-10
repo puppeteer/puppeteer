@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, rm, unlink} from 'node:fs/promises';
+import {mkdir, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -448,22 +448,18 @@ async function installUrl(
 
   try {
     if (existsSync(outputPath)) {
-      if (existsSync(installedBrowser.executablePath)) {
-        await runSetup(installedBrowser, logger);
-        if (options.installDeps) {
-          await installDeps(installedBrowser, logger);
-        }
-        return installedBrowser;
+      if (!existsSync(installedBrowser.executablePath)) {
+        throw new Error(
+          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing. ` +
+            `An earlier install of this build probably did not finish. ` +
+            `Run \`npx puppeteer browsers clear\` to empty the browser cache, then install again.`,
+        );
       }
-      logger?.(DEBUG_PREFIXES.install)?.(
-        `Reinstalling ${outputPath}: the executable ${installedBrowser.executablePath} is missing`,
-      );
-      await rm(outputPath, {
-        force: true,
-        recursive: true,
-        maxRetries: 10,
-        retryDelay: 500,
-      });
+      await runSetup(installedBrowser, logger);
+      if (options.installDeps) {
+        await installDeps(installedBrowser, logger);
+      }
+      return installedBrowser;
     }
 
     // Check if archive already exists (e.g., from a custom provider)
