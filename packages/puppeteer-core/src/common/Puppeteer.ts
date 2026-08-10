@@ -12,6 +12,7 @@ import {
   type CustomQueryHandler,
   customQueryHandlers,
 } from './CustomQueryHandler.js';
+import {debug} from './Debug.js';
 
 /**
  * Settings that are common to the Puppeteer class, regardless of environment.
@@ -120,6 +121,10 @@ export class Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   connect(options: ConnectOptions): Promise<Browser> {
-    return _connectToBrowser(options);
+    const withLogger = {
+      logger: debug,
+      ...options,
+    };
+    return _connectToBrowser(withLogger);
   }
 }

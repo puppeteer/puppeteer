@@ -117,6 +117,9 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
     this.#logger = logger;
   }
 
+  /**
+   * @internal
+   */
   protected get logger(): Logger {
     return this.#logger;
   }

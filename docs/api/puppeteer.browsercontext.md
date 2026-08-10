@@ -94,21 +94,6 @@ string \| undefined
 Identifier for this [browser context](./puppeteer.browsercontext.md).
 
 </td></tr>
-<tr><td>
-
-<span id="logger">logger</span>
-
-</td><td>
-
-`protected, readonly`
-
-</td><td>
-
-[Logger](./puppeteer.logger.md)
-
-</td><td>
-
-</td></tr>
 </tbody></table>
 
 ## Methods

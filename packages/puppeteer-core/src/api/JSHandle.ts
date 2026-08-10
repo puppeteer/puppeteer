@@ -54,6 +54,9 @@ export abstract class JSHandle<T = unknown> {
     this.#logger = logger;
   }
 
+  /**
+   * @internal
+   */
   protected get logger(): Logger {
     return this.#logger;
   }

@@ -486,6 +486,9 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
     this.#logger = logger;
   }
 
+  /**
+   * @internal
+   */
   protected get logger(): Logger {
     return this.#logger;
   }
