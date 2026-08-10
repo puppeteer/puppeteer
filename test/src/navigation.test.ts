@@ -372,7 +372,9 @@ describe('navigation', function () {
 
       server.setRoute('/404-error', (_, res) => {
         res.statusCode = 404;
-        res.end();
+        setTimeout(() => {
+          res.end();
+        }, 50);
       });
 
       const response = (await page.goto(server.PREFIX + '/404-error'))!;
@@ -384,7 +386,9 @@ describe('navigation', function () {
 
       server.setRoute('/500-error', (_, res) => {
         res.statusCode = 500;
-        res.end();
+        setTimeout(() => {
+          res.end();
+        }, 50);
       });
 
       const response = (await page.goto(server.PREFIX + '/500-error'))!;
