@@ -35,7 +35,7 @@ import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
-import {debug, type Logger} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
@@ -72,19 +72,19 @@ export class CdpBrowser extends BrowserBase {
     connection: Connection,
     contextIds: string[],
     acceptInsecureCerts: boolean,
-    defaultViewport?: Viewport | null,
-    downloadBehavior?: DownloadBehavior,
-    process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback,
-    isPageTargetCallback?: IsPageTargetCallback,
+    defaultViewport: Viewport | null | undefined = undefined,
+    downloadBehavior: DownloadBehavior | undefined = undefined,
+    process: ChildProcess | undefined = undefined,
+    closeCallback: BrowserCloseCallback | undefined = undefined,
+    targetFilterCallback: TargetFilterCallback | undefined = undefined,
+    isPageTargetCallback: IsPageTargetCallback | undefined = undefined,
     waitForInitiallyDiscoveredTargets = true,
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
-    blocklist?: string[],
-    allowlist?: string[],
-    logger: Logger = debug,
+    blocklist: string[] | undefined = undefined,
+    allowlist: string[] | undefined = undefined,
+    logger: Logger,
   ): Promise<CdpBrowser> {
     const browser = new CdpBrowser(
       connection,
@@ -140,18 +140,18 @@ export class CdpBrowser extends BrowserBase {
   constructor(
     connection: Connection,
     contextIds: string[],
-    defaultViewport?: Viewport | null,
-    process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback,
-    isPageTargetCallback?: IsPageTargetCallback,
+    defaultViewport: Viewport | null | undefined = undefined,
+    process: ChildProcess | undefined = undefined,
+    closeCallback: BrowserCloseCallback | undefined = undefined,
+    targetFilterCallback: TargetFilterCallback | undefined = undefined,
+    isPageTargetCallback: IsPageTargetCallback | undefined = undefined,
     waitForInitiallyDiscoveredTargets = true,
     networkEnabled = true,
     issuesEnabled = true,
     handleDevToolsAsPage = false,
-    blocklist?: string[],
-    allowlist?: string[],
-    logger: Logger = debug,
+    blocklist: string[] | undefined = undefined,
+    allowlist: string[] | undefined = undefined,
+    logger: Logger,
   ) {
     super(logger);
     this.#networkEnabled = networkEnabled;

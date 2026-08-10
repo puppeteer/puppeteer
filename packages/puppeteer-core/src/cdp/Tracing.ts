@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {CDPSession} from '../api/CDPSession.js';
-import {debug, type Logger} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 import {
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
@@ -47,7 +47,7 @@ export class Tracing {
   /**
    * @internal
    */
-  constructor(client: CDPSession, logger: Logger = debug) {
+  constructor(client: CDPSession, logger: Logger) {
     this.#client = client;
     this.#logger = logger;
   }

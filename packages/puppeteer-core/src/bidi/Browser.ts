@@ -165,7 +165,7 @@ export class BidiBrowser extends Browser {
   private constructor(
     browserCore: BrowserCore,
     opts: BidiBrowserOptions,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super(logger);
     this.#process = opts.process;

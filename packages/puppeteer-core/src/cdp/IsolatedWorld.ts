@@ -73,13 +73,13 @@ export class IsolatedWorld extends Realm {
   #origin?: string;
 
   readonly #frameOrWorker: CdpFrame | CdpWebWorker;
-  #logger?: Logger;
+  #logger: Logger;
 
   constructor(
     frameOrWorker: CdpFrame | CdpWebWorker,
     timeoutSettings: TimeoutSettings,
     worldId: string | symbol,
-    logger?: Logger,
+    logger: Logger,
   ) {
     super(timeoutSettings);
     this.#frameOrWorker = frameOrWorker;

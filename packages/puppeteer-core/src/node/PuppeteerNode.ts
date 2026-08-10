@@ -146,10 +146,7 @@ export class PuppeteerNode extends Puppeteer {
     return await this.#launcher.launch(options);
   }
 
-  #getLauncher(
-    browser: SupportedBrowser,
-    logger: Logger = debug,
-  ): BrowserLauncher {
+  #getLauncher(browser: SupportedBrowser, logger: Logger): BrowserLauncher {
     if (this.#launcher && this.#launcher.browser === browser) {
       return this.#launcher;
     }
@@ -181,16 +178,18 @@ export class PuppeteerNode extends Puppeteer {
     if (optsOrChannel === undefined) {
       return await this.#getLauncher(
         await this.lastLaunchedBrowser(),
+        debug,
       ).executablePath(undefined, /* validatePath= */ false);
     }
     if (typeof optsOrChannel === 'string') {
-      return await this.#getLauncher('chrome').executablePath(
+      return await this.#getLauncher('chrome', debug).executablePath(
         optsOrChannel,
         /* validatePath= */ false,
       );
     }
     return await this.#getLauncher(
       optsOrChannel.browser ?? (await this.lastLaunchedBrowser()),
+      (optsOrChannel as LaunchOptions).logger ?? debug,
     ).resolveExecutablePath(optsOrChannel.headless, /* validatePath= */ false);
   }
 
@@ -239,6 +238,7 @@ export class PuppeteerNode extends Puppeteer {
   async defaultArgs(options: LaunchOptions = {}): Promise<string[]> {
     return this.#getLauncher(
       options.browser ?? (await this.lastLaunchedBrowser()),
+      options.logger ?? debug,
     ).defaultArgs(options);
   }
 

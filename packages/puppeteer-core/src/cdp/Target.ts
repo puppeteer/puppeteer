@@ -10,7 +10,7 @@ import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -58,7 +58,7 @@ export class CdpTarget extends Target {
     targetManager: TargetManager | undefined,
     sessionFactory:
       ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined,
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super(logger);
     this.#session = session;
@@ -228,7 +228,7 @@ export class PageTarget extends CdpTarget {
     targetManager: TargetManager,
     sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>,
     defaultViewport: Viewport | null,
-    logger?: Logger,
+    logger: Logger,
   ) {
     super(
       targetInfo,
@@ -277,7 +277,12 @@ export class PageTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        return CdpPage._create(client, this, this.#defaultViewport ?? null);
+        return CdpPage._create(
+          client,
+          this,
+          this.#defaultViewport ?? null,
+          this.logger,
+        );
       });
     }
     return (await this.pagePromise) ?? null;

@@ -73,7 +73,7 @@ export class CdpWebWorker extends WebWorker {
 
     this.#client.once('Runtime.executionContextCreated', async event => {
       this.#world.setContext(
-        new ExecutionContext(client, event.context, this.#world),
+        new ExecutionContext(client, event.context, this.#world, logger),
       );
     });
     this.#client.once('Inspector.workerScriptLoaded', () => {
