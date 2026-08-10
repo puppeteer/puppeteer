@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
@@ -15,7 +15,7 @@ import {DisposableStack} from '../util/disposable.js';
 export class PipeTransport implements ConnectionTransport {
   #pipeWrite: NodeJS.WritableStream;
   #subscriptions = new DisposableStack();
-  #logger?: Logger;
+  #logger: Logger;
 
   #isClosed = false;
   #pendingMessage: Buffer[] = [];
@@ -26,7 +26,7 @@ export class PipeTransport implements ConnectionTransport {
   constructor(
     pipeWrite: NodeJS.WritableStream,
     pipeRead: NodeJS.ReadableStream,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     this.#pipeWrite = pipeWrite;
     this.#logger = logger;
@@ -35,6 +35,7 @@ export class PipeTransport implements ConnectionTransport {
       // As long as we don't use it we should be OK.
       new EventEmitter(
         pipeRead as unknown as EventEmitter<Record<string, any>>,
+        logger,
       ),
     );
     pipeReadEmitter.on('data', buffer => {

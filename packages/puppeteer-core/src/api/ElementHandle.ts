@@ -235,7 +235,7 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  constructor(handle: JSHandle<ElementType>, logger?: Logger) {
+  constructor(handle: JSHandle<ElementType>, logger: Logger) {
     super(logger);
     this.handle = handle;
     this[_isElementHandle] = true;

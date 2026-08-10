@@ -107,14 +107,18 @@ export interface BrowserContextEvents extends Record<EventType, unknown> {
  */
 
 export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> {
-  #logger?: Logger;
+  #logger: Logger;
 
   /**
    * @internal
    */
-  constructor(logger?: Logger) {
+  constructor(logger: Logger) {
     super(undefined, logger);
     this.#logger = logger;
+  }
+
+  protected get logger(): Logger {
+    return this.#logger;
   }
 
   /**

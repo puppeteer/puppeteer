@@ -9,7 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
@@ -65,7 +65,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   >();
 
   #frameTreeHandled?: Deferred<void>;
-  #logger?: Logger;
+  #logger: Logger;
 
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
@@ -83,7 +83,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     client: CdpCDPSession,
     page: CdpPage,
     timeoutSettings: TimeoutSettings,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     super(undefined, logger);
     this.#client = client;

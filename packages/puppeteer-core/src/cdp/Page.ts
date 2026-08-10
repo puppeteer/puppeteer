@@ -42,7 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -161,7 +161,11 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(client: CdpCDPSession, target: CdpTarget, logger?: Logger) {
+  constructor(
+    client: CdpCDPSession,
+    target: CdpTarget,
+    logger: Logger = debug,
+  ) {
     super(logger);
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
@@ -181,7 +185,7 @@ export class CdpPage extends Page {
       logger,
     );
     this.#emulationManager = new EmulationManager(client, this.logger);
-    this.#tracing = new Tracing(client);
+    this.#tracing = new Tracing(client, this.logger);
     this.#webmcp = new WebMCP(client, this.#frameManager, logger);
     this.#coverage = new Coverage(client);
     this.#viewport = null;
@@ -378,6 +382,7 @@ export class CdpPage extends Page {
         session.target().type(),
         this.#handleException.bind(this),
         this.#frameManager.networkManager,
+        this.logger,
       );
       this.#workers.set(session.id(), worker);
       worker.internalEmitter.on(WebWorkerEvent.Console, message => {
@@ -1290,7 +1295,11 @@ export class CdpPage extends Page {
   override async pdf(options: PDFOptions = {}): Promise<Uint8Array> {
     const {path = undefined} = options;
     const readable = await this.createPDFStream(options);
-    const typedArray = await getReadableAsTypedArray(readable, path);
+    const typedArray = await getReadableAsTypedArray(
+      readable,
+      path,
+      this.logger,
+    );
     assert(typedArray, 'Could not create typed array');
     return typedArray;
   }

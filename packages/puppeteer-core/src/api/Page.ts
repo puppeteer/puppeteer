@@ -784,12 +784,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
-  protected logger?: Logger;
+  protected logger: Logger;
 
   /**
    * @internal
    */
-  constructor(logger?: Logger) {
+  constructor(logger: Logger) {
     super(undefined, logger);
     this.logger = logger;
     fromEmitterEvent(this, PageEvent.Request)

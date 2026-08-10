@@ -18,7 +18,7 @@ import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -56,7 +56,7 @@ export class BidiBrowserContext extends BrowserContext {
     browser: BidiBrowser,
     userContext: UserContext,
     options: BidiBrowserContextOptions,
-    logger?: Logger,
+    logger: Logger = debug,
   ): BidiBrowserContext {
     const context = new BidiBrowserContext(
       browser,
@@ -85,13 +85,13 @@ export class BidiBrowserContext extends BrowserContext {
   >();
 
   #overrides: Array<{origin: string; permission: Permission}> = [];
-  #logger?: Logger;
+  #logger: Logger;
 
   private constructor(
     browser: BidiBrowser,
     userContext: UserContext,
     options: BidiBrowserContextOptions,
-    logger?: Logger,
+    logger: Logger = debug,
   ) {
     super(logger);
     this.#browser = browser;

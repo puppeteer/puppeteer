@@ -115,14 +115,18 @@ export interface LocatorEvents extends Record<EventType, unknown> {
  * @public
  */
 export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
-  #logger?: Logger;
+  #logger: Logger;
 
   /**
    * @internal
    */
-  constructor(logger?: Logger) {
+  constructor(logger: Logger) {
     super(undefined, logger);
     this.#logger = logger;
+  }
+
+  protected get logger(): Logger {
+    return this.#logger;
   }
   /**
    * Creates a race between multiple locators trying to locate elements in
@@ -853,7 +857,7 @@ export class FunctionLocator<T> extends Locator<T> {
   #func: () => Awaitable<T>;
 
   private constructor(pageOrFrame: Page | Frame, func: () => Awaitable<T>) {
-    super();
+    super((pageOrFrame as any).logger);
 
     this.#pageOrFrame = pageOrFrame;
     this.#func = func;
@@ -895,7 +899,7 @@ export abstract class DelegatedLocator<T, U> extends Locator<U> {
   #delegate: Locator<T>;
 
   constructor(delegate: Locator<T>) {
-    super();
+    super((delegate as any).logger);
 
     this.#delegate = delegate;
     this.copyOptions(this.#delegate);
@@ -1085,7 +1089,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     pageOrFrame: Page | Frame,
     selectorOrHandle: string | ElementHandle<T>,
   ) {
-    super();
+    super((pageOrFrame as any).logger);
     this.#pageOrFrame = pageOrFrame;
     this.#selectorOrHandle = selectorOrHandle;
   }
@@ -1175,7 +1179,7 @@ export class RaceLocator<T> extends Locator<T> {
   #locators: ReadonlyArray<Locator<T>>;
 
   constructor(locators: ReadonlyArray<Locator<T>>) {
-    super();
+    super((locators[0] as any).logger);
     this.#locators = locators;
   }
 

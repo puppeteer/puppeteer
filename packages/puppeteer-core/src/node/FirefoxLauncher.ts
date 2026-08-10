@@ -11,7 +11,7 @@ import path from 'node:path';
 
 import {Browser as SupportedBrowsers, createProfile} from '@puppeteer/browsers';
 
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {assert} from '../util/assert.js';
 
 import {BrowserLauncher, type ResolvedLaunchArgs} from './BrowserLauncher.js';
@@ -23,11 +23,8 @@ import {rm} from './util/fs.js';
  * @internal
  */
 export class FirefoxLauncher extends BrowserLauncher {
-  #logger?: Logger;
-
-  constructor(puppeteer: PuppeteerNode, logger?: Logger) {
+  constructor(puppeteer: PuppeteerNode, logger: Logger = debug) {
     super(puppeteer, 'firefox', logger);
-    this.#logger = logger;
   }
 
   static getPreferences(
@@ -144,7 +141,7 @@ export class FirefoxLauncher extends BrowserLauncher {
       try {
         await rm(userDataDir);
       } catch (error) {
-        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+        this.logger(DEBUG_PREFIXES.error)?.(error);
         throw error;
       }
     } else {
@@ -168,7 +165,7 @@ export class FirefoxLauncher extends BrowserLauncher {
           }
         }
       } catch (error) {
-        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+        this.logger(DEBUG_PREFIXES.error)?.(error);
       }
     }
   }

@@ -10,7 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
-import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -53,7 +53,7 @@ export class ExecutionContext
   implements Disposable
 {
   static #ariaQuerySelectorBinding?: Binding;
-  static getOrCreateAriaQuerySelectorBinding(logger?: Logger): Binding {
+  static getOrCreateAriaQuerySelectorBinding(logger: Logger = debug): Binding {
     return (this.#ariaQuerySelectorBinding ??= new Binding(
       '__ariaQuerySelector',
       ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
@@ -63,7 +63,9 @@ export class ExecutionContext
   }
 
   static #ariaQuerySelectorAllBinding?: Binding;
-  static getOrCreateAriaQuerySelectorAllBinding(logger?: Logger): Binding {
+  static getOrCreateAriaQuerySelectorAllBinding(
+    logger: Logger = debug,
+  ): Binding {
     return (this.#ariaQuerySelectorAllBinding ??= new Binding(
       '__ariaQuerySelectorAll',
       (async (
@@ -219,6 +221,9 @@ export class ExecutionContext
 
   #bindingsInstalled = false;
   #puppeteerUtil?: Promise<JSHandle<PuppeteerInjectedUtil>>;
+  /**
+   * @internal
+   */
   get puppeteerUtil(): Promise<JSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
