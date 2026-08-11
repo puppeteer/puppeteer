@@ -63,9 +63,6 @@ for (const version of Object.keys(versions)) {
   const buildId = versions[version];
 
   for (const platform of Object.values(BrowserPlatform)) {
-    if (platform === BrowserPlatform.LINUX_ARM) {
-      continue;
-    }
     const targetPath = join(
       cacheDir,
       'server',
