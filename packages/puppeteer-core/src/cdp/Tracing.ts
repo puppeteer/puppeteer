@@ -17,9 +17,32 @@ import {isErrorLike} from '../util/ErrorLike.js';
  * @public
  */
 export interface TracingOptions {
+  /**
+   * The file path to write the trace to.
+   * If no path is specified, the trace will not be written to disk, but can
+   * still be retrieved as a `Uint8Array` from `tracing.stop()`.
+   */
   path?: string;
+  /**
+   * Whether to capture screenshots in the trace.
+   *
+   * @defaultValue `false`
+   */
   screenshots?: boolean;
+  /**
+   * The tracing categories to include/exclude.
+   *
+   * To exclude a category, prefix it with `-` (e.g., `-toplevel`).
+   *
+   * @defaultValue Default categories listed in the implementation.
+   */
   categories?: string[];
+  /**
+   * Size of the trace buffer in kilobytes.
+   * If not specified or zero is passed, the default value of 200 MB
+   * (200,000 KB) is used by Chromium.
+   */
+  bufferSize?: number;
 }
 
 /**
@@ -85,7 +108,12 @@ export class Tracing {
       'disabled-by-default-devtools.timeline.stack',
       'disabled-by-default-v8.cpu_profiler',
     ];
-    const {path, screenshots = false, categories = defaultCategories} = options;
+    const {
+      path,
+      screenshots = false,
+      categories = defaultCategories,
+      bufferSize,
+    } = options;
 
     if (screenshots) {
       categories.push('disabled-by-default-devtools.screenshot');
@@ -109,6 +137,7 @@ export class Tracing {
       traceConfig: {
         excludedCategories,
         includedCategories,
+        traceBufferSizeInKb: bufferSize,
       },
     });
   }

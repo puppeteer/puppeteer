@@ -8,6 +8,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import expect from 'expect';
+import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
+import sinon from 'sinon';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
 
@@ -96,6 +98,31 @@ describe('Tracing', function () {
     await page.goto(server.PREFIX + '/grid.html');
     const trace = await page.tracing.stop();
     expect(trace).toBeTruthy();
+  });
+
+  it('should support bufferSize option', async () => {
+    const {page, server} = state;
+    const client = (page as CdpPage)._client();
+    const sendSpy = sinon.spy(client, 'send');
+
+    await page.tracing.start({
+      path: outputFile,
+      bufferSize: 10,
+    });
+    await page.goto(server.PREFIX + '/grid.html');
+    await page.tracing.stop();
+
+    const tracingStartCall = sendSpy.getCalls().find(call => {
+      return call.args[0] === 'Tracing.start';
+    });
+    expect(tracingStartCall).toBeDefined();
+    expect(tracingStartCall?.args[1]).toEqual(
+      expect.objectContaining({
+        traceConfig: expect.objectContaining({
+          traceBufferSizeInKb: 10,
+        }),
+      }),
+    );
   });
 
   it('should support a typedArray without a path', async () => {
