@@ -28,8 +28,8 @@ describe('Chrome', () => {
       'https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/linux64/chrome-linux64.zip',
     );
     assert.strictEqual(
-      resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '153.0.7998.0'),
-      'https://storage.googleapis.com/chrome-for-testing-public/153.0.7998.0/linux-arm64/chrome-linux-arm64.zip',
+      resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '153.0.8001.0'),
+      'https://storage.googleapis.com/chrome-for-testing-public/153.0.8001.0/linux-arm64/chrome-linux-arm64.zip',
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '113.0.5672.0'),

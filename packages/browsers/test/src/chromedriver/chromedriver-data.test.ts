@@ -21,8 +21,8 @@ describe('ChromeDriver', () => {
       'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/linux64/chromedriver-linux64.zip',
     );
     assert.strictEqual(
-      resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '153.0.7998.0'),
-      'https://storage.googleapis.com/chrome-for-testing-public/153.0.7998.0/linux-arm64/chromedriver-linux-arm64.zip',
+      resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '153.0.8001.0'),
+      'https://storage.googleapis.com/chrome-for-testing-public/153.0.8001.0/linux-arm64/chromedriver-linux-arm64.zip',
     );
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '115.0.5763.0'),

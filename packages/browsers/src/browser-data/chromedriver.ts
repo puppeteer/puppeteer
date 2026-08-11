@@ -11,7 +11,7 @@ import {BrowserPlatform} from './types.js';
 function folder(platform: BrowserPlatform, buildId?: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX_ARM:
-      if (buildId && compareVersions(buildId, '153.0.7998.0') < 0) {
+      if (buildId && compareVersions(buildId, '153.0.8001.0') < 0) {
         return 'linux64';
       }
       return 'linux-arm64';
