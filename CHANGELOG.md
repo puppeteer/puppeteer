@@ -2,6 +2,40 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.5.0...puppeteer-v25.6.0) (2026-08-11)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.1.0 to 3.2.0
+
+
+### 🎉 Features
+
+* expose custom Logger to launch/connect ([#15324](https://github.com/puppeteer/puppeteer/issues/15324)) ([ffe68ee](https://github.com/puppeteer/puppeteer/commit/ffe68ee9ef16655c747d8d67a6ddd1a427dcb8fe))
+
+
+### 🛠️ Fixes
+
+* **cdp:** do not fail a per-frame fan-out when an OOP iframe goes away ([#15300](https://github.com/puppeteer/puppeteer/issues/15300)) ([e29c4e7](https://github.com/puppeteer/puppeteer/commit/e29c4e7cf30fe0d0170d35ff8947163d06bc9276))
+* roll to Chrome 151.0.7922.76 ([#15295](https://github.com/puppeteer/puppeteer/issues/15295)) ([5c78fe3](https://github.com/puppeteer/puppeteer/commit/5c78fe35147c8191bfb4b10f55a1937ed96f38ca))
+* roll to Chrome 151.0.7922.77 ([#15308](https://github.com/puppeteer/puppeteer/issues/15308)) ([321aa69](https://github.com/puppeteer/puppeteer/commit/321aa69374665d559a4f7b92769731c53551c4d0))
+* roll to Firefox 153.0.3 ([#15294](https://github.com/puppeteer/puppeteer/issues/15294)) ([6c0a749](https://github.com/puppeteer/puppeteer/commit/6c0a7490d6b79410335639ca7cde87aaa9c98ed4))
+
+
+### 🏗️ Refactor
+
+* pass logger though the constructors ([#15297](https://github.com/puppeteer/puppeteer/issues/15297)) ([76c2a8d](https://github.com/puppeteer/puppeteer/commit/76c2a8dac21a7faf83ba1fb15b2b018aa1417c7f))
+* use logger that is passed down ([#15302](https://github.com/puppeteer/puppeteer/issues/15302)) ([3b1339e](https://github.com/puppeteer/puppeteer/commit/3b1339ef5a2d72d976e2505e968f2853d978a63e))
+
+
 ## [25.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.4.0...puppeteer-v25.5.0) (2026-08-04)
 
 

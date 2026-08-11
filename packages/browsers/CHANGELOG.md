@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/puppeteer/puppeteer/compare/browsers-v3.1.0...browsers-v3.2.0) (2026-08-11)
+
+
+### 🎉 Features
+
+* allow downloading CfT linux-arm64 ([#15325](https://github.com/puppeteer/puppeteer/issues/15325)) ([fc984bd](https://github.com/puppeteer/puppeteer/commit/fc984bd16587832ed8ab8c24397e70f494698a41))
+
 ## [3.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.6...browsers-v3.1.0) (2026-08-04)
 
 
