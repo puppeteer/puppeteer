@@ -16,6 +16,42 @@ export declare abstract class Target
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Target` class.
 
+## Properties
+
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="logger">logger</span>
+
+</td><td>
+
+`protected`
+
+</td><td>
+
+[Logger](./puppeteer.logger.md)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
+
 ## Methods
 
 <table><thead><tr><th>
