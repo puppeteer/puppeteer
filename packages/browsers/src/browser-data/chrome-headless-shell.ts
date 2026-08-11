@@ -5,11 +5,16 @@
  */
 import path from 'node:path';
 
+import {compareVersions} from './chrome.js';
 import {BrowserPlatform} from './types.js';
 
-function folder(platform: BrowserPlatform): string {
+function folder(platform: BrowserPlatform, buildId?: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX_ARM:
+      if (buildId && compareVersions(buildId, '153.0.8001.0') < 0) {
+        return 'linux64';
+      }
+      return 'linux-arm64';
     case BrowserPlatform.LINUX:
       return 'linux64';
     case BrowserPlatform.MAC_ARM:
@@ -37,32 +42,32 @@ export function resolveDownloadPath(
 ): string[] {
   return [
     buildId,
-    folder(platform),
-    `chrome-headless-shell-${folder(platform)}.zip`,
+    folder(platform, buildId),
+    `chrome-headless-shell-${folder(platform, buildId)}.zip`,
   ];
 }
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _buildId: string,
+  buildId: string,
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:
     case BrowserPlatform.MAC_ARM:
       return path.join(
-        'chrome-headless-shell-' + folder(platform),
+        'chrome-headless-shell-' + folder(platform, buildId),
         'chrome-headless-shell',
       );
     case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
       return path.join(
-        'chrome-headless-shell-linux64',
+        'chrome-headless-shell-' + folder(platform, buildId),
         'chrome-headless-shell',
       );
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
       return path.join(
-        'chrome-headless-shell-' + folder(platform),
+        'chrome-headless-shell-' + folder(platform, buildId),
         'chrome-headless-shell.exe',
       );
   }

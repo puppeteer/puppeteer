@@ -21,6 +21,10 @@ describe('chrome-headless-shell', () => {
       'https://storage.googleapis.com/chrome-for-testing-public/118.0.5950.0/linux64/chrome-headless-shell-linux64.zip',
     );
     assert.strictEqual(
+      resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '153.0.8001.0'),
+      'https://storage.googleapis.com/chrome-for-testing-public/153.0.8001.0/linux-arm64/chrome-headless-shell-linux-arm64.zip',
+    );
+    assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '118.0.5950.0'),
       'https://storage.googleapis.com/chrome-for-testing-public/118.0.5950.0/mac-x64/chrome-headless-shell-mac-x64.zip',
     );
@@ -51,6 +55,10 @@ describe('chrome-headless-shell', () => {
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
       path.join('chrome-headless-shell-linux64', 'chrome-headless-shell'),
+    );
+    assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.LINUX_ARM, '12372323'),
+      path.join('chrome-headless-shell-linux-arm64', 'chrome-headless-shell'),
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC, '12372323'),

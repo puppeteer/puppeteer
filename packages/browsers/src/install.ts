@@ -320,7 +320,8 @@ async function installDeps(
 ) {
   if (
     process.platform !== 'linux' ||
-    installedBrowser.platform !== BrowserPlatform.LINUX
+    (installedBrowser.platform !== BrowserPlatform.LINUX &&
+      installedBrowser.platform !== BrowserPlatform.LINUX_ARM)
   ) {
     return;
   }
