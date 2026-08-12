@@ -62,7 +62,7 @@ import {environment} from '../environment.js';
 import type {Realm} from '../index-browser.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
-import {AsyncDisposableStack, DisposableStack} from '../util/disposable.js';
+import {AsyncDisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Binding} from './Binding.js';
