@@ -15,7 +15,7 @@ import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {Binding} from './Binding.js';
@@ -131,22 +131,21 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       this.#removeFramesRecursively(child);
     }
     const swapped = Deferred.create<void>();
-    const onFrameSwapped = () => {
+    using subscriptions = new DisposableStack();
+    const frameEmitter = subscriptions.use(new EventEmitter(mainFrame));
+    const pageEmitter = subscriptions.use(new EventEmitter(this.#page));
+
+    frameEmitter.once(FrameEvent.FrameSwappedByActivation, () => {
       swapped.resolve();
-    };
-    const onPageClosed = () => {
+    });
+    pageEmitter.once(PageEvent.Close, () => {
       swapped.reject(new Error('Page closed'));
-    };
-    mainFrame.once(FrameEvent.FrameSwappedByActivation, onFrameSwapped);
-    this.#page.once(PageEvent.Close, onPageClosed);
+    });
 
     try {
       await swapped.valueOrThrow();
     } catch {
       this.#removeFramesRecursively(mainFrame);
-    } finally {
-      mainFrame.off(FrameEvent.FrameSwappedByActivation, onFrameSwapped);
-      this.#page.off(PageEvent.Close, onPageClosed);
     }
   }
 

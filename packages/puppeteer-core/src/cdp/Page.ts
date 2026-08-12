@@ -62,7 +62,7 @@ import {environment} from '../environment.js';
 import type {Realm} from '../index-browser.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
-import {AsyncDisposableStack} from '../util/disposable.js';
+import {AsyncDisposableStack, DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Binding} from './Binding.js';
@@ -899,19 +899,17 @@ export class CdpPage extends Page {
     await client.send('HeapProfiler.enable');
     await client.send('HeapProfiler.collectGarbage');
 
-    const handler = (
-      event: Protocol.HeapProfiler.AddHeapSnapshotChunkEvent,
-    ) => {
+    using clientEmitter = new EventEmitter(client);
+
+    clientEmitter.on('HeapProfiler.addHeapSnapshotChunk', event => {
       stream.write(event.chunk);
-    };
-    client.on('HeapProfiler.addHeapSnapshotChunk', handler);
+    });
 
     try {
       await client.send('HeapProfiler.takeHeapSnapshot', {
         reportProgress: false,
       });
     } finally {
-      client.off('HeapProfiler.addHeapSnapshotChunk', handler);
       await client.send('HeapProfiler.disable');
     }
 
