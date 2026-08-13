@@ -1,6 +1,6 @@
 {
-  "packages/puppeteer": "25.6.0",
-  "packages/puppeteer-core": "25.6.0",
+  "packages/puppeteer": "25.7.0",
+  "packages/puppeteer-core": "25.7.0",
   "packages/ng-schematics": "0.8.0",
   "packages/browsers": "3.2.0"
 }
