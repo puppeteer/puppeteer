@@ -888,8 +888,7 @@ export class CdpPage extends Page {
   override async captureHeapSnapshot(
     options: HeapSnapshotOptions,
   ): Promise<void> {
-    const {createWriteStream} = environment.value.fs;
-    const stream = createWriteStream(options.path);
+    const stream = environment.value.createWriteStream(options.path);
     const streamPromise = new Promise<void>((resolve, reject) => {
       stream.on('error', reject);
       stream.on('finish', resolve);

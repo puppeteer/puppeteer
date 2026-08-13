@@ -40,6 +40,10 @@ export const {
    * @public
    */
   trimCache,
+  /**
+   * @public
+   */
+  setFollowSymlinks,
 } = puppeteer;
 
 export default puppeteer;
