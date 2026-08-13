@@ -135,6 +135,8 @@ export class BidiFrame extends Frame {
         request,
         this,
         this.page().isNetworkInterceptionEnabled,
+        undefined,
+        this.logger,
       );
       request.once('success', () => {
         this.page().trustedEmitter.emit(PageEvent.RequestFinished, httpRequest);

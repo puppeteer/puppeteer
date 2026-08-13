@@ -20,6 +20,7 @@ import {
   InterceptResolutionAction,
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
+import type {Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {stringToBase64} from '../util/encoding.js';
 
@@ -37,13 +38,15 @@ export class BidiHTTPRequest extends HTTPRequest {
     bidiRequest: Request,
     frame: BidiFrame,
     isNetworkInterceptionEnabled: boolean,
-    redirect?: BidiHTTPRequest,
+    redirect: BidiHTTPRequest | undefined,
+    logger: Logger,
   ): BidiHTTPRequest {
     const request = new BidiHTTPRequest(
       bidiRequest,
       frame,
       isNetworkInterceptionEnabled,
       redirect,
+      logger,
     );
     request.#initialize();
     return request;
@@ -54,14 +57,17 @@ export class BidiHTTPRequest extends HTTPRequest {
   override readonly id: string;
   readonly #frame: BidiFrame;
   readonly #request: Request;
+  #logger: Logger;
 
   private constructor(
     request: Request,
     frame: BidiFrame,
     isNetworkInterceptionEnabled: boolean,
-    redirect?: BidiHTTPRequest,
+    redirect: BidiHTTPRequest | undefined,
+    logger: Logger,
   ) {
     super();
+    this.#logger = logger;
     requests.set(request, this);
 
     this.interception.enabled = isNetworkInterceptionEnabled;
@@ -83,6 +89,7 @@ export class BidiHTTPRequest extends HTTPRequest {
         this.#frame,
         this.interception.enabled,
         this,
+        this.#logger,
       );
       this.#redirectChain.push(this);
 
@@ -228,7 +235,7 @@ export class BidiHTTPRequest extends HTTPRequest {
       })
       .catch(error => {
         this.interception.handled = false;
-        return handleError(error, (this.#frame as any).logger);
+        return handleError(error, this.#logger);
       });
   }
 

@@ -128,7 +128,7 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
   /**
    * @internal
    */
-  protected get logger(): Logger {
+  get logger(): Logger {
     return this.#logger;
   }
   /**
@@ -860,7 +860,7 @@ export class FunctionLocator<T> extends Locator<T> {
   #func: () => Awaitable<T>;
 
   private constructor(pageOrFrame: Page | Frame, func: () => Awaitable<T>) {
-    super((pageOrFrame as any).logger);
+    super(pageOrFrame.logger);
 
     this.#pageOrFrame = pageOrFrame;
     this.#func = func;
@@ -902,7 +902,7 @@ export abstract class DelegatedLocator<T, U> extends Locator<U> {
   #delegate: Locator<T>;
 
   constructor(delegate: Locator<T>) {
-    super((delegate as any).logger);
+    super(delegate.logger);
 
     this.#delegate = delegate;
     this.copyOptions(this.#delegate);
@@ -1092,7 +1092,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     pageOrFrame: Page | Frame,
     selectorOrHandle: string | ElementHandle<T>,
   ) {
-    super((pageOrFrame as any).logger);
+    super(pageOrFrame.logger);
     this.#pageOrFrame = pageOrFrame;
     this.#selectorOrHandle = selectorOrHandle;
   }
@@ -1182,7 +1182,12 @@ export class RaceLocator<T> extends Locator<T> {
   #locators: ReadonlyArray<Locator<T>>;
 
   constructor(locators: ReadonlyArray<Locator<T>>) {
-    super((locators[0] as any).logger);
+    super(
+      locators[0]?.logger ??
+        (() => {
+          return undefined;
+        }),
+    );
     this.#locators = locators;
   }
 

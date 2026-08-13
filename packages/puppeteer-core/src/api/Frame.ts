@@ -319,7 +319,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * @internal
    */
-  protected logger: Logger;
+  logger: Logger;
 
   /**
    * @internal

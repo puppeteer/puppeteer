@@ -525,6 +525,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#userRequestInterceptionEnabled,
       event,
       [],
+      this.#logger,
     );
     this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
@@ -590,6 +591,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#userRequestInterceptionEnabled,
       event,
       redirectChain,
+      this.#logger,
     );
 
     const extraInfo = this.#networkEventManager
