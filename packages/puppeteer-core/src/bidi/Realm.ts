@@ -67,7 +67,7 @@ export abstract class BidiRealm extends Realm {
   /**
    * @internal
    */
-  protected get logger(): Logger {
+  get logger(): Logger {
     return this.#logger;
   }
 

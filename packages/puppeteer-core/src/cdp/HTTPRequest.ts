@@ -45,7 +45,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #headers: Record<string, string> = {};
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
-  #logger?: Logger;
+  #logger: Logger;
 
   override get client(): CDPSession {
     return this.#client;
@@ -87,12 +87,11 @@ export class CdpHTTPRequest extends HTTPRequest {
       type?: Protocol.Network.ResourceType;
     },
     redirectChain: CdpHTTPRequest[],
-    logger?: Logger,
+    logger: Logger,
   ) {
     super();
     this.#logger = logger;
     this.#client = client;
-    this.#logger = logger;
     this.id = data.requestId;
     this.#isNavigationRequest =
       data.requestId === data.loaderId && data.type === 'Document';
@@ -230,7 +229,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       })
       .catch(error => {
         this.interception.handled = false;
-        return handleError(error, (this.frame() as any).logger);
+        return handleError(error, this.#logger);
       });
   }
 
@@ -282,7 +281,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       })
       .catch(error => {
         this.interception.handled = false;
-        return handleError(error, (this.frame() as any).logger);
+        return handleError(error, this.#logger);
       });
   }
 
@@ -301,7 +300,7 @@ export class CdpHTTPRequest extends HTTPRequest {
         errorReason: errorReason || 'Failed',
       })
       .catch(error => {
-        return handleError(error, (this.frame() as any).logger);
+        return handleError(error, this.#logger);
       });
   }
 }
