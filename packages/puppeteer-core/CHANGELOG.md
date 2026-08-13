@@ -1,5 +1,24 @@
 # Changelog
 
+## [25.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.6.0...puppeteer-core-v25.7.0) (2026-08-13)
+
+
+### 🎉 Features
+
+* roll to Chrome 152.0.7977.42 ([#15330](https://github.com/puppeteer/puppeteer/issues/15330)) ([0c187db](https://github.com/puppeteer/puppeteer/commit/0c187db99161fe49d7d966d242f131c63337e76e))
+* **tracing:** support bufferSize option in tracing.start ([#15328](https://github.com/puppeteer/puppeteer/issues/15328)) ([987f146](https://github.com/puppeteer/puppeteer/commit/987f146b85115b73f8415c1c1b93d3b42576f058))
+
+
+### 🛠️ Fixes
+
+* logger calling causing crashes ([#15338](https://github.com/puppeteer/puppeteer/issues/15338)) ([eb874a5](https://github.com/puppeteer/puppeteer/commit/eb874a58e55bd7221bca35d4216dc298b1f8ee86))
+* roll to Firefox 153.0.4 ([#15329](https://github.com/puppeteer/puppeteer/issues/15329)) ([df5a524](https://github.com/puppeteer/puppeteer/commit/df5a5241108b6856d8198b019e6772c001da2729))
+
+
+### 🏗️ Refactor
+
+* use Desposable stacks to track listeners ([#15332](https://github.com/puppeteer/puppeteer/issues/15332)) ([df2d719](https://github.com/puppeteer/puppeteer/commit/df2d71988ef7b2a857ff66615cdc28a857078e9c))
+
 ## [25.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.5.0...puppeteer-core-v25.6.0) (2026-08-11)
 
 
