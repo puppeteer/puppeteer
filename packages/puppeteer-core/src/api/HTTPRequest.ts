@@ -733,7 +733,7 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
 /**
  * @internal
  */
-export function handleError(error: ProtocolError, logger: Logger): void {
+export function handleError(error: ProtocolError, logger?: Logger): void {
   // Firefox throws an invalid argument error with a message starting with
   // 'Expected "header" [...]'.
   if (
