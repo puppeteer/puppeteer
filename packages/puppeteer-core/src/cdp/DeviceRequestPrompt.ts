@@ -117,12 +117,12 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
       !this.#handled,
       'Cannot select DeviceRequestPrompt which is already handled!',
     );
+    this.#subscriptions.dispose();
+    this.#handled = true;
     await this.#client.send('DeviceAccess.selectPrompt', {
       id: this.#id,
       deviceId: device.id,
     });
-    this.#subscriptions.dispose();
-    this.#handled = true;
   }
 
   async cancel(): Promise<void> {
@@ -130,9 +130,9 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
       !this.#handled,
       'Cannot cancel DeviceRequestPrompt which is already handled!',
     );
-    await this.#client.send('DeviceAccess.cancelPrompt', {id: this.#id});
     this.#subscriptions.dispose();
     this.#handled = true;
+    await this.#client.send('DeviceAccess.cancelPrompt', {id: this.#id});
   }
 }
 
