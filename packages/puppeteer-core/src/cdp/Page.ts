@@ -899,19 +899,17 @@ export class CdpPage extends Page {
     await client.send('HeapProfiler.enable');
     await client.send('HeapProfiler.collectGarbage');
 
-    const handler = (
-      event: Protocol.HeapProfiler.AddHeapSnapshotChunkEvent,
-    ) => {
+    using clientEmitter = new EventEmitter(client);
+
+    clientEmitter.on('HeapProfiler.addHeapSnapshotChunk', event => {
       stream.write(event.chunk);
-    };
-    client.on('HeapProfiler.addHeapSnapshotChunk', handler);
+    });
 
     try {
       await client.send('HeapProfiler.takeHeapSnapshot', {
         reportProgress: false,
       });
     } finally {
-      client.off('HeapProfiler.addHeapSnapshotChunk', handler);
       await client.send('HeapProfiler.disable');
     }
 

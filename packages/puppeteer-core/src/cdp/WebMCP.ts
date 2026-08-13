@@ -12,6 +12,7 @@ import type {Frame} from '../api/Frame.js';
 import type {ConsoleMessageLocation} from '../common/ConsoleMessage.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {DisposableStack} from '../util/disposable.js';
 
 import type {CdpFrame} from './Frame.js';
 import type {FrameManager} from './FrameManager.js';
@@ -244,6 +245,7 @@ export class WebMCP extends EventEmitter<{
   #tools = new Map<string, Map<string, WebMCPTool>>();
   #pendingCalls = new Map<string, WebMCPToolCall>();
   #logger?: Logger;
+  #subscriptions = new DisposableStack();
 
   #onToolsAdded = (event: Protocol.WebMCP.ToolsAddedEvent) => {
     const tools: WebMCPTool[] = [];
@@ -374,20 +376,21 @@ export class WebMCP extends EventEmitter<{
   }
 
   #bindListeners(): void {
-    this.#client.on('WebMCP.toolsAdded', this.#onToolsAdded);
-    this.#client.on('WebMCP.toolsRemoved', this.#onToolsRemoved);
-    this.#client.on('WebMCP.toolInvoked', this.#onToolInvoked);
-    this.#client.on('WebMCP.toolResponded', this.#onToolResponded);
+    const clientEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#client),
+    );
+    clientEmitter.on('WebMCP.toolsAdded', this.#onToolsAdded);
+    clientEmitter.on('WebMCP.toolsRemoved', this.#onToolsRemoved);
+    clientEmitter.on('WebMCP.toolInvoked', this.#onToolInvoked);
+    clientEmitter.on('WebMCP.toolResponded', this.#onToolResponded);
   }
 
   /**
    * @internal
    */
   updateClient(client: CDPSession): void {
-    this.#client.off('WebMCP.toolsAdded', this.#onToolsAdded);
-    this.#client.off('WebMCP.toolsRemoved', this.#onToolsRemoved);
-    this.#client.off('WebMCP.toolInvoked', this.#onToolInvoked);
-    this.#client.off('WebMCP.toolResponded', this.#onToolResponded);
+    this.#subscriptions.dispose();
+    this.#subscriptions = new DisposableStack();
     this.#client = client;
     this.#bindListeners();
   }

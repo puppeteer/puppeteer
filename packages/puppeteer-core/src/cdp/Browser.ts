@@ -37,8 +37,10 @@ import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
+import {DisposableStack} from '../util/disposable.js';
 
 import {CdpBrowserContext} from './BrowserContext.js';
 import type {CdpCDPSession} from './CdpSession.js';
@@ -136,6 +138,7 @@ export class CdpBrowser extends BrowserBase {
   #extensions = new Map<string, Extension>();
   #version?: Deferred<Protocol.Browser.GetVersionResponse>;
   #hasNetworkRestrictions = false;
+  #subscriptions = new DisposableStack();
 
   constructor(
     connection: Connection,
@@ -201,23 +204,29 @@ export class CdpBrowser extends BrowserBase {
   };
 
   async _attach(downloadBehavior: DownloadBehavior | undefined): Promise<void> {
-    this.#connection.on(CDPSessionEvent.Disconnected, this.#emitDisconnected);
+    const connectionEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#connection),
+    );
+    connectionEmitter.on(CDPSessionEvent.Disconnected, this.#emitDisconnected);
     if (downloadBehavior) {
       await this.#defaultContext.setDownloadBehavior(downloadBehavior);
     }
-    this.#targetManager.on(
+    const targetManagerEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#targetManager),
+    );
+    targetManagerEmitter.on(
       TargetManagerEvent.TargetAvailable,
       this.#onAttachedToTarget,
     );
-    this.#targetManager.on(
+    targetManagerEmitter.on(
       TargetManagerEvent.TargetGone,
       this.#onDetachedFromTarget,
     );
-    this.#targetManager.on(
+    targetManagerEmitter.on(
       TargetManagerEvent.TargetChanged,
       this.#onTargetChanged,
     );
-    this.#targetManager.on(
+    targetManagerEmitter.on(
       TargetManagerEvent.TargetDiscovered,
       this.#onTargetDiscovered,
     );
@@ -225,23 +234,7 @@ export class CdpBrowser extends BrowserBase {
   }
 
   _detach(): void {
-    this.#connection.off(CDPSessionEvent.Disconnected, this.#emitDisconnected);
-    this.#targetManager.off(
-      TargetManagerEvent.TargetAvailable,
-      this.#onAttachedToTarget,
-    );
-    this.#targetManager.off(
-      TargetManagerEvent.TargetGone,
-      this.#onDetachedFromTarget,
-    );
-    this.#targetManager.off(
-      TargetManagerEvent.TargetChanged,
-      this.#onTargetChanged,
-    );
-    this.#targetManager.off(
-      TargetManagerEvent.TargetDiscovered,
-      this.#onTargetDiscovered,
-    );
+    this.#subscriptions.dispose();
   }
 
   override process(): ChildProcess | null {
