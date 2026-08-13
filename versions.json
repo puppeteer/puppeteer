@@ -1,10 +1,10 @@
 {
-  "lastMaintainedChromeVersion": "148.0.7778.167",
+  "lastMaintainedChromeVersion": "149.0.7827.22",
   "versions": [
     [
       "NEXT",
       {
-        "chrome": "151.0.7922.77",
+        "chrome": "152.0.7977.42",
         "firefox": "stable_153.0.4"
       }
     ],
