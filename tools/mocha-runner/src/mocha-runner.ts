@@ -11,6 +11,7 @@ import {randomUUID} from 'node:crypto';
 import fs, {globSync} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
@@ -235,26 +236,33 @@ async function main() {
         args.push(...specs);
       }
 
+      const mochaBinary = fileURLToPath(
+        import.meta.resolve('mocha/bin/mocha.js'),
+      );
       const mochaCommand = [
         ...(useCoverage
-          ? ['c8', '--check-coverage', '--lines', '90', 'npx']
+          ? ['c8', '--check-coverage', '--lines', '90', process.execPath]
           : []),
-        'mocha',
+        mochaBinary,
         ...mochaArgs.map(String),
         ...args,
       ];
 
-      const handle = spawn('npx', mochaCommand, {
-        shell: true,
+      const handle = spawn(process.execPath, mochaCommand, {
         cwd: process.cwd(),
         stdio: 'inherit',
         env,
+        windowsHide: true,
       });
+      let exitCode: number | null = 0;
+      let exitSignal: NodeJS.Signals | null = null;
       await new Promise<void>((resolve, reject) => {
         handle.on('error', err => {
           reject(err);
         });
-        handle.on('close', () => {
+        handle.on('close', (code, signal) => {
+          exitCode = code;
+          exitSignal = signal;
           resolve();
         });
       });
@@ -263,9 +271,17 @@ async function main() {
           try {
             return readJSON(tmpFilename) as MochaResults;
           } catch (cause) {
-            throw new Error('Test results are not found', {
-              cause,
-            });
+            const terminationReason = exitSignal
+              ? `terminated with signal ${exitSignal}`
+              : exitCode !== 0
+                ? `exited with code ${exitCode}`
+                : 'did not produce results';
+            throw new Error(
+              `Test results are not found because Mocha process ${terminationReason}`,
+              {
+                cause,
+              },
+            );
           }
         })();
         console.log('Finished', JSON.stringify(parameters));
@@ -329,11 +345,15 @@ async function main() {
       );
     }
     const unexpected = added.length + removed.length + updated.length;
-    console.log(
-      fail && Boolean(unexpected)
-        ? `Run failed: ${unexpected} unexpected result(s).`
-        : `Run succeeded.`,
-    );
+    if (fail) {
+      console.log(
+        unexpected > 0
+          ? `Run failed: ${unexpected} unexpected result(s).`
+          : `Run failed.`,
+      );
+    } else {
+      console.log('Run succeeded.');
+    }
     process.exit(fail ? 1 : 0);
   }
 }

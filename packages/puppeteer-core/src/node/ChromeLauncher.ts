@@ -160,7 +160,6 @@ export class ChromeLauncher extends BrowserLauncher {
         await rm(path);
       } catch (error) {
         this.logger(DEBUG_PREFIXES.error)?.(error);
-        throw error;
       }
     }
   }

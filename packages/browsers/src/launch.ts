@@ -318,11 +318,10 @@ export class Process {
     opts.handleSIGINT ??= true;
     opts.handleSIGTERM ??= true;
     opts.handleSIGHUP ??= true;
-    // On non-windows platforms, `detached: true` makes child process a
-    // leader of a new process group, making it possible to kill child
-    // process tree with `.kill(-pid)` command. @see
-    // https://nodejs.org/api/child_process.html#child_process_options_detached
-    opts.detached ??= process.platform !== 'win32';
+    // `detached: true` makes child process a leader of a new process group,
+    // making it possible to isolate process trees and prevent console signal propagation.
+    // @see https://nodejs.org/api/child_process.html#child_process_options_detached
+    opts.detached ??= true;
     const stdio = this.#configureStdio({
       pipe: opts.pipe,
     });
@@ -351,6 +350,7 @@ export class Process {
       this.#args,
       {
         detached: opts.detached,
+        windowsHide: true,
         env,
         stdio,
       },

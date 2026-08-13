@@ -955,6 +955,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
+    "platforms": ["darwin"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Started to flake on MacOS"
+  },
+  {
     "testIdPattern": "[tracing.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

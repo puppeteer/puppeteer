@@ -142,7 +142,6 @@ export class FirefoxLauncher extends BrowserLauncher {
         await rm(userDataDir);
       } catch (error) {
         this.logger(DEBUG_PREFIXES.error)?.(error);
-        throw error;
       }
     } else {
       try {
