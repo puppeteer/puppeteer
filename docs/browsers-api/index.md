@@ -332,7 +332,7 @@ Utility function to build a standard archive filename.
 </td></tr>
 <tr><td>
 
-<span id="computesystemexecutablepath">[computeSystemExecutablePath(options)](./browsers.computesystemexecutablepath.md)</span>
+<span id="computesystemexecutablepath">[computeSystemExecutablePath(options, validatePath)](./browsers.computesystemexecutablepath.md)</span>
 
 </td><td>
 

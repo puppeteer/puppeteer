@@ -11,6 +11,7 @@ Returns a path to a system-wide Chrome installation given a release channel name
 ```typescript
 export declare function computeSystemExecutablePath(
   options: SystemOptions,
+  validatePath?: boolean,
 ): string;
 ```
 
@@ -38,6 +39,19 @@ options
 [SystemOptions](./browsers.systemoptions.md)
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+validatePath
+
+</td><td>
+
+boolean
+
+</td><td>
+
+_(Optional)_
 
 </td></tr>
 </tbody></table>
