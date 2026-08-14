@@ -260,7 +260,7 @@ export function addPageBinding(
     [name](...args: unknown[]): Promise<unknown> {
       // This is the Puppeteer binding.
       // @ts-expect-error: In a different context.
-      const callPuppeteer = globalThis[name];
+      const callPuppeteer = globalThis[prefix + name];
       callPuppeteer.args ??= new Map();
       callPuppeteer.callbacks ??= new Map();
 
