@@ -9,7 +9,8 @@ import fs from 'node:fs';
 const rmOptions = {
   force: true,
   recursive: true,
-  maxRetries: 5,
+  maxRetries: 10,
+  retryDelay: 100,
 };
 
 /**

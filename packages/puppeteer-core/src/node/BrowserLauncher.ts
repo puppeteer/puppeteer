@@ -156,6 +156,11 @@ export abstract class BrowserLauncher {
     });
 
     if (!existsSync(launchArgs.executablePath)) {
+      if (launchArgs.isTempUserDataDir) {
+        await this.cleanUserDataDir(launchArgs.userDataDir, {
+          isTemp: true,
+        });
+      }
       throw new Error(
         `Browser was not found at the configured executablePath (${launchArgs.executablePath})`,
       );
