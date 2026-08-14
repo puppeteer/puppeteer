@@ -159,4 +159,72 @@ describe('CLI', function () {
     );
     assert.strictEqual(found[2], 'chrome', 'Expected browser to match');
   });
+
+  it('should name its own clear command when an installation is incomplete', async () => {
+    fs.mkdirSync(path.join(tmpDir, 'chrome', `linux-${testChromeBuildId}`), {
+      recursive: true,
+    });
+
+    const output = await runAndCaptureFailure(
+      new CLI({
+        cachePath: tmpDir,
+        scriptName: 'puppeteer',
+        prefixCommand: {cmd: 'browsers', description: 'Manage browsers'},
+      }),
+      [
+        'npx',
+        'puppeteer',
+        'browsers',
+        'install',
+        `chrome@${testChromeBuildId}`,
+        `--path=${tmpDir}`,
+        '--platform=linux',
+        `--base-url=${getServerUrl()}`,
+      ],
+    );
+
+    assert.ok(
+      output.includes('npx puppeteer browsers clear'),
+      `Expected the output to contain "npx puppeteer browsers clear" but got "${output}"`,
+    );
+  });
+
+  it('should not name its clear command for other install failures', async () => {
+    const output = await runAndCaptureFailure(new CLI(tmpDir), [
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `chrome@${testChromeBuildId}`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+      '--base-url=http://localhost:1',
+    ]);
+
+    assert.ok(
+      !output.includes('empty the whole browser cache'),
+      `Expected the output to not mention the clear command but got "${output}"`,
+    );
+  });
 });
+
+// Yargs logs the error and exits the process, so both have to be captured.
+async function runAndCaptureFailure(cli: CLI, argv: string[]): Promise<string> {
+  const logs: string[] = [];
+  const originalConsoleError = console.error;
+  const originalExit = process.exit;
+  console.error = (message: unknown) => {
+    logs.push(String(message));
+  };
+  try {
+    (process as any).exit = (code: number) => {
+      throw new Error(`process.exit called with ${code}`);
+    };
+    await cli.run(argv);
+  } catch (err) {
+    logs.push((err as Error).message);
+  } finally {
+    console.error = originalConsoleError;
+    process.exit = originalExit;
+  }
+  return logs.join('\n');
+}
