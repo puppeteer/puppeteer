@@ -351,10 +351,10 @@ async function main() {
           ? `Run failed: ${unexpected} unexpected result(s).`
           : `Run failed.`,
       );
-    } else {
-      console.log('Run succeeded.');
+      process.exit(1);
     }
-    process.exit(fail ? 1 : 0);
+    console.log('Run succeeded.');
+    process.exit(0);
   }
 }
 
