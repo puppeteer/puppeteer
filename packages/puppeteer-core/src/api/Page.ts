@@ -2508,7 +2508,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       return;
     }
 
-    await environment.value.fs.promises.writeFile(path, typedArray);
+    await environment.value.writeFile(path, typedArray);
   }
 
   /**
@@ -2620,8 +2620,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
       throw error;
     }
     if (options.path) {
-      const {createWriteStream} = environment.value.fs;
-      const stream = createWriteStream(options.path, 'binary');
+      const stream = environment.value.createWriteStream(options.path, {
+        encoding: 'binary',
+      });
       recorder.pipe(stream);
     }
     return recorder;

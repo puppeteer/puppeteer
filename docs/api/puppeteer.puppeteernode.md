@@ -183,6 +183,17 @@ Puppeteer can also be used to control the Chrome browser, but it works best with
 </td></tr>
 <tr><td>
 
+<span id="setfollowsymlinks">[setFollowSymlinks(followSymlinks)](./puppeteer.puppeteernode.setfollowsymlinks.md)</span>
+
+</td><td>
+
+</td><td>
+
+Defines whether Puppeteer should follow symlinks for file operations.
+
+</td></tr>
+<tr><td>
+
 <span id="trimcache">[trimCache()](./puppeteer.puppeteernode.trimcache.md)</span>
 
 </td><td>

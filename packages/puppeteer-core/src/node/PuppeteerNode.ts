@@ -18,6 +18,7 @@ import type {ConnectOptions} from '../common/ConnectOptions.js';
 import {debug, type Logger} from '../common/Debug.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
+import {environment} from '../environment.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
 import type {BrowserLauncher} from './BrowserLauncher.js';
@@ -328,5 +329,14 @@ export class PuppeteerNode extends Puppeteer {
         buildId: installedBrowser.buildId,
       });
     }
+  }
+
+  /**
+   * Defines whether Puppeteer should follow symlinks for file operations.
+   *
+   * @param followSymlinks - Whether Puppeteer should follow symlinks.
+   */
+  setFollowSymlinks(followSymlinks: boolean): void {
+    environment.value.followSymlinks = followSymlinks;
   }
 }

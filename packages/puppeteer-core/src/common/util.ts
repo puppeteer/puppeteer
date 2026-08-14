@@ -197,7 +197,7 @@ export async function getReadableAsTypedArray(
   const buffers: Uint8Array[] = [];
   const reader = readable.getReader();
   if (path) {
-    const fileHandle = await environment.value.fs.promises.open(path, 'w+');
+    const fileHandle = await environment.value.openFileForWriting(path);
     try {
       while (true) {
         const {done, value} = await reader.read();

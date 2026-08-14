@@ -147,10 +147,7 @@ async function getConnectionTransport(
     );
     const portPath = join(userDataDir, 'DevToolsActivePort');
     try {
-      const fileContent = await environment.value.fs.promises.readFile(
-        portPath,
-        'ascii',
-      );
+      const fileContent = await environment.value.readFile(portPath, 'ascii');
       const [rawPort, rawPath] = fileContent
         .split('\n')
         .map(line => {
