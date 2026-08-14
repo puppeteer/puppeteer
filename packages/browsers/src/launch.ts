@@ -101,7 +101,10 @@ export interface SystemOptions {
  *
  * @public
  */
-export function computeSystemExecutablePath(options: SystemOptions): string {
+export function computeSystemExecutablePath(
+  options: SystemOptions,
+  validatePath = true,
+): string {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
@@ -113,11 +116,16 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
     options.platform,
     options.channel,
   );
+
   for (const path of paths) {
     try {
       accessSync(path);
       return path;
     } catch {}
+  }
+
+  if (!validatePath) {
+    return paths[0];
   }
   throw new Error(
     `Could not find Google Chrome executable for channel '${options.channel}' at:${paths.map(
