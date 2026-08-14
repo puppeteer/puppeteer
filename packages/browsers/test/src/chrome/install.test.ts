@@ -100,8 +100,8 @@ describe('Chrome install', () => {
       `Expected error message to contain "${expectedMessage}" but got "${error?.message}"`,
     );
     assert.ok(
-      error?.message.includes('npx puppeteer browsers clear'),
-      `Expected error message to tell the user how to recover but got "${error?.message}"`,
+      error?.message.includes(`Delete ${expectedOutputPath}`),
+      `Expected error message to contain "Delete ${expectedOutputPath}" but got "${error?.message}"`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });

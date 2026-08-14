@@ -452,7 +452,7 @@ async function installUrl(
         throw new Error(
           `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing. ` +
             `An earlier install of this build probably did not finish. ` +
-            `Run \`npx puppeteer browsers clear\` to empty the browser cache, then install again.`,
+            `Delete ${outputPath} and install the browser again.`,
         );
       }
       await runSetup(installedBrowser, logger);
