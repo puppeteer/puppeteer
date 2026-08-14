@@ -142,7 +142,11 @@ export class BidiBrowser extends Browser {
     );
 
     const browser = new BidiBrowser(session.browser, opts, opts.logger);
+    browser._startBuffering();
     browser.#initialize();
+    setTimeout(() => {
+      browser._stopBufferingAndReplay();
+    }, 0);
     return browser;
   }
 

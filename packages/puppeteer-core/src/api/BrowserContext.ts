@@ -30,7 +30,11 @@ import type {
   WaitForTargetOptions,
 } from './Browser.js';
 import type {Page} from './Page.js';
+import {PageEvent} from './Page.js';
 import type {Target} from './Target.js';
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
+import type {HTTPRequest} from './HTTPRequest.js';
+import type {HTTPResponse} from './HTTPResponse.js';
 
 /**
  * @public
@@ -65,6 +69,30 @@ export interface BrowserContextEvents extends Record<EventType, unknown> {
   [BrowserContextEvent.TargetChanged]: Target;
   [BrowserContextEvent.TargetCreated]: Target;
   [BrowserContextEvent.TargetDestroyed]: Target;
+  /**
+   * Emitted when a console message is logged.
+   */
+  [PageEvent.Console]: ConsoleMessage;
+  /**
+   * Emitted when a page issues a request.
+   */
+  [PageEvent.Request]: HTTPRequest;
+  /**
+   * Emitted when a response is received.
+   */
+  [PageEvent.Response]: HTTPResponse;
+  /**
+   * Emitted when a request fails.
+   */
+  [PageEvent.RequestFailed]: HTTPRequest;
+  /**
+   * Emitted when a request finishes.
+   */
+  [PageEvent.RequestFinished]: HTTPRequest;
+  /**
+   * Emitted when a request is served from cache.
+   */
+  [PageEvent.RequestServedFromCache]: HTTPRequest;
 }
 
 /**

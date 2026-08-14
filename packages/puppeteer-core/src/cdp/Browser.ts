@@ -35,7 +35,7 @@ import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
-import type {Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -204,6 +204,7 @@ export class CdpBrowser extends BrowserBase {
   };
 
   async _attach(downloadBehavior: DownloadBehavior | undefined): Promise<void> {
+    this._startBuffering();
     const connectionEmitter = this.#subscriptions.use(
       new EventEmitter(this.#connection),
     );
@@ -231,6 +232,9 @@ export class CdpBrowser extends BrowserBase {
       this.#onTargetDiscovered,
     );
     await this.#targetManager.initialize();
+    setTimeout(() => {
+      this._stopBufferingAndReplay();
+    }, 0);
   }
 
   _detach(): void {
@@ -378,6 +382,15 @@ export class CdpBrowser extends BrowserBase {
     ) {
       this.emit(BrowserEvent.TargetCreated, target);
       target.browserContext().emit(BrowserContextEvent.TargetCreated, target);
+      if (
+        target.type() === 'page' ||
+        target.type() === 'background_page' ||
+        target.type() === 'webview'
+      ) {
+        void target.page().catch(err => {
+          this.logger?.(DEBUG_PREFIXES.error)?.(err);
+        });
+      }
     }
   };
 

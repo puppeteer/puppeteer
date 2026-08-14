@@ -826,6 +826,69 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
+   * @internal
+   */
+  override emit<Key extends keyof PageEvents>(
+    type: Key,
+    event: PageEvents[Key],
+  ): boolean {
+    const emitted = super.emit(type, event);
+    if (
+      type === PageEvent.Console ||
+      type === PageEvent.Request ||
+      type === PageEvent.Response ||
+      type === PageEvent.RequestFailed ||
+      type === PageEvent.RequestFinished ||
+      type === PageEvent.RequestServedFromCache
+    ) {
+      try {
+        const browser = this.browser();
+        if (browser) {
+          if (browser._isBuffering) {
+            browser._deferEvent(this.browserContext(), type as any, event);
+            browser._deferEvent(browser, type as any, event);
+          } else {
+            this.browserContext().emit(type as any, event);
+            browser.emit(type as any, event);
+          }
+        }
+      } catch {
+        // Safe check during early construction
+      }
+    }
+    return emitted;
+  }
+
+  /**
+   * @internal
+   */
+  override listenerCount(type: keyof PageEvents): number {
+    let count = super.listenerCount(type);
+    if (
+      type === PageEvent.Console ||
+      type === PageEvent.Request ||
+      type === PageEvent.Response ||
+      type === PageEvent.RequestFailed ||
+      type === PageEvent.RequestFinished ||
+      type === PageEvent.RequestServedFromCache
+    ) {
+      try {
+        const browser = this.browser();
+        if (browser) {
+          count += this.browserContext().listenerCount(type as any);
+          count += browser.listenerCount(type as any);
+          if (browser._isBuffering) {
+            count += 1;
+          }
+        }
+      } catch {
+        // Safe check during early construction
+      }
+    }
+    return count;
+  }
+
+  /**
    * `true` if the service worker are being bypassed, `false` otherwise.
    */
   abstract isServiceWorkerBypassed(): boolean;

@@ -34,7 +34,12 @@ import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {Extension} from './Extension.js';
 import type {Page} from './Page.js';
+import {PageEvent} from './Page.js';
 import type {Target} from './Target.js';
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
+import type {HTTPRequest} from './HTTPRequest.js';
+import type {HTTPResponse} from './HTTPResponse.js';
+
 /**
  * @public
  */
@@ -218,6 +223,30 @@ export interface BrowserEvents extends Record<EventType, unknown> {
    * @internal
    */
   [BrowserEvent.TargetDiscovered]: Protocol.Target.TargetInfo;
+  /**
+   * Emitted when a console message is logged.
+   */
+  [PageEvent.Console]: ConsoleMessage;
+  /**
+   * Emitted when a page issues a request.
+   */
+  [PageEvent.Request]: HTTPRequest;
+  /**
+   * Emitted when a response is received.
+   */
+  [PageEvent.Response]: HTTPResponse;
+  /**
+   * Emitted when a request fails.
+   */
+  [PageEvent.RequestFailed]: HTTPRequest;
+  /**
+   * Emitted when a request finishes.
+   */
+  [PageEvent.RequestFinished]: HTTPRequest;
+  /**
+   * Emitted when a request is served from cache.
+   */
+  [PageEvent.RequestServedFromCache]: HTTPRequest;
 }
 
 /**
@@ -477,6 +506,46 @@ export interface PWAState {
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
   #logger: Logger;
+
+  /**
+   * @internal
+   */
+  _deferredEvents: Array<{
+    emitter: EventEmitter<any>;
+    type: any;
+    event: any;
+  }> = [];
+
+  /**
+   * @internal
+   */
+  _isBuffering = false;
+
+  /**
+   * @internal
+   */
+  _startBuffering(): void {
+    this._isBuffering = true;
+  }
+
+  /**
+   * @internal
+   */
+  _stopBufferingAndReplay(): void {
+    this._isBuffering = false;
+    const events = this._deferredEvents;
+    this._deferredEvents = [];
+    for (const {emitter, type, event} of events) {
+      emitter.emit(type, event);
+    }
+  }
+
+  /**
+   * @internal
+   */
+  _deferEvent(emitter: EventEmitter<any>, type: any, event: any): void {
+    this._deferredEvents.push({emitter, type, event});
+  }
 
   /**
    * @internal
