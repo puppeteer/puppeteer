@@ -302,10 +302,13 @@ export class ChromeLauncher extends BrowserLauncher {
     validatePath = true,
   ): Promise<string> {
     if (channel) {
-      return computeSystemExecutablePath({
-        browser: SupportedBrowsers.CHROME,
-        channel: convertPuppeteerChannelToBrowsersChannel(channel),
-      });
+      return computeSystemExecutablePath(
+        {
+          browser: SupportedBrowsers.CHROME,
+          channel: convertPuppeteerChannelToBrowsersChannel(channel),
+        },
+        validatePath,
+      );
     } else {
       return await this.resolveExecutablePath(undefined, validatePath);
     }
