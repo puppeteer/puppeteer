@@ -33,7 +33,7 @@ You can manually download the required browsers after installation by running:
 npx puppeteer browsers install
 ```
 
-Alternatively, you can configure your package manager to allow the install script to run (for example, with npm, by adding `"puppeteer"` to `"allowScripts"` in your `package.json`).
+Alternatively, you can configure your package manager to allow the install script to run (for example, with npm, by adding `"puppeteer"` to `"allowScripts"` in your `package.json`, or with pnpm by approving Puppeteer's build script).
 
 :::
 
