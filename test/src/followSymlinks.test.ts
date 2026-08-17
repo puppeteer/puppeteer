@@ -159,6 +159,48 @@ describe('followSymlinks', () => {
       expect(error).toBeDefined();
       expect((error as NodeJS.ErrnoException).code).toBe('ELOOP');
     });
+
+    it('should reject screencast to an existing symlink path', async function () {
+      if (!symlinksSupported || process.platform === 'win32') {
+        this.skip();
+      }
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const targetFile = path.join(tmpDir, 'output.webm');
+      const linkFile = path.join(tmpDir, 'output-link.webm');
+      await fs.promises.writeFile(targetFile, 'placeholder');
+      await fs.promises.symlink(targetFile, linkFile);
+
+      let error!: Error;
+      try {
+        await page.screencast({path: linkFile as `${string}.webm`});
+      } catch (err) {
+        error = err as Error;
+      }
+      expect(error).toBeDefined();
+      expect((error as NodeJS.ErrnoException).code).toBe('ELOOP');
+    });
+
+    it('should reject screencast when overwrite is false and file exists', async function () {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const targetFile = path.join(tmpDir, 'output.webm');
+      await fs.promises.writeFile(targetFile, 'placeholder');
+
+      let error!: Error;
+      try {
+        await page.screencast({
+          path: targetFile as `${string}.webm`,
+          overwrite: false,
+        });
+      } catch (err) {
+        error = err as Error;
+      }
+      expect(error).toBeDefined();
+      expect((error as NodeJS.ErrnoException).code).toBe('EEXIST');
+    });
   });
 
   describe('when followSymlinks is true (default)', () => {

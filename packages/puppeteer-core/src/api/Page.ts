@@ -2603,6 +2603,19 @@ export abstract class Page extends EventEmitter<PageEvents> {
       throw new Error(`\`scale\` must be greater than 0.`);
     }
 
+    if (options.path && environment.value.path) {
+      await environment.value.mkdir(
+        environment.value.path.dirname(options.path),
+        {recursive: options.overwrite ?? true},
+      );
+    }
+
+    const stream = options.path
+      ? environment.value.createWriteStream(options.path, {
+          encoding: 'binary',
+          overwrite: options.overwrite,
+        })
+      : undefined;
     const recorder = new ScreenRecorder(
       this,
       width,
@@ -2619,10 +2632,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       void recorder.stop();
       throw error;
     }
-    if (options.path) {
-      const stream = environment.value.createWriteStream(options.path, {
-        encoding: 'binary',
-      });
+    if (stream) {
       recorder.pipe(stream);
     }
     return recorder;

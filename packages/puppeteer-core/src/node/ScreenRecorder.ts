@@ -6,9 +6,7 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
-import fs from 'node:fs';
 import os from 'node:os';
-import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
 import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
@@ -78,8 +76,6 @@ export interface ScreenRecorderOptions {
   quality?: number;
   colors?: number;
   scale?: number;
-  path?: `${string}.${VideoFormat}`;
-  overwrite?: boolean;
 }
 
 /**
@@ -114,8 +110,6 @@ export class ScreenRecorder extends PassThrough {
       delay,
       quality,
       colors,
-      path,
-      overwrite,
     }: ScreenRecorderOptions = {},
     logger?: Logger,
   ) {
@@ -131,7 +125,6 @@ export class ScreenRecorder extends PassThrough {
     delay ??= -1;
     quality ??= CRF_VALUE;
     colors ??= 256;
-    overwrite ??= true;
 
     this.#fps = fps;
 
@@ -166,11 +159,6 @@ export class ScreenRecorder extends PassThrough {
     const vf = formatArgs.indexOf('-vf');
     if (vf !== -1) {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
-    }
-
-    // Ensure provided output directory path exists.
-    if (path) {
-      fs.mkdirSync(dirname(path), {recursive: overwrite});
     }
 
     this.#process = spawn(
@@ -210,8 +198,6 @@ export class ScreenRecorder extends PassThrough {
         // Filters to ensure the images are piped correctly,
         // combined with any format-specific filters.
         ['-vf', filters.join()],
-        // Overwrite output, or exit immediately if file already exists.
-        [overwrite ? '-y' : '-n'],
         'pipe:1',
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
