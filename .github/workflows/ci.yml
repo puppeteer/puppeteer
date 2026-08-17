@@ -22,13 +22,14 @@ on:
       - '**'
 
 concurrency:
-  group: ci-${{ github.head_ref || github.run_id }}
+  group: ci-${{ github.head_ref || github.run_id }}-${{ github.event.action == 'labeled' && github.event.label.name != 'full-ci' && github.run_id || '' }}
   cancel-in-progress: true
 
 jobs:
   inspect-code:
     name: '[Required] Inspect code'
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'labeled' || github.event.label.name == 'full-ci' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -72,6 +73,7 @@ jobs:
           rm $diff_file
 
   check-changes:
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'labeled' || github.event.label.name == 'full-ci' }}
     uses: ./.github/workflows/changed-packages.yml
     with:
       check-mergeable-state: true
@@ -387,7 +389,7 @@ jobs:
       - run: 'exit 0'
 
   docker-tests:
-    name: '[Required] Docker image test'
+    name: Docker image test
     runs-on: ubuntu-latest
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -418,8 +420,18 @@ jobs:
         run: |
           docker run -i --init --cap-add=SYS_ADMIN --rm puppeteer-test-image node -e "`cat test/smoke-test.js`"
 
+  docker-tests-required:
+    name: '[Required] Docker image test'
+    needs: [check-changes, docker-tests]
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+      - if: ${{ needs.docker-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'
+
   unit-tests:
-    name: '[Required] Puppeteer Unit tests'
+    name: Puppeteer Unit tests
     runs-on: ubuntu-latest
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
@@ -439,8 +451,18 @@ jobs:
         run: |
           npm run unit -w puppeteer-core -w puppeteer --if-present
 
+  unit-tests-required:
+    name: '[Required] Puppeteer Unit tests'
+    needs: [check-changes, unit-tests]
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+      - if: ${{ needs.unit-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'
+
   ng-schematics-unit:
-    name: '[Required] Angular Schematics tests'
+    name: Angular Schematics unit tests
     runs-on: ubuntu-latest
     needs: check-changes
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
@@ -458,6 +480,16 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run tests
         run: npm run unit --workspace @puppeteer/ng-schematics
+
+  ng-schematics-unit-required:
+    name: '[Required] Angular Schematics tests'
+    needs: [check-changes, ng-schematics-unit]
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+      - if: ${{ needs.ng-schematics-unit.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
+        run: 'exit 1'
+      - run: 'exit 0'
 
   ng-schematics-smoke-tests:
     name: Angular Schematics smoke tests on ${{ matrix.os }} ${{ matrix.test-runner }}
