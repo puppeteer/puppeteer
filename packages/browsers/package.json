@@ -83,7 +83,7 @@
     "!*.tsbuildinfo"
   ],
   "dependencies": {
-    "modern-tar": "^0.8.0",
+    "modern-tar": "^0.8.4",
     "yargs": "^18.0.0"
   },
   "peerDependencies": {
