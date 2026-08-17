@@ -10,11 +10,23 @@ import {debuglog} from 'node:util';
 
 import {environment} from './environment.js';
 
+const READ_NOFOLLOW_FLAGS = fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW;
+
 const WRITE_NOFOLLOW_FLAGS =
   fs.constants.O_WRONLY |
   fs.constants.O_CREAT |
   fs.constants.O_TRUNC |
   fs.constants.O_NOFOLLOW;
+
+const WRITE_NOFOLLOW_NOOVERWRITE_FLAGS =
+  fs.constants.O_WRONLY |
+  fs.constants.O_CREAT |
+  fs.constants.O_EXCL |
+  fs.constants.O_NOFOLLOW;
+
+const WRITE_NOOVERWRITE_FLAGS =
+  fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL;
+
 const WRITE_NOFOLLOW_MODE = 0o600;
 
 async function readFile(
@@ -32,7 +44,7 @@ async function readFile(
   ) {
     return await fs.promises.readFile(path, {
       encoding,
-      flag: fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW,
+      flag: READ_NOFOLLOW_FLAGS,
     });
   }
   return await fs.promises.readFile(path, {encoding});
@@ -72,21 +84,31 @@ environment.value = {
   },
   createWriteStream: (filePath, options) => {
     const encoding = options?.encoding;
+    const overwrite = options?.overwrite ?? true;
     if (
       !environment.value.followSymlinks &&
       fs.constants.O_NOFOLLOW !== undefined
     ) {
-      const fd = fs.openSync(
-        filePath,
-        WRITE_NOFOLLOW_FLAGS,
-        WRITE_NOFOLLOW_MODE,
-      );
+      const flags = overwrite
+        ? WRITE_NOFOLLOW_FLAGS
+        : WRITE_NOFOLLOW_NOOVERWRITE_FLAGS;
+      const fd = fs.openSync(filePath, flags, WRITE_NOFOLLOW_MODE);
       return fs.createWriteStream('', {
         fd,
         mode: WRITE_NOFOLLOW_MODE,
         encoding,
       });
     }
+    if (!overwrite) {
+      const fd = fs.openSync(filePath, WRITE_NOOVERWRITE_FLAGS);
+      return fs.createWriteStream('', {
+        fd,
+        encoding,
+      });
+    }
     return fs.createWriteStream(filePath, encoding ? {encoding} : undefined);
+  },
+  mkdir: async (dirPath, options) => {
+    await fs.promises.mkdir(dirPath, options);
   },
 };

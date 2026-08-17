@@ -335,6 +335,8 @@ export class PuppeteerNode extends Puppeteer {
    * Defines whether Puppeteer should follow symlinks for file operations.
    *
    * @param followSymlinks - Whether Puppeteer should follow symlinks.
+   *
+   * @public
    */
   setFollowSymlinks(followSymlinks: boolean): void {
     environment.value.followSymlinks = followSymlinks;

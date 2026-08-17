@@ -31,8 +31,10 @@ export interface EnvironmentDependencies {
     path: string,
     options?: {
       encoding?: BufferEncoding;
+      overwrite?: boolean;
     },
   ) => Writable;
+  mkdir: (path: string, options?: {recursive?: boolean}) => Promise<void>;
 }
 
 /**
@@ -62,6 +64,9 @@ export const environment: {
     },
     createWriteStream: () => {
       throw new Error('createWriteStream is not available in this environment');
+    },
+    mkdir: () => {
+      throw new Error('mkdir is not available in this environment');
     },
   },
 };
