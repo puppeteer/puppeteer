@@ -158,6 +158,14 @@ export interface InstallOptions {
 }
 
 /**
+ * Thrown when an installation folder is present but does not hold a browser
+ * that can be launched.
+ *
+ * @internal
+ */
+export class IncompleteInstallationError extends Error {}
+
+/**
  * Install using custom provider plugins.
  * Tries each provider in order until one succeeds.
  * Falls back to default provider if all custom providers fail.
@@ -270,9 +278,16 @@ async function installWithProviders(
       return `  - ${e.providerName}: ${e.error.message}`;
     })
     .join('\n');
-  throw new Error(
-    `All providers failed for ${options.browser} ${options.buildId}:\n${errorDetails}`,
-  );
+  const message = `All providers failed for ${options.browser} ${options.buildId}:\n${errorDetails}`;
+  if (
+    errors.length > 0 &&
+    errors.every(e => {
+      return e.error instanceof IncompleteInstallationError;
+    })
+  ) {
+    throw new IncompleteInstallationError(message);
+  }
+  throw new Error(message);
 }
 
 /**
@@ -450,8 +465,10 @@ async function installUrl(
   try {
     if (existsSync(outputPath)) {
       if (!existsSync(installedBrowser.executablePath)) {
-        throw new Error(
-          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing`,
+        throw new IncompleteInstallationError(
+          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing. ` +
+            `An earlier install of this build probably did not finish. ` +
+            `Delete ${outputPath} and install the browser again.`,
         );
       }
       await runSetup(installedBrowser, logger);

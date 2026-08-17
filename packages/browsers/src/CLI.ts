@@ -21,7 +21,7 @@ import {
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
-import {install} from './install.js';
+import {IncompleteInstallationError, install} from './install.js';
 import {
   computeExecutablePath,
   computeSystemExecutablePath,
@@ -635,17 +635,32 @@ export class CLI {
       args.platform,
       args.browser.buildId,
     );
-    await install({
-      browser: args.browser.name,
-      buildId: args.browser.buildId,
-      platform: args.platform,
-      cacheDir: args.path ?? this.#cachePath,
-      downloadProgressCallback: 'default',
-      baseUrl: args.baseUrl,
-      buildIdAlias:
-        originalBuildId !== args.browser.buildId ? originalBuildId : undefined,
-      installDeps: args.installDeps,
-    });
+    try {
+      await install({
+        browser: args.browser.name,
+        buildId: args.browser.buildId,
+        platform: args.platform,
+        cacheDir: args.path ?? this.#cachePath,
+        downloadProgressCallback: 'default',
+        baseUrl: args.baseUrl,
+        buildIdAlias:
+          originalBuildId !== args.browser.buildId
+            ? originalBuildId
+            : undefined,
+        installDeps: args.installDeps,
+      });
+    } catch (error) {
+      if (!(error instanceof IncompleteInstallationError)) {
+        throw error;
+      }
+      const command = this.#prefixCommand
+        ? `${this.#scriptName} ${this.#prefixCommand.cmd}`
+        : this.#scriptName;
+      throw new Error(
+        `${error.message}\nYou can also empty the whole browser cache with \`npx ${command} clear\` and then run \`npx ${command} install\` again.`,
+        {cause: error},
+      );
+    }
     const executablePath = computeExecutablePath({
       browser: args.browser.name,
       buildId: args.browser.buildId,

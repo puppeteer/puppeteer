@@ -11,6 +11,7 @@ import https from 'node:https';
 import os from 'node:os';
 import path from 'node:path';
 
+import {IncompleteInstallationError} from '../../../lib/install.js';
 import {
   install,
   canDownload,
@@ -98,6 +99,14 @@ describe('Chrome install', () => {
     assert.ok(
       error?.message.includes(expectedMessage),
       `Expected error message to contain "${expectedMessage}" but got "${error?.message}"`,
+    );
+    assert.ok(
+      error?.message.includes(`Delete ${expectedOutputPath}`),
+      `Expected error message to contain "Delete ${expectedOutputPath}" but got "${error?.message}"`,
+    );
+    assert.ok(
+      error instanceof IncompleteInstallationError,
+      `Expected an IncompleteInstallationError but got "${error?.name}"`,
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
