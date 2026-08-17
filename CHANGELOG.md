@@ -2,6 +2,28 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.7.0...puppeteer-v25.8.0) (2026-08-17)
+
+
+### 🎉 Features
+
+* support followSymlinks option ([#15335](https://github.com/puppeteer/puppeteer/issues/15335)) ([af6a23d](https://github.com/puppeteer/puppeteer/commit/af6a23dde5e95516929b24b62f2eac4e71fa14c8))
+
+
+### 🛠️ Fixes
+
+* computeSystemExecutablePath support validatePath ([#15340](https://github.com/puppeteer/puppeteer/issues/15340)) ([73da9a4](https://github.com/puppeteer/puppeteer/commit/73da9a41b32f26e995ac00b50c958e6e95fb2be2))
+* launch browsers in detached mode on Windows to fix flakiness ([#15339](https://github.com/puppeteer/puppeteer/issues/15339)) ([8e1022b](https://github.com/puppeteer/puppeteer/commit/8e1022b543f27d9d517310435aaa2b299fe99d46))
+* remove redundant overwrite and file access from ScreenRecorder ([#15352](https://github.com/puppeteer/puppeteer/issues/15352)) ([61a1675](https://github.com/puppeteer/puppeteer/commit/61a16759e01ed622ffac0d0426d35180f7ab4064))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.0 to 3.2.1
+
+
 ## [25.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.6.0...puppeteer-v25.7.0) (2026-08-13)
 
 
