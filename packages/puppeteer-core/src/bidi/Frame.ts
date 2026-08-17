@@ -29,6 +29,8 @@ import {
   type SetContentWaitForOptions,
   type WaitForOptions,
 } from '../api/Frame.js';
+import {BrowserEvent} from '../api/Browser.js';
+import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
 import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
@@ -48,6 +50,7 @@ import {BidiElementHandle} from './ElementHandle.js';
 import {ExposableFunction} from './ExposedFunction.js';
 import {BidiHTTPRequest, requests} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
+import {BidiBrowserContext} from './BrowserContext.js';
 import type {BidiPage} from './Page.js';
 import type {BidiRealm} from './Realm.js';
 import {BidiFrameRealm} from './Realm.js';
@@ -172,17 +175,35 @@ export class BidiFrame extends Frame {
         return;
       }
       if (isConsoleLogEntry(entry)) {
-        if (!this.page().listenerCount(PageEvent.Console)) {
+        const hasPageConsoleListeners =
+          this.page().listenerCount(PageEvent.Console) > 0;
+        const hasBrowserConsoleListeners =
+          this.page().browser().listenerCount(BrowserEvent.Console) > 0;
+        const hasContextConsoleListeners =
+          this.page().browserContext().listenerCount(BrowserContextEvent.Console) > 0;
+        const isContextInitializing =
+          (this.page().browserContext() as BidiBrowserContext).isInitializing;
+
+        if (
+          !hasPageConsoleListeners &&
+          !hasBrowserConsoleListeners &&
+          !hasContextConsoleListeners &&
+          !isContextInitializing
+        ) {
           return;
         }
         const args = entry.args.map(arg => {
           return this.mainRealm().createHandle(arg);
         });
 
-        this.page().trustedEmitter.emit(
-          PageEvent.Console,
-          getConsoleMessage(entry, args, this),
-        );
+        const message = getConsoleMessage(entry, args, this);
+
+        if (hasPageConsoleListeners) {
+          this.page().trustedEmitter.emit(PageEvent.Console, message);
+        }
+        (
+          this.page().browserContext() as BidiBrowserContext
+        ).emitContextEvent(BrowserContextEvent.Console, message);
       } else if (isJavaScriptLogEntry(entry)) {
         const error = new Error(entry.text ?? '');
 
