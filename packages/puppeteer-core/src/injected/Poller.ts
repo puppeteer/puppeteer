@@ -38,10 +38,13 @@ function parentOf(node: Node): Node | null {
 }
 
 function hasAncestorIn(node: Node, nodes: Set<Node>): boolean {
-  for (let parent = parentOf(node); parent; parent = parentOf(parent)) {
+  let current = node;
+  let parent: Node | null;
+  while ((parent = parentOf(current))) {
     if (nodes.has(parent)) {
       return true;
     }
+    current = parent;
   }
   return false;
 }
