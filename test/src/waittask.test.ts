@@ -434,9 +434,88 @@ describe('waittask specs', function () {
       await watchdog;
     });
 
-    // MutationPoller currently does not support shadow DOM.
-    // See https://github.com/puppeteer/puppeteer/issues/13163.
+    const addShadowHost = (tag: string) => {
+      document.body
+        .appendChild(document.createElement(tag))
+        .attachShadow({mode: 'open'});
+    };
+
+    const addElementToShadowRoot = (selector: string, tag: string) => {
+      const element = document.createElement(tag);
+      element.textContent = 'inside';
+      document.querySelector(selector)!.shadowRoot!.appendChild(element);
+    };
+
     it('should work when node is added in a shadow root', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const watcher = page.waitForSelector('div >>> h1');
+      await page.evaluate(addShadowHost, 'div');
+      await expect(
+        Promise.race([watcher, createTimeout(40)]),
+      ).resolves.toBeFalsy();
+      await page.evaluate(addElementToShadowRoot, 'div', 'h1');
+      using element = await watcher;
+      expect(
+        await element!.evaluate(el => {
+          return el.textContent;
+        }),
+      ).toBe('inside');
+    });
+
+    it('should work when node is added in a shadow root that predates the wait', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addShadowHost, 'div');
+      const watcher = page.waitForSelector('div >>> h1');
+      await expect(
+        Promise.race([watcher, createTimeout(40)]),
+      ).resolves.toBeFalsy();
+      await page.evaluate(addElementToShadowRoot, 'div', 'h1');
+      using element = await watcher;
+      expect(
+        await element!.evaluate(el => {
+          return el.textContent;
+        }),
+      ).toBe('inside');
+    });
+
+    it('should work when node is added in a nested shadow root', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const watcher = page.waitForSelector('div >>> h1');
+      await page.evaluate(() => {
+        const host = document.body.appendChild(document.createElement('div'));
+        const inner = document.createElement('section');
+        inner.attachShadow({mode: 'open'});
+        host.attachShadow({mode: 'open'}).appendChild(inner);
+      });
+      await expect(
+        Promise.race([watcher, createTimeout(40)]),
+      ).resolves.toBeFalsy();
+      await page.evaluate(() => {
+        const h1 = document.createElement('h1');
+        h1.textContent = 'inside';
+        document
+          .querySelector('div')!
+          .shadowRoot!.querySelector('section')!
+          .shadowRoot!.appendChild(h1);
+      });
+      using element = await watcher;
+      expect(
+        await element!.evaluate(el => {
+          return el.textContent;
+        }),
+      ).toBe('inside');
+    });
+
+    // Attaching a shadow root to a node that is already in the DOM does not
+    // produce a mutation, so MutationPoller has nothing to react to.
+    // See https://github.com/whatwg/dom/issues/1287.
+    it('should work when a shadow root is attached to an existing node', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
