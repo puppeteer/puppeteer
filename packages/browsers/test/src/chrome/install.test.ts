@@ -11,6 +11,7 @@ import https from 'node:https';
 import os from 'node:os';
 import path from 'node:path';
 
+import {InstallLockError} from '../../../lib/installLock.js';
 import {
   install,
   canDownload,
@@ -38,6 +39,25 @@ describe('Chrome install', () => {
   afterEach(() => {
     new Cache(tmpDir).clear();
   });
+
+  function expectedInstallLockPath(): string {
+    return path.join(
+      tmpDir,
+      'chrome',
+      `.installLock-${BrowserPlatform.LINUX}-${testChromeBuildId}`,
+    );
+  }
+
+  function writeStaleInstallLock(
+    lockPath: string,
+    owner: {hostname: string; pid: number},
+  ): void {
+    fs.mkdirSync(lockPath, {recursive: true});
+    const heartbeatPath = path.join(lockPath, 'heartbeat');
+    fs.writeFileSync(heartbeatPath, `${JSON.stringify(owner)}\n`);
+    const staleTime = new Date(Date.now() - 2 * 60 * 1000);
+    fs.utimesSync(heartbeatPath, staleTime, staleTime);
+  }
 
   it('should check if a buildId can be downloaded', async () => {
     assert.ok(
@@ -99,7 +119,65 @@ describe('Chrome install', () => {
       error?.message.includes(expectedMessage),
       `Expected error message to contain "${expectedMessage}" but got "${error?.message}"`,
     );
+    assert.doesNotMatch(
+      error?.message ?? '',
+      /recovering a stale install lock/,
+    );
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
+  });
+
+  it('preserves install-lock timeout details without starting installation', async function () {
+    this.timeout(60000);
+    const lockPath = expectedInstallLockPath();
+    const owner = {
+      hostname: `${os.hostname()}-remote`,
+      pid: process.pid,
+    };
+    writeStaleInstallLock(lockPath, owner);
+
+    let error: (Error & {cause?: unknown}) | undefined;
+    try {
+      await install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: testChromeBuildId,
+        installLockTimeout: 0,
+        logger: () => {
+          return () => {};
+        },
+      });
+    } catch (cause) {
+      assert(cause instanceof Error);
+      error = cause as Error & {cause?: unknown};
+    }
+
+    assert(error);
+    const lockError = error.cause;
+    assert(lockError instanceof InstallLockError);
+    assert.strictEqual(lockError.lockPath, lockPath);
+    assert.strictEqual(lockError.reason, 'owner-unverifiable');
+    assert.deepStrictEqual(lockError.owner, owner);
+    assert.ok(lockError.observedAgeMs! >= 60 * 1000);
+    assert.ok(lockError.waitedMs >= 0);
+
+    for (const detail of [
+      tmpDir,
+      lockPath,
+      lockError.reason,
+      owner.hostname,
+      String(owner.pid),
+    ]) {
+      assert.ok(
+        error.message.includes(detail),
+        `Expected install-lock guidance to include ${detail}`,
+      );
+    }
+    assert.match(error.message, /remove[\s\S]*lock[\s\S]*retry/i);
+    assert.deepStrictEqual(fs.readdirSync(path.dirname(lockPath)), [
+      path.basename(lockPath),
+    ]);
+    assert.strictEqual(fs.existsSync(lockPath), true);
   });
 
   it('does not list install lock directories as installed browsers', () => {

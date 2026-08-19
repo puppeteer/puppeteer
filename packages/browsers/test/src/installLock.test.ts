@@ -12,7 +12,12 @@ import os from 'node:os';
 import path from 'node:path';
 import {setTimeout as sleep} from 'node:timers/promises';
 
-import {withInstallLock} from '../../lib/installLock.js';
+import {
+  hasUsableBirthtime,
+  compareInstallLockIdentities,
+  InstallLockError,
+  withInstallLock,
+} from '../../lib/installLock.js';
 
 describe('installLock', function () {
   let tmpDir = '/tmp/puppeteer-browsers-test';
@@ -34,11 +39,46 @@ describe('installLock', function () {
     });
   });
 
-  const testLockOptions = {
+  const defaultTestLockOptions = {
+    acquisitionTimeout: 1000,
     heartbeatInterval: 1000,
     retryDelay: 1,
     staleThreshold: 10000,
   };
+  const testLockOptions = {
+    ...defaultTestLockOptions,
+    warningLogger: () => {},
+  };
+
+  function writeStaleHeartbeat(contents: string): string {
+    fs.mkdirSync(lockPath, {recursive: true});
+    const heartbeatPath = path.join(lockPath, 'heartbeat');
+    fs.writeFileSync(heartbeatPath, contents);
+    const staleTime = new Date(Date.now() - 20000);
+    fs.utimesSync(heartbeatPath, staleTime, staleTime);
+    return heartbeatPath;
+  }
+
+  function writeStaleOwnerHeartbeat(
+    pid: number,
+    hostname = os.hostname(),
+  ): string {
+    return writeStaleHeartbeat(`${JSON.stringify({hostname, pid})}\n`);
+  }
+
+  function requireStableDirectoryBirthtime(context: Mocha.Context): void {
+    const before = fs.statSync(lockPath, {bigint: true});
+    const probePath = path.join(lockPath, 'birthtime-probe');
+    fs.mkdirSync(probePath);
+    fs.rmSync(probePath, {recursive: true});
+    const after = fs.statSync(lockPath, {bigint: true});
+    if (
+      !hasUsableBirthtime(before) ||
+      compareInstallLockIdentities(before, after) !== 'same'
+    ) {
+      context.skip();
+    }
+  }
 
   async function exitedProcessPid(): Promise<number> {
     const child = spawn(process.execPath, ['-e', ''], {
@@ -52,52 +92,245 @@ describe('installLock', function () {
     return pid;
   }
 
-  it('does not claim stale locks owned by live processes', async () => {
-    fs.mkdirSync(lockPath, {recursive: true});
-    const heartbeatPath = path.join(lockPath, 'heartbeat');
-    fs.writeFileSync(heartbeatPath, `${process.pid}\n`);
-    const staleTime = new Date(Date.now() - 20000);
-    fs.utimesSync(heartbeatPath, staleTime, staleTime);
+  it('waits without claiming while a stale lock owner is still alive', async () => {
+    writeStaleOwnerHeartbeat(process.pid);
     let lockEntered = false;
+    let warningCount = 0;
+    const warningObserved = Promise.withResolvers<void>();
 
     const lock = withInstallLock(
       lockPath,
       async () => {
         lockEntered = true;
       },
-      testLockOptions,
+      {
+        ...testLockOptions,
+        warningLogger: () => {
+          warningCount++;
+          warningObserved.resolve();
+        },
+      },
     );
 
-    await sleep(20);
-    assert.strictEqual(lockEntered, false);
-    fs.rmSync(lockPath, {recursive: true, force: true});
-    await lock;
+    try {
+      await warningObserved.promise;
+      await sleep(20);
+      assert.strictEqual(lockEntered, false);
+      assert.strictEqual(fs.existsSync(lockPath), true);
+      assert.strictEqual(warningCount, 1);
+    } finally {
+      fs.rmSync(lockPath, {recursive: true, force: true});
+      await lock;
+    }
+
     assert.strictEqual(lockEntered, true);
+    assert.strictEqual(warningCount, 1);
     assert.strictEqual(fs.existsSync(lockPath), false);
     assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
-  it('claims stale locks', async () => {
+  it('times out without claiming a stale lock owned by a live process', async () => {
+    writeStaleOwnerHeartbeat(process.pid);
+    let lockEntered = false;
+    let warningCount = 0;
+
+    const lock = withInstallLock(
+      lockPath,
+      async () => {
+        lockEntered = true;
+      },
+      {
+        ...testLockOptions,
+        acquisitionTimeout: 10,
+        warningLogger: () => {
+          warningCount++;
+        },
+      },
+    );
+
+    await assert.rejects(lock, error => {
+      assert(error instanceof InstallLockError);
+      assert.strictEqual(error.lockPath, lockPath);
+      assert.strictEqual(error.reason, 'owner-alive');
+      assert.deepStrictEqual(error.owner, {
+        hostname: os.hostname(),
+        pid: process.pid,
+      });
+      assert.ok(error.observedAgeMs! >= 10000);
+      assert.ok(error.waitedMs >= 10);
+      return true;
+    });
+
+    assert.strictEqual(lockEntered, false);
+    assert.strictEqual(warningCount, 1);
+    assert.strictEqual(fs.existsSync(lockPath), true);
+    assert.strictEqual(fs.existsSync(lockParent), true);
+  });
+
+  it('times out on fresh contention without inspecting malformed metadata', async () => {
     fs.mkdirSync(lockPath, {recursive: true});
-    const heartbeatPath = path.join(lockPath, 'heartbeat');
-    fs.writeFileSync(heartbeatPath, `${await exitedProcessPid()}\n`);
-    const staleTime = new Date(Date.now() - 20000);
-    fs.utimesSync(heartbeatPath, staleTime, staleTime);
+    fs.writeFileSync(path.join(lockPath, 'heartbeat'), '{');
+    let lockEntered = false;
+    let debugCount = 0;
+    let warningCount = 0;
+
+    const lock = withInstallLock(
+      lockPath,
+      async () => {
+        lockEntered = true;
+      },
+      {
+        ...testLockOptions,
+        acquisitionTimeout: 0,
+        logger: () => {
+          debugCount++;
+        },
+        warningLogger: () => {
+          warningCount++;
+        },
+      },
+    );
+
+    await assert.rejects(lock, error => {
+      assert(error instanceof InstallLockError);
+      assert.strictEqual(error.reason, undefined);
+      assert.strictEqual(error.owner, undefined);
+      assert.strictEqual(error.observedAgeMs, undefined);
+      return true;
+    });
+
+    assert.strictEqual(lockEntered, false);
+    assert.strictEqual(warningCount, 0);
+    assert.strictEqual(debugCount, 1);
+    assert.strictEqual(fs.existsSync(lockPath), true);
+    assert.strictEqual(fs.existsSync(lockParent), true);
+  });
+
+  it('times out instead of claiming stale locks owned on another host', async () => {
+    const remoteHostname = `${os.hostname()}-remote`;
+    writeStaleOwnerHeartbeat(process.pid, remoteHostname);
+    let lockEntered = false;
+    let warningCount = 0;
+
+    const lock = withInstallLock(
+      lockPath,
+      async () => {
+        lockEntered = true;
+      },
+      {
+        ...testLockOptions,
+        acquisitionTimeout: 0,
+        warningLogger: () => {
+          warningCount++;
+        },
+      },
+    );
+
+    await assert.rejects(lock, error => {
+      assert(error instanceof InstallLockError);
+      assert.strictEqual(error.reason, 'owner-unverifiable');
+      assert.deepStrictEqual(error.owner, {
+        hostname: remoteHostname,
+        pid: process.pid,
+      });
+      return true;
+    });
+
+    assert.strictEqual(lockEntered, false);
+    assert.strictEqual(warningCount, 1);
+    assert.strictEqual(fs.existsSync(lockPath), true);
+    assert.strictEqual(fs.existsSync(lockParent), true);
+  });
+
+  it('fails with console warning fallback for invalid owner metadata', async () => {
+    const originalWarn = console.warn;
+    try {
+      for (const contents of [
+        '{',
+        JSON.stringify({hostname: os.hostname(), pid: 0}),
+      ]) {
+        writeStaleHeartbeat(contents);
+        let lockEntered = false;
+        let warningCount = 0;
+        console.warn = () => {
+          warningCount++;
+        };
+        const lock = withInstallLock(
+          lockPath,
+          async () => {
+            lockEntered = true;
+          },
+          {
+            ...defaultTestLockOptions,
+            acquisitionTimeout: 0,
+          },
+        );
+
+        await assert.rejects(lock, error => {
+          assert(error instanceof InstallLockError);
+          assert.strictEqual(error.reason, 'invalid-owner-metadata');
+          assert.strictEqual(error.owner, undefined);
+          return true;
+        });
+        assert.strictEqual(lockEntered, false);
+        assert.strictEqual(warningCount, 1);
+        fs.rmSync(lockPath, {recursive: true, force: true});
+      }
+    } finally {
+      console.warn = originalWarn;
+    }
+  });
+
+  it('claims a safely recoverable lock before checking the timeout', async () => {
+    const heartbeatPath = writeStaleOwnerHeartbeat(await exitedProcessPid());
 
     await withInstallLock(
       lockPath,
       async () => {
-        assert.ok(fs.statSync(heartbeatPath).mtimeMs > staleTime.getTime());
+        assert.deepStrictEqual(
+          JSON.parse(fs.readFileSync(heartbeatPath, 'utf8')),
+          {
+            hostname: os.hostname(),
+            pid: process.pid,
+          },
+        );
       },
-      testLockOptions,
+      {...testLockOptions, acquisitionTimeout: 0},
     );
 
     assert.strictEqual(fs.existsSync(lockPath), false);
     assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
-  it('claims stale lock directories without heartbeat files', async () => {
+  it('classifies heartbeat-less lock identities conservatively', () => {
+    const identity = {
+      dev: 1n,
+      ino: 2n,
+      birthtimeNs: 3n,
+    };
+
+    assert.strictEqual(hasUsableBirthtime(identity), true);
+    assert.strictEqual(
+      hasUsableBirthtime({...identity, birthtimeNs: 0n}),
+      false,
+    );
+    assert.strictEqual(
+      compareInstallLockIdentities(identity, identity),
+      'same',
+    );
+    assert.strictEqual(
+      compareInstallLockIdentities(identity, {...identity, ino: 4n}),
+      'recreated',
+    );
+    assert.strictEqual(
+      compareInstallLockIdentities(identity, {...identity, birthtimeNs: 4n}),
+      'unstable',
+    );
+  });
+
+  it('uses the stale threshold for lock directories without heartbeat files', async function () {
     fs.mkdirSync(lockPath, {recursive: true});
+    requireStableDirectoryBirthtime(this);
     const heartbeatPath = path.join(lockPath, 'heartbeat');
     const staleTime = new Date(Date.now() - 20000);
     fs.utimesSync(lockPath, staleTime, staleTime);
@@ -115,14 +348,11 @@ describe('installLock', function () {
     assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
-  it('recovers when stale reaper directories are left behind', async () => {
-    fs.mkdirSync(lockPath, {recursive: true});
-    const heartbeatPath = path.join(lockPath, 'heartbeat');
+  it('uses the stale threshold for reaper directories left behind', async () => {
+    const heartbeatPath = writeStaleOwnerHeartbeat(await exitedProcessPid());
     const reaperPath = path.join(lockPath, 'reaper');
-    fs.writeFileSync(heartbeatPath, `${await exitedProcessPid()}\n`);
     fs.mkdirSync(reaperPath);
     const staleTime = new Date(Date.now() - 20000);
-    fs.utimesSync(heartbeatPath, staleTime, staleTime);
     fs.utimesSync(reaperPath, staleTime, staleTime);
 
     await withInstallLock(
@@ -139,11 +369,7 @@ describe('installLock', function () {
   });
 
   it('serializes concurrent stale lock recovery', async () => {
-    fs.mkdirSync(lockPath, {recursive: true});
-    const heartbeatPath = path.join(lockPath, 'heartbeat');
-    fs.writeFileSync(heartbeatPath, `${await exitedProcessPid()}\n`);
-    const staleTime = new Date(Date.now() - 20000);
-    fs.utimesSync(heartbeatPath, staleTime, staleTime);
+    writeStaleOwnerHeartbeat(await exitedProcessPid());
     let activeTasks = 0;
     let maxActiveTasks = 0;
 
@@ -167,8 +393,9 @@ describe('installLock', function () {
     assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
-  it('revalidates heartbeat-less stale locks after acquiring the reaper', async () => {
+  it('revalidates heartbeat-less stale locks after acquiring the reaper', async function () {
     fs.mkdirSync(lockPath, {recursive: true});
+    requireStableDirectoryBirthtime(this);
     const staleTime = new Date(Date.now() - 20000);
     fs.utimesSync(lockPath, staleTime, staleTime);
 
@@ -240,8 +467,9 @@ describe('installLock', function () {
     assert.strictEqual(fs.existsSync(lockParent), true);
   });
 
-  it('does not claim a recreated heartbeat-less lock using stale stats', async () => {
+  it('does not claim a recreated heartbeat-less lock using stale stats', async function () {
     fs.mkdirSync(lockPath, {recursive: true});
+    requireStableDirectoryBirthtime(this);
     const staleTime = new Date(Date.now() - 20000);
     fs.utimesSync(lockPath, staleTime, staleTime);
     const lockRecreated = Promise.withResolvers<void>();
