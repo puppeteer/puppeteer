@@ -290,9 +290,9 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     {
       algolia: {
-        appId: 'DVKY664LG7',
-        apiKey: '4dac1ae64b623f1d33ae0b4ce0ff16a4',
-        indexName: 'pptr',
+        appId: process.env.ALGOLIA_APP_ID,
+        apiKey: process.env.ALGOLIA_API_KEY,
+        indexName: process.env.ALGOLIA_INDEX_NAME,
       },
       navbar: {
         title: 'Puppeteer',
