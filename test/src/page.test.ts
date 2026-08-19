@@ -1566,6 +1566,33 @@ describe('Page', function () {
       const result = await page.content();
       expect(result).toBe(`${comment}${expectedOutput}`);
     });
+    it('should not run a cross-origin script through document.write', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const warnings: string[] = [];
+      page.on('console', message => {
+        if (message.type() === 'warn') {
+          warnings.push(message.text());
+        }
+      });
+
+      await page.setContent(
+        html`<script src="${server.CROSS_PROCESS_PREFIX + '/injectedfile.js'}"></script>`,
+        {waitUntil: 'load'},
+      );
+
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        }),
+      ).toBe(42);
+      expect(
+        warnings.filter(warning => {
+          return warning.includes('document.write');
+        }),
+      ).toHaveLength(0);
+    });
   });
 
   describe('Page.setBypassCSP', function () {
