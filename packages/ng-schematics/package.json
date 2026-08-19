@@ -69,5 +69,8 @@
     "save": "devDependencies"
   },
   "schematics": "./lib/schematics/collection.json",
-  "builders": "./lib/builders/builders.json"
+  "builders": "./lib/builders/builders.json",
+  "overrides": {
+    "picomatch": "4.0.4"
+  }
 }

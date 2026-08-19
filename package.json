@@ -211,6 +211,10 @@
     },
     "@rollup/plugin-babel": {
       "@babel/core": "$@babel/core"
+    },
+    "picomatch": "4.0.4",
+    "@angular-devkit/core": {
+      "picomatch": "4.0.4"
     }
   },
   "workspaces": [
