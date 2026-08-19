@@ -140,6 +140,7 @@ describe('Chrome install', () => {
     };
     writeStaleInstallLock(lockPath, owner);
 
+    const loggedMessages: unknown[] = [];
     let error: (Error & {cause?: unknown}) | undefined;
     try {
       await install({
@@ -149,7 +150,9 @@ describe('Chrome install', () => {
         buildId: testChromeBuildId,
         installLockTimeout: 0,
         logger: () => {
-          return () => {};
+          return message => {
+            loggedMessages.push(message);
+          };
         },
       });
     } catch (cause) {
@@ -165,6 +168,16 @@ describe('Chrome install', () => {
     assert.deepStrictEqual(lockError.owner, owner);
     assert.ok(lockError.observedAgeMs! >= 60 * 1000);
     assert.ok(lockError.waitedMs >= 0);
+    assert.ok(
+      loggedMessages.some(message => {
+        return (
+          typeof message === 'string' &&
+          message.includes(lockPath) &&
+          message.includes(owner.hostname)
+        );
+      }),
+      'Expected the install-lock warning to reach the custom logger',
+    );
 
     for (const detail of [
       tmpDir,
