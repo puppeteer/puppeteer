@@ -7,7 +7,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import type {GeolocationOptions, MediaFeature} from '../api/Page.js';
-import {debugError, debugCatchError} from '../common/util.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {invokeAtMostOnceForArguments} from '../util/decorators.js';
@@ -221,7 +221,10 @@ export class EmulationManager implements ClientProvider {
 
   #secondaryClients = new Set<CDPSession>();
 
-  constructor(client: CDPSession) {
+  #logger: Logger;
+
+  constructor(client: CDPSession, logger: Logger) {
+    this.#logger = logger;
     this.#client = client;
   }
 
@@ -247,7 +250,9 @@ export class EmulationManager implements ClientProvider {
     // the target is unpaused.
     void Promise.all(
       this.#states.map(s => {
-        return s.sync().catch(debugCatchError);
+        return s.sync().catch(err => {
+          return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+        });
       }),
     );
   }
@@ -293,7 +298,9 @@ export class EmulationManager implements ClientProvider {
         client.send('Emulation.setTouchEmulationEnabled', {
           enabled: false,
         }),
-      ]).catch(debugCatchError);
+      ]).catch(err => {
+        return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+      });
       return;
     }
     const {viewport} = viewportState;
@@ -320,7 +327,7 @@ export class EmulationManager implements ClientProvider {
           if (
             err.message.includes('Target does not support metrics override')
           ) {
-            debugError?.(err);
+            this.#logger?.(DEBUG_PREFIXES.error)?.(err);
             return;
           }
           throw err;

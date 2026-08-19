@@ -13,6 +13,7 @@ import {
   type CommandOptions,
 } from '../api/CDPSession.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
+import type {Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {assert} from '../util/assert.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
@@ -42,11 +43,12 @@ export class CdpCDPSession extends CDPSession {
     sessionId: string,
     parentSessionId: string | undefined,
     rawErrors: boolean,
+    logger: Logger,
   ) {
     super();
     this.#connection = connection;
     this.#targetType = targetType;
-    this.#callbacks = new CallbackRegistry(connection._idGenerator);
+    this.#callbacks = new CallbackRegistry(connection._idGenerator, logger);
     this.#sessionId = sessionId;
     this.#parentSessionId = parentSessionId;
     this.#rawErrors = rawErrors;

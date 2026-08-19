@@ -8,8 +8,8 @@ import {Deferred} from '../util/Deferred.js';
 import {rewriteError} from '../util/ErrorLike.js';
 import type {GetIdFn} from '../util/incremental-id-generator.js';
 
+import {DEBUG_PREFIXES, type Logger} from './Debug.js';
 import {ProtocolError, TargetCloseError} from './Errors.js';
-import {debugCatchError} from './util.js';
 
 /**
  * Manages callbacks and their IDs for the protocol request/response communication.
@@ -19,9 +19,11 @@ import {debugCatchError} from './util.js';
 export class CallbackRegistry {
   readonly #callbacks = new Map<number, Callback>();
   readonly #idGenerator: GetIdFn;
+  #logger: Logger;
 
-  constructor(idGenerator: GetIdFn) {
+  constructor(idGenerator: GetIdFn, logger: Logger) {
     this.#idGenerator = idGenerator;
+    this.#logger = logger;
   }
 
   has(id: number): boolean {
@@ -40,9 +42,13 @@ export class CallbackRegistry {
     } catch (error) {
       // We still throw sync errors synchronously and clean up the scheduled
       // callback.
-      void callback.promise.catch(debugCatchError).finally(() => {
-        this.#callbacks.delete(callback.id);
-      });
+      void callback.promise
+        .catch(err => {
+          this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+        })
+        .finally(() => {
+          this.#callbacks.delete(callback.id);
+        });
       callback.reject(error as Error);
       throw error;
     }

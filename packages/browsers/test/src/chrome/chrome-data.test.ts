@@ -28,6 +28,10 @@ describe('Chrome', () => {
       'https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/linux64/chrome-linux64.zip',
     );
     assert.strictEqual(
+      resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '153.0.8001.0'),
+      'https://storage.googleapis.com/chrome-for-testing-public/153.0.8001.0/linux-arm64/chrome-linux-arm64.zip',
+    );
+    assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '113.0.5672.0'),
       'https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/mac-x64/chrome-mac-x64.zip',
     );
@@ -49,6 +53,10 @@ describe('Chrome', () => {
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
       path.join('chrome-linux64', 'chrome'),
+    );
+    assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.LINUX_ARM, '12372323'),
+      path.join('chrome-linux-arm64', 'chrome'),
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC, '12372323'),

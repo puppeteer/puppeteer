@@ -5,6 +5,7 @@
  */
 
 import {Target, TargetType} from '../api/Target.js';
+import type {Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {CDPSession} from '../puppeteer-core.js';
 
@@ -20,8 +21,8 @@ import type {BidiWebWorker} from './WebWorker.js';
 export class BidiBrowserTarget extends Target {
   #browser: BidiBrowser;
 
-  constructor(browser: BidiBrowser) {
-    super();
+  constructor(browser: BidiBrowser, logger: Logger) {
+    super(logger);
     this.#browser = browser;
   }
 
@@ -54,8 +55,8 @@ export class BidiBrowserTarget extends Target {
 export class BidiPageTarget extends Target {
   #page: BidiPage;
 
-  constructor(page: BidiPage) {
-    super();
+  constructor(page: BidiPage, logger: Logger) {
+    super(logger);
     this.#page = page;
   }
 
@@ -92,8 +93,8 @@ export class BidiFrameTarget extends Target {
   #frame: BidiFrame;
   #page: BidiPage | undefined;
 
-  constructor(frame: BidiFrame) {
-    super();
+  constructor(frame: BidiFrame, logger: Logger) {
+    super(logger);
     this.#frame = frame;
   }
 
@@ -102,6 +103,7 @@ export class BidiFrameTarget extends Target {
       this.#page = BidiPage.from(
         this.browserContext(),
         this.#frame.browsingContext,
+        this.logger,
       );
     }
     return this.#page;
@@ -135,8 +137,8 @@ export class BidiFrameTarget extends Target {
 export class BidiWorkerTarget extends Target {
   #worker: BidiWebWorker;
 
-  constructor(worker: BidiWebWorker) {
-    super();
+  constructor(worker: BidiWebWorker, logger: Logger) {
+    super(logger);
     this.#worker = worker;
   }
 

@@ -141,7 +141,9 @@ export async function downloadBrowsers(): Promise<void> {
     for (const failure of failures) {
       console.error(failure.reason);
     }
-    process.exit(1);
+    throw new Error(
+      'Failed to download one or more browsers. Run `npx puppeteer browsers install` to try again, or `npx puppeteer browsers clear` first if the cache holds an unfinished install.',
+    );
   }
 }
 

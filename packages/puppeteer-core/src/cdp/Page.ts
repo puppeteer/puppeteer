@@ -42,6 +42,7 @@ import type {
   CookiePartitionKey,
   CookieSameSite,
 } from '../common/Cookie.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -49,14 +50,12 @@ import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
 import type {BindingPayload, HandleFor} from '../common/types.js';
 import {
-  debugError,
   evaluationString,
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
   parsePDFOptions,
   timeout,
   validateDialogType,
-  debugCatchError,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
@@ -119,15 +118,16 @@ export class CdpPage extends Page {
     client: CdpCDPSession,
     target: CdpTarget,
     defaultViewport: Viewport | null,
+    logger: Logger,
   ): Promise<CdpPage> {
-    const page = new CdpPage(client, target);
+    const page = new CdpPage(client, target, logger);
     await page.#initialize();
     if (defaultViewport) {
       try {
         await page.setViewport(defaultViewport);
       } catch (err) {
         if (isErrorLike(err) && isTargetClosedError(err)) {
-          debugError?.(err);
+          page.logger?.(DEBUG_PREFIXES.error)?.(err);
         } else {
           throw err;
         }
@@ -161,8 +161,8 @@ export class CdpPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  constructor(client: CdpCDPSession, target: CdpTarget) {
-    super();
+  constructor(client: CdpCDPSession, target: CdpTarget, logger: Logger) {
+    super(logger);
     this.#primaryTargetClient = client;
     this.#tabTargetClient = client.parentSession()!;
     assert(this.#tabTargetClient, 'Tab target session is not defined.');
@@ -174,10 +174,15 @@ export class CdpPage extends Page {
     this.#keyboard = new CdpKeyboard(client);
     this.#mouse = new CdpMouse(client, this.#keyboard);
     this.#touchscreen = new CdpTouchscreen(client, this.#keyboard);
-    this.#frameManager = new FrameManager(client, this, this._timeoutSettings);
-    this.#emulationManager = new EmulationManager(client);
-    this.#tracing = new Tracing(client);
-    this.#webmcp = new WebMCP(client, this.#frameManager);
+    this.#frameManager = new FrameManager(
+      client,
+      this,
+      this._timeoutSettings,
+      logger,
+    );
+    this.#emulationManager = new EmulationManager(client, this.logger);
+    this.#tracing = new Tracing(client, this.logger);
+    this.#webmcp = new WebMCP(client, this.#frameManager, logger);
     this.#coverage = new Coverage(client);
     this.#viewport = null;
 
@@ -258,7 +263,9 @@ export class CdpPage extends Page {
         this.emit(PageEvent.Close, undefined);
         this.#closed = true;
       })
-      .catch(debugCatchError);
+      .catch(error => {
+        this.logger?.(DEBUG_PREFIXES.error)?.(error);
+      });
 
     this.#setupPrimaryTargetListeners();
     this.#attachExistingTargets();
@@ -310,12 +317,14 @@ export class CdpPage extends Page {
     if (session.target()._subtype() !== 'prerender') {
       return;
     }
-    void this.#frameManager
-      .registerSpeculativeSession(session)
-      .catch(debugCatchError);
+    void this.#frameManager.registerSpeculativeSession(session).catch(error => {
+      this.logger?.(DEBUG_PREFIXES.error)?.(error);
+    });
     void this.#emulationManager
       .registerSpeculativeSession(session)
-      .catch(debugCatchError);
+      .catch(error => {
+        this.logger?.(DEBUG_PREFIXES.error)?.(error);
+      });
   }
 
   /**
@@ -369,6 +378,7 @@ export class CdpPage extends Page {
         session.target().type(),
         this.#handleException.bind(this),
         this.#frameManager.networkManager,
+        this.logger,
       );
       this.#workers.set(session.id(), worker);
       worker.internalEmitter.on(WebWorkerEvent.Console, message => {
@@ -381,7 +391,9 @@ export class CdpPage extends Page {
           // eslint-disable-next-line max-len -- The comment is long.
           // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
           for (const arg of message.args()) {
-            void arg.dispose().catch(debugCatchError);
+            void arg.dispose().catch(error => {
+              this.logger?.(DEBUG_PREFIXES.error)?.(error);
+            });
           }
           return;
         }
@@ -405,7 +417,7 @@ export class CdpPage extends Page {
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {
-        debugError?.(err);
+        this.logger?.(DEBUG_PREFIXES.error)?.(err);
       } else {
         throw err;
       }
@@ -563,7 +575,7 @@ export class CdpPage extends Page {
       event.entry;
     if (args) {
       args.map(arg => {
-        void releaseObject(this.#primaryTargetClient, arg);
+        void releaseObject(this.#primaryTargetClient, arg, this.logger);
       });
     }
     if (source !== 'worker') {
@@ -795,6 +807,7 @@ export class CdpPage extends Page {
           name,
           pptrFunction as (...args: unknown[]) => unknown,
           source,
+          this.logger,
         );
         break;
       default:
@@ -802,6 +815,7 @@ export class CdpPage extends Page {
           name,
           pptrFunction.default as (...args: unknown[]) => unknown,
           source,
+          this.logger,
         );
         break;
     }
@@ -874,8 +888,7 @@ export class CdpPage extends Page {
   override async captureHeapSnapshot(
     options: HeapSnapshotOptions,
   ): Promise<void> {
-    const {createWriteStream} = environment.value.fs;
-    const stream = createWriteStream(options.path);
+    const stream = environment.value.createWriteStream(options.path);
     const streamPromise = new Promise<void>((resolve, reject) => {
       stream.on('error', reject);
       stream.on('finish', resolve);
@@ -885,19 +898,17 @@ export class CdpPage extends Page {
     await client.send('HeapProfiler.enable');
     await client.send('HeapProfiler.collectGarbage');
 
-    const handler = (
-      event: Protocol.HeapProfiler.AddHeapSnapshotChunkEvent,
-    ) => {
+    using clientEmitter = new EventEmitter(client);
+
+    clientEmitter.on('HeapProfiler.addHeapSnapshotChunk', event => {
       stream.write(event.chunk);
-    };
-    client.on('HeapProfiler.addHeapSnapshotChunk', handler);
+    });
 
     try {
       await client.send('HeapProfiler.takeHeapSnapshot', {
         reportProgress: false,
       });
     } finally {
-      client.off('HeapProfiler.addHeapSnapshotChunk', handler);
       await client.send('HeapProfiler.disable');
     }
 
@@ -953,7 +964,9 @@ export class CdpPage extends Page {
         // eslint-disable-next-line max-len -- The comment is long.
         // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
         for (const value of values) {
-          void value.dispose().catch(debugCatchError);
+          void value.dispose().catch(error => {
+            this.logger?.(DEBUG_PREFIXES.error)?.(error);
+          });
         }
       }
       return;
@@ -1160,7 +1173,9 @@ export class CdpPage extends Page {
       stack.defer(async () => {
         await this.#emulationManager
           .resetDefaultBackgroundColor()
-          .catch(debugCatchError);
+          .catch(error => {
+            this.logger?.(DEBUG_PREFIXES.error)?.(error);
+          });
       });
     }
 
@@ -1273,7 +1288,11 @@ export class CdpPage extends Page {
   override async pdf(options: PDFOptions = {}): Promise<Uint8Array> {
     const {path = undefined} = options;
     const readable = await this.createPDFStream(options);
-    const typedArray = await getReadableAsTypedArray(readable, path);
+    const typedArray = await getReadableAsTypedArray(
+      readable,
+      path,
+      this.logger,
+    );
     assert(typedArray, 'Could not create typed array');
     return typedArray;
   }

@@ -1,5 +1,54 @@
 # Changelog
 
+## [25.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.7.0...puppeteer-v25.8.0) (2026-08-17)
+
+
+### 🎉 Features
+
+* support followSymlinks option ([#15335](https://github.com/puppeteer/puppeteer/issues/15335)) ([af6a23d](https://github.com/puppeteer/puppeteer/commit/af6a23dde5e95516929b24b62f2eac4e71fa14c8))
+
+
+### 🛠️ Fixes
+
+* tell the user how to recover a partial browser folder ([#15319](https://github.com/puppeteer/puppeteer/issues/15319)) ([bbc51bd](https://github.com/puppeteer/puppeteer/commit/bbc51bd2eff8a4423bf8432c41a31178b13ea9f7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.0 to 3.2.1
+    * puppeteer-core bumped from 25.7.0 to 25.8.0
+
+## [25.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.6.0...puppeteer-v25.7.0) (2026-08-13)
+
+
+### 🎉 Features
+
+* roll to Chrome 152.0.7977.42 ([#15330](https://github.com/puppeteer/puppeteer/issues/15330)) ([0c187db](https://github.com/puppeteer/puppeteer/commit/0c187db99161fe49d7d966d242f131c63337e76e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 25.6.0 to 25.7.0
+
+## [25.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.5.0...puppeteer-v25.6.0) (2026-08-11)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.1.0 to 3.2.0
+    * puppeteer-core bumped from 25.5.0 to 25.6.0
+
 ## [25.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.4.0...puppeteer-v25.5.0) (2026-08-04)
 
 

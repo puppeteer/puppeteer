@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type FS from 'node:fs';
+import type {FileHandle} from 'node:fs/promises';
 import type Path from 'node:path';
+import type {Writable} from 'node:stream';
 import type {debuglog} from 'node:util';
 
 import type {ScreenRecorder} from './node/ScreenRecorder.js';
@@ -16,10 +17,24 @@ import type {ScreenRecorder} from './node/ScreenRecorder.js';
 export const isNode = !!(typeof process !== 'undefined' && process.version);
 
 export interface EnvironmentDependencies {
-  fs: typeof FS;
   path?: typeof Path;
   ScreenRecorder: typeof ScreenRecorder;
   debuglog?: typeof debuglog;
+  followSymlinks: boolean;
+  readFile: {
+    (path: string, encoding: 'utf8' | 'ascii'): Promise<string>;
+    (path: string): Promise<Uint8Array>;
+  };
+  writeFile: (path: string, data: Uint8Array | string) => Promise<void>;
+  openFileForWriting: (path: string) => Promise<FileHandle>;
+  createWriteStream: (
+    path: string,
+    options?: {
+      encoding?: BufferEncoding;
+      overwrite?: boolean;
+    },
+  ) => Writable;
+  mkdir: (path: string, options?: {recursive?: boolean}) => Promise<void>;
 }
 
 /**
@@ -30,13 +45,28 @@ export const environment: {
   value: EnvironmentDependencies;
 } = {
   value: {
-    get fs(): typeof FS {
-      throw new Error('fs is not available in this environment');
-    },
+    followSymlinks: true,
     ScreenRecorder: class {
       constructor() {
         throw new Error('ScreenRecorder is not available in this environment');
       }
     } as unknown as typeof ScreenRecorder,
+    readFile: (() => {
+      throw new Error('readFile is not available in this environment');
+    }) as unknown as EnvironmentDependencies['readFile'],
+    writeFile: () => {
+      throw new Error('writeFile is not available in this environment');
+    },
+    openFileForWriting: () => {
+      throw new Error(
+        'openFileForWriting is not available in this environment',
+      );
+    },
+    createWriteStream: () => {
+      throw new Error('createWriteStream is not available in this environment');
+    },
+    mkdir: () => {
+      throw new Error('mkdir is not available in this environment');
+    },
   },
 };

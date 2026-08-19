@@ -1,6 +1,7 @@
 name: Check which packages changed
 
-permissions: read-all
+permissions:
+  contents: read
 
 on:
   workflow_call:

@@ -6,9 +6,9 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Awaitable, FlattenHandle} from '../common/types.js';
-import {debugError, debugCatchError} from '../common/util.js';
 import {DisposableStack} from '../util/disposable.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
@@ -34,8 +34,9 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     name: string,
     apply: (...args: Args) => Awaitable<Ret>,
     isolate = false,
+    logger: Logger,
   ): Promise<ExposableFunction<Args, Ret>> {
-    const func = new ExposableFunction(frame, name, apply, isolate);
+    const func = new ExposableFunction(frame, name, apply, isolate, logger);
     await func.#initialize();
     return func;
   }
@@ -45,6 +46,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
   readonly name;
   readonly #apply;
   readonly #isolate;
+  readonly #logger: Logger;
 
   readonly #channel;
 
@@ -56,11 +58,13 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     name: string,
     apply: (...args: Args) => Awaitable<Ret>,
     isolate = false,
+    logger: Logger,
   ) {
     this.#frame = frame;
     this.name = name;
     this.#apply = apply;
     this.#isolate = isolate;
+    this.#logger = logger;
 
     this.#channel = `__puppeteer__${this.#frame._id}_page_exposeFunction_${this.name}`;
   }
@@ -76,7 +80,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     };
 
     const connectionEmitter = this.#disposables.use(
-      new EventEmitter(connection),
+      new EventEmitter(connection, this.#logger),
     );
     connectionEmitter.on('script.message', this.#handleMessage);
 
@@ -119,7 +123,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
         } catch (error) {
           // If it errors, the frame probably doesn't support call function. We
           // fail gracefully.
-          debugError?.(error);
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         }
       }),
     );
@@ -192,7 +196,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
           }, error);
         }
       } catch (error) {
-        debugError?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }
       return;
     }
@@ -202,7 +206,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
         resolve(result);
       }, result);
     } catch (error) {
-      debugError?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
   };
 
@@ -227,7 +231,9 @@ export class ExposableFunction<Args extends unknown[], Ret> {
   }
 
   [Symbol.dispose](): void {
-    void this[Symbol.asyncDispose]().catch(debugCatchError);
+    void this[Symbol.asyncDispose]().catch(error => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   async [Symbol.asyncDispose](): Promise<void> {
@@ -248,7 +254,7 @@ export class ExposableFunction<Args extends unknown[], Ret> {
             frame.browsingContext.removePreloadScript(script),
           ]);
         } catch (error) {
-          debugError?.(error);
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         }
       }),
     );

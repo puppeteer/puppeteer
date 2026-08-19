@@ -10,12 +10,12 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {
-  debugError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
@@ -52,10 +52,23 @@ import type {BidiWebWorker} from './WebWorker.js';
  */
 export abstract class BidiRealm extends Realm {
   readonly realm: BidiRealmCore;
+  #logger: Logger;
 
-  constructor(realm: BidiRealmCore, timeoutSettings: TimeoutSettings) {
+  constructor(
+    realm: BidiRealmCore,
+    timeoutSettings: TimeoutSettings,
+    logger: Logger,
+  ) {
     super(timeoutSettings);
     this.realm = realm;
+    this.#logger = logger;
+  }
+
+  /**
+   * @internal
+   */
+  get logger(): Logger {
+    return this.#logger;
   }
 
   protected initialize(): void {
@@ -266,10 +279,10 @@ export abstract class BidiRealm extends Realm {
       return;
     }
 
-    await this.realm.disown(handleIds).catch(error => {
+    void this.realm.disown(handleIds).catch(error => {
       // Exceptions might happen in case of a page been navigated or closed.
       // Swallow these since they are harmless and we don't leak anything in this case.
-      debugError?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   }
 
@@ -303,8 +316,12 @@ export abstract class BidiRealm extends Realm {
  * @internal
  */
 export class BidiFrameRealm extends BidiRealm {
-  static from(realm: WindowRealm, frame: BidiFrame): BidiFrameRealm {
-    const frameRealm = new BidiFrameRealm(realm, frame);
+  static from(
+    realm: WindowRealm,
+    frame: BidiFrame,
+    logger: Logger,
+  ): BidiFrameRealm {
+    const frameRealm = new BidiFrameRealm(realm, frame, logger);
     frameRealm.#initialize();
     return frameRealm;
   }
@@ -312,8 +329,8 @@ export class BidiFrameRealm extends BidiRealm {
 
   readonly #frame: BidiFrame;
 
-  private constructor(realm: WindowRealm, frame: BidiFrame) {
-    super(realm, frame.timeoutSettings);
+  private constructor(realm: WindowRealm, frame: BidiFrame, logger: Logger) {
+    super(realm, frame.timeoutSettings, logger);
     this.#frame = frame;
   }
 
@@ -337,6 +354,7 @@ export class BidiFrameRealm extends BidiRealm {
           '__ariaQuerySelector',
           ARIAQueryHandler.queryOne,
           !!this.sandbox,
+          this.logger,
         ),
         ExposableFunction.from(
           this.environment,
@@ -354,6 +372,7 @@ export class BidiFrameRealm extends BidiRealm {
             );
           },
           !!this.sandbox,
+          this.logger,
         ),
       ]);
       this.#bindingsInstalled = true;
@@ -399,8 +418,9 @@ export class BidiWorkerRealm extends BidiRealm {
   static from(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
     worker: BidiWebWorker,
+    logger: Logger,
   ): BidiWorkerRealm {
-    const workerRealm = new BidiWorkerRealm(realm, worker);
+    const workerRealm = new BidiWorkerRealm(realm, worker, logger);
     workerRealm.initialize();
     return workerRealm;
   }
@@ -411,8 +431,9 @@ export class BidiWorkerRealm extends BidiRealm {
   private constructor(
     realm: DedicatedWorkerRealm | SharedWorkerRealm,
     frame: BidiWebWorker,
+    logger: Logger,
   ) {
-    super(realm, frame.timeoutSettings);
+    super(realm, frame.timeoutSettings, logger);
     this.#worker = frame;
   }
 

@@ -433,6 +433,39 @@ describe('OOPIF', function () {
     });
   });
 
+  it('should exposeFunction when an OOP iframe goes away mid-call', async () => {
+    const {page, server} = state;
+    const frameCount = 8;
+
+    await page.goto(server.EMPTY_PAGE);
+    for (let i = 0; i < frameCount; i++) {
+      await attachFrame(
+        page,
+        `oopif${i}`,
+        server.CROSS_PROCESS_PREFIX + '/empty.html',
+      );
+    }
+    expect(page.frames()).toHaveLength(frameCount + 1);
+
+    // Start the teardown first so it lands while the per-frame calls run.
+    const detached = page.evaluate(() => {
+      for (const frame of document.querySelectorAll('iframe')) {
+        frame.remove();
+      }
+    });
+    const exposed = page.exposeFunction('doubleIt', (value: number) => {
+      return value * 2;
+    });
+    await exposed;
+    await detached;
+
+    expect(
+      await page.evaluate(() => {
+        return (window as any).doubleIt(21);
+      }),
+    ).toBe(42);
+  });
+
   it('should evaluate on a page with a PDF viewer', async () => {
     const {page, server} = state;
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.2.1](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.0...browsers-v3.2.1) (2026-08-17)
+
+
+### 🛠️ Fixes
+
+* computeSystemExecutablePath support validatePath ([#15340](https://github.com/puppeteer/puppeteer/issues/15340)) ([73da9a4](https://github.com/puppeteer/puppeteer/commit/73da9a41b32f26e995ac00b50c958e6e95fb2be2))
+* launch browsers in detached mode on Windows to fix flakiness ([#15339](https://github.com/puppeteer/puppeteer/issues/15339)) ([8e1022b](https://github.com/puppeteer/puppeteer/commit/8e1022b543f27d9d517310435aaa2b299fe99d46))
+* tell the user how to recover a partial browser folder ([#15319](https://github.com/puppeteer/puppeteer/issues/15319)) ([bbc51bd](https://github.com/puppeteer/puppeteer/commit/bbc51bd2eff8a4423bf8432c41a31178b13ea9f7))
+
+## [3.2.0](https://github.com/puppeteer/puppeteer/compare/browsers-v3.1.0...browsers-v3.2.0) (2026-08-11)
+
+
+### 🎉 Features
+
+* allow downloading CfT linux-arm64 ([#15325](https://github.com/puppeteer/puppeteer/issues/15325)) ([fc984bd](https://github.com/puppeteer/puppeteer/commit/fc984bd16587832ed8ab8c24397e70f494698a41))
+
 ## [3.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v3.0.6...browsers-v3.1.0) (2026-08-04)
 
 

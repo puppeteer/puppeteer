@@ -1,14 +1,15 @@
 name: DevTools CI
 
 # Declare default permissions as read only.
-permissions: read-all
+permissions:
+  contents: read
 
 on:
   pull_request:
     types: [labeled]
 
 concurrency:
-  group: devtools-${{ github.head_ref || github.run_id }}
+  group: devtools-${{ github.head_ref || github.run_id }}-${{ !contains(github.event.label.name, 'devtools') && github.run_id || '' }}
   cancel-in-progress: true
 
 jobs:

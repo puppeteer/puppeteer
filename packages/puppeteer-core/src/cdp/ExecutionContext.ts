@@ -10,6 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -17,7 +18,6 @@ import type {BindingPayload, EvaluateFunc, HandleFor} from '../common/types.js';
 import {
   PuppeteerURL,
   SOURCE_URL_REGEX,
-  debugError,
   getSourcePuppeteerURLIfAvailable,
   getSourceUrlComment,
   isString,
@@ -39,29 +39,6 @@ import {
   valueFromPrimitiveRemoteObject,
 } from './utils.js';
 
-const ariaQuerySelectorBinding = new Binding(
-  '__ariaQuerySelector',
-  ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
-  '', // custom init
-);
-
-const ariaQuerySelectorAllBinding = new Binding(
-  '__ariaQuerySelectorAll',
-  (async (
-    element: ElementHandle<Node>,
-    selector: string,
-  ): Promise<JSHandle<Node[]>> => {
-    const results = ARIAQueryHandler.queryAll(element, selector);
-    return await element.realm.evaluateHandle(
-      (...elements) => {
-        return elements;
-      },
-      ...(await AsyncIterableUtil.collect(results)),
-    );
-  }) as (...args: unknown[]) => unknown,
-  '', // custom init
-);
-
 /**
  * @internal
  */
@@ -75,21 +52,55 @@ export class ExecutionContext
   }>
   implements Disposable
 {
+  static #ariaQuerySelectorBinding?: Binding;
+  static getOrCreateAriaQuerySelectorBinding(logger: Logger): Binding {
+    return (this.#ariaQuerySelectorBinding ??= new Binding(
+      '__ariaQuerySelector',
+      ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
+      '', // custom init
+      logger,
+    ));
+  }
+
+  static #ariaQuerySelectorAllBinding?: Binding;
+  static getOrCreateAriaQuerySelectorAllBinding(logger: Logger): Binding {
+    return (this.#ariaQuerySelectorAllBinding ??= new Binding(
+      '__ariaQuerySelectorAll',
+      (async (
+        element: ElementHandle<Node>,
+        selector: string,
+      ): Promise<JSHandle<Node[]>> => {
+        const results = ARIAQueryHandler.queryAll(element, selector);
+        return await element.realm.evaluateHandle(
+          (...elements) => {
+            return elements;
+          },
+          ...(await AsyncIterableUtil.collect(results)),
+        );
+      }) as (...args: unknown[]) => unknown,
+      '', // custom init
+      logger,
+    ));
+  }
+
   #client: CDPSession;
   #world: IsolatedWorld;
   #id: number;
   #name?: string;
 
   readonly #disposables = new DisposableStack();
+  #logger: Logger;
 
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     world: IsolatedWorld,
+    logger: Logger,
   ) {
-    super();
+    super(undefined, logger);
     this.#client = client;
     this.#world = world;
+    this.#logger = logger;
     this.#id = contextPayload.id;
     if (contextPayload.name) {
       this.#name = contextPayload.name;
@@ -158,8 +169,7 @@ export class ExecutionContext
           return;
         }
       }
-
-      debugError?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
   }
 
@@ -192,7 +202,7 @@ export class ExecutionContext
       const binding = this.#bindings.get(name);
       await binding?.run(this, seq, args, isTrivial);
     } catch (err) {
-      debugError?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 
@@ -209,12 +219,19 @@ export class ExecutionContext
 
   #bindingsInstalled = false;
   #puppeteerUtil?: Promise<JSHandle<PuppeteerInjectedUtil>>;
+  /**
+   * @internal
+   */
   get puppeteerUtil(): Promise<JSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
     if (!this.#bindingsInstalled) {
       promise = Promise.all([
-        this.#addBindingWithoutThrowing(ariaQuerySelectorBinding),
-        this.#addBindingWithoutThrowing(ariaQuerySelectorAllBinding),
+        this.#addBindingWithoutThrowing(
+          ExecutionContext.getOrCreateAriaQuerySelectorBinding(this.#logger),
+        ),
+        this.#addBindingWithoutThrowing(
+          ExecutionContext.getOrCreateAriaQuerySelectorAllBinding(this.#logger),
+        ),
       ]);
       this.#bindingsInstalled = true;
     }
@@ -239,7 +256,7 @@ export class ExecutionContext
     } catch (err) {
       // If the binding cannot be added, the context is broken. We cannot
       // recover so we ignore the error.
-      debugError?.(err);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 

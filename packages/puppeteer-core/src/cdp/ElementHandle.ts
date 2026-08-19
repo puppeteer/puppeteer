@@ -12,8 +12,8 @@ import {
   ElementHandle,
   type AutofillData,
 } from '../api/ElementHandle.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {AwaitableIterable} from '../common/types.js';
-import {debugError} from '../common/util.js';
 import {environment} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
@@ -38,12 +38,15 @@ export class CdpElementHandle<
 > extends ElementHandle<ElementType> {
   declare protected readonly handle: CdpJSHandle<ElementType>;
   #backendNodeId?: number;
+  #logger: Logger;
 
   constructor(
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
+    logger: Logger,
   ) {
-    super(new CdpJSHandle(world, remoteObject));
+    super(new CdpJSHandle(world, remoteObject, logger), logger);
+    this.#logger = logger;
   }
 
   override get realm(): IsolatedWorld {
@@ -92,7 +95,7 @@ export class CdpElementHandle<
         objectId: this.id,
       });
     } catch (error) {
-      debugError?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
       await super.scrollIntoView();
     }

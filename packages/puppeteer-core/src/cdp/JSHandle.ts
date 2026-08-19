@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
-import {debugError} from '../common/util.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
@@ -21,14 +21,17 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
   readonly #remoteObject: Protocol.Runtime.RemoteObject;
   readonly #world: IsolatedWorld;
+  #logger: Logger;
 
   constructor(
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
+    logger: Logger,
   ) {
-    super();
+    super(logger);
     this.#world = world;
     this.#remoteObject = remoteObject;
+    this.#logger = logger;
   }
 
   override get disposed(): boolean {
@@ -69,7 +72,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
       return;
     }
     this.#disposed = true;
-    await releaseObject(this.client, this.#remoteObject);
+    await releaseObject(this.client, this.#remoteObject, this.#logger);
   }
 
   override toString(): string {
@@ -112,6 +115,7 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
 export async function releaseObject(
   client: CDPSession,
   remoteObject: Protocol.Runtime.RemoteObject,
+  logger?: Logger,
 ): Promise<void> {
   if (!remoteObject.objectId) {
     return;
@@ -121,6 +125,6 @@ export async function releaseObject(
     .catch(error => {
       // Exceptions might happen in case of a page been navigated or closed.
       // Swallow these since they are harmless and we don't leak anything in this case.
-      debugError?.(error);
+      logger?.(DEBUG_PREFIXES.error)?.(error);
     });
 }

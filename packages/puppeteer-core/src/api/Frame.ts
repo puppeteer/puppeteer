@@ -16,6 +16,7 @@ import type {
 } from '../api/Page.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
+import type {Logger} from '../common/Debug.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
@@ -318,8 +319,14 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * @internal
    */
-  constructor() {
-    super();
+  logger: Logger;
+
+  /**
+   * @internal
+   */
+  constructor(logger: Logger) {
+    super(undefined, logger);
+    this.logger = logger;
   }
 
   /**
@@ -931,7 +938,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     }
 
     if (path) {
-      content = await environment.value.fs.promises.readFile(path, 'utf8');
+      content = await environment.value.readFile(path, 'utf8');
       content += `//# sourceURL=${path.replace(/\n/g, '')}`;
     }
 
@@ -1011,7 +1018,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     }
 
     if (path) {
-      content = await environment.value.fs.promises.readFile(path, 'utf8');
+      content = await environment.value.readFile(path, 'utf8');
       content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       options.content = content;
     }

@@ -41,6 +41,8 @@ import type {
   CookieParam,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
+import type {Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES} from '../common/Debug.js';
 import type {Device} from '../common/Device.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
@@ -68,7 +70,6 @@ import {
   timeout,
   withSourcePuppeteerURLIfNone,
   fromAbortSignal,
-  debugCatchError,
 } from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
@@ -783,9 +784,14 @@ export abstract class Page extends EventEmitter<PageEvents> {
   /**
    * @internal
    */
-  constructor() {
-    super();
+  logger: Logger;
 
+  /**
+   * @internal
+   */
+  constructor(logger: Logger) {
+    super(undefined, logger);
+    this.logger = logger;
     fromEmitterEvent(this, PageEvent.Request)
       .pipe(
         mergeMap(originalRequest => {
@@ -2502,7 +2508,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       return;
     }
 
-    await environment.value.fs.promises.writeFile(path, typedArray);
+    await environment.value.writeFile(path, typedArray);
   }
 
   /**
@@ -2597,19 +2603,36 @@ export abstract class Page extends EventEmitter<PageEvents> {
       throw new Error(`\`scale\` must be greater than 0.`);
     }
 
-    const recorder = new ScreenRecorder(this, width, height, {
-      ...options,
-      crop,
-    });
+    if (options.path && environment.value.path) {
+      await environment.value.mkdir(
+        environment.value.path.dirname(options.path),
+        {recursive: options.overwrite ?? true},
+      );
+    }
+
+    const stream = options.path
+      ? environment.value.createWriteStream(options.path, {
+          encoding: 'binary',
+          overwrite: options.overwrite,
+        })
+      : undefined;
+    const recorder = new ScreenRecorder(
+      this,
+      width,
+      height,
+      {
+        ...options,
+        crop,
+      },
+      this.logger,
+    );
     try {
       await this._startScreencast();
     } catch (error) {
       void recorder.stop();
       throw error;
     }
-    if (options.path) {
-      const {createWriteStream} = environment.value.fs;
-      const stream = createWriteStream(options.path, 'binary');
+    if (stream) {
       recorder.pipe(stream);
     }
     return recorder;
@@ -2663,7 +2686,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
     if (viewport && viewport.deviceScaleFactor !== 0) {
       await this.setViewport({...viewport, deviceScaleFactor: 0});
       stack.defer(() => {
-        void this.setViewport(viewport).catch(debugCatchError);
+        void this.setViewport(viewport).catch(error => {
+          this.logger?.(DEBUG_PREFIXES.error)?.(error);
+        });
       });
     }
     return await this.mainFrame()
@@ -2787,7 +2812,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
             ...scrollDimensions,
           });
           stack.defer(async () => {
-            await this.setViewport(viewport).catch(debugCatchError);
+            await this.setViewport(viewport).catch(error => {
+              this.logger?.(DEBUG_PREFIXES.error)?.(error);
+            });
           });
         }
       } else {
@@ -3276,7 +3303,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
   abstract windowId(): Promise<WindowId>;
 
   override [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugCatchError);
+    return void this[asyncDisposeSymbol]().catch(error => {
+      this.logger?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   override async [asyncDisposeSymbol](): Promise<void> {

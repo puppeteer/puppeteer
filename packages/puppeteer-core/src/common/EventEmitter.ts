@@ -7,7 +7,7 @@
 import mitt, {type Emitter} from '../../third_party/mitt/mitt.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
-import {debugCatchError} from './util.js';
+import {DEBUG_PREFIXES, type Logger} from './Debug.js';
 
 /**
  * @public
@@ -63,6 +63,7 @@ export class EventEmitter<
 > implements CommonEventEmitter<EventsWithWildcard<Events>> {
   #emitter: Emitter<EventsWithWildcard<Events>> | EventEmitter<Events>;
   #handlers = new Map<keyof Events | '*', Array<Handler<any>>>();
+  #logger?: Logger;
 
   /**
    * If you pass an emitter, the returned emitter will wrap the passed emitter.
@@ -73,8 +74,10 @@ export class EventEmitter<
     emitter: Emitter<EventsWithWildcard<Events>> | EventEmitter<Events> = mitt(
       new Map(),
     ),
+    logger?: Logger,
   ) {
     this.#emitter = emitter;
+    this.#logger = logger;
   }
 
   /**
@@ -182,7 +185,9 @@ export class EventEmitter<
   }
 
   [disposeSymbol](): void {
-    return void this[asyncDisposeSymbol]().catch(debugCatchError);
+    return void this[asyncDisposeSymbol]().catch(error => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   async [asyncDisposeSymbol](): Promise<void> {

@@ -10,23 +10,25 @@ import type {CDPSession} from '../api/CDPSession.js';
 import {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {DeviceRequestPromptDevice} from '../api/DeviceRequestPrompt.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {DisposableStack} from '../util/disposable.js';
 
 /**
  * @internal
  */
 export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
-  #client: CDPSession | null;
+  #client: CDPSession;
   #timeoutSettings: TimeoutSettings;
   #id: string;
   #handled = false;
-  #updateDevicesHandle = this.#updateDevices.bind(this);
   #waitForDevicePromises = new Set<{
     filter: (device: DeviceRequestPromptDevice) => boolean;
     promise: Deferred<DeviceRequestPromptDevice>;
   }>();
+  #subscriptions = new DisposableStack();
 
   constructor(
     client: CDPSession,
@@ -38,13 +40,13 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
     this.#timeoutSettings = timeoutSettings;
     this.#id = firstEvent.id;
 
-    this.#client.on(
-      'DeviceAccess.deviceRequestPrompted',
-      this.#updateDevicesHandle,
+    const clientEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#client),
     );
-    this.#client.on('Target.detachedFromTarget', () => {
-      this.#client = null;
-    });
+    clientEmitter.on(
+      'DeviceAccess.deviceRequestPrompted',
+      this.#updateDevices.bind(this),
+    );
 
     this.#updateDevices(firstEvent);
   }
@@ -110,21 +112,14 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
   }
 
   async select(device: DeviceRequestPromptDevice): Promise<void> {
-    assert(
-      this.#client !== null,
-      'Cannot select device through detached session!',
-    );
     assert(this.devices.includes(device), 'Cannot select unknown device!');
     assert(
       !this.#handled,
       'Cannot select DeviceRequestPrompt which is already handled!',
     );
-    this.#client.off(
-      'DeviceAccess.deviceRequestPrompted',
-      this.#updateDevicesHandle,
-    );
+    this.#subscriptions.dispose();
     this.#handled = true;
-    return await this.#client.send('DeviceAccess.selectPrompt', {
+    await this.#client.send('DeviceAccess.selectPrompt', {
       id: this.#id,
       deviceId: device.id,
     });
@@ -132,19 +127,12 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
 
   async cancel(): Promise<void> {
     assert(
-      this.#client !== null,
-      'Cannot cancel prompt through detached session!',
-    );
-    assert(
       !this.#handled,
       'Cannot cancel DeviceRequestPrompt which is already handled!',
     );
-    this.#client.off(
-      'DeviceAccess.deviceRequestPrompted',
-      this.#updateDevicesHandle,
-    );
+    this.#subscriptions.dispose();
     this.#handled = true;
-    return await this.#client.send('DeviceAccess.cancelPrompt', {id: this.#id});
+    await this.#client.send('DeviceAccess.cancelPrompt', {id: this.#id});
   }
 }
 

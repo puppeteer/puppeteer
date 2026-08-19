@@ -33,6 +33,11 @@ describe('WebDriver BiDi Connection', () => {
       'ws://127.0.0.1',
       transport,
       createIncrementalIdGenerator(),
+      0,
+      undefined,
+      () => {
+        return undefined;
+      },
     );
     const responsePromise = connection.send('session.new', {
       capabilities: {},

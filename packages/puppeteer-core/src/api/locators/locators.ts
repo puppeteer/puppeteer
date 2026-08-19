@@ -30,10 +30,11 @@ import {
   tap,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
+import {DEBUG_PREFIXES, type Logger} from '../../common/Debug.js';
 import type {EventType} from '../../common/EventEmitter.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import type {Awaitable, HandleFor, NodeFor} from '../../common/types.js';
-import {fromAbortSignal, timeout, debugCatchError} from '../../common/util.js';
+import {fromAbortSignal, timeout} from '../../common/util.js';
 import type {
   BoundingBox,
   ClickOptions,
@@ -114,6 +115,22 @@ export interface LocatorEvents extends Record<EventType, unknown> {
  * @public
  */
 export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
+  #logger: Logger;
+
+  /**
+   * @internal
+   */
+  constructor(logger: Logger) {
+    super(undefined, logger);
+    this.#logger = logger;
+  }
+
+  /**
+   * @internal
+   */
+  get logger(): Logger {
+    return this.#logger;
+  }
   /**
    * Creates a race between multiple locators trying to locate elements in
    * parallel but ensures that only a single element receives the action.
@@ -400,7 +417,9 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
       mergeMap(handle => {
         return from(handle.click(options)).pipe(
           catchError(err => {
-            void handle.dispose().catch(debugCatchError);
+            void handle.dispose().catch(error => {
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+            });
             throw err;
           }),
         );
@@ -595,7 +614,9 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
           )
           .pipe(
             catchError(err => {
-              void handle.dispose().catch(debugCatchError);
+              void handle.dispose().catch(error => {
+                this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+              });
               throw err;
             }),
           );
@@ -624,7 +645,9 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
       mergeMap(handle => {
         return from(handle.hover()).pipe(
           catchError(err => {
-            void handle.dispose().catch(debugCatchError);
+            void handle.dispose().catch(error => {
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+            });
             throw err;
           }),
         );
@@ -666,7 +689,9 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
           ),
         ).pipe(
           catchError(err => {
-            void handle.dispose().catch(debugCatchError);
+            void handle.dispose().catch(error => {
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+            });
             throw err;
           }),
         );
@@ -835,7 +860,7 @@ export class FunctionLocator<T> extends Locator<T> {
   #func: () => Awaitable<T>;
 
   private constructor(pageOrFrame: Page | Frame, func: () => Awaitable<T>) {
-    super();
+    super(pageOrFrame.logger);
 
     this.#pageOrFrame = pageOrFrame;
     this.#func = func;
@@ -877,7 +902,7 @@ export abstract class DelegatedLocator<T, U> extends Locator<U> {
   #delegate: Locator<T>;
 
   constructor(delegate: Locator<T>) {
-    super();
+    super(delegate.logger);
 
     this.#delegate = delegate;
     this.copyOptions(this.#delegate);
@@ -1067,7 +1092,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     pageOrFrame: Page | Frame,
     selectorOrHandle: string | ElementHandle<T>,
   ) {
-    super();
+    super(pageOrFrame.logger);
     this.#pageOrFrame = pageOrFrame;
     this.#selectorOrHandle = selectorOrHandle;
   }
@@ -1157,7 +1182,12 @@ export class RaceLocator<T> extends Locator<T> {
   #locators: ReadonlyArray<Locator<T>>;
 
   constructor(locators: ReadonlyArray<Locator<T>>) {
-    super();
+    super(
+      locators[0]?.logger ??
+        (() => {
+          return undefined;
+        }),
+    );
     this.#locators = locators;
   }
 

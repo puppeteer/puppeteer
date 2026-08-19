@@ -1,7 +1,8 @@
 name: Deflake Puppeteer test
 
 # Declare default permissions as read only.
-permissions: read-all
+permissions:
+  contents: read
 
 concurrency:
   group: deflake-${{ github.head_ref || github.run_id }}

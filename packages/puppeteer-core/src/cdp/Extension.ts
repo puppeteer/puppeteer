@@ -5,7 +5,7 @@
  */
 import type {Page, Target, WebWorker} from '../api/api.js';
 import {Extension} from '../api/api.js';
-import {debugError} from '../common/util.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {CdpBrowser} from './Browser.js';
@@ -14,6 +14,7 @@ import {isTargetClosedError} from './Connection.js';
 export class CdpExtension extends Extension {
   // needed to access the CDPSession to trigger an extension action.
   #browser: CdpBrowser;
+  #logger?: Logger;
 
   /*
    * @internal
@@ -25,9 +26,11 @@ export class CdpExtension extends Extension {
     path: string,
     enabled: boolean,
     browser: CdpBrowser,
+    logger?: Logger,
   ) {
     super(id, version, name, path, enabled);
     this.#browser = browser;
+    this.#logger = logger;
   }
 
   async workers(): Promise<WebWorker[]> {
@@ -47,7 +50,7 @@ export class CdpExtension extends Extension {
           return await target.worker();
         } catch (err) {
           if (this.#canIgnoreError(err)) {
-            debugError?.(err);
+            this.#logger?.(DEBUG_PREFIXES.error)?.(err);
             return null;
           }
           throw err;
@@ -77,7 +80,7 @@ export class CdpExtension extends Extension {
           return await target.asPage();
         } catch (err) {
           if (this.#canIgnoreError(err)) {
-            debugError?.(err);
+            this.#logger?.(DEBUG_PREFIXES.error)?.(err);
             return null;
           }
           throw err;

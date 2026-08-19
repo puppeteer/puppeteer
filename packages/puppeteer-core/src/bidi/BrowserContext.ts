@@ -18,9 +18,9 @@ import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError, debugCatchError} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
@@ -56,8 +56,14 @@ export class BidiBrowserContext extends BrowserContext {
     browser: BidiBrowser,
     userContext: UserContext,
     options: BidiBrowserContextOptions,
+    logger: Logger,
   ): BidiBrowserContext {
-    const context = new BidiBrowserContext(browser, userContext, options);
+    const context = new BidiBrowserContext(
+      browser,
+      userContext,
+      options,
+      logger,
+    );
     context.#initialize();
     return context;
   }
@@ -79,16 +85,19 @@ export class BidiBrowserContext extends BrowserContext {
   >();
 
   #overrides: Array<{origin: string; permission: Permission}> = [];
+  #logger: Logger;
 
   private constructor(
     browser: BidiBrowser,
     userContext: UserContext,
     options: BidiBrowserContextOptions,
+    logger: Logger,
   ) {
-    super();
+    super(logger);
     this.#browser = browser;
     this.userContext = userContext;
     this.#defaultViewport = options.defaultViewport;
+    this.#logger = logger;
   }
 
   #initialize() {
@@ -118,20 +127,20 @@ export class BidiBrowserContext extends BrowserContext {
   }
 
   #createPage(browsingContext: BrowsingContext): BidiPage {
-    const page = BidiPage.from(this, browsingContext);
+    const page = BidiPage.from(this, browsingContext, this.#logger);
     this.#pages.set(browsingContext, page);
     page.trustedEmitter.on(PageEvent.Close, () => {
       this.#pages.delete(browsingContext);
     });
 
     // -- Target stuff starts here --
-    const pageTarget = new BidiPageTarget(page);
+    const pageTarget = new BidiPageTarget(page, this.#logger);
     const pageTargets = new Map();
     this.#targets.set(page, [pageTarget, pageTargets]);
 
     page.trustedEmitter.on(PageEvent.FrameAttached, frame => {
       const bidiFrame = frame as BidiFrame;
-      const target = new BidiFrameTarget(bidiFrame);
+      const target = new BidiFrameTarget(bidiFrame, this.#logger);
       pageTargets.set(bidiFrame, target);
       this.trustedEmitter.emit(BrowserContextEvent.TargetCreated, target);
     });
@@ -157,7 +166,7 @@ export class BidiBrowserContext extends BrowserContext {
 
     page.trustedEmitter.on(PageEvent.WorkerCreated, worker => {
       const bidiWorker = worker as BidiWebWorker;
-      const target = new BidiWorkerTarget(bidiWorker);
+      const target = new BidiWorkerTarget(bidiWorker, this.#logger);
       pageTargets.set(bidiWorker, target);
       this.trustedEmitter.emit(BrowserContextEvent.TargetCreated, target);
     });
@@ -214,7 +223,7 @@ export class BidiBrowserContext extends BrowserContext {
         await page.setViewport(this.#defaultViewport);
       } catch (error) {
         // Tolerate not supporting `browsingContext.setViewport`. Only log it.
-        debugError?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }
     }
     if (options?.type === 'window' && options?.windowBounds !== undefined) {
@@ -225,7 +234,7 @@ export class BidiBrowserContext extends BrowserContext {
         );
       } catch (error) {
         // Tolerate not supporting `browser.setClientWindowState`. Only log it.
-        debugError?.(error);
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }
     }
 
@@ -241,7 +250,7 @@ export class BidiBrowserContext extends BrowserContext {
     try {
       await this.userContext.remove();
     } catch (error) {
-      debugError?.(error);
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
 
     this.#targets.clear();
@@ -287,7 +296,9 @@ export class BidiBrowserContext extends BrowserContext {
           // TODO: some permissions are outdated and setting them to denied does
           // not work.
           if (!permissionsSet.has(permission)) {
-            return result.catch(debugCatchError);
+            return result.catch(error => {
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+            });
           }
           return result;
         },
@@ -345,7 +356,9 @@ export class BidiBrowserContext extends BrowserContext {
           },
           Bidi.Permissions.PermissionState.Prompt,
         )
-        .catch(debugCatchError);
+        .catch(error => {
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+        });
     });
     this.#overrides = [];
     await Promise.all(promises);

@@ -15,8 +15,10 @@ import {
 import type {Browser} from '../api/Browser.js';
 import type {Configuration} from '../common/Configuration.js';
 import type {ConnectOptions} from '../common/ConnectOptions.js';
+import {debug, type Logger} from '../common/Debug.js';
 import {type CommonPuppeteerSettings, Puppeteer} from '../common/Puppeteer.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
+import {environment} from '../environment.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
 import type {BrowserLauncher} from './BrowserLauncher.js';
@@ -94,6 +96,7 @@ export class PuppeteerNode extends Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   override connect(options: ConnectOptions): Promise<Browser> {
+    options.logger ??= debug;
     return super.connect(options);
   }
 
@@ -134,27 +137,25 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Options to configure launching behavior.
    */
   async launch(options: LaunchOptions = {}): Promise<Browser> {
+    options.logger ??= debug;
     const {browser = await this.defaultBrowser()} = options;
     this.#lastLaunchedBrowser = browser;
     if (!['chrome', 'firefox'].includes(browser)) {
       throw new Error(`Unknown product: ${browser}`);
     }
-    this.#launcher = this.#getLauncher(browser);
+    this.#launcher = this.#getLauncher(browser, options.logger);
     return await this.#launcher.launch(options);
   }
 
-  /**
-   * @internal
-   */
-  #getLauncher(browser: SupportedBrowser): BrowserLauncher {
+  #getLauncher(browser: SupportedBrowser, logger: Logger): BrowserLauncher {
     if (this.#launcher && this.#launcher.browser === browser) {
       return this.#launcher;
     }
     switch (browser) {
       case 'chrome':
-        return new ChromeLauncher(this);
+        return new ChromeLauncher(this, logger);
       case 'firefox':
-        return new FirefoxLauncher(this);
+        return new FirefoxLauncher(this, logger);
       default:
         throw new Error(`Unknown product: ${browser}`);
     }
@@ -178,16 +179,18 @@ export class PuppeteerNode extends Puppeteer {
     if (optsOrChannel === undefined) {
       return await this.#getLauncher(
         await this.lastLaunchedBrowser(),
+        debug,
       ).executablePath(undefined, /* validatePath= */ false);
     }
     if (typeof optsOrChannel === 'string') {
-      return await this.#getLauncher('chrome').executablePath(
+      return await this.#getLauncher('chrome', debug).executablePath(
         optsOrChannel,
         /* validatePath= */ false,
       );
     }
     return await this.#getLauncher(
       optsOrChannel.browser ?? (await this.lastLaunchedBrowser()),
+      (optsOrChannel as LaunchOptions).logger ?? debug,
     ).resolveExecutablePath(optsOrChannel.headless, /* validatePath= */ false);
   }
 
@@ -236,6 +239,7 @@ export class PuppeteerNode extends Puppeteer {
   async defaultArgs(options: LaunchOptions = {}): Promise<string[]> {
     return this.#getLauncher(
       options.browser ?? (await this.lastLaunchedBrowser()),
+      options.logger ?? debug,
     ).defaultArgs(options);
   }
 
@@ -325,5 +329,16 @@ export class PuppeteerNode extends Puppeteer {
         buildId: installedBrowser.buildId,
       });
     }
+  }
+
+  /**
+   * Defines whether Puppeteer should follow symlinks for file operations.
+   *
+   * @param followSymlinks - Whether Puppeteer should follow symlinks.
+   *
+   * @public
+   */
+  setFollowSymlinks(followSymlinks: boolean): void {
+    environment.value.followSymlinks = followSymlinks;
   }
 }

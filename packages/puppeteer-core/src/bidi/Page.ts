@@ -47,6 +47,7 @@ import type {
   CookieSameSite,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
+import type {Logger} from '../common/Debug.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {FileChooser} from '../common/FileChooser.js';
@@ -81,8 +82,9 @@ export class BidiPage extends Page {
   static from(
     browserContext: BidiBrowserContext,
     browsingContext: BrowsingContext,
+    logger: Logger,
   ): BidiPage {
-    const page = new BidiPage(browserContext, browsingContext);
+    const page = new BidiPage(browserContext, browsingContext, logger);
     page.#initialize();
     return page;
   }
@@ -115,13 +117,17 @@ export class BidiPage extends Page {
   private constructor(
     browserContext: BidiBrowserContext,
     browsingContext: BrowsingContext,
+    logger: Logger,
   ) {
-    super();
+    super(logger);
     this.#browserContext = browserContext;
-    this.#frame = BidiFrame.from(this, browsingContext);
+    this.#frame = BidiFrame.from(this, browsingContext, logger);
 
-    this.#cdpEmulationManager = new EmulationManager(this.#frame.client);
-    this.tracing = new Tracing(this.#frame.client);
+    this.#cdpEmulationManager = new EmulationManager(
+      this.#frame.client,
+      logger,
+    );
+    this.tracing = new Tracing(this.#frame.client, logger);
     this.coverage = new Coverage(this.#frame.client);
     this.keyboard = new BidiKeyboard(this);
     this.mouse = new BidiMouse(this);

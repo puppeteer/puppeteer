@@ -41,7 +41,24 @@ describe('CdpBrowser', function () {
   describe('launchPWA', function () {
     it('should apply the timeout while waiting for the page target', async () => {
       const connection = new MockConnection();
-      const browser = new CdpBrowser(connection as unknown as Connection, []);
+      const browser = new CdpBrowser(
+        connection as unknown as Connection,
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        () => {
+          return undefined;
+        },
+      );
       const page = {} as Page;
       const target = {
         page: async () => {

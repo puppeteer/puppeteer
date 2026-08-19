@@ -2,6 +2,89 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.7.0...puppeteer-v25.8.0) (2026-08-17)
+
+
+### 🎉 Features
+
+* support followSymlinks option ([#15335](https://github.com/puppeteer/puppeteer/issues/15335)) ([af6a23d](https://github.com/puppeteer/puppeteer/commit/af6a23dde5e95516929b24b62f2eac4e71fa14c8))
+
+
+### 🛠️ Fixes
+
+* computeSystemExecutablePath support validatePath ([#15340](https://github.com/puppeteer/puppeteer/issues/15340)) ([73da9a4](https://github.com/puppeteer/puppeteer/commit/73da9a41b32f26e995ac00b50c958e6e95fb2be2))
+* launch browsers in detached mode on Windows to fix flakiness ([#15339](https://github.com/puppeteer/puppeteer/issues/15339)) ([8e1022b](https://github.com/puppeteer/puppeteer/commit/8e1022b543f27d9d517310435aaa2b299fe99d46))
+* remove redundant overwrite and file access from ScreenRecorder ([#15352](https://github.com/puppeteer/puppeteer/issues/15352)) ([61a1675](https://github.com/puppeteer/puppeteer/commit/61a16759e01ed622ffac0d0426d35180f7ab4064))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.0 to 3.2.1
+
+
+## [25.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.6.0...puppeteer-v25.7.0) (2026-08-13)
+
+
+### 🎉 Features
+
+* roll to Chrome 152.0.7977.42 ([#15330](https://github.com/puppeteer/puppeteer/issues/15330)) ([0c187db](https://github.com/puppeteer/puppeteer/commit/0c187db99161fe49d7d966d242f131c63337e76e))
+* **tracing:** support bufferSize option in tracing.start ([#15328](https://github.com/puppeteer/puppeteer/issues/15328)) ([987f146](https://github.com/puppeteer/puppeteer/commit/987f146b85115b73f8415c1c1b93d3b42576f058))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 25.6.0 to 25.7.0
+
+
+### 🛠️ Fixes
+
+* logger calling causing crashes ([#15338](https://github.com/puppeteer/puppeteer/issues/15338)) ([eb874a5](https://github.com/puppeteer/puppeteer/commit/eb874a58e55bd7221bca35d4216dc298b1f8ee86))
+* roll to Firefox 153.0.4 ([#15329](https://github.com/puppeteer/puppeteer/issues/15329)) ([df5a524](https://github.com/puppeteer/puppeteer/commit/df5a5241108b6856d8198b019e6772c001da2729))
+
+
+### 🏗️ Refactor
+
+* use Desposable stacks to track listeners ([#15332](https://github.com/puppeteer/puppeteer/issues/15332)) ([df2d719](https://github.com/puppeteer/puppeteer/commit/df2d71988ef7b2a857ff66615cdc28a857078e9c))
+
+
+## [25.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.5.0...puppeteer-v25.6.0) (2026-08-11)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.1.0 to 3.2.0
+
+
+### 🎉 Features
+
+* expose custom Logger to launch/connect ([#15324](https://github.com/puppeteer/puppeteer/issues/15324)) ([ffe68ee](https://github.com/puppeteer/puppeteer/commit/ffe68ee9ef16655c747d8d67a6ddd1a427dcb8fe))
+
+
+### 🛠️ Fixes
+
+* **cdp:** do not fail a per-frame fan-out when an OOP iframe goes away ([#15300](https://github.com/puppeteer/puppeteer/issues/15300)) ([e29c4e7](https://github.com/puppeteer/puppeteer/commit/e29c4e7cf30fe0d0170d35ff8947163d06bc9276))
+* roll to Chrome 151.0.7922.76 ([#15295](https://github.com/puppeteer/puppeteer/issues/15295)) ([5c78fe3](https://github.com/puppeteer/puppeteer/commit/5c78fe35147c8191bfb4b10f55a1937ed96f38ca))
+* roll to Chrome 151.0.7922.77 ([#15308](https://github.com/puppeteer/puppeteer/issues/15308)) ([321aa69](https://github.com/puppeteer/puppeteer/commit/321aa69374665d559a4f7b92769731c53551c4d0))
+* roll to Firefox 153.0.3 ([#15294](https://github.com/puppeteer/puppeteer/issues/15294)) ([6c0a749](https://github.com/puppeteer/puppeteer/commit/6c0a7490d6b79410335639ca7cde87aaa9c98ed4))
+
+
+### 🏗️ Refactor
+
+* pass logger though the constructors ([#15297](https://github.com/puppeteer/puppeteer/issues/15297)) ([76c2a8d](https://github.com/puppeteer/puppeteer/commit/76c2a8dac21a7faf83ba1fb15b2b018aa1417c7f))
+* use logger that is passed down ([#15302](https://github.com/puppeteer/puppeteer/issues/15302)) ([3b1339e](https://github.com/puppeteer/puppeteer/commit/3b1339ef5a2d72d976e2505e968f2853d978a63e))
+
+
 ## [25.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.4.0...puppeteer-v25.5.0) (2026-08-04)
 
 

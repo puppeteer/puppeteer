@@ -31,7 +31,7 @@ export class BidiJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
 
   constructor(value: Bidi.Script.RemoteValue, realm: BidiRealm) {
-    super();
+    super(realm.logger);
     this.#remoteValue = value;
     this.realm = realm;
   }

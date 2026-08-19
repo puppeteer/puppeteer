@@ -12,7 +12,13 @@ import {HTTPRequest} from './HTTPRequest.js';
 import {Page, PageEvent} from './Page.js';
 
 // @ts-expect-error no need to implement all methods
-class MockPage extends Page {}
+class MockPage extends Page {
+  constructor() {
+    super(() => {
+      return undefined;
+    });
+  }
+}
 
 // @ts-expect-error no need to implement all methods
 class MockHTTPRequest extends HTTPRequest {

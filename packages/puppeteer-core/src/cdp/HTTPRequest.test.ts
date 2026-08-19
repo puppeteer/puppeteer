@@ -31,6 +31,9 @@ describe('CdpHTTPRequest', () => {
         } as any,
       } as any,
       [],
+      () => {
+        return undefined;
+      },
     );
     expect(request.postData()).toBe('part1part2');
   });
@@ -53,6 +56,9 @@ describe('CdpHTTPRequest', () => {
         } as any,
       } as any,
       [],
+      () => {
+        return undefined;
+      },
     );
     expect(request.postData()).toBe('originalData');
   });

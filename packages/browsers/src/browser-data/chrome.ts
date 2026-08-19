@@ -12,9 +12,13 @@ import {getJSON} from '../httpUtil.js';
 
 import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
 
-function folder(platform: BrowserPlatform): string {
+function folder(platform: BrowserPlatform, buildId?: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX_ARM:
+      if (buildId && compareVersions(buildId, '153.0.8001.0') < 0) {
+        return 'linux64';
+      }
+      return 'linux-arm64';
     case BrowserPlatform.LINUX:
       return 'linux64';
     case BrowserPlatform.MAC_ARM:
@@ -40,18 +44,22 @@ export function resolveDownloadPath(
   platform: BrowserPlatform,
   buildId: string,
 ): string[] {
-  return [buildId, folder(platform), `chrome-${folder(platform)}.zip`];
+  return [
+    buildId,
+    folder(platform, buildId),
+    `chrome-${folder(platform, buildId)}.zip`,
+  ];
 }
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _buildId: string,
+  buildId: string,
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:
     case BrowserPlatform.MAC_ARM:
       return path.join(
-        'chrome-' + folder(platform),
+        'chrome-' + folder(platform, buildId),
         'Google Chrome for Testing.app',
         'Contents',
         'MacOS',
@@ -59,10 +67,10 @@ export function relativeExecutablePath(
       );
     case BrowserPlatform.LINUX_ARM:
     case BrowserPlatform.LINUX:
-      return path.join('chrome-linux64', 'chrome');
+      return path.join('chrome-' + folder(platform, buildId), 'chrome');
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
-      return path.join('chrome-' + folder(platform), 'chrome.exe');
+      return path.join('chrome-' + folder(platform, buildId), 'chrome.exe');
   }
 }
 

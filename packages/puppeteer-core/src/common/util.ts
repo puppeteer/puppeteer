@@ -21,7 +21,7 @@ import {assert} from '../util/assert.js';
 import {mergeUint8Arrays, stringToTypedArray} from '../util/encoding.js';
 import {packageVersion} from '../util/version.js';
 
-import {debug, DEBUG_PREFIXES} from './Debug.js';
+import {DEBUG_PREFIXES, type Logger} from './Debug.js';
 import {TimeoutError} from './Errors.js';
 import type {EventEmitter, EventType} from './EventEmitter.js';
 import type {
@@ -30,19 +30,6 @@ import type {
   PDFOptions,
 } from './PDFOptions.js';
 import {paperFormats} from './PDFOptions.js';
-
-/**
- * @internal
- */
-export const debugError = debug(DEBUG_PREFIXES.error);
-
-/**
- * @internal
- *
- * Use this instead of debugError so the catch functions
- * don't re-throw the error.
- */
-export const debugCatchError = debugError ?? (() => {});
 
 /**
  * @internal
@@ -204,12 +191,13 @@ export function evaluationString(
  */
 export async function getReadableAsTypedArray(
   readable: ReadableStream<Uint8Array>,
-  path?: string,
+  path: string | undefined,
+  logger: Logger,
 ): Promise<Uint8Array | null> {
   const buffers: Uint8Array[] = [];
   const reader = readable.getReader();
   if (path) {
-    const fileHandle = await environment.value.fs.promises.open(path, 'w+');
+    const fileHandle = await environment.value.openFileForWriting(path);
     try {
       while (true) {
         const {done, value} = await reader.read();
@@ -238,7 +226,7 @@ export async function getReadableAsTypedArray(
     }
     return concat;
   } catch (error) {
-    debugError?.(error);
+    logger?.(DEBUG_PREFIXES.error)?.(error);
     return null;
   }
 }

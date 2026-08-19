@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugCatchError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
 
@@ -15,6 +15,7 @@ import {DisposableStack} from '../util/disposable.js';
 export class PipeTransport implements ConnectionTransport {
   #pipeWrite: NodeJS.WritableStream;
   #subscriptions = new DisposableStack();
+  #logger: Logger;
 
   #isClosed = false;
   #pendingMessage: Buffer[] = [];
@@ -25,13 +26,16 @@ export class PipeTransport implements ConnectionTransport {
   constructor(
     pipeWrite: NodeJS.WritableStream,
     pipeRead: NodeJS.ReadableStream,
+    logger: Logger,
   ) {
     this.#pipeWrite = pipeWrite;
+    this.#logger = logger;
     const pipeReadEmitter = this.#subscriptions.use(
       // NodeJS event emitters don't support `*` so we need to typecast
       // As long as we don't use it we should be OK.
       new EventEmitter(
         pipeRead as unknown as EventEmitter<Record<string, any>>,
+        logger,
       ),
     );
     pipeReadEmitter.on('data', buffer => {
@@ -42,7 +46,9 @@ export class PipeTransport implements ConnectionTransport {
         this.onclose.call(null);
       }
     });
-    pipeReadEmitter.on('error', debugCatchError);
+    pipeReadEmitter.on('error', err => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+    });
     const pipeWriteEmitter = this.#subscriptions.use(
       // NodeJS event emitters don't support `*` so we need to typecast
       // As long as we don't use it we should be OK.
@@ -50,7 +56,9 @@ export class PipeTransport implements ConnectionTransport {
         pipeWrite as unknown as EventEmitter<Record<string, any>>,
       ),
     );
-    pipeWriteEmitter.on('error', debugCatchError);
+    pipeWriteEmitter.on('error', err => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+    });
   }
 
   send(message: string): void {

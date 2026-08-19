@@ -32,15 +32,11 @@ import {
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
 import type {Realm} from '../api/Realm.js';
 import {Accessibility} from '../cdp/Accessibility.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, HandleFor} from '../common/types.js';
-import {
-  debugError,
-  fromAbortSignal,
-  fromEmitterEvent,
-  timeout,
-} from '../common/util.js';
+import {fromAbortSignal, fromEmitterEvent, timeout} from '../common/util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {BidiCdpSession} from './CDPSession.js';
@@ -67,8 +63,9 @@ export class BidiFrame extends Frame {
   static from(
     parent: BidiPage | BidiFrame,
     browsingContext: BrowsingContext,
+    logger: Logger,
   ): BidiFrame {
-    const frame = new BidiFrame(parent, browsingContext);
+    const frame = new BidiFrame(parent, browsingContext, logger);
     frame.#initialize();
     return frame;
   }
@@ -77,6 +74,7 @@ export class BidiFrame extends Frame {
   readonly browsingContext: BrowsingContext;
   readonly #frames = new WeakMap<BrowsingContext, BidiFrame>();
   readonly realms: {default: BidiFrameRealm; internal: BidiFrameRealm};
+  #logger: Logger;
 
   override readonly _id: string;
   override readonly client: BidiCdpSession;
@@ -85,23 +83,34 @@ export class BidiFrame extends Frame {
   private constructor(
     parent: BidiPage | BidiFrame,
     browsingContext: BrowsingContext,
+    logger: Logger,
   ) {
-    super();
+    super(logger);
     this.#parent = parent;
     this.browsingContext = browsingContext;
+    this.#logger = logger;
 
     this._id = browsingContext.id;
     this.client = new BidiCdpSession(this);
     this.realms = {
-      default: BidiFrameRealm.from(this.browsingContext.defaultRealm, this),
+      default: BidiFrameRealm.from(
+        this.browsingContext.defaultRealm,
+        this,
+        logger,
+      ),
       internal: BidiFrameRealm.from(
         this.browsingContext.createWindowRealm(
           `__puppeteer_internal_${Math.ceil(Math.random() * 10000)}`,
         ),
         this,
+        logger,
       ),
     };
-    this.accessibility = new Accessibility(this.realms.default, this._id);
+    this.accessibility = new Accessibility(
+      this.realms.default,
+      this._id,
+      logger,
+    );
   }
 
   #initialize(): void {
@@ -126,6 +135,8 @@ export class BidiFrame extends Frame {
         request,
         this,
         this.page().isNetworkInterceptionEnabled,
+        undefined,
+        this.logger,
       );
       request.once('success', () => {
         this.page().trustedEmitter.emit(PageEvent.RequestFinished, httpRequest);
@@ -198,14 +209,14 @@ export class BidiFrame extends Frame {
         error.stack = [...messageLines, ...stackLines].join('\n');
         this.page().trustedEmitter.emit(PageEvent.PageError, error);
       } else {
-        debugError?.(
+        this.#logger?.(DEBUG_PREFIXES.error)?.(
           `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`,
         );
       }
     });
 
     this.browsingContext.on('worker', realm => {
-      const worker = BidiWebWorker.from(this, realm);
+      const worker = BidiWebWorker.from(this, realm, this.#logger);
       realm.on('destroyed', () => {
         this.page().trustedEmitter.emit(PageEvent.WorkerDestroyed, worker);
       });
@@ -214,7 +225,7 @@ export class BidiFrame extends Frame {
   }
 
   #createFrameTarget(browsingContext: BrowsingContext) {
-    const frame = BidiFrame.from(this, browsingContext);
+    const frame = BidiFrame.from(this, browsingContext, this.#logger);
     this.#frames.set(browsingContext, frame);
     this.page().trustedEmitter.emit(PageEvent.FrameAttached, frame);
 
@@ -468,7 +479,13 @@ export class BidiFrame extends Frame {
         `Failed to add page binding with name ${name}: globalThis['${name}'] already exists!`,
       );
     }
-    const exposable = await ExposableFunction.from(this, name, apply);
+    const exposable = await ExposableFunction.from(
+      this,
+      name,
+      apply,
+      false,
+      this.#logger,
+    );
     this.#exposedFunctions.set(name, exposable);
   }
 

@@ -6,9 +6,7 @@
 
 import type {ChildProcessWithoutNullStreams} from 'node:child_process';
 import {spawn, spawnSync} from 'node:child_process';
-import fs from 'node:fs';
 import os from 'node:os';
-import {dirname} from 'node:path';
 import {PassThrough} from 'node:stream';
 
 import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
@@ -26,8 +24,8 @@ import {
 import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Page, VideoFormat} from '../api/Page.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
-import {fromEmitterEvent, debugCatchError} from '../common/util.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {fromEmitterEvent} from '../common/util.js';
 import {guarded} from '../util/decorators.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
 
@@ -78,8 +76,6 @@ export interface ScreenRecorderOptions {
   quality?: number;
   colors?: number;
   scale?: number;
-  path?: `${string}.${VideoFormat}`;
-  overwrite?: boolean;
 }
 
 /**
@@ -94,7 +90,7 @@ export class ScreenRecorder extends PassThrough {
   #lastFrame: Promise<readonly [Buffer, number]>;
 
   #fps: number;
-  #debugFfmpeg: ((...args: unknown[]) => void) | undefined;
+  #logger?: Logger;
 
   /**
    * @internal
@@ -114,14 +110,12 @@ export class ScreenRecorder extends PassThrough {
       delay,
       quality,
       colors,
-      path,
-      overwrite,
     }: ScreenRecorderOptions = {},
-    logger: Logger = debug,
+    logger?: Logger,
   ) {
     super({allowHalfOpen: false});
 
-    this.#debugFfmpeg = logger(DEBUG_PREFIXES.ffmpeg);
+    this.#logger = logger;
 
     ffmpegPath ??= 'ffmpeg';
     format ??= 'webm';
@@ -131,7 +125,6 @@ export class ScreenRecorder extends PassThrough {
     delay ??= -1;
     quality ??= CRF_VALUE;
     colors ??= 256;
-    overwrite ??= true;
 
     this.#fps = fps;
 
@@ -166,11 +159,6 @@ export class ScreenRecorder extends PassThrough {
     const vf = formatArgs.indexOf('-vf');
     if (vf !== -1) {
       filters.push(formatArgs.splice(vf, 2).at(-1) ?? '');
-    }
-
-    // Ensure provided output directory path exists.
-    if (path) {
-      fs.mkdirSync(dirname(path), {recursive: overwrite});
     }
 
     this.#process = spawn(
@@ -210,22 +198,22 @@ export class ScreenRecorder extends PassThrough {
         // Filters to ensure the images are piped correctly,
         // combined with any format-specific filters.
         ['-vf', filters.join()],
-        // Overwrite output, or exit immediately if file already exists.
-        [overwrite ? '-y' : '-n'],
         'pipe:1',
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
     );
     this.#process.stdout.pipe(this);
     this.#process.stderr.on('data', (data: Buffer) => {
-      this.#debugFfmpeg?.(data.toString('utf8'));
+      this.#logger?.(DEBUG_PREFIXES.ffmpeg)?.(data.toString('utf8'));
     });
 
     this.#page = page;
 
     const {client} = this.#page.mainFrame();
     client.once(CDPSessionEvent.Disconnected, () => {
-      void this.stop().catch(debugCatchError);
+      void this.stop().catch(err => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+      });
     });
 
     // Anchor for the constant-fps grid; set to the first frame's timestamp.
@@ -353,7 +341,9 @@ export class ScreenRecorder extends PassThrough {
       return;
     }
     // Stopping the screencast will flush the frames.
-    await this.#page._stopScreencast().catch(debugCatchError);
+    await this.#page._stopScreencast().catch(err => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+    });
 
     this.#controller.abort();
 

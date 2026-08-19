@@ -12,6 +12,7 @@ import type {
 } from '../api/Browser.js';
 
 import type {ConnectionTransport} from './ConnectionTransport.js';
+import type {Logger} from './Debug.js';
 import type {DownloadBehavior} from './DownloadBehavior.js';
 import type {Viewport} from './Viewport.js';
 
@@ -233,4 +234,23 @@ export interface ConnectOptions {
    * @experimental
    */
   allowlist?: string[];
+  /**
+   * When provided, Puppeteer calls the logger with a debug channel prefix
+   * {@link DebugPrefix}. If the logger returns a
+   * {@link LoggerFunction}, Puppeteer uses it to log details for that channel.
+   *
+   * @example
+   *
+   * ```ts
+   * const browser = await puppeteer.connect({
+   *   browserWSEndpoint,
+   *   logger: prefix => {
+   *     return (...args) => console.log(`[${prefix}]`, ...args);
+   *   },
+   * });
+   * ```
+   *
+   * @experimental The API may change in future releases.
+   */
+  logger?: Logger;
 }

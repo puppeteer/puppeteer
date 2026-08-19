@@ -7,6 +7,12 @@ updates:
       day: 'sunday'
       time: '02:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
+      exclude:
+        - devtools-protocol
+        - chromium-bidi
+        - '@types/chrome'
     ignore:
       - dependency-name: devtools-protocol
       - dependency-name: chromium-bidi
@@ -28,6 +34,8 @@ updates:
       day: 'sunday'
       time: '03:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -39,6 +47,8 @@ updates:
       day: 'sunday'
       time: '04:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -50,6 +60,8 @@ updates:
       day: 'sunday'
       time: '05:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: node
         versions:

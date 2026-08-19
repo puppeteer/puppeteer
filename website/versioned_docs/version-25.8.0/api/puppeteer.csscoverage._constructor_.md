@@ -10,7 +10,7 @@ Constructs a new instance of the `CSSCoverage` class
 
 ```typescript
 class CSSCoverage {
-  constructor(client: CDPSession);
+  constructor(client: CDPSession, logger?: Logger);
 }
 ```
 
@@ -38,6 +38,19 @@ client
 [CDPSession](./puppeteer.cdpsession.md)
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+logger
+
+</td><td>
+
+[Logger](./puppeteer.logger.md)
+
+</td><td>
+
+_(Optional)_
 
 </td></tr>
 </tbody></table>

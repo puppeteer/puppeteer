@@ -9,12 +9,13 @@ import type {Protocol} from 'devtools-protocol';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import type {Credentials, Page} from '../api/Page.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {
   NetworkManagerEvent,
   type NetworkManagerEvents,
 } from '../common/NetworkManagerEvents.js';
-import {debugError, isString, debugCatchError} from '../common/util.js';
+import {isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -102,11 +103,17 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
   #clients = new Map<CDPSession, DisposableStack>();
   #networkEnabled: boolean;
+  #logger: Logger;
 
-  constructor(frameManager: FrameProvider, networkEnabled?: boolean) {
-    super();
+  constructor(
+    frameManager: FrameProvider,
+    networkEnabled = true,
+    logger: Logger,
+  ) {
+    super(undefined, logger);
     this.#frameManager = frameManager;
     this.#networkEnabled = networkEnabled ?? true;
+    this.#logger = logger;
   }
 
   #canIgnoreError(error: unknown) {
@@ -430,7 +437,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         requestId: event.requestId,
         authChallengeResponse: {response, username, password},
       })
-      .catch(debugCatchError);
+      .catch(err => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+      });
   }
 
   /**
@@ -452,7 +461,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         .send('Fetch.continueRequest', {
           requestId: event.requestId,
         })
-        .catch(debugCatchError);
+        .catch(err => {
+          this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+        });
     }
 
     const {networkId: networkRequestId, requestId: fetchRequestId} = event;
@@ -514,6 +525,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#userRequestInterceptionEnabled,
       event,
       [],
+      this.#logger,
     );
     this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
@@ -579,6 +591,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#userRequestInterceptionEnabled,
       event,
       redirectChain,
+      this.#logger,
     );
 
     const extraInfo = this.#networkEventManager
@@ -624,7 +637,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       request = this.#networkEventManager.getRequest(event.requestId);
     }
     if (!request) {
-      debugError?.(
+      this.#logger?.(DEBUG_PREFIXES.error)?.(
         new Error(
           `Request ${event.requestId} was served from cache but we could not find the corresponding request object`,
         ),
@@ -668,7 +681,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       responseReceived.requestId,
     );
     if (extraInfos.length) {
-      debugError?.(
+      this.#logger?.(DEBUG_PREFIXES.error)?.(
         new Error(
           'Unexpected extraInfo events for request ' +
             responseReceived.requestId,

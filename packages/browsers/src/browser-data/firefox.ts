@@ -379,10 +379,6 @@ function defaultProfilePreferences(
 
     'privacy.trackingprotection.enabled': false,
 
-    // Can be removed once Firefox 89 is no longer supported
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1710839
-    'remote.enabled': true,
-
     // Until Bug 1999693 is resolved, this preference needs to be set to allow
     // Webdriver BiDi to automatically dismiss file pickers.
     'remote.bidi.dismiss_file_pickers.enabled': true,
@@ -400,8 +396,8 @@ function defaultProfilePreferences(
     // Do not wait for the notification button security delay
     'security.notification_enable_delay': 0,
 
-    // Ensure blocklist updates do not hit the network
-    'services.settings.server': `http://${server}/dummy/blocklist/`,
+    // Ensure remote settings do not hit the network
+    'services.settings.server': 'data:,#remote-settings-dummy/v1',
 
     // Do not automatically fill sign-in forms with known usernames and
     // passwords

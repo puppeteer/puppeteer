@@ -9,11 +9,10 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ConnectionClosedError} from '../common/Errors.js';
 import type {EventsWithWildcard} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {debugError} from '../common/util.js';
 import type {GetIdFn} from '../util/incremental-id-generator.js';
 
 import {BidiCdpSession} from './CDPSession.js';
@@ -55,6 +54,7 @@ export class BidiConnection
   #delay: number;
   #timeout = 0;
   #closed = false;
+  #logger?: Logger;
   #callbacks: CallbackRegistry;
   #emitters: Array<EventEmitter<any>> = [];
   #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
@@ -65,17 +65,17 @@ export class BidiConnection
     transport: ConnectionTransport,
     idGenerator: GetIdFn,
     delay = 0,
-    timeout?: number,
-    logger: Logger = debug,
+    timeout: number | undefined = undefined,
+    logger: Logger,
   ) {
     super();
     this.#url = url;
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
-    this.#callbacks = new CallbackRegistry(idGenerator);
+    this.#callbacks = new CallbackRegistry(idGenerator, logger);
 
-    this.#debugProtocolSend = logger(DEBUG_PREFIXES.bidiSend);
-    this.#debugProtocolReceive = logger(DEBUG_PREFIXES.bidiReceive);
+    this.#debugProtocolSend = logger?.(DEBUG_PREFIXES.bidiSend);
+    this.#debugProtocolReceive = logger?.(DEBUG_PREFIXES.bidiReceive);
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);
@@ -186,7 +186,7 @@ export class BidiConnection
         object.message,
       );
     }
-    debugError?.(object);
+    this.#logger?.(DEBUG_PREFIXES.error)?.(object);
   }
 
   /**

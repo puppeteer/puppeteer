@@ -10,7 +10,7 @@ import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
-import {debugCatchError} from '../common/util.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -37,6 +37,7 @@ export class CdpTarget extends Target {
   #targetManager?: TargetManager;
   #sessionFactory:
     ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined;
+  #logger: Logger;
   #childTargets = new Set<CdpTarget>();
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
@@ -57,14 +58,16 @@ export class CdpTarget extends Target {
     targetManager: TargetManager | undefined,
     sessionFactory:
       ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined,
+    logger: Logger,
   ) {
-    super();
+    super(logger);
     this.#session = session;
     this.#targetManager = targetManager;
     this.#targetInfo = targetInfo;
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
+    this.#logger = logger;
     if (this.#session) {
       this.#session.setTarget(this);
     }
@@ -84,7 +87,7 @@ export class CdpTarget extends Target {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        return CdpPage._create(client, this, null);
+        return CdpPage._create(client, this, null, this.#logger);
       });
     }
     return (await this._asPagePromise) ?? null;
@@ -225,8 +228,16 @@ export class PageTarget extends CdpTarget {
     targetManager: TargetManager,
     sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>,
     defaultViewport: Viewport | null,
+    logger: Logger,
   ) {
-    super(targetInfo, session, browserContext, targetManager, sessionFactory);
+    super(
+      targetInfo,
+      session,
+      browserContext,
+      targetManager,
+      sessionFactory,
+      logger,
+    );
     this.#defaultViewport = defaultViewport ?? undefined;
   }
 
@@ -252,7 +263,9 @@ export class PageTarget extends CdpTarget {
         openerPage.emit(PageEvent.Popup, popupPage);
         return true;
       })
-      .catch(debugCatchError);
+      .catch(error => {
+        this.logger?.(DEBUG_PREFIXES.error)?.(error);
+      });
     this._checkIfInitialized();
   }
 
@@ -264,7 +277,12 @@ export class PageTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        return CdpPage._create(client, this, this.#defaultViewport ?? null);
+        return CdpPage._create(
+          client,
+          this,
+          this.#defaultViewport ?? null,
+          this.logger,
+        );
       });
     }
     return (await this.pagePromise) ?? null;
@@ -306,6 +324,7 @@ export class WorkerTarget extends CdpTarget {
           this.type(),
           () => {} /* exceptionThrown */,
           undefined /* networkManager */,
+          this.logger,
         );
       });
     }

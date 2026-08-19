@@ -21,6 +21,10 @@ describe('ChromeDriver', () => {
       'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/linux64/chromedriver-linux64.zip',
     );
     assert.strictEqual(
+      resolveDownloadUrl(BrowserPlatform.LINUX_ARM, '153.0.8001.0'),
+      'https://storage.googleapis.com/chrome-for-testing-public/153.0.8001.0/linux-arm64/chromedriver-linux-arm64.zip',
+    );
+    assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.MAC, '115.0.5763.0'),
       'https://storage.googleapis.com/chrome-for-testing-public/115.0.5763.0/mac-x64/chromedriver-mac-x64.zip',
     );
@@ -50,6 +54,10 @@ describe('ChromeDriver', () => {
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
       path.join('chromedriver-linux64', 'chromedriver'),
+    );
+    assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.LINUX_ARM, '12372323'),
+      path.join('chromedriver-linux-arm64', 'chromedriver'),
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC, '12372323'),

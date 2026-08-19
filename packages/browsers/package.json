@@ -1,6 +1,6 @@
 {
   "name": "@puppeteer/browsers",
-  "version": "3.1.0",
+  "version": "3.2.1",
   "description": "Download and launch browsers",
   "scripts": {
     "build:docs": "wireit",
@@ -83,7 +83,7 @@
     "!*.tsbuildinfo"
   ],
   "dependencies": {
-    "modern-tar": "^0.7.6",
+    "modern-tar": "^0.8.0",
     "yargs": "^18.0.0"
   },
   "peerDependencies": {

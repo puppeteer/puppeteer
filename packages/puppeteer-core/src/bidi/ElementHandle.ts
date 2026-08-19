@@ -39,7 +39,7 @@ export class BidiElementHandle<
   declare handle: BidiJSHandle<ElementType>;
 
   constructor(value: Bidi.Script.RemoteValue, realm: BidiFrameRealm) {
-    super(BidiJSHandle.from(value, realm));
+    super(BidiJSHandle.from(value, realm), realm.logger);
   }
 
   override get realm(): BidiFrameRealm {

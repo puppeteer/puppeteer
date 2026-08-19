@@ -9,17 +9,13 @@ import type {Protocol} from 'devtools-protocol';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
-import {
-  debugError,
-  PuppeteerURL,
-  UTILITY_WORLD_NAME,
-  debugCatchError,
-} from '../common/util.js';
+import {PuppeteerURL, UTILITY_WORLD_NAME} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
-import {disposeSymbol} from '../util/disposable.js';
+import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {Binding} from './Binding.js';
@@ -69,6 +65,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   >();
 
   #frameTreeHandled?: Deferred<void>;
+  #logger: Logger;
 
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
@@ -86,18 +83,23 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     client: CdpCDPSession,
     page: CdpPage,
     timeoutSettings: TimeoutSettings,
+    logger: Logger,
   ) {
-    super();
+    super(undefined, logger);
     this.#client = client;
     this.#page = page;
     this.#networkManager = new NetworkManager(
       this,
       page.browser().isNetworkEnabled(),
+      logger,
     );
     this.#timeoutSettings = timeoutSettings;
+    this.#logger = logger;
     this.setupEventListeners(this.#client);
     client.once(CDPSessionEvent.Disconnected, () => {
-      void this.#onClientDisconnect(client).catch(debugCatchError);
+      void this.#onClientDisconnect(client).catch(error => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+      });
     });
   }
 
@@ -129,22 +131,21 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       this.#removeFramesRecursively(child);
     }
     const swapped = Deferred.create<void>();
-    const onFrameSwapped = () => {
+    using subscriptions = new DisposableStack();
+    const frameEmitter = subscriptions.use(new EventEmitter(mainFrame));
+    const pageEmitter = subscriptions.use(new EventEmitter(this.#page));
+
+    frameEmitter.once(FrameEvent.FrameSwappedByActivation, () => {
       swapped.resolve();
-    };
-    const onPageClosed = () => {
+    });
+    pageEmitter.once(PageEvent.Close, () => {
       swapped.reject(new Error('Page closed'));
-    };
-    mainFrame.once(FrameEvent.FrameSwappedByActivation, onFrameSwapped);
-    this.#page.once(PageEvent.Close, onPageClosed);
+    });
 
     try {
       await swapped.valueOrThrow();
     } catch {
       this.#removeFramesRecursively(mainFrame);
-    } finally {
-      mainFrame.off(FrameEvent.FrameSwappedByActivation, onFrameSwapped);
-      this.#page.off(PageEvent.Close, onPageClosed);
     }
   }
 
@@ -165,7 +166,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
     this.setupEventListeners(client);
     client.once(CDPSessionEvent.Disconnected, () => {
-      void this.#onClientDisconnect(client).catch(debugCatchError);
+      void this.#onClientDisconnect(client).catch(error => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+      });
     });
     await this.initialize(client, frame);
     await this.#networkManager.addClient(client);
@@ -282,22 +285,39 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return this._frameTree.getById(frameId) || null;
   }
 
-  async addExposedFunctionBinding(binding: Binding): Promise<void> {
-    this.#bindings.add(binding);
+  async #forEachFrame(
+    action: (frame: CdpFrame) => Promise<unknown>,
+  ): Promise<void> {
     await Promise.all(
       this.frames().map(async frame => {
-        return await frame.addExposedFunctionBinding(binding);
+        try {
+          await action(frame);
+        } catch (error) {
+          // Only an out-of-process frame has a session of its own to lose.
+          if (
+            frame._client() === this.#client ||
+            !isErrorLike(error) ||
+            !isTargetClosedError(error)
+          ) {
+            throw error;
+          }
+        }
       }),
     );
   }
 
+  async addExposedFunctionBinding(binding: Binding): Promise<void> {
+    this.#bindings.add(binding);
+    await this.#forEachFrame(frame => {
+      return frame.addExposedFunctionBinding(binding);
+    });
+  }
+
   async removeExposedFunctionBinding(binding: Binding): Promise<void> {
     this.#bindings.delete(binding);
-    await Promise.all(
-      this.frames().map(async frame => {
-        return await frame.removeExposedFunctionBinding(binding);
-      }),
-    );
+    await this.#forEachFrame(frame => {
+      return frame.removeExposedFunctionBinding(binding);
+    });
   }
 
   async evaluateOnNewDocument(
@@ -317,11 +337,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
     this.#scriptsToEvaluateOnNewDocument.set(identifier, preloadScript);
 
-    await Promise.all(
-      this.frames().map(async frame => {
-        return await frame.addPreloadScript(preloadScript);
-      }),
-    );
+    await this.#forEachFrame(frame => {
+      return frame.addPreloadScript(preloadScript);
+    });
 
     return {identifier};
   }
@@ -347,7 +365,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
           .send('Page.removeScriptToEvaluateOnNewDocument', {
             identifier,
           })
-          .catch(debugCatchError);
+          .catch(error => {
+            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+          });
       }),
     );
   }
@@ -362,7 +382,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    void this.initialize(target._session()!, frame).catch(debugCatchError);
+    void this.initialize(target._session()!, frame).catch(error => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+    });
   }
 
   _deviceRequestPromptManager(
@@ -450,7 +472,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return;
     }
 
-    frame = new CdpFrame(this, frameId, parentFrameId, session);
+    frame = new CdpFrame(this, frameId, parentFrameId, session, this.#logger);
     this._frameTree.addFrame(frame);
     this.emit(FrameManagerEvent.FrameAttached, frame);
   }
@@ -479,7 +501,13 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         frame._id = frameId;
       } else {
         // Initial main frame navigation.
-        frame = new CdpFrame(this, frameId, undefined, this.#client);
+        frame = new CdpFrame(
+          this,
+          frameId,
+          undefined,
+          this.#client,
+          this.#logger,
+        );
       }
       this._frameTree.addFrame(frame);
     }
@@ -516,7 +544,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
               worldName: name,
               grantUniveralAccess: true,
             })
-            .catch(debugCatchError);
+            .catch(error => {
+              this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+            });
         }),
     );
 
@@ -599,14 +629,21 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         const extId = this.#extractExtensionId(origin);
 
         if (!extId) {
-          debugError?.('Error while parsing extension id');
+          this.#logger?.(DEBUG_PREFIXES.error)?.(
+            'Error while parsing extension id',
+          );
           return;
         }
 
         if (frame.extensionWorlds[extId]) {
           world = frame.extensionWorlds[extId];
         } else {
-          world = new IsolatedWorld(frame, this.timeoutSettings, extId);
+          world = new IsolatedWorld(
+            frame,
+            this.timeoutSettings,
+            extId,
+            this.#logger,
+          );
           frame.extensionWorlds[extId] = world;
           frame.registerWorldListeners(world);
           world.origin = origin;
@@ -623,6 +660,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       frame?.client || this.#client,
       contextPayload,
       world,
+      this.#logger,
     );
     world.setContext(context);
   }

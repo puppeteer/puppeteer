@@ -69,7 +69,9 @@ describe('removeMatchingFlags', () => {
 
 describe('ChromeLauncher', () => {
   it('removes disabled features if they are enabled explicitly', () => {
-    const launcher = new ChromeLauncher({} as any);
+    const launcher = new ChromeLauncher({} as any, () => {
+      return undefined;
+    });
     const args = launcher.defaultArgs({
       args: ['--enable-features=Translate'],
     });

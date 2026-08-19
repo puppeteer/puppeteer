@@ -21,7 +21,13 @@ describe('NodeWebSocketTransport', () => {
     wss.on('connection', c => {
       connection = c;
     });
-    transport = await NodeWebSocketTransport.create('ws://127.0.0.1:8080');
+    transport = await NodeWebSocketTransport.create(
+      'ws://127.0.0.1:8080',
+      undefined,
+      () => {
+        return undefined;
+      },
+    );
   });
 
   afterEach(() => {

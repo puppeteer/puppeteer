@@ -48,7 +48,9 @@ describe('PipeTransport', () => {
         // No-op as we will push data manually.
       },
     });
-    transport = new PipeTransport(myWritable, myReadable);
+    transport = new PipeTransport(myWritable, myReadable, () => {
+      return undefined;
+    });
   });
 
   afterEach(() => {

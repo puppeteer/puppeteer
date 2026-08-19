@@ -13,8 +13,8 @@ import type {SetContentWaitForOptions, WaitForOptions} from '../api/Frame.js';
 import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
-import {debugCatchError} from '../common/util.js';
 import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -54,20 +54,23 @@ export class CdpFrame extends Frame {
 
   worlds: IsolatedWorldChart;
   extensionWorlds: Record<string, IsolatedWorld> = {};
+  #logger: Logger;
 
   constructor(
     frameManager: FrameManager,
     frameId: string,
     parentFrameId: string | undefined,
     client: CDPSession,
+    logger: Logger,
   ) {
-    super();
+    super(logger);
     this._frameManager = frameManager;
     this.#url = '';
     this._id = frameId;
     this._parentId = parentFrameId;
     this.#detached = false;
     this.#client = client;
+    this.#logger = logger;
 
     this._loaderId = '';
     this.worlds = {
@@ -75,15 +78,21 @@ export class CdpFrame extends Frame {
         this,
         this._frameManager.timeoutSettings,
         MAIN_WORLD,
+        logger,
       ),
       [PUPPETEER_WORLD]: new IsolatedWorld(
         this,
         this._frameManager.timeoutSettings,
         PUPPETEER_WORLD,
+        logger,
       ),
     };
 
-    this.accessibility = new Accessibility(this.worlds[MAIN_WORLD], frameId);
+    this.accessibility = new Accessibility(
+      this.worlds[MAIN_WORLD],
+      frameId,
+      logger,
+    );
 
     this.on(FrameEvent.FrameSwappedByActivation, () => {
       // Emulate loading process for swapped frames.
@@ -351,7 +360,9 @@ export class CdpFrame extends Frame {
       this.#client.send('Runtime.addBinding', {
         name: CDP_BINDING_PREFIX + binding.name,
       }),
-      this.evaluate(binding.initSource).catch(debugCatchError),
+      this.evaluate(binding.initSource).catch(error => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+      }),
     ]);
   }
 
@@ -370,7 +381,9 @@ export class CdpFrame extends Frame {
         // Removes the dangling Puppeteer binding wrapper.
         // @ts-expect-error: In a different context.
         globalThis[name] = undefined;
-      }, binding.name).catch(debugCatchError),
+      }, binding.name).catch(error => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+      }),
     ]);
   }
 

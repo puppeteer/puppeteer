@@ -25,7 +25,9 @@ describe('FirefoxLauncher', function () {
 
   describe('launch', function () {
     it('should reject blocklist for the default Firefox WebDriver BiDi protocol', async () => {
-      const launcher = new FirefoxLauncher({} as PuppeteerNode);
+      const launcher = new FirefoxLauncher({} as PuppeteerNode, () => {
+        return undefined;
+      });
 
       await expect(
         launcher.launch({

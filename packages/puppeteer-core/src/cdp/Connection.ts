@@ -15,7 +15,7 @@ import {
 } from '../api/CDPSession.js';
 import {CallbackRegistry} from '../common/CallbackRegistry.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {debug, DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {ConnectionClosedError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {createProtocolErrorMessage} from '../util/ErrorLike.js';
@@ -43,6 +43,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #idGenerator: GetIdFn;
   #debugProtocolSend: ((...args: unknown[]) => void) | undefined;
   #debugProtocolReceive: ((...args: unknown[]) => void) | undefined;
+  #logger: Logger;
 
   /**
    * @internal
@@ -51,18 +52,19 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     url: string,
     transport: ConnectionTransport,
     delay = 0,
-    timeout?: number,
+    timeout: number | undefined = undefined,
     rawErrors = false,
     idGenerator: () => number = createIncrementalIdGenerator(),
-    logger: Logger = debug,
+    logger: Logger,
   ) {
     super();
+    this.#logger = logger;
     this.#rawErrors = rawErrors;
     this.#idGenerator = idGenerator;
-    this.#callbacks = new CallbackRegistry(idGenerator);
+    this.#callbacks = new CallbackRegistry(idGenerator, logger);
     this.#url = url;
-    this.#debugProtocolSend = logger(DEBUG_PREFIXES.cdpSend);
-    this.#debugProtocolReceive = logger(DEBUG_PREFIXES.cdpReceive);
+    this.#debugProtocolSend = logger?.(DEBUG_PREFIXES.cdpSend);
+    this.#debugProtocolReceive = logger?.(DEBUG_PREFIXES.cdpReceive);
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
 
@@ -212,6 +214,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         sessionId,
         object.sessionId,
         this.#rawErrors,
+        this.#logger,
       );
       this.#sessions.set(sessionId, session);
       this.emit(CDPSessionEvent.SessionAttached, session);

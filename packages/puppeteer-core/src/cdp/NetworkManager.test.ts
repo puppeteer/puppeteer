@@ -22,22 +22,28 @@ import {NetworkManager} from './NetworkManager.js';
 // are not relevant for the network manager to make tests shorter.
 
 function createNetworkManager() {
-  return new NetworkManager({
-    frame(): CdpFrame | null {
-      return null;
+  return new NetworkManager(
+    {
+      frame(): CdpFrame | null {
+        return null;
+      },
+      page() {
+        return {
+          browser() {
+            return {
+              userAgent() {
+                return 'user-agent';
+              },
+            };
+          },
+        } as any;
+      },
     },
-    page() {
-      return {
-        browser() {
-          return {
-            userAgent() {
-              return 'user-agent';
-            },
-          };
-        },
-      } as any;
+    true,
+    () => {
+      return undefined;
     },
-  });
+  );
 }
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
@@ -1653,22 +1659,28 @@ describe('NetworkManager', () => {
 
     it('should not throw if page().browser().userAgent() throws', async () => {
       const mockCDPSession = new MockCDPSession();
-      const manager = new NetworkManager({
-        frame(): CdpFrame | null {
-          return null;
+      const manager = new NetworkManager(
+        {
+          frame(): CdpFrame | null {
+            return null;
+          },
+          page() {
+            return {
+              browser() {
+                return {
+                  userAgent() {
+                    throw new TargetCloseError('Target closed');
+                  },
+                };
+              },
+            } as any;
+          },
         },
-        page() {
-          return {
-            browser() {
-              return {
-                userAgent() {
-                  throw new TargetCloseError('Target closed');
-                },
-              };
-            },
-          } as any;
+        true,
+        () => {
+          return undefined;
         },
-      });
+      );
       await manager.addClient(mockCDPSession);
     });
   });

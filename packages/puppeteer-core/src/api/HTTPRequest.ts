@@ -5,8 +5,10 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
+import {DEBUG_PREFIXES} from '../common/Debug.js';
+import type {Logger} from '../common/Debug.js';
 import type {ProtocolError} from '../common/Errors.js';
-import {debugError, isString} from '../common/util.js';
+import {isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {typedArrayToBase64} from '../util/encoding.js';
 
@@ -731,7 +733,7 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
 /**
  * @internal
  */
-export function handleError(error: ProtocolError): void {
+export function handleError(error: ProtocolError, logger: Logger): void {
   // Firefox throws an invalid argument error with a message starting with
   // 'Expected "header" [...]'.
   if (
@@ -746,5 +748,5 @@ export function handleError(error: ProtocolError): void {
   // In certain cases, protocol will return error if the request was
   // already canceled or the page was closed. We should tolerate these
   // errors.
-  debugError?.(error);
+  logger?.(DEBUG_PREFIXES.error)?.(error);
 }
