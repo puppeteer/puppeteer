@@ -2599,8 +2599,12 @@ describe('Page', function () {
   });
 
   describe('Page.resize', function () {
+    const state = setupSeparateTestBrowserHooks({
+      args: ['--screen-info={3840x2160}'],
+    });
+
     it('should resize the browser window to fit page content', async () => {
-      const {context} = await getTestState();
+      const {context} = state;
 
       const page = await context.newPage();
 
@@ -2620,6 +2624,42 @@ describe('Page', function () {
       const innerSize = await page.evaluate(() => {
         return {width: window.innerWidth, height: window.innerHeight};
       });
+      expect(innerSize.width).toBe(contentWidth);
+      expect(innerSize.height).toBe(contentHeight);
+    });
+
+    it('should resize the browser window to fit page content when fullscreen', async () => {
+      const {browser, context} = state;
+
+      const page = await context.newPage();
+      // Default view port restricts window to 800x600, so remove it.
+      await page.setViewport(null);
+      const windowId = await page.windowId();
+      await browser.setWindowBounds(windowId, {windowState: 'fullscreen'});
+
+      const windowState = await browser.getWindowBounds(windowId);
+      assert.strictEqual(windowState.windowState, 'fullscreen');
+
+      await browser.setWindowBounds(windowId, {windowState: 'normal'});
+      await browser.setWindowBounds(windowId, {windowState: 'normal'});
+
+      const contentWidth = 500;
+      const contentHeight = 400;
+      const resized = page.evaluate(() => {
+        return new Promise(resolve => {
+          window.onresize = resolve;
+        });
+      });
+      await page.resize({contentWidth, contentHeight});
+      await resized;
+
+      const innerSize = await page.evaluate(() => {
+        return {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      });
+
       expect(innerSize.width).toBe(contentWidth);
       expect(innerSize.height).toBe(contentHeight);
     });
