@@ -100,8 +100,8 @@ if (!args.runner) {
     );
   }
 } else {
-  const single = new AngularProjectSingle(args.testRunner, args.name);
-  const multi = new AngularProjectMulti(args.testRunner, args.name);
+  const single = new AngularProjectSingle(args.runner, args.name);
+  const multi = new AngularProjectMulti(args.runner, args.name);
 
   // Create Angular projects
   await Promise.all([single.create(), multi.create()]);
