@@ -93,6 +93,23 @@ describe('Browser specs', function () {
     });
   });
 
+  describe('Browser.connected', () => {
+    it('should set the browser connected state', async () => {
+      const {browser, puppeteer} = await getTestState({
+        skipContextCreation: true,
+      });
+
+      const browserWSEndpoint = browser.wsEndpoint();
+      using newBrowser = await puppeteer.connect({
+        browserWSEndpoint,
+        protocol: browser.protocol,
+      });
+      expect(newBrowser.connected).toBe(true);
+      await newBrowser.disconnect();
+      expect(newBrowser.connected).toBe(false);
+    });
+  });
+
   describe('Browser.screens', function () {
     it('should return default screen info', async () => {
       const {browser, isHeadless} = await getTestState();
