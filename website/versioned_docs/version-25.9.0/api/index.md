@@ -1529,6 +1529,13 @@ Options for [Browser.uninstallPWA()](./puppeteer.browser.uninstallpwa.md).
 </td></tr>
 <tr><td>
 
+<span id="webmcptoolexecuteoptions">[WebMCPToolExecuteOptions](./puppeteer.webmcptoolexecuteoptions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="webmcptoolsaddedevent">[WebMCPToolsAddedEvent](./puppeteer.webmcptoolsaddedevent.md)</span>
 
 </td><td>

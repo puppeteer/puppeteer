@@ -171,7 +171,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="execute">[execute(input)](./puppeteer.webmcptool.execute.md)</span>
+<span id="execute">[execute(input, options)](./puppeteer.webmcptool.execute.md)</span>
 
 </td><td>
 
