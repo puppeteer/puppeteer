@@ -7,6 +7,7 @@
 // TODO: this could be an eslint rule probably.
 import fs from 'node:fs';
 import path from 'node:path';
+import {pathToFileURL} from 'node:url';
 
 import prettier from 'prettier';
 
@@ -28,7 +29,7 @@ function testIdMatchesExpectationPattern(title, pattern) {
 }
 
 const prettierConfig = await import(
-  path.join(import.meta.dirname, '..', 'prettier.config.js')
+  pathToFileURL(path.join(import.meta.dirname, '..', 'prettier.config.js')).href
 );
 
 function getSpecificity(item) {
