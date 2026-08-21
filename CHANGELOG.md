@@ -2,6 +2,34 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [25.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.8.0...puppeteer-v25.9.0) (2026-08-21)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 25.8.0 to 25.9.0
+
+
+### 🎉 Features
+
+* roll to Firefox 154.0 ([#15361](https://github.com/puppeteer/puppeteer/issues/15361)) ([d702da7](https://github.com/puppeteer/puppeteer/commit/d702da7ec7d72e3a814ffcf0c4bc70a11c171748))
+* support shadow roots in MutationPoller ([#15292](https://github.com/puppeteer/puppeteer/issues/15292)) ([4670a25](https://github.com/puppeteer/puppeteer/commit/4670a25b16d48c8be8e4a747412a8caf4509063f))
+* **webmcp:** support canceling tool execution ([#15365](https://github.com/puppeteer/puppeteer/issues/15365)) ([3523f36](https://github.com/puppeteer/puppeteer/commit/3523f36e840b6c7ebf1167eddb5c2e83c9262c68))
+
+
+### 🛠️ Fixes
+
+* roll to Chrome 152.0.7977.54 ([#15363](https://github.com/puppeteer/puppeteer/issues/15363)) ([9088feb](https://github.com/puppeteer/puppeteer/commit/9088feb7d71cda035eee4f4d21cb20fee9238aa9))
+* set frame content without document.write ([#15358](https://github.com/puppeteer/puppeteer/issues/15358)) ([83f8d1c](https://github.com/puppeteer/puppeteer/commit/83f8d1c8536f238dbdfdf041c72581bdf2b6f3de))
+
+
 ## [25.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.7.0...puppeteer-v25.8.0) (2026-08-17)
 
 
