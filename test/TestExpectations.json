@@ -1029,7 +1029,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox WebDriver BiDi does not yet provide a stable remote connection lifecycle for this test."
   },
   {
     "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
