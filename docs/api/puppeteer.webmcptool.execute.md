@@ -10,7 +10,10 @@ Executes tool with input parameters, matching tool's `inputSchema`.
 
 ```typescript
 class WebMCPTool {
-  execute(input?: object): Promise<WebMCPToolCallResult>;
+  execute(
+    input?: object,
+    options?: WebMCPToolExecuteOptions,
+  ): Promise<WebMCPToolCallResult>;
 }
 ```
 
@@ -36,6 +39,19 @@ input
 </td><td>
 
 object
+
+</td><td>
+
+_(Optional)_
+
+</td></tr>
+<tr><td>
+
+options
+
+</td><td>
+
+[WebMCPToolExecuteOptions](./puppeteer.webmcptoolexecuteoptions.md)
 
 </td><td>
 

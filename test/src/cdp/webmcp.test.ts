@@ -650,6 +650,122 @@ describe('Page.webmcp', function () {
     expect(response.exception).toBeUndefined();
   });
 
+  it('should cancel tool execution', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    const toolAddedPromise = new Promise<any>(resolve => {
+      page.webmcp.on('toolsadded', resolve);
+    });
+
+    // Register an imperative WebMCP tool with a delayed response.
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {type: 'string', description: 'Some text'},
+          },
+          required: ['text'],
+        },
+        execute: () => {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              resolve('done');
+            }, 5000);
+          });
+        },
+      });
+    });
+
+    await toolAddedPromise;
+
+    const [tool] = page.webmcp.tools();
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
+    const controller = new AbortController();
+    const executePromise = tool!.execute(
+      {text: 'world'},
+      {signal: controller.signal},
+    );
+
+    const call = await toolCalled;
+    controller.abort();
+
+    const response = await executePromise;
+
+    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
+    expect(response.status).toBe('Canceled');
+    expect(response.output).toBeUndefined();
+    expect(response.errorText).toBe('');
+    expect(response.exception).toBeUndefined();
+  });
+
+  it('should cancel tool execution with already aborted signal', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    expect(page.webmcp).toBeDefined();
+
+    const toolAddedPromise = new Promise<any>(resolve => {
+      page.webmcp.on('toolsadded', resolve);
+    });
+
+    // Register an imperative WebMCP tool with a delayed response.
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {type: 'string', description: 'Some text'},
+          },
+          required: ['text'],
+        },
+        execute: () => {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              resolve('done');
+            }, 5000);
+          });
+        },
+      });
+    });
+
+    await toolAddedPromise;
+
+    const [tool] = page.webmcp.tools();
+
+    const toolCalled = new Promise<WebMCPToolCall>(resolve => {
+      page.webmcp.once('toolinvoked', resolve);
+    });
+
+    const controller = new AbortController();
+    controller.abort();
+    const response = await tool!.execute(
+      {text: 'world'},
+      {signal: controller.signal},
+    );
+
+    const call = await toolCalled;
+
+    expect(response.id).toBe(call.id);
+    expect(response.call).toBe(call);
+    expect(response.status).toBe('Canceled');
+    expect(response.output).toBeUndefined();
+    expect(response.errorText).toBe('');
+    expect(response.exception).toBeUndefined();
+  });
+
   it('should emit issue event from WebMCP form missing tooldescription', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);

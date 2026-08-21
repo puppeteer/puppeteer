@@ -76,6 +76,28 @@ if (tool) {
 }
 ```
 
+### Canceling tool execution
+
+You can cancel an in-progress tool execution by passing an `AbortSignal`:
+
+```ts
+const controller = new AbortController();
+
+// Cancel execution after 2 seconds
+setTimeout(() => {
+  controller.abort();
+}, 2000);
+
+const result = await tool.execute(
+  {query: 'large data processing'},
+  {signal: controller.signal},
+);
+
+if (result.status === 'Canceled') {
+  console.log('Tool execution was canceled.');
+}
+```
+
 ## Handling tool invocations
 
 You can observe when a tool is invoked by the page or the browser and when it responds.
@@ -91,6 +113,8 @@ page.webmcp.on('toolresponded', response => {
   );
   if (response.status === 'Completed') {
     console.log('Output:', response.output);
+  } else if (response.status === 'Canceled') {
+    console.log('Invocation was canceled');
   } else {
     console.log('Error:', response.errorText);
   }

@@ -105,18 +105,40 @@ export class WebMCPTool extends EventEmitter<{
   /**
    * Executes tool with input parameters, matching tool's `inputSchema`.
    */
-  async execute(input: object = {}): Promise<WebMCPToolCallResult> {
+  async execute(
+    input: object = {},
+    options: WebMCPToolExecuteOptions = {},
+  ): Promise<WebMCPToolCallResult> {
     const {invocationId} = await this.#webmcp.invokeTool(this, input);
     return await new Promise<WebMCPToolCallResult>(resolve => {
+      const onAbort = () => {
+        void this.#webmcp.cancelInvocation(invocationId);
+      };
       const handler = (event: WebMCPToolCallResult) => {
         if (event.id === invocationId) {
+          options.signal?.removeEventListener('abort', onAbort);
           this.#webmcp.off('toolresponded', handler);
           resolve(event);
         }
       };
       this.#webmcp.on('toolresponded', handler);
+      if (options.signal?.aborted) {
+        onAbort();
+      } else {
+        options.signal?.addEventListener('abort', onAbort, {once: true});
+      }
     });
   }
+}
+
+/**
+ * @public
+ */
+export interface WebMCPToolExecuteOptions {
+  /**
+   * A signal object that allows you to cancel the tool execution.
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -364,6 +386,19 @@ export class WebMCP extends EventEmitter<{
       toolName: tool.name,
       input,
     });
+  }
+
+  /**
+   * @internal
+   */
+  async cancelInvocation(invocationId: string): Promise<void> {
+    return await this.#client
+      .send('WebMCP.cancelInvocation', {
+        invocationId,
+      })
+      .catch(err => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+      });
   }
 
   /**
