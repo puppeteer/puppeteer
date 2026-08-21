@@ -109,7 +109,7 @@ export function getDependenciesFromOptions(
 
   switch (options.testRunner) {
     case TestRunner.Jasmine:
-      dependencies.push('jasmine');
+      dependencies.push('jasmine', '@types/jasmine');
       break;
     case TestRunner.Jest:
       dependencies.push('jest', '@types/jest');
