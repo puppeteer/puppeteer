@@ -58,7 +58,7 @@ export class Binding {
         using handles = await context.evaluateHandle(
           (name, seq) => {
             // @ts-expect-error Code is evaluated in a different context.
-            return globalThis[name].args.get(seq);
+            return globalThis['puppeteer_' + name].args.get(seq);
           },
           this.#name,
           id,
@@ -84,7 +84,7 @@ export class Binding {
       await context.evaluate(
         (name, seq, result) => {
           // @ts-expect-error Code is evaluated in a different context.
-          const callbacks = globalThis[name].callbacks;
+          const callbacks = globalThis['puppeteer_' + name].callbacks;
           callbacks.get(seq).resolve(result);
           callbacks.delete(seq);
         },
@@ -106,7 +106,7 @@ export class Binding {
               const error = new Error(message);
               error.stack = stack;
               // @ts-expect-error Code is evaluated in a different context.
-              const callbacks = globalThis[name].callbacks;
+              const callbacks = globalThis['puppeteer_' + name].callbacks;
               callbacks.get(seq).reject(error);
               callbacks.delete(seq);
             },
@@ -123,7 +123,7 @@ export class Binding {
           .evaluate(
             (name, seq, error) => {
               // @ts-expect-error Code is evaluated in a different context.
-              const callbacks = globalThis[name].callbacks;
+              const callbacks = globalThis['puppeteer_' + name].callbacks;
               callbacks.get(seq).reject(error);
               callbacks.delete(seq);
             },
