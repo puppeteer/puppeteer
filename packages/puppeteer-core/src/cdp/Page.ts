@@ -8,8 +8,11 @@ import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
-import type {Browser, WindowId} from '../api/Browser.js';
-import type {BrowserContext} from '../api/BrowserContext.js';
+import {BrowserEvent, type Browser, type WindowId} from '../api/Browser.js';
+import {
+  BrowserContextEvent,
+  type BrowserContext,
+} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
@@ -220,6 +223,8 @@ export class CdpPage extends Page {
     );
     networkManagerEmitter.on(NetworkManagerEvent.Request, request => {
       this.emit(PageEvent.Request, request);
+      this.browserContext().emit(BrowserContextEvent.Request, request);
+      this.browser().emit(BrowserEvent.Request, request);
     });
     networkManagerEmitter.on(
       NetworkManagerEvent.RequestServedFromCache,
@@ -386,8 +391,17 @@ export class CdpPage extends Page {
           this.listenerCount(PageEvent.Console) === 0;
         const noListenersForConsoleOnWorker =
           worker.listenerCount(WebWorkerEvent.Console) === 0;
+        const noListenersForConsoleOnBrowser =
+          this.browser().listenerCount(BrowserEvent.Console) === 0;
+        const noListenersForConsoleOnContext =
+          this.browserContext().listenerCount(BrowserContextEvent.Console) === 0;
 
-        if (noListenersForConsoleOnPage && noListenersForConsoleOnWorker) {
+        if (
+          noListenersForConsoleOnPage &&
+          noListenersForConsoleOnWorker &&
+          noListenersForConsoleOnBrowser &&
+          noListenersForConsoleOnContext
+        ) {
           // eslint-disable-next-line max-len -- The comment is long.
           // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
           for (const arg of message.args()) {
@@ -398,9 +412,9 @@ export class CdpPage extends Page {
           return;
         }
 
-        if (!noListenersForConsoleOnPage) {
-          this.emit(PageEvent.Console, message);
-        }
+        this.emit(PageEvent.Console, message);
+        this.browserContext().emit(BrowserContextEvent.Console, message);
+        this.browser().emit(BrowserEvent.Console, message);
       });
       this.emit(PageEvent.WorkerCreated, worker);
     }
@@ -958,16 +972,23 @@ export class CdpPage extends Page {
     const hasWorkerConsoleListeners =
       world.environment instanceof WebWorker &&
       world.environment.listenerCount(WebWorkerEvent.Console) > 0;
+    const hasBrowserConsoleListeners =
+      this.browser().listenerCount(BrowserEvent.Console) > 0;
+    const hasContextConsoleListeners =
+      this.browserContext().listenerCount(BrowserContextEvent.Console) > 0;
 
-    if (!hasPageConsoleListeners) {
-      if (!hasWorkerConsoleListeners) {
-        // eslint-disable-next-line max-len -- The comment is long.
-        // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
-        for (const value of values) {
-          void value.dispose().catch(error => {
-            this.logger?.(DEBUG_PREFIXES.error)?.(error);
-          });
-        }
+    if (
+      !hasPageConsoleListeners &&
+      !hasWorkerConsoleListeners &&
+      !hasBrowserConsoleListeners &&
+      !hasContextConsoleListeners
+    ) {
+      // eslint-disable-next-line max-len -- The comment is long.
+      // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+      for (const value of values) {
+        void value.dispose().catch(error => {
+          this.logger?.(DEBUG_PREFIXES.error)?.(error);
+        });
       }
       return;
     }
@@ -977,7 +998,11 @@ export class CdpPage extends Page {
       targetId = world.environment.client.target()._targetId;
     }
 
-    this.emit(PageEvent.Console, createConsoleMessage(event, values, targetId));
+    const message = createConsoleMessage(event, values, targetId);
+
+    this.emit(PageEvent.Console, message);
+    this.browserContext().emit(BrowserContextEvent.Console, message);
+    this.browser().emit(BrowserEvent.Console, message);
   }
 
   async #onBindingCalled(
