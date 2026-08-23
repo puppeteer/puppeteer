@@ -64,6 +64,7 @@ jobs:
             website:
               - '.nvmrc'
               - '.github/workflows/ci.yml'
+              - '.github/workflows/docs.yml'
               - '.github/workflows/full-ci.yml'
               - 'docs/**'
               - 'website/**'
