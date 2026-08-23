@@ -62,7 +62,7 @@ jobs:
               - 'tsconfig.base.json'
             website:
               - '.nvmrc'
-              - '.github/workflows/ci.yml'
+              - '.github/workflows/docs.yml'
               - 'docs/**'
               - 'website/**'
               - 'README.md'
