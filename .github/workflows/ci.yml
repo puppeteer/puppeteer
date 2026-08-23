@@ -237,7 +237,7 @@ jobs:
     name: '[Required] Chrome tests'
     needs: [check-changes, chrome-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.chrome-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -316,7 +316,7 @@ jobs:
     name: '[Required] Firefox tests'
     needs: [check-changes, firefox-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.firefox-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -382,7 +382,7 @@ jobs:
     name: '[Required] Installation tests'
     needs: [check-changes, installation-test]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.installation-test.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -424,7 +424,7 @@ jobs:
     name: '[Required] Docker image test'
     needs: [check-changes, docker-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.docker-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -455,7 +455,7 @@ jobs:
     name: '[Required] Puppeteer Unit tests'
     needs: [check-changes, unit-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.unit-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -485,7 +485,7 @@ jobs:
     name: '[Required] Angular Schematics tests'
     needs: [check-changes, ng-schematics-unit]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.ng-schematics-unit.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
         run: 'exit 1'
@@ -542,7 +542,7 @@ jobs:
     name: '[Required] Angular Schematics smoke tests'
     needs: [check-changes, ng-schematics-smoke-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.ng-schematics-smoke-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
         run: 'exit 1'
@@ -594,7 +594,7 @@ jobs:
     name: '[Required] Test the browsers packages'
     needs: [check-changes, browsers-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.browsers-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
         run: 'exit 1'
