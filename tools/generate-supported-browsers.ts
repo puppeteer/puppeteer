@@ -21,8 +21,7 @@ function isAtLeast(version: string, major: number, minor = 0): boolean {
   const versionMajor = Number(match[1]);
   const versionMinor = Number(match[2]);
   return (
-    versionMajor > major ||
-    (versionMajor === major && versionMinor >= minor)
+    versionMajor > major || (versionMajor === major && versionMinor >= minor)
   );
 }
 
