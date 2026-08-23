@@ -5,11 +5,13 @@ permissions:
   contents: read
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - release-please
+    types:
+      - completed
     branches:
       - main
-    tags:
-      - 'puppeteer-v*'
   pull_request:
     types:
       - opened
@@ -24,15 +26,16 @@ concurrency:
 
 jobs:
   check-changes:
-    if: ${{ !startsWith(github.ref, 'refs/tags/puppeteer-v') }}
     uses: ./.github/workflows/changed-packages.yml
     with:
+      base: ${{ github.event_name == 'workflow_run' && format('{0}^', github.event.workflow_run.head_sha) || '' }}
       check-mergeable-state: true
+      ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
 
   deploy-docs:
     needs: check-changes
     name: Build/deploy docs (if needed)
-    if: ${{ always() && (startsWith(github.ref, 'refs/tags/puppeteer-v') || (needs.check-changes.result == 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'website'))) }}
+    if: ${{ needs.check-changes.result == 'success' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') && contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -40,7 +43,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ startsWith(github.ref, 'refs/tags/puppeteer-v') && 'main' || '' }}
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -52,13 +55,12 @@ jobs:
       - name: Build website
         working-directory: ./website
         env:
-          DOCS_RELEASE_REF: ${{ startsWith(github.ref, 'refs/tags/puppeteer-v') && github.ref_name || '' }}
           NODE_OPTIONS: --max-old-space-size=6144
         run: npm run build
       - name: Check for tracked changes
         run: git diff --exit-code
       - name: Deploy to GitHub Pages
-        # Only deploy changes from main or a Puppeteer release tag.
+        # Only deploy after the release workflow completes on main.
         if: ${{ github.event_name != 'pull_request' }}
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:

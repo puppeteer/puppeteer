@@ -2,6 +2,7 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    labels: []
     schedule:
       interval: weekly
       day: 'sunday'
@@ -29,6 +30,7 @@ updates:
           - '*'
   - package-ecosystem: npm
     directory: /website
+    labels: []
     schedule:
       interval: weekly
       day: 'sunday'
@@ -42,6 +44,7 @@ updates:
           - '*'
   - package-ecosystem: github-actions
     directory: /
+    labels: []
     schedule:
       interval: weekly
       day: 'sunday'
@@ -55,6 +58,7 @@ updates:
           - '*'
   - package-ecosystem: docker
     directory: /docker
+    labels: []
     schedule:
       interval: weekly
       day: 'sunday'
