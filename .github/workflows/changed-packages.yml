@@ -58,7 +58,6 @@ jobs:
               - 'test-d/**'
               - 'tools/mocha-runner/**'
               - '.mocharc.cjs'
-              - 'tools/doctest/**'
               - 'tsconfig.base.json'
             website:
               - '.nvmrc'
