@@ -12,6 +12,10 @@ import {promisify} from 'node:util';
 
 import semver from 'semver';
 
+import {
+  type BrowserVersionData,
+  generateSupportedBrowsersTable,
+} from '../tools/generate-supported-browsers.ts';
 import {mergeChangelogs} from '../tools/merge-changelogs.ts';
 
 const execFile = promisify(execFileCallback);
@@ -24,15 +28,6 @@ const releaseDocsDir = path.join(releaseSourceDir, 'docs');
 
 const puppeteerChangelogPath = 'packages/puppeteer/CHANGELOG.md';
 const puppeteerCoreChangelogPath = 'packages/puppeteer-core/CHANGELOG.md';
-
-interface BrowserVersions {
-  chrome: string;
-  firefox: string;
-}
-
-interface VersionData {
-  versions: Array<[string, BrowserVersions]>;
-}
 
 interface Release {
   ref: string;
@@ -161,45 +156,16 @@ async function writeCombinedChangelog(
   await writeFile(path.join(target, 'CHANGELOG.md'), changelog);
 }
 
-function getApiUrl(version: string): string {
-  if (semver.gte(version, '19.3.0')) {
-    return `https://github.com/puppeteer/puppeteer/blob/puppeteer-${version}/docs/api/index.md`;
-  }
-  if (semver.gte(version, '15.3.0')) {
-    return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api/index.md`;
-  }
-  return `https://github.com/puppeteer/puppeteer/blob/${version}/docs/api.md`;
-}
-
 async function updateSupportedBrowsers(releaseVersion: string): Promise<void> {
   const versionData = JSON.parse(
     await readFile(path.join(releaseSourceDir, 'versions.json'), 'utf-8'),
-  ) as VersionData;
-  const rows = [
-    '| Puppeteer | Chrome | Firefox |',
-    '| --------- | ------ | ------- |',
-  ];
-
-  for (const [storedVersion, browserVersions] of versionData.versions) {
-    const version =
-      storedVersion === 'NEXT' ? `v${releaseVersion}` : storedVersion;
-    const puppeteer = `[Puppeteer ${version}](${getApiUrl(version)})`;
-    const firefox = semver.gte(version, '23.0.0')
-      ? `[Firefox](https://www.mozilla.org/en-US/firefox/) ${browserVersions.firefox.split('_').at(-1)}`
-      : semver.gte(version, '2.1.0')
-        ? 'Firefox Nightly (at the time)'
-        : 'Firefox not supported';
-    const chrome = semver.gte(version, '20.0.0')
-      ? `[Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) ${browserVersions.chrome}`
-      : `Chromium ${browserVersions.chrome}`;
-    rows.push(`| ${puppeteer} | ${chrome} | ${firefox} |`);
-  }
+  ) as BrowserVersionData;
 
   const filename = path.join(releaseDocsDir, 'supported-browsers.md');
   const content = await readFile(filename, 'utf-8');
   const updated = content.replace(
     /(?<=<!-- version-start -->\n)[\s\S]*?(?=\n<!-- version-end -->)/,
-    `\n${rows.join('\n')}\n`,
+    `\n${generateSupportedBrowsersTable(versionData, releaseVersion)}\n`,
   );
   await writeFile(filename, updated);
 }
