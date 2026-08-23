@@ -13,7 +13,6 @@
     "clean": "npm run clean --workspaces --if-present",
     "debug": "mocha --inspect-brk",
     "docs": "wireit",
-    "doctest": "wireit",
     "format": "wireit",
     "format:eslint": "wireit",
     "format:expectations": "node tools/sort-test-expectations.mjs",
@@ -59,7 +58,6 @@
     "build:tools": {
       "dependencies": [
         "./tools/docgen:build",
-        "./tools/doctest:build",
         "./tools/mocha-runner:build",
         "./tools/eslint:build",
         "./packages/testserver:build"
@@ -72,13 +70,6 @@
         "./packages/puppeteer:build:docs",
         "./packages/puppeteer-core:build:docs",
         "./tools/docgen:build"
-      ]
-    },
-    "doctest": {
-      "command": "npx ./tools/doctest 'packages/puppeteer-core/lib/**/*.js'",
-      "dependencies": [
-        "./packages/puppeteer-core:build",
-        "./tools/doctest:build"
       ]
     },
     "lint": {
@@ -218,7 +209,6 @@
     "test",
     "test/installation",
     "tools/eslint",
-    "tools/doctest",
     "tools/docgen",
     "tools/mocha-runner"
   ]
