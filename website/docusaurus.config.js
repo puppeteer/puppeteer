@@ -8,16 +8,25 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 const assert = require('node:assert');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const {themes} = require('prism-react-renderer');
 const darkCodeTheme = themes.dracula;
 const lightCodeTheme = themes.github;
 const semver = require('semver');
 
-const archivedVersions = require('./versionsArchived.json');
+const archivedVersionsFilename = path.join(__dirname, 'versionsArchived.json');
+const archivedVersions = fs.existsSync(archivedVersionsFilename)
+  ? require('./versionsArchived.json')
+  : [];
 
 const DOC_ROUTE_BASE_PATH = '/';
-const DOC_PATH = '../docs';
+const DOC_PATH = process.env['DOCS_PATH']
+  ? path.resolve(process.env['DOCS_PATH'])
+  : fs.existsSync(path.join(__dirname, '.generated-docs', 'next'))
+    ? path.join(__dirname, '.generated-docs', 'next')
+    : path.join(__dirname, '..', 'docs');
 
 /**
  * This logic should match the one in `Herebyfile.mjs`.

@@ -115,12 +115,6 @@ export const docsTask = task({
       index.replace('# API Reference', readme),
     );
 
-    // Copy combined changelog.
-    let changelog = await readFile('CHANGELOG.md', 'utf-8');
-    // Escape for MDX.
-    changelog = changelog.replaceAll('{', '\\{');
-    await writeFile('docs/CHANGELOG.md', changelog);
-
     // Format everything.
     await execa('prettier', ['--ignore-path', 'none', '--write', 'docs']);
   },

@@ -19,6 +19,11 @@ coverage/
 generated/
 .eslintcache
 .cache/
+website/.generated-docs/
+website/versioned_docs/
+website/versioned_sidebars/
+website/versions.json
+website/versionsArchived.json
 
 # IDE Artifacts
 .vscode/*
