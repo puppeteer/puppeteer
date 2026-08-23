@@ -5,6 +5,7 @@ permissions:
   contents: read
 
 on:
+  workflow_call:
   push:
     branches:
       - main
@@ -15,21 +16,17 @@ on:
       - opened
       - reopened
       - synchronize
-
-      # Used for `full-ci`
-      - labeled
     branches:
       - '**'
 
 concurrency:
-  group: ci-${{ github.head_ref || github.run_id }}-${{ github.event.action == 'labeled' && github.event.label.name != 'full-ci' && github.run_id || '' }}
+  group: ci-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   inspect-code:
     name: '[Required] Inspect code'
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' || github.event.action != 'labeled' || github.event.label.name == 'full-ci' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -73,7 +70,6 @@ jobs:
           rm $diff_file
 
   check-changes:
-    if: ${{ github.event_name != 'pull_request' || github.event.action != 'labeled' || github.event.label.name == 'full-ci' }}
     uses: ./.github/workflows/changed-packages.yml
     with:
       check-mergeable-state: true
@@ -237,7 +233,7 @@ jobs:
     name: '[Required] Chrome tests'
     needs: [check-changes, chrome-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.chrome-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -316,7 +312,7 @@ jobs:
     name: '[Required] Firefox tests'
     needs: [check-changes, firefox-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.firefox-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -382,7 +378,7 @@ jobs:
     name: '[Required] Installation tests'
     needs: [check-changes, installation-test]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.installation-test.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -424,7 +420,7 @@ jobs:
     name: '[Required] Docker image test'
     needs: [check-changes, docker-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.docker-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -455,7 +451,7 @@ jobs:
     name: '[Required] Puppeteer Unit tests'
     needs: [check-changes, unit-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.unit-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
         run: 'exit 1'
@@ -485,7 +481,7 @@ jobs:
     name: '[Required] Angular Schematics tests'
     needs: [check-changes, ng-schematics-unit]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.ng-schematics-unit.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
         run: 'exit 1'
@@ -542,7 +538,7 @@ jobs:
     name: '[Required] Angular Schematics smoke tests'
     needs: [check-changes, ng-schematics-smoke-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.ng-schematics-smoke-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'ng-schematics') }}
         run: 'exit 1'
@@ -594,7 +590,7 @@ jobs:
     name: '[Required] Test the browsers packages'
     needs: [check-changes, browsers-tests]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
     steps:
       - if: ${{ needs.browsers-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
         run: 'exit 1'

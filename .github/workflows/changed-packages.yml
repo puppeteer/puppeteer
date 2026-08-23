@@ -45,6 +45,7 @@ jobs:
             puppeteer:
               - '.nvmrc'
               - '.github/workflows/ci.yml'
+              - '.github/workflows/full-ci.yml'
               - 'packages/browsers/src/install.ts'
               - 'packages/browsers/src/browser-data/firefox.ts'
               - 'packages/browsers/src/fileUtil.ts'
@@ -63,6 +64,7 @@ jobs:
             website:
               - '.nvmrc'
               - '.github/workflows/ci.yml'
+              - '.github/workflows/full-ci.yml'
               - 'docs/**'
               - 'website/**'
               - 'README.md'
@@ -70,10 +72,12 @@ jobs:
             ng-schematics:
               - '.nvmrc'
               - '.github/workflows/ci.yml'
+              - '.github/workflows/full-ci.yml'
               - 'packages/ng-schematics/**'
               - 'tsconfig.base.json'
             browsers:
               - '.nvmrc'
               - '.github/workflows/ci.yml'
+              - '.github/workflows/full-ci.yml'
               - 'packages/browsers/**'
               - 'tsconfig.base.json'
