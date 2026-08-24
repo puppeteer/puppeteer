@@ -15,7 +15,11 @@ import * as path from 'node:path';
 
 import type {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
 import {CustomMarkdownEmitter as ApiFormatterMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
-import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
+import type {IMarkdownEmitterContext} from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
+import {
+  CustomDocNodeKind,
+  CustomDocNodes,
+} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
 import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';
 import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading';
 import {DocNoteBox} from '@microsoft/api-documenter/lib/nodes/DocNoteBox';
@@ -62,6 +66,7 @@ import {
   type DocComment,
   DocFencedCode,
   DocLinkTag,
+  type DocNode,
   type DocNodeContainer,
   DocNodeKind,
   DocParagraph,
@@ -93,6 +98,7 @@ export class CustomMarkdownEmitter extends ApiFormatterMarkdownEmitter {
       .replace(/[*#[\]_|`~]/g, x => {
         return '\\' + x;
       }) // then escape any special characters
+      .replace(/\\\*\\\*/g, '**')
       .replace(/---/g, '\\-\\-\\-') // hyphens only if it's 3 or more
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -100,6 +106,95 @@ export class CustomMarkdownEmitter extends ApiFormatterMarkdownEmitter {
       .replace(/\{/g, '&#123;')
       .replace(/\}/g, '&#125;');
     return textWithBackslashes;
+  }
+
+  protected override writePlainText(
+    text: string,
+    context: IMarkdownEmitterContext,
+  ): void {
+    const writer = context.writer;
+    // split out the [ leading whitespace, content, trailing whitespace ]
+    const parts = text.match(/^(\s*)(.*?)(\s*)$/) || [];
+    writer.write(parts[1] ?? ''); // write leading whitespace
+    const middle = parts[2] ?? '';
+    if (middle !== '') {
+      if (context.boldRequested) {
+        writer.write('**');
+      }
+      if (context.italicRequested) {
+        writer.write('_');
+      }
+      writer.write(this.getEscapedText(middle));
+      if (context.italicRequested) {
+        writer.write('_');
+      }
+      if (context.boldRequested) {
+        writer.write('**');
+      }
+    }
+    writer.write(parts[3] ?? ''); // write trailing whitespace
+  }
+
+  protected override writeNode(
+    docNode: DocNode,
+    context: IMarkdownEmitterContext,
+    docNodeSiblings: boolean,
+  ): void {
+    const writer = context.writer;
+    switch (docNode.kind) {
+      case CustomDocNodeKind.Heading: {
+        const docHeading = docNode as DocHeading;
+        writer.ensureSkippedLine();
+        let prefix: string;
+        switch (docHeading.level) {
+          case 1:
+            prefix = '#';
+            break;
+          case 2:
+            prefix = '##';
+            break;
+          case 3:
+            prefix = '###';
+            break;
+          case 4:
+            prefix = '####';
+            break;
+          default:
+            prefix = '#####';
+        }
+        writer.writeLine(prefix + ' ' + this.getEscapedText(docHeading.title));
+        writer.writeLine();
+        break;
+      }
+      case DocNodeKind.HtmlStartTag: {
+        const docHtmlTag = docNode as DocHtmlStartTag;
+        if (docHtmlTag.name === 'b' || docHtmlTag.name === 'strong') {
+          writer.write('**');
+          break;
+        }
+        if (docHtmlTag.name === 'i' || docHtmlTag.name === 'em') {
+          writer.write('_');
+          break;
+        }
+        writer.write(docHtmlTag.emitAsHtml());
+        break;
+      }
+      case DocNodeKind.HtmlEndTag: {
+        const docHtmlTag = docNode as DocHtmlEndTag;
+        if (docHtmlTag.name === 'b' || docHtmlTag.name === 'strong') {
+          writer.write('**');
+          break;
+        }
+        if (docHtmlTag.name === 'i' || docHtmlTag.name === 'em') {
+          writer.write('_');
+          break;
+        }
+        writer.write(docHtmlTag.emitAsHtml());
+        break;
+      }
+      default:
+        super.writeNode(docNode, context, docNodeSiblings);
+    }
   }
 }
 
@@ -249,8 +344,6 @@ export class MarkdownDocumenter {
       apiItem.getMergedSiblings().length > 1
     ) {
       const overloadId = this._getOverloadElementId(apiItem.overloadIndex);
-
-      // TODO: See if we don't need to create all of the on our own.
       const overLoadHeader = `${apiItem.displayName}(): ${apiItem.returnTypeExcerpt.text}`;
       output.appendNode(
         new DocParagraph({configuration}, [
@@ -463,10 +556,6 @@ export class MarkdownDocumenter {
     pageContent =
       `---\nsidebar_label: ${this._getSidebarLabelForApiItem(apiItem)}\n---` +
       pageContent;
-    pageContent = pageContent.replace('##', '#');
-    pageContent = pageContent.replace(/<!-- -->/g, '');
-    pageContent = pageContent.replace(/\\\*\\\*/g, '**');
-    pageContent = pageContent.replace(/<b>|<\/b>/g, '**');
     FileSystem.writeFile(filename, pageContent, {
       convertLineEndings: this._documenterConfig
         ? this._documenterConfig.newlineKind
@@ -613,6 +702,7 @@ export class MarkdownDocumenter {
             new DocHeading({
               configuration,
               title: 'Remarks',
+              level: 2,
             }),
           );
           this._appendSection(output, tsdocComment.remarksBlock.content);
@@ -637,6 +727,7 @@ export class MarkdownDocumenter {
             new DocHeading({
               configuration,
               title: heading,
+              level: 2,
             }),
           );
 
@@ -667,6 +758,7 @@ export class MarkdownDocumenter {
             new DocHeading({
               configuration: this._tsdocConfiguration,
               title: heading,
+              level: 2,
             }),
           );
 
@@ -708,6 +800,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Packages',
+          level: 2,
         }),
       );
       output.appendNode(packagesTable);
@@ -812,6 +905,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Classes',
+          level: 2,
         }),
       );
       output.appendNode(classesTable);
@@ -822,6 +916,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Enumerations',
+          level: 2,
         }),
       );
       output.appendNode(enumerationsTable);
@@ -831,6 +926,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Functions',
+          level: 2,
         }),
       );
       output.appendNode(functionsTable);
@@ -841,6 +937,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Interfaces',
+          level: 2,
         }),
       );
       output.appendNode(interfacesTable);
@@ -851,6 +948,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Namespaces',
+          level: 2,
         }),
       );
       output.appendNode(namespacesTable);
@@ -861,6 +959,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Variables',
+          level: 2,
         }),
       );
       output.appendNode(variablesTable);
@@ -871,6 +970,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Type Aliases',
+          level: 2,
         }),
       );
       output.appendNode(typeAliasesTable);
@@ -959,6 +1059,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Events',
+          level: 2,
         }),
       );
       output.appendNode(eventsTable);
@@ -969,6 +1070,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Constructors',
+          level: 2,
         }),
       );
       output.appendNode(constructorsTable);
@@ -979,6 +1081,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Properties',
+          level: 2,
         }),
       );
       output.appendNode(propertiesTable);
@@ -989,6 +1092,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Methods',
+          level: 2,
         }),
       );
       output.appendNode(methodsTable);
@@ -1028,6 +1132,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Enumeration Members',
+          level: 2,
         }),
       );
       output.appendNode(enumMembersTable);
@@ -1103,6 +1208,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Events',
+          level: 2,
         }),
       );
       output.appendNode(eventsTable);
@@ -1113,6 +1219,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Properties',
+          level: 2,
         }),
       );
       output.appendNode(propertiesTable);
@@ -1123,6 +1230,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Methods',
+          level: 2,
         }),
       );
       output.appendNode(methodsTable);
@@ -1183,6 +1291,7 @@ export class MarkdownDocumenter {
         new DocHeading({
           configuration,
           title: 'Parameters',
+          level: 2,
         }),
       );
       output.appendNode(parametersTable);

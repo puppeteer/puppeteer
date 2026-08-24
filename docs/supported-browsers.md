@@ -18,7 +18,7 @@ Prior to this version Puppeteer downloaded and worked with the nightly versions 
 The following table provides mapping between the Puppeteer version and the browsers version you can use it with.
 If an exact matching version of Puppeteer isn't listed, the supported version of the browser is that for the immediately prior version:
 
-<!-- version-start -->
+{/* version-start */}
 
 | Puppeteer                                                                                              | Chrome                                                                                     | Firefox                                                   |
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
@@ -194,4 +194,4 @@ If an exact matching version of Puppeteer isn't listed, the supported version of
 | [Puppeteer v1.13.0](https://github.com/puppeteer/puppeteer/blob/v1.13.0/docs/api.md)                   | Chromium 74.0.3723.0                                                                       | Firefox not supported                                     |
 | [Puppeteer v1.12.2](https://github.com/puppeteer/puppeteer/blob/v1.12.2/docs/api.md)                   | Chromium 73.0.3679.0                                                                       | Firefox not supported                                     |
 
-<!-- version-end -->
+{/* version-end */}

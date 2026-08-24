@@ -26,13 +26,26 @@ export function spliceIntoSection(
   sectionContent: string,
 ): string {
   const lines = content.split('\n');
-  const offset =
-    lines.findIndex(line => {
-      return line.includes(`<!-- ${sectionName}-start -->`);
-    }) + 1;
-  const limit = lines.slice(offset).findIndex(line => {
-    return line.includes(`<!-- ${sectionName}-end -->`);
+  const startIndex = lines.findIndex(line => {
+    return (
+      line.includes(`{/* ${sectionName}-start */}`) ||
+      line.includes(`<!-- ${sectionName}-start -->`)
+    );
   });
-  lines.splice(offset, limit, ...sectionContent.split('\n'));
+  if (startIndex === -1) {
+    return content;
+  }
+  const offset = startIndex + 1;
+  const limit = lines.slice(offset).findIndex(line => {
+    return (
+      line.includes(`{/* ${sectionName}-end */}`) ||
+      line.includes(`<!-- ${sectionName}-end -->`)
+    );
+  });
+  if (limit === -1) {
+    return content;
+  }
+  const newLines = ['', ...sectionContent.trim().split('\n'), ''];
+  lines.splice(offset, limit, ...newLines);
   return lines.join('\n');
 }

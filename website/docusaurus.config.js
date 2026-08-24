@@ -48,6 +48,7 @@ const config = {
   url: 'https://pptr.dev',
   baseUrl: '/',
   onBrokenLinks: 'warn',
+  onBrokenAnchors: 'ignore',
   markdown: {
     hooks: {
       onBrokenMarkdownLinks: 'warn',
@@ -72,29 +73,13 @@ const config = {
       defer: false,
     },
   ],
-  webpack: {
-    jsLoader: isServer => {
-      return {
-        loader: require.resolve('swc-loader'),
-        options: {
-          jsc: {
-            parser: {
-              syntax: 'typescript',
-              tsx: true,
-            },
-            transform: {
-              react: {
-                runtime: 'automatic',
-              },
-            },
-            target: 'es2017',
-          },
-          module: {
-            type: isServer ? 'commonjs' : 'es6',
-          },
-        },
-      };
-    },
+  future: {
+    v4: true,
+    faster: true,
+  },
+  storage: {
+    type: 'localStorage',
+    namespace: true,
   },
   plugins: [
     [
