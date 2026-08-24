@@ -15,21 +15,17 @@ on:
       - opened
       - reopened
       - synchronize
-
-      # Used for `full-ci`
-      - labeled
     branches:
       - '**'
 
 concurrency:
-  group: ci-${{ github.head_ref || github.run_id }}-${{ github.event.action == 'labeled' && github.event.label.name != 'full-ci' && github.run_id || '' }}
+  group: ci-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   inspect-code:
     name: '[Required] Inspect code'
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' || github.event.action != 'labeled' || github.event.label.name == 'full-ci' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -73,7 +69,6 @@ jobs:
           rm $diff_file
 
   check-changes:
-    if: ${{ github.event_name != 'pull_request' || github.event.action != 'labeled' || github.event.label.name == 'full-ci' }}
     uses: ./.github/workflows/changed-packages.yml
     with:
       check-mergeable-state: true
