@@ -12,7 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "materialize": "node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON materialize-docs.ts"
+    "materialize": "node materialize-docs.ts"
   },
   "dependencies": {
     "@docsearch/react": "5.0.0",

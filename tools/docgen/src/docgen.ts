@@ -27,20 +27,14 @@ export function spliceIntoSection(
 ): string {
   const lines = content.split('\n');
   const startIndex = lines.findIndex(line => {
-    return (
-      line.includes(`{/* ${sectionName}-start */}`) ||
-      line.includes(`<!-- ${sectionName}-start -->`)
-    );
+    return line.includes(`{/* ${sectionName}-start */}`);
   });
   if (startIndex === -1) {
     return content;
   }
   const offset = startIndex + 1;
   const limit = lines.slice(offset).findIndex(line => {
-    return (
-      line.includes(`{/* ${sectionName}-end */}`) ||
-      line.includes(`<!-- ${sectionName}-end -->`)
-    );
+    return line.includes(`{/* ${sectionName}-end */}`);
   });
   if (limit === -1) {
     return content;

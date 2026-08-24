@@ -163,13 +163,10 @@ async function updateSupportedBrowsers(releaseVersion: string): Promise<void> {
 
   const filename = path.join(releaseDocsDir, 'supported-browsers.md');
   const content = await readFile(filename, 'utf-8');
-  let updated = content.replace(
-    /(?<=(?:<!--|\{\/\*)\s*version-start\s*(?:-->|\*\/)\n)[\s\S]*?(?=\n(?:<!--|\{\/\*)\s*version-end\s*(?:-->|\*\/))/,
-    `\n${generateSupportedBrowsersTable(versionData, releaseVersion)}\n`,
+  const updated = content.replace(
+    /(?<=(?:\{\/\*)\s*version-start\s*(?:\*\/)\n)[\s\S]*?(?=\n(?:\{\/\*)\s*version-end\s*(?:\*\/))/,
+    generateSupportedBrowsersTable(versionData, releaseVersion),
   );
-  updated = updated
-    .replace('<!-- version-start -->', '{/* version-start */}')
-    .replace('<!-- version-end -->', '{/* version-end */}');
   await writeFile(filename, updated);
 }
 
