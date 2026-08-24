@@ -25,9 +25,7 @@ jobs:
       contents: write
     uses: ./.github/workflows/docs.yml
     with:
-      base: ${{ format('{0}^', github.sha) }}
       deploy: true
-      ref: ${{ github.sha }}
     secrets:
       ALGOLIA_CRAWLER_API_KEY: ${{ secrets.ALGOLIA_CRAWLER_API_KEY }}
       ALGOLIA_CRAWLER_ID: ${{ secrets.ALGOLIA_CRAWLER_ID }}
