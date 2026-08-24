@@ -112,7 +112,7 @@ export function mergeChangelogs(
   return combinedChangelog.join('\n');
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+if (import.meta.main) {
   const puppeteerChangelog = readFileSync(
     './packages/puppeteer/CHANGELOG.md',
     'utf-8',
