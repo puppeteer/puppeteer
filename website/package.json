@@ -4,15 +4,15 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "start": "npm run materialize && docusaurus start",
+    "build": "npm run materialize && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "archive": "node archive.js"
+    "materialize": "node materialize-docs.ts"
   },
   "dependencies": {
     "@docsearch/react": "5.0.0",

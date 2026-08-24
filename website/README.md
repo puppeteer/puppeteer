@@ -22,7 +22,17 @@ This command starts a local development server and opens up a browser window. Mo
 $ npm run build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+This command materializes the current documentation as `next`, materializes
+the latest `puppeteer-v*` tag as the released documentation, and generates
+static content into the `build` directory. Fetch Git tags before building.
+
+In a shallow checkout, select an explicit source and version instead:
+
+```
+$ DOCS_RELEASE_REF=HEAD DOCS_RELEASE_VERSION=25.8.0 npm run build
+```
+
+The generated documentation inputs are ignored by Git.
 
 ### Deployment
 

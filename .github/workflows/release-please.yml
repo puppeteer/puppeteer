@@ -17,3 +17,18 @@ jobs:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  docs:
+    name: Docs
+    needs: release-please
+    permissions:
+      contents: write
+    uses: ./.github/workflows/docs.yml
+    with:
+      base: ${{ format('{0}^', github.sha) }}
+      deploy: true
+      ref: ${{ github.sha }}
+    secrets:
+      ALGOLIA_CRAWLER_API_KEY: ${{ secrets.ALGOLIA_CRAWLER_API_KEY }}
+      ALGOLIA_CRAWLER_ID: ${{ secrets.ALGOLIA_CRAWLER_ID }}
+      ALGOLIA_CRAWLER_USER_ID: ${{ secrets.ALGOLIA_CRAWLER_USER_ID }}

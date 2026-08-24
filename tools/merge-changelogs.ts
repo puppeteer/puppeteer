@@ -17,8 +17,8 @@ interface Version {
   lines: string[];
 }
 
-function parseChangelog(file: string) {
-  const log = readFileSync(file, 'utf-8').split('\n');
+function parseChangelog(content: string) {
+  const log = content.split('\n');
 
   const parsed: Version[] = [];
   let version: Version | undefined = undefined;
@@ -84,26 +84,44 @@ function mergeVersions(a: Version, b: Version): Version {
   return result;
 }
 
-const puppeteerChangelog = parseChangelog('./packages/puppeteer/CHANGELOG.md');
-const puppeteerCoreChangelog = parseChangelog(
-  './packages/puppeteer-core/CHANGELOG.md',
-);
+export function mergeChangelogs(
+  puppeteerChangelogContent: string,
+  puppeteerCoreChangelogContent: string,
+): string {
+  const puppeteerChangelog = parseChangelog(puppeteerChangelogContent);
+  const puppeteerCoreChangelog = parseChangelog(puppeteerCoreChangelogContent);
 
-const combinedChangelog: string[] = [
-  '# Changelog',
-  '',
-  'Combined changelog for puppeteer and puppeteer-core.',
-  '',
-];
+  const combinedChangelog: string[] = [
+    '# Changelog',
+    '',
+    'Combined changelog for puppeteer and puppeteer-core.',
+    '',
+  ];
 
-for (let entry of puppeteerChangelog) {
-  for (const coreEntry of puppeteerCoreChangelog) {
-    if (coreEntry.version === entry.version) {
-      entry = mergeVersions(entry, coreEntry);
+  for (let entry of puppeteerChangelog) {
+    for (const coreEntry of puppeteerCoreChangelog) {
+      if (coreEntry.version === entry.version) {
+        entry = mergeVersions(entry, coreEntry);
+      }
     }
+    combinedChangelog.push(entry.header);
+    combinedChangelog.push(...entry.lines);
   }
-  combinedChangelog.push(entry.header);
-  combinedChangelog.push(...entry.lines);
+
+  return combinedChangelog.join('\n');
 }
 
-writeFileSync('./CHANGELOG.md', combinedChangelog.join('\n'));
+if (import.meta.main) {
+  const puppeteerChangelog = readFileSync(
+    './packages/puppeteer/CHANGELOG.md',
+    'utf-8',
+  );
+  const puppeteerCoreChangelog = readFileSync(
+    './packages/puppeteer-core/CHANGELOG.md',
+    'utf-8',
+  );
+  writeFileSync(
+    './CHANGELOG.md',
+    mergeChangelogs(puppeteerChangelog, puppeteerCoreChangelog),
+  );
+}

@@ -5,9 +5,28 @@ permissions:
   contents: read
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      base:
+        description: Git revision to compare against.
+        required: false
+        type: string
+      deploy:
+        description: Whether to deploy the built website.
+        default: false
+        required: false
+        type: boolean
+      ref:
+        description: Git revision to build.
+        required: false
+        type: string
+    secrets:
+      ALGOLIA_CRAWLER_API_KEY:
+        required: false
+      ALGOLIA_CRAWLER_ID:
+        required: false
+      ALGOLIA_CRAWLER_USER_ID:
+        required: false
   pull_request:
     types:
       - opened
@@ -17,25 +36,29 @@ on:
       - '**'
 
 concurrency:
-  group: docs-${{ github.head_ref || github.run_id }}
+  group: docs-${{ github.event_name == 'pull_request' && github.head_ref || 'deploy' }}
   cancel-in-progress: true
 
 jobs:
   check-changes:
     uses: ./.github/workflows/changed-packages.yml
     with:
+      base: ${{ inputs.base }}
       check-mergeable-state: true
+      ref: ${{ inputs.ref }}
 
   deploy-docs:
     needs: check-changes
-    name: Deploy docs (if needed)
-    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
+    name: Build/deploy docs (if needed)
+    if: ${{ needs.check-changes.result == 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -49,9 +72,10 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: npm run build
+      - name: Check for tracked changes
+        run: git diff --exit-code
       - name: Deploy to GitHub Pages
-        # Only change on push to main
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ inputs.deploy }}
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -59,8 +83,8 @@ jobs:
           user_name: release-please[bot]
           user_email: 55107282+release-please[bot]@users.noreply.github.com
       - name: Test Algolia if Crawler is blocked
-        # Only change on push to main
-        if: ${{ github.event_name != 'pull_request'}}
+        # Only check the crawler after a deployment.
+        if: ${{ inputs.deploy }}
         env:
           CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
           CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
@@ -70,8 +94,8 @@ jobs:
             "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" || true ); \
           if [ ! -z "$RESPONSE" ]; then echo "Please go to https://crawler.algolia.com/" && exit 1; fi
       - name: Trigger Algolia reindexing
-        # Only change on push to main
-        if: ${{ github.event_name != 'pull_request'}}
+        # Only reindex after a deployment.
+        if: ${{ inputs.deploy }}
         env:
           CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
           CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
