@@ -35,6 +35,20 @@ describe('Screencasts', function () {
 
       expect(statSync(file.filename).size).toBeGreaterThan(0);
     });
+    it('should start on a static page', async () => {
+      using file = getUniqueVideoFilePlaceholder();
+
+      const {page} = await getTestState();
+      await page.goto('data:text/html,<h1>static</h1>');
+
+      const recorder = await page.screencast({path: file.filename});
+      await new Promise(resolve => {
+        return setTimeout(resolve, 100);
+      });
+      await recorder.stop();
+
+      expect(statSync(file.filename).size).toBeGreaterThan(0);
+    });
     it('should work concurrently', async () => {
       using file1 = getUniqueVideoFilePlaceholder();
       using file2 = getUniqueVideoFilePlaceholder();
