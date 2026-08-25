@@ -19,7 +19,6 @@ import translations from '@theme/SearchTranslations';
 import React, {useState, useRef, useCallback, useMemo} from 'react';
 import {createPortal} from 'react-dom';
 
-import {tagToCounter} from '../SearchMetadata/index.js';
 let DocSearchModal = null;
 function Hit({hit, children}) {
   return <Link to={hit.url}>{children}</Link>;
@@ -48,30 +47,30 @@ function mergeFacetFilters(f1, f2) {
 }
 
 function usePuppeteerSearchFilters() {
-  const {locale, tags} = useContextualSearchFilters();
+  const {locale} = useContextualSearchFilters();
   const languageFilter = `language:${locale}`;
-  return [
-    languageFilter,
-    tags.map(tag => {
-      return `counter:${tagToCounter.get(tag)}`;
-    }),
-  ];
+  return [languageFilter];
 }
 
-function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
+function DocSearch({contextualSearch = true, externalUrlRegex, ...props}) {
   const {siteMetadata} = useDocusaurusContext();
   const contextualSearchFacetFilters = usePuppeteerSearchFilters();
-  const configFacetFilters = props.searchParameters?.facetFilters ?? [];
-  const facetFilters = contextualSearch
-    ? // Merge contextual search filters with config filters
-      mergeFacetFilters(contextualSearchFacetFilters, configFacetFilters)
-    : // ... or use config facetFilters
-      configFacetFilters;
-  // We let user override default searchParameters if she wants to
-  const searchParameters = {
-    ...props.searchParameters,
-    facetFilters,
-  };
+
+  const indices = useMemo(() => {
+    return props.indices.map(index => {
+      const configFacetFilters = index.searchParameters?.facetFilters ?? [];
+      const facetFilters = contextualSearch
+        ? mergeFacetFilters(contextualSearchFacetFilters, configFacetFilters)
+        : configFacetFilters;
+      return {
+        ...index,
+        searchParameters: {
+          ...index.searchParameters,
+          ...(facetFilters.length > 0 ? {facetFilters} : {}),
+        },
+      };
+    });
+  }, [props.indices, contextualSearch, contextualSearchFacetFilters]);
   const {withBaseUrl} = useBaseUrlUtils();
   const history = useHistory();
   const searchContainer = useRef(null);
@@ -124,21 +123,24 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
       }
     },
   }).current;
-  const transformItems = useRef(items => {
-    return items.map(item => {
-      // If Algolia contains a external domain, we should navigate without
-      // relative URL
-      if (isRegexpStringMatch(externalUrlRegex, item.url)) {
-        return item;
-      }
-      // We transform the absolute URL into a relative URL.
-      const url = new URL(item.url);
-      return {
-        ...item,
-        url: withBaseUrl(`${url.pathname}${url.hash}`),
-      };
-    });
-  }).current;
+  const transformItems = useRef(
+    items => {
+      return items.map(item => {
+        // If Algolia contains a external domain, we should navigate without
+        // relative URL
+        if (isRegexpStringMatch(externalUrlRegex, item.url)) {
+          return item;
+        }
+        // We transform the absolute URL into a relative URL.
+        const url = new URL(item.url);
+        return {
+          ...item,
+          url: withBaseUrl(`${url.pathname}${url.hash}`),
+        };
+      });
+    },
+    [externalUrlRegex, withBaseUrl],
+  ).current;
   const resultsFooterComponent = useMemo(() => {
     return footerProps => {
       return (
@@ -200,11 +202,11 @@ function DocSearch({contextualSearch, externalUrlRegex, ...props}) {
             transformItems={transformItems}
             hitComponent={Hit}
             transformSearchClient={transformSearchClient}
-            {...(props.searchPagePath && {
+            {...((props.searchPagePath ?? props.searchPage) && {
               resultsFooterComponent,
             })}
             {...props}
-            searchParameters={searchParameters}
+            indices={indices}
             placeholder={translations.placeholder}
             translations={translations.modal}
           />,
