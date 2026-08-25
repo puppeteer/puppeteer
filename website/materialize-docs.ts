@@ -170,6 +170,20 @@ async function updateSupportedBrowsers(releaseVersion: string): Promise<void> {
   await writeFile(filename, updated);
 }
 
+async function sanitizeMdxComments(dir: string): Promise<void> {
+  const entries = await readdir(dir, {withFileTypes: true, recursive: true});
+  for (const entry of entries) {
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      const fullPath = path.join(entry.parentPath ?? dir, entry.name);
+      const content = await readFile(fullPath, 'utf-8');
+      if (content.includes('<!--')) {
+        const sanitized = content.replace(/<!--([\s\S]*?)-->/g, '{/*$1*/}');
+        await writeFile(fullPath, sanitized);
+      }
+    }
+  }
+}
+
 async function runDocusaurusVersioning(version: string): Promise<void> {
   const docusaurus = path.join(
     websiteDir,
@@ -217,6 +231,7 @@ async function main(): Promise<void> {
       JSON.stringify(archivedVersions, null, 2) + '\n',
     ),
   ]);
+  await sanitizeMdxComments(releaseDocsDir);
   await writeCombinedChangelog(releaseDocsDir, releaseSourceDir);
   await updateSupportedBrowsers(release.version);
   await runDocusaurusVersioning(release.version);
