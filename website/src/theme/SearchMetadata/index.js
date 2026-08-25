@@ -15,12 +15,10 @@ class MonotonicCountMap {
   #map = new Map();
 
   get(key) {
-    let counter = this.#map.get(key);
-    if (!counter) {
-      counter = ++this.#counter;
-      this.#map.set(key, counter);
+    if (!this.#map.has(key)) {
+      this.#map.set(key, ++this.#counter);
     }
-    return counter;
+    return this.#map.get(key);
   }
 }
 
@@ -28,10 +26,7 @@ export const tagToCounter = new MonotonicCountMap();
 
 export default function SearchMetadata({locale, tag}) {
   const language = locale;
-  let counter;
-  if (tag) {
-    counter = tagToCounter.get(tag);
-  }
+  const counter = tag ? tagToCounter.get(tag) : undefined;
   return (
     <Head>
       {language && (
@@ -40,10 +35,10 @@ export default function SearchMetadata({locale, tag}) {
           content={language}
         />
       )}
-      {counter && (
+      {counter !== undefined && (
         <meta
           name="docsearch:counter"
-          content={counter}
+          content={String(counter)}
         />
       )}
     </Head>

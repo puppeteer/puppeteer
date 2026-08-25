@@ -287,6 +287,11 @@ const config = {
         appId: 'DVKY664LG7',
         apiKey: '4dac1ae64b623f1d33ae0b4ce0ff16a4',
         indexName: 'pptr',
+        indices: [
+          {
+            name: 'pptr',
+          },
+        ],
       },
       navbar: {
         title: 'Puppeteer',

@@ -22,8 +22,6 @@ import algoliaSearchHelper from 'algoliasearch-helper';
 import clsx from 'clsx';
 import React, {useEffect, useState, useReducer, useRef, useMemo} from 'react';
 
-import {tagToCounter} from '../SearchMetadata/index.js';
-
 import styles from './styles.module.css';
 // Very simple pluralization: probably good enough for now
 function useDocumentsFoundPlural() {
@@ -125,8 +123,9 @@ function SearchPageContent() {
     i18n: {currentLocale},
   } = useDocusaurusContext();
   const {
-    algolia: {appId, apiKey, indexName, externalUrlRegex},
+    algolia: {appId, apiKey, indices, externalUrlRegex},
   } = themeConfig;
+  const indexName = indices[0].name;
   const documentsFoundPlural = useDocumentsFoundPlural();
   const docsSearchVersionsHelpers = useDocsSearchVersionsHelpers();
   const [searchQuery, setSearchQuery] = useSearchQueryString();
@@ -174,15 +173,17 @@ function SearchPageContent() {
     },
     initialSearchResultState,
   );
-  const algoliaClient = liteClient(appId, apiKey);
-  const algoliaHelper = algoliaSearchHelper(algoliaClient, indexName, {
-    hitsPerPage: 15,
-    advancedSyntax: true,
-    disjunctiveFacets: ['language', 'counter'],
-  });
-  algoliaHelper.on(
-    'result',
-    ({results: {query, hits, page, nbHits, nbPages}}) => {
+  const algoliaHelper = useMemo(() => {
+    const algoliaClient = liteClient(appId, apiKey);
+    return algoliaSearchHelper(algoliaClient, indexName, {
+      hitsPerPage: 15,
+      advancedSyntax: true,
+      disjunctiveFacets: ['language'],
+    });
+  }, [appId, apiKey, indexName]);
+
+  useEffect(() => {
+    const onResult = ({results: {query, hits, page, nbHits, nbPages}}) => {
       if (query === '' || !Array.isArray(hits)) {
         searchResultStateDispatcher({type: 'reset'});
         return;
@@ -227,8 +228,12 @@ function SearchPageContent() {
           loading: false,
         },
       });
-    },
-  );
+    };
+    algoliaHelper.on('result', onResult);
+    return () => {
+      algoliaHelper.removeListener('result', onResult);
+    };
+  }, [algoliaHelper, externalUrlRegex]);
   const [loaderRef, setLoaderRef] = useState(null);
   const prevY = useRef(0);
   const observer = useRef(
@@ -270,19 +275,7 @@ function SearchPageContent() {
     return title || 'Search';
   }, [searchQuery]);
   const makeSearch = useEvent((page = 0) => {
-    algoliaHelper.addDisjunctiveFacetRefinement(
-      'counter',
-      tagToCounter.get('default'),
-    );
     algoliaHelper.addDisjunctiveFacetRefinement('language', currentLocale);
-    Object.entries(docsSearchVersionsHelpers.searchVersions).forEach(
-      ([pluginId, searchVersion]) => {
-        algoliaHelper.addDisjunctiveFacetRefinement(
-          'counter',
-          tagToCounter.get(`docs-${pluginId}-${searchVersion}`),
-        );
-      },
-    );
     algoliaHelper.setQuery(searchQuery).setPage(page).search();
   });
   useEffect(() => {
