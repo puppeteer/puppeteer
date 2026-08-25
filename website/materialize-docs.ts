@@ -5,7 +5,7 @@
  */
 
 import {execFile as execFileCallback} from 'node:child_process';
-import {cp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
+import {cp, mkdir, readFile, readdir, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {promisify} from 'node:util';
@@ -89,16 +89,16 @@ async function getRelease(): Promise<Release> {
 async function getReleaseTags(): Promise<string[]> {
   const localTags = await git(['tag', '--list', 'puppeteer-v*']);
   let remoteTags = '';
-  try {
-    remoteTags = await git([
-      'ls-remote',
-      '--tags',
-      '--refs',
-      'origin',
-      'refs/tags/puppeteer-v*',
-    ]);
-  } catch {
-    if (!localTags) {
+  if (!localTags) {
+    try {
+      remoteTags = await git([
+        'ls-remote',
+        '--tags',
+        '--refs',
+        'origin',
+        'refs/tags/puppeteer-v*',
+      ]);
+    } catch {
       throw new Error('Unable to list local or remote Puppeteer release tags.');
     }
   }
@@ -164,10 +164,24 @@ async function updateSupportedBrowsers(releaseVersion: string): Promise<void> {
   const filename = path.join(releaseDocsDir, 'supported-browsers.md');
   const content = await readFile(filename, 'utf-8');
   const updated = content.replace(
-    /(?<=<!-- version-start -->\n)[\s\S]*?(?=\n<!-- version-end -->)/,
-    `\n${generateSupportedBrowsersTable(versionData, releaseVersion)}\n`,
+    /(?<=(?:\{\/\*)\s*version-start\s*(?:\*\/)\n)[\s\S]*?(?=\n(?:\{\/\*)\s*version-end\s*(?:\*\/))/,
+    generateSupportedBrowsersTable(versionData, releaseVersion),
   );
   await writeFile(filename, updated);
+}
+
+async function sanitizeMdxComments(dir: string): Promise<void> {
+  const entries = await readdir(dir, {withFileTypes: true, recursive: true});
+  for (const entry of entries) {
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      const fullPath = path.join(entry.parentPath ?? dir, entry.name);
+      const content = await readFile(fullPath, 'utf-8');
+      if (content.includes('<!--')) {
+        const sanitized = content.replace(/<!--([\s\S]*?)-->/g, '{/*$1*/}');
+        await writeFile(fullPath, sanitized);
+      }
+    }
+  }
 }
 
 async function runDocusaurusVersioning(version: string): Promise<void> {
@@ -217,6 +231,7 @@ async function main(): Promise<void> {
       JSON.stringify(archivedVersions, null, 2) + '\n',
     ),
   ]);
+  await sanitizeMdxComments(releaseDocsDir);
   await writeCombinedChangelog(releaseDocsDir, releaseSourceDir);
   await updateSupportedBrowsers(release.version);
   await runDocusaurusVersioning(release.version);

@@ -17,6 +17,7 @@
   "dependencies": {
     "@docsearch/react": "5.0.0",
     "@docusaurus/core": "3.10.2",
+    "@docusaurus/faster": "3.10.2",
     "@docusaurus/plugin-client-redirects": "3.10.2",
     "@docusaurus/plugin-content-docs": "3.10.2",
     "@docusaurus/preset-classic": "3.10.2",
@@ -35,8 +36,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@swc/core": "1.15.47",
-    "swc-loader": "0.2.7"
+    "@swc/core": "1.15.47"
   },
   "browserslist": {
     "production": [

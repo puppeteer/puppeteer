@@ -327,7 +327,7 @@ our [pull requests](https://github.com/puppeteer/puppeteer/pulls) and merge it.
 
 ### In case Release Please fails
 
-<!-- TODO: Remove once release-please is fixed -->
+{/* TODO: Remove once release-please is fixed */}
 
 In the event release-please fails, the following needs to be done:
 

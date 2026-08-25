@@ -22,8 +22,7 @@ import algoliaSearchHelper from 'algoliasearch-helper';
 import clsx from 'clsx';
 import React, {useEffect, useState, useReducer, useRef, useMemo} from 'react';
 
-// eslint-disable-next-line @puppeteer/extensions
-import {tagToCounter} from '../SearchMetadata';
+import {tagToCounter} from '../SearchMetadata/index.js';
 
 import styles from './styles.module.css';
 // Very simple pluralization: probably good enough for now
