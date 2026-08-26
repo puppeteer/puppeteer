@@ -510,6 +510,17 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="screenrecording">[ScreenRecording](./puppeteer.screenrecording.md)</span>
+
+</td><td>
+
+**Remarks:**
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ScreenRecording` class.
+
+</td></tr>
+<tr><td>
+
 <span id="securitydetails">[SecurityDetails](./puppeteer.securitydetails.md)</span>
 
 </td><td>
@@ -1363,6 +1374,15 @@ The OS-integration state of an installed web app, returned by [Browser.getPWASta
 </td></tr>
 <tr><td>
 
+<span id="recordoptions">[RecordOptions](./puppeteer.recordoptions.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
+
+</td></tr>
+<tr><td>
+
 <span id="reloadoptions">[ReloadOptions](./puppeteer.reloadoptions.md)</span>
 
 </td><td>
@@ -1565,6 +1585,13 @@ Options for [Browser.uninstallPWA()](./puppeteer.browser.uninstallpwa.md).
 <tr><td>
 
 <span id="workareainsets">[WorkAreaInsets](./puppeteer.workareainsets.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="writabledestination">[WritableDestination](./puppeteer.writabledestination.md)</span>
 
 </td><td>
 
