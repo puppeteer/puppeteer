@@ -39,6 +39,8 @@ describe('Screencasts', function () {
       using file = getUniqueVideoFilePlaceholder();
 
       const {page} = await getTestState();
+      // A quiescent page may emit only the initial screencast frame.
+      // Readiness must observe that frame even if it races the start ACK.
       await page.goto('data:text/html,<h1>static</h1>');
 
       const recorder = await page.screencast({path: file.filename});

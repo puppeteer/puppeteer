@@ -15,7 +15,6 @@ import {
 
 class FakeScreencastClient implements ScreencastClient {
   frameListeners: Array<() => void> = [];
-  emitFrameDuringSend = false;
   failSend = false;
   #resolveSend: (() => void) | undefined;
 
@@ -25,9 +24,6 @@ class FakeScreencastClient implements ScreencastClient {
   ): Promise<unknown> {
     if (this.failSend) {
       return Promise.reject(new Error('startScreencast failed'));
-    }
-    if (this.emitFrameDuringSend) {
-      this.emitFrame();
     }
     return new Promise(resolve => {
       this.#resolveSend = () => {
@@ -60,31 +56,79 @@ class FakeScreencastClient implements ScreencastClient {
   }
 }
 
+/**
+ * Real CDP delivers the command result and `Page.screencastFrame` as
+ * separate tasks. Emitting a frame inside `send()` is not a faithful
+ * model of that transport.
+ */
+function afterTimeout(callback: () => void): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      callback();
+      resolve();
+    }, 0);
+  });
+}
+
+async function dispatchFrameThenResult(
+  client: FakeScreencastClient,
+): Promise<void> {
+  await afterTimeout(() => {
+    client.emitFrame();
+  });
+  await afterTimeout(() => {
+    client.ackStart();
+  });
+}
+
+async function dispatchResultThenFrame(
+  client: FakeScreencastClient,
+): Promise<void> {
+  await afterTimeout(() => {
+    client.ackStart();
+  });
+  await afterTimeout(() => {
+    client.emitFrame();
+  });
+}
+
+async function startAfterAck(client: FakeScreencastClient): Promise<void> {
+  await client.send('Page.startScreencast', {format: 'png'});
+  await new Promise<void>(resolve => {
+    client.on('Page.screencastFrame', () => {
+      resolve();
+    });
+  });
+}
+
 describe('startScreencastAndWaitForFirstFrame', () => {
-  it('does not miss a frame emitted during Page.startScreencast', async () => {
+  it('does not miss a frame dispatched before the command result', async () => {
     const client = new FakeScreencastClient();
-    client.emitFrameDuringSend = true;
 
     const ready = startScreencastAndWaitForFirstFrame(client);
-    client.ackStart();
+    await dispatchFrameThenResult(client);
     await ready;
 
     expect(client.frameListeners).toHaveLength(0);
   });
 
-  it('waits for a later frame when none arrives during start', async () => {
+  it('waits for a later frame when the result arrives first', async () => {
     const client = new FakeScreencastClient();
     let settled = false;
     const ready = startScreencastAndWaitForFirstFrame(client).then(() => {
       settled = true;
     });
 
-    client.ackStart();
+    await afterTimeout(() => {
+      client.ackStart();
+    });
     await Promise.resolve();
     expect(settled).toBe(false);
     expect(client.frameListeners).toHaveLength(1);
 
-    client.emitFrame();
+    await afterTimeout(() => {
+      client.emitFrame();
+    });
     await ready;
     expect(settled).toBe(true);
     expect(client.frameListeners).toHaveLength(0);
@@ -100,24 +144,25 @@ describe('startScreencastAndWaitForFirstFrame', () => {
     expect(client.frameListeners).toHaveLength(0);
   });
 
-  it('reproduces a missed first frame when the listener is attached after ack', async () => {
+  it('reproduces a missed first frame when listen happens after the result', async () => {
     const client = new FakeScreencastClient();
-    client.emitFrameDuringSend = true;
-
     let settled = false;
-    void (async () => {
-      await client.send('Page.startScreencast', {format: 'png'});
-      await new Promise<void>(resolve => {
-        client.on('Page.screencastFrame', () => {
-          resolve();
-        });
-      });
+    void startAfterAck(client).then(() => {
       settled = true;
-    })();
+    });
 
-    client.ackStart();
-    await Promise.resolve();
+    await dispatchFrameThenResult(client);
+    await afterTimeout(() => {});
+
     expect(settled).toBe(false);
     expect(client.frameListeners).toHaveLength(1);
+  });
+
+  it('still resolves after-ack when the result task runs before the frame task', async () => {
+    const client = new FakeScreencastClient();
+
+    const ready = startAfterAck(client);
+    await dispatchResultThenFrame(client);
+    await ready;
   });
 });

@@ -22,9 +22,15 @@ export interface ScreencastClient {
  * Sends `Page.startScreencast` and resolves once the first
  * `Page.screencastFrame` event is observed.
  *
- * The frame listener is registered before the CDP command is sent. Registering
- * after the acknowledgement can miss the only frame emitted by a static page,
- * leaving readiness waiting forever.
+ * The frame listener is registered before the CDP command is sent.
+ *
+ * `Page.startScreencast` and `Page.screencastFrame` are separate CDP
+ * messages. Chromium starts capture and can encode a frame while the start
+ * command result is still in flight (the browser handler returns
+ * `FallThrough()`, so the client ACK also waits on the renderer).
+ * `ScreenRecorder` is already subscribed and ACKs frames. If readiness only
+ * listens in the start-command `.then()`, it can miss that first (and, on a
+ * static page, only) frame and wait forever.
  *
  * If `Page.startScreencast` rejects, the listener is removed before the error
  * propagates.
