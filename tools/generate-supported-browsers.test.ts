@@ -131,6 +131,33 @@ void describe('generate-supported-browsers', () => {
         ['v24.43.0', {chrome: '148.0.7778.97', firefox: 'stable_150.0.1'}],
       ]);
     });
+    void it('retains only the single latest version when all versions have identical pins', () => {
+      const versions: Array<[string, BrowserVersions]> = [
+        ['v25.2.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+        ['v25.1.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+        ['v25.0.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+      ];
+
+      const deduplicated = deduplicateBrowserVersions(versions);
+      expect(deduplicated).toEqual([
+        ['v25.2.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+      ]);
+    });
+
+    void it('preserves the latest version when top N versions share the same pins and prior versions differ', () => {
+      const versions: Array<[string, BrowserVersions]> = [
+        ['v25.3.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+        ['v25.2.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+        ['v25.1.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+        ['v25.0.0', {chrome: '151.0.7922.77', firefox: 'stable_153.0.3'}],
+      ];
+
+      const deduplicated = deduplicateBrowserVersions(versions);
+      expect(deduplicated).toEqual([
+        ['v25.3.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+        ['v25.0.0', {chrome: '151.0.7922.77', firefox: 'stable_153.0.3'}],
+      ]);
+    });
   });
 
   void describe('getLastMaintainedVersion', () => {
@@ -151,6 +178,18 @@ void describe('generate-supported-browsers', () => {
         'v25.1.0',
         {chrome: '149.0.7827.22', firefox: 'stable_151.0'},
       ]);
+    });
+
+    void it('returns undefined when no matching major version is found', () => {
+      const versionData = {
+        versions: [
+          ['v25.9.0', {chrome: '152.0.7977.54', firefox: 'stable_154.0'}],
+          ['v25.7.0', {chrome: '152.0.7977.42', firefox: 'stable_153.0.4'}],
+        ] as Array<[string, BrowserVersions]>,
+      };
+
+      const result = getLastMaintainedVersion(versionData);
+      expect(result).toBeUndefined();
     });
 
     void it('returns undefined for empty versions', () => {
@@ -175,6 +214,33 @@ void describe('generate-supported-browsers', () => {
       );
       expect(table).toContain('Firefox Nightly (at the time)');
       expect(table).toContain('Firefox not supported');
+    });
+
+    void it('handles NEXT storedVersion when nextVersion is provided', () => {
+      const versionData = {
+        versions: [
+          ['NEXT', {chrome: '153.0.8000.0', firefox: 'stable_155.0'}],
+          ['v25.9.0', {chrome: '152.0.7977.54', firefox: 'stable_154.0'}],
+        ] as Array<[string, BrowserVersions]>,
+      };
+
+      const table = generateSupportedBrowsersTable(versionData, '25.10.0');
+      expect(table).toContain(
+        '| [Puppeteer v25.10.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.10.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 153.0.8000.0 | [Firefox](https://www.mozilla.org/en-US/firefox/) 155.0 |',
+      );
+    });
+
+    void it('skips NEXT storedVersion when nextVersion is not provided', () => {
+      const versionData = {
+        versions: [
+          ['NEXT', {chrome: '153.0.8000.0', firefox: 'stable_155.0'}],
+          ['v25.9.0', {chrome: '152.0.7977.54', firefox: 'stable_154.0'}],
+        ] as Array<[string, BrowserVersions]>,
+      };
+
+      const table = generateSupportedBrowsersTable(versionData);
+      expect(table).not.toContain('NEXT');
+      expect(table).toContain('v25.9.0');
     });
   });
 });
