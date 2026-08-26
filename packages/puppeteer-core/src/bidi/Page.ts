@@ -22,6 +22,7 @@ import type {
   HeapSnapshotOptions,
   MediaFeature,
   PageEvents,
+  RecordOptions,
   ReloadOptions,
   WaitTimeoutOptions,
 } from '../api/Page.js';
@@ -55,6 +56,7 @@ import type {PDFOptions} from '../common/PDFOptions.js';
 import type {Awaitable} from '../common/types.js';
 import {evaluationString, parsePDFOptions, timeout} from '../common/util.js';
 import type {Viewport} from '../common/Viewport.js';
+import {environment} from '../environment.js';
 import type {Realm} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {bubble} from '../util/decorators.js';
@@ -70,6 +72,7 @@ import {BidiFrame} from './Frame.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
+import {BidiScreenRecording} from './ScreenRecording.js';
 import {rewriteNavigationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
 
@@ -1032,6 +1035,52 @@ export class BidiPage extends Page {
 
   override extensionRealms(): Realm[] {
     throw new UnsupportedOperation();
+  }
+
+  override async record(
+    options: Readonly<RecordOptions> = {},
+  ): Promise<BidiScreenRecording> {
+    if (options.maxWidth !== undefined && options.maxWidth <= 0) {
+      throw new Error('`maxWidth` must be greater than 0.');
+    }
+    if (options.maxHeight !== undefined && options.maxHeight <= 0) {
+      throw new Error('`maxHeight` must be greater than 0.');
+    }
+    if (options.frameRate !== undefined && options.frameRate <= 0) {
+      throw new Error('`frameRate` must be greater than 0.');
+    }
+    if (options.fps !== undefined && options.fps <= 0) {
+      throw new Error('`fps` must be greater than 0.');
+    }
+
+    if (options.path && environment.value.path) {
+      await environment.value.mkdir(
+        environment.value.path.dirname(options.path),
+        {recursive: options.overwrite ?? true},
+      );
+    }
+
+    const stream = options.path
+      ? environment.value.createWriteStream(options.path, {
+          encoding: 'binary',
+          overwrite: options.overwrite,
+        })
+      : undefined;
+
+    const recording = new BidiScreenRecording(this, options, this.logger);
+
+    try {
+      await recording._start();
+    } catch (error) {
+      void recording.stop();
+      throw error;
+    }
+
+    if (stream) {
+      recording.pipe(stream);
+    }
+
+    return recording;
   }
 }
 

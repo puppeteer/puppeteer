@@ -27,13 +27,31 @@ export interface WritableDestination {
  * @public
  */
 export class ScreenRecording extends ReadableStream<Uint8Array> {
-  #page: Page;
-  #options: RecordOptions;
-  #logger?: Logger;
+  /**
+   * @internal
+   */
+  protected page: Page;
+  /**
+   * @internal
+   */
+  protected options: RecordOptions;
+  /**
+   * @internal
+   */
+  protected logger?: Logger;
   #streamHandle?: string;
-  #controller!: ReadableStreamDefaultController<Uint8Array>;
-  #destinations = new Set<WritableDestination>();
-  #stopped = false;
+  /**
+   * @internal
+   */
+  protected controller!: ReadableStreamDefaultController<Uint8Array>;
+  /**
+   * @internal
+   */
+  protected destinations = new Set<WritableDestination>();
+  /**
+   * @internal
+   */
+  protected stopped = false;
 
   /**
    * @internal
@@ -45,16 +63,16 @@ export class ScreenRecording extends ReadableStream<Uint8Array> {
         controller = c;
       },
     });
-    this.#controller = controller;
+    this.controller = controller;
 
-    this.#page = page;
-    this.#options = options;
-    this.#logger = logger;
+    this.page = page;
+    this.options = options;
+    this.logger = logger;
 
-    const {client} = this.#page.mainFrame();
-    client.once(CDPSessionEvent.Disconnected, () => {
+    const {client} = this.page.mainFrame();
+    client?.once?.(CDPSessionEvent.Disconnected, () => {
       void this.stop().catch(err => {
-        this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+        this.logger?.(DEBUG_PREFIXES.error)?.(err);
       });
     });
   }
@@ -63,13 +81,13 @@ export class ScreenRecording extends ReadableStream<Uint8Array> {
    * @internal
    */
   async _start(): Promise<void> {
-    const {client} = this.#page.mainFrame();
-    const frameRate = this.#options.frameRate ?? this.#options.fps;
+    const {client} = this.page.mainFrame();
+    const frameRate = this.options.frameRate ?? this.options.fps;
     // @ts-expect-error Page.startScreenRecording is not yet in devtools-protocol
     const result = (await client.send('Page.startScreenRecording', {
-      audio: this.#options.audio,
-      maxWidth: this.#options.maxWidth,
-      maxHeight: this.#options.maxHeight,
+      audio: this.options.audio,
+      maxWidth: this.options.maxWidth,
+      maxHeight: this.options.maxHeight,
       frameRate,
     })) as {stream?: string} | undefined;
     if (result && typeof result.stream === 'string') {
@@ -94,18 +112,18 @@ export class ScreenRecording extends ReadableStream<Uint8Array> {
       return this.pipeTo(destination as WritableStream<Uint8Array>);
     }
     const dest = destination as WritableDestination;
-    this.#destinations.add(dest);
+    this.destinations.add(dest);
     dest.once?.('unpipe', () => {
-      this.#destinations.delete(dest);
+      this.destinations.delete(dest);
     });
     dest.once?.('error', () => {
-      this.#destinations.delete(dest);
+      this.destinations.delete(dest);
     });
     dest.once?.('close', () => {
-      this.#destinations.delete(dest);
+      this.destinations.delete(dest);
     });
     dest.once?.('finish', () => {
-      this.#destinations.delete(dest);
+      this.destinations.delete(dest);
     });
     return dest;
   }
@@ -117,18 +135,18 @@ export class ScreenRecording extends ReadableStream<Uint8Array> {
    */
   @guarded()
   async stop(): Promise<void> {
-    if (this.#stopped) {
+    if (this.stopped) {
       return;
     }
-    this.#stopped = true;
+    this.stopped = true;
 
     try {
-      const {client} = this.#page.mainFrame();
+      const {client} = this.page.mainFrame();
       const result = (await client
         // @ts-expect-error Page.stopScreenRecording is not yet in devtools-protocol
         .send('Page.stopScreenRecording')
         .catch(err => {
-          this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+          this.logger?.(DEBUG_PREFIXES.error)?.(err);
           return undefined;
         })) as {stream?: string} | undefined;
 
@@ -145,26 +163,26 @@ export class ScreenRecording extends ReadableStream<Uint8Array> {
           eof = isEof;
           if (data) {
             const buffer = stringToTypedArray(data, base64Encoded ?? false);
-            this.#controller.enqueue(buffer);
-            for (const dest of this.#destinations) {
+            this.controller.enqueue(buffer);
+            for (const dest of this.destinations) {
               dest.write(buffer);
             }
           }
         }
         await client.send('IO.close', {handle}).catch(err => {
-          this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+          this.logger?.(DEBUG_PREFIXES.error)?.(err);
         });
       }
     } finally {
       try {
-        this.#controller.close();
+        this.controller.close();
       } catch {
         // Controller might already be closed.
       }
-      for (const dest of this.#destinations) {
+      for (const dest of this.destinations) {
         dest.end();
       }
-      const destinationPromises = Array.from(this.#destinations).map(dest => {
+      const destinationPromises = Array.from(this.destinations).map(dest => {
         return new Promise(resolve => {
           if (dest.writableFinished || dest.closed || dest.destroyed) {
             resolve(undefined);
