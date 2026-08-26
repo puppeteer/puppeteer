@@ -19,28 +19,16 @@ export interface ScreencastClient {
 }
 
 /**
- * Sends `Page.startScreencast` and resolves once the first
- * `Page.screencastFrame` event is observed.
- *
- * The frame listener is registered before the CDP command is sent.
- *
- * `Page.startScreencast` and `Page.screencastFrame` are separate CDP
- * messages. Chromium starts capture and can encode a frame while the start
- * command result is still in flight (the browser handler returns
- * `FallThrough()`, so the client ACK also waits on the renderer).
- * `ScreenRecorder` is already subscribed and ACKs frames. If readiness only
- * listens in the start-command `.then()`, it can miss that first (and, on a
- * static page, only) frame and wait forever.
- *
- * If `Page.startScreencast` rejects, the listener is removed before the error
- * propagates.
+ * Starts a screencast and resolves on the first frame. The listener is
+ * registered before `Page.startScreencast` is sent, and removed on settle
+ * or reject.
  *
  * @internal
  */
 export async function startScreencastAndWaitForFirstFrame(
   client: ScreencastClient,
 ): Promise<void> {
-  let onFrame: (() => void) | undefined;
+  let onFrame = (): void => {};
   try {
     const firstFrame = new Promise<void>(resolve => {
       onFrame = () => {
@@ -51,8 +39,6 @@ export async function startScreencastAndWaitForFirstFrame(
     await client.send('Page.startScreencast', {format: 'png'});
     await firstFrame;
   } finally {
-    if (onFrame) {
-      client.off('Page.screencastFrame', onFrame);
-    }
+    client.off('Page.screencastFrame', onFrame);
   }
 }

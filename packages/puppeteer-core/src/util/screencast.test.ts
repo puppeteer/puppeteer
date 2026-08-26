@@ -56,11 +56,6 @@ class FakeScreencastClient implements ScreencastClient {
   }
 }
 
-/**
- * Real CDP delivers the command result and `Page.screencastFrame` as
- * separate tasks. Emitting a frame inside `send()` is not a faithful
- * model of that transport.
- */
 function afterTimeout(callback: () => void): Promise<void> {
   return new Promise(resolve => {
     setTimeout(() => {
