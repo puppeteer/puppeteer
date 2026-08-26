@@ -86,7 +86,6 @@
       ],
       "files": [
         "{src,third_party}/**",
-        "../../versions.js",
         "!src/generated",
         "Herebyfile.mjs"
       ],

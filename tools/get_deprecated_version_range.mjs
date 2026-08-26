@@ -4,15 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import data from '../versions.json' with {type: 'json'};
+import {
+  getLastMaintainedVersion,
+  getSupportedBrowserData,
+} from './generate-supported-browsers.ts';
 
-const version = data.versions.find(([puppeteerVersion, browserVersions]) => {
-  return browserVersions.chrome === data.lastMaintainedChromeVersion;
-});
-const puppeteerVersion = version[0];
-if (puppeteerVersion === 'NEXT') {
-  console.error('Unexpected NEXT Puppeteer version in versions.js');
+const versionData = await getSupportedBrowserData();
+const version = getLastMaintainedVersion(versionData);
+if (!version) {
+  console.error('Could not find last maintained version');
   process.exit(1);
 }
-console.log(`< ${puppeteerVersion.substring(1)}`);
+const puppeteerVersion = version[0];
+console.log(`< ${puppeteerVersion.replace(/^v/, '')}`);
 process.exit(0);

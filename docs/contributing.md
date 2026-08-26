@@ -288,18 +288,16 @@ The following steps are manual version of the script above.
 1. Find a suitable Chrome `revision` and `version` via https://googlechromelabs.github.io/chrome-for-testing/ or https://chromiumdash.appspot.com/.
 2. Update `packages/puppeteer-core/src/revisions.ts` with the found `version`
    number.
-3. Update `versions.json` with the new Chrome-to-Puppeteer `version` mapping and
-   update `lastMaintainedChromeVersion` with the next one in from the list.
-4. Run `npm run check`. If it fails, update
+3. Run `npm run check`. If it fails, update
    `packages/puppeteer-core/package.json`
    with the expected `devtools-protocol` version and run `npm install` to generate an updated `package-lock.json`.
-5. Run `npm run clean`, `npm install` and `npm run build`.
-6. Run `npm test` and ensure that all tests pass. If a test fails,
+4. Run `npm run clean`, `npm install` and `npm run build`.
+5. Run `npm test` and ensure that all tests pass. If a test fails,
    [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and
    either update the test expectations accordingly (if it was an intended
    change) or work around the changes in Puppeteer (if it’s not desirable to
    change Puppeteer’s observable behavior).
-7. Commit and push your changes and open a pull request. The commit message must
+6. Commit and push your changes and open a pull request. The commit message must
    contain the version in `Chrome <version>` format to ensure
    that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g.
    `feat(chrome): roll to Chrome 90.0.4427.0`.
