@@ -75,7 +75,6 @@ import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
 import type {ScreenRecorder} from '../node/ScreenRecorder.js';
 import {guarded} from '../util/decorators.js';
-import {startScreencastAndWaitForFirstFrame} from '../util/screencast.js';
 import {
   AsyncDisposableStack,
   asyncDisposeSymbol,
@@ -2648,9 +2647,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
   async _startScreencast(): Promise<void> {
     ++this.#screencastSessionCount;
     if (!this.#startScreencastPromise) {
-      this.#startScreencastPromise = startScreencastAndWaitForFirstFrame(
-        this.mainFrame().client,
-      );
+      const client = this.mainFrame().client;
+      const firstFrame = new Promise<void>(resolve => {
+        return client.once('Page.screencastFrame', () => {
+          return resolve();
+        });
+      });
+      this.#startScreencastPromise = client
+        .send('Page.startScreencast', {format: 'png'})
+        .then(() => {
+          return firstFrame;
+        });
     }
     await this.#startScreencastPromise;
   }

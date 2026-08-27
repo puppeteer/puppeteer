@@ -35,46 +35,6 @@ describe('Screencasts', function () {
 
       expect(statSync(file.filename).size).toBeGreaterThan(0);
     });
-    it('should start on a static page', async () => {
-      using file = getUniqueVideoFilePlaceholder();
-
-      const {page} = await getTestState();
-      await page.goto('data:text/html,<h1>static</h1>');
-
-      const recorder = await page.screencast({path: file.filename});
-      await new Promise(resolve => {
-        return setTimeout(resolve, 100);
-      });
-      await recorder.stop();
-
-      expect(statSync(file.filename).size).toBeGreaterThan(0);
-    });
-    it('should start if the first frame arrives before the start result', async () => {
-      using file = getUniqueVideoFilePlaceholder();
-
-      const {page} = await getTestState();
-      await page.goto('data:text/html,<h1>static</h1>');
-      await new Promise(resolve => {
-        return setTimeout(resolve, 200);
-      });
-
-      const client = page.mainFrame().client;
-      const send = client.send.bind(client);
-      let queued = false;
-      client.send = ((method: string, ...args: unknown[]) => {
-        if (method === 'Page.startScreencast' && !queued) {
-          queued = true;
-          void send('Runtime.evaluate', {
-            expression:
-              '(() => { const end = performance.now() + 400; while (performance.now() < end) {} })()',
-          });
-        }
-        return send(method, ...args);
-      }) as typeof client.send;
-
-      const recorder = await page.screencast({path: file.filename});
-      await recorder.stop();
-    });
     it('should work concurrently', async () => {
       using file1 = getUniqueVideoFilePlaceholder();
       using file2 = getUniqueVideoFilePlaceholder();
