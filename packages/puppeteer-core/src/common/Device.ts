@@ -640,6 +640,32 @@ const knownDevices = [
     },
   },
   {
+    name: 'iPhone SE (3rd gen)',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/26.5 Mobile/19E241 Safari/602.1',
+    viewport: {
+      width: 375,
+      height: 667,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone SE (3rd gen) landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/26.5 Mobile/19E241 Safari/602.1',
+    viewport: {
+      width: 667,
+      height: 375,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
     name: 'iPhone X',
     userAgent:
       'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
@@ -1179,6 +1205,266 @@ const knownDevices = [
     viewport: {
       width: 814,
       height: 380,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 16',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 393,
+      height: 659,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 16 landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 734,
+      height: 343,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 16 Plus',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 430,
+      height: 739,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 16 Plus landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 814,
+      height: 380,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 16 Pro',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 402,
+      height: 681,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 16 Pro landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 756,
+      height: 352,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 16 Pro Max',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 440,
+      height: 763,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 16 Pro Max landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 838,
+      height: 390,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 16e',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 390,
+      height: 651,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 16e landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 726,
+      height: 340,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 17',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 402,
+      height: 681,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 17 landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 756,
+      height: 352,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone Air',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 420,
+      height: 719,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone Air landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 794,
+      height: 370,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 17 Pro',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 402,
+      height: 681,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 17 Pro landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 756,
+      height: 352,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 17 Pro Max',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 440,
+      height: 763,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 17 Pro Max landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 838,
+      height: 390,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 17e',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 390,
+      height: 651,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 17e landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 726,
+      height: 340,
       deviceScaleFactor: 3,
       isMobile: true,
       hasTouch: true,
@@ -1736,7 +2022,7 @@ for (const device of knownDevices) {
  *
  * ```ts
  * import {KnownDevices} from 'puppeteer';
- * const iPhone = KnownDevices['iPhone 15 Pro'];
+ * const iPhone = KnownDevices['iPhone 17 Pro'];
  *
  * const browser = await puppeteer.launch();
  * const page = await browser.newPage();

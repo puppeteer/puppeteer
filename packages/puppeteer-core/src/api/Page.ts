@@ -2138,7 +2138,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * ```ts
    * import {KnownDevices} from 'puppeteer';
-   * const iPhone = KnownDevices['iPhone 15 Pro'];
+   * const iPhone = KnownDevices['iPhone 17 Pro'];
    *
    * const browser = await puppeteer.launch();
    * const page = await browser.newPage();

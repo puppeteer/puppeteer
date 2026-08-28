@@ -59,6 +59,8 @@ KnownDevices: Readonly<
     | 'iPhone 8 Plus landscape'
     | 'iPhone SE'
     | 'iPhone SE landscape'
+    | 'iPhone SE (3rd gen)'
+    | 'iPhone SE (3rd gen) landscape'
     | 'iPhone X'
     | 'iPhone X landscape'
     | 'iPhone XR'
@@ -101,6 +103,26 @@ KnownDevices: Readonly<
     | 'iPhone 15 Pro landscape'
     | 'iPhone 15 Pro Max'
     | 'iPhone 15 Pro Max landscape'
+    | 'iPhone 16'
+    | 'iPhone 16 landscape'
+    | 'iPhone 16 Plus'
+    | 'iPhone 16 Plus landscape'
+    | 'iPhone 16 Pro'
+    | 'iPhone 16 Pro landscape'
+    | 'iPhone 16 Pro Max'
+    | 'iPhone 16 Pro Max landscape'
+    | 'iPhone 16e'
+    | 'iPhone 16e landscape'
+    | 'iPhone 17'
+    | 'iPhone 17 landscape'
+    | 'iPhone Air'
+    | 'iPhone Air landscape'
+    | 'iPhone 17 Pro'
+    | 'iPhone 17 Pro landscape'
+    | 'iPhone 17 Pro Max'
+    | 'iPhone 17 Pro Max landscape'
+    | 'iPhone 17e'
+    | 'iPhone 17e landscape'
     | 'JioPhone 2'
     | 'JioPhone 2 landscape'
     | 'Kindle Fire HDX'
@@ -151,7 +173,7 @@ KnownDevices: Readonly<
 
 ```ts
 import {KnownDevices} from 'puppeteer';
-const iPhone = KnownDevices['iPhone 15 Pro'];
+const iPhone = KnownDevices['iPhone 17 Pro'];
 
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
