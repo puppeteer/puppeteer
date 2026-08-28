@@ -58,7 +58,7 @@ This method will resize the page. A lot of websites don't expect phones to chang
 
 ```ts
 import {KnownDevices} from 'puppeteer';
-const iPhone = KnownDevices['iPhone 15 Pro'];
+const iPhone = KnownDevices['iPhone 17 Pro'];
 
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
