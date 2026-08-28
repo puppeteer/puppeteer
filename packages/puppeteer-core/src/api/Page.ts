@@ -2647,15 +2647,16 @@ export abstract class Page extends EventEmitter<PageEvents> {
   async _startScreencast(): Promise<void> {
     ++this.#screencastSessionCount;
     if (!this.#startScreencastPromise) {
-      this.#startScreencastPromise = this.mainFrame()
-        .client.send('Page.startScreencast', {format: 'png'})
+      const client = this.mainFrame().client;
+      const firstFrame = new Promise<void>(resolve => {
+        return client.once('Page.screencastFrame', () => {
+          return resolve();
+        });
+      });
+      this.#startScreencastPromise = client
+        .send('Page.startScreencast', {format: 'png'})
         .then(() => {
-          // Wait for the first frame.
-          return new Promise(resolve => {
-            return this.mainFrame().client.once('Page.screencastFrame', () => {
-              return resolve();
-            });
-          });
+          return firstFrame;
         });
     }
     await this.#startScreencastPromise;
