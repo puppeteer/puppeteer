@@ -3,7 +3,7 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import {existsSync} from 'node:fs';
+import {accessSync, constants, existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
@@ -50,6 +50,21 @@ export interface ResolvedLaunchArgs {
   userDataDir: string;
   executablePath: string;
   args: string[];
+}
+
+/**
+ * Whether the profile directory exists and the current process can write to it.
+ * A missing directory counts as writable: the browser creates it on launch.
+ *
+ * @internal
+ */
+function isWritableDirectory(directory: string): boolean {
+  try {
+    accessSync(directory, constants.W_OK);
+    return true;
+  } catch {
+    return !existsSync(directory);
+  }
 }
 
 /**
@@ -291,6 +306,14 @@ export abstract class BrowserLauncher {
         (process.platform === 'win32' &&
           existsSync(join(launchArgs.userDataDir, 'lockfile')))
       ) {
+        // The browser reports the same ProcessSingleton failure whether another
+        // instance holds the lock or it simply cannot write to the profile
+        // directory, so check for the latter before blaming a running browser.
+        if (!isWritableDirectory(launchArgs.userDataDir)) {
+          throw new Error(
+            `The browser cannot write to ${launchArgs.userDataDir}. Make the \`userDataDir\` writable or use a different one.`,
+          );
+        }
         throw new Error(
           `The browser is already running for ${launchArgs.userDataDir}. Use a different \`userDataDir\` or stop the running browser first.`,
         );
