@@ -27,6 +27,6 @@
     "@microsoft/api-documenter": "7.30.13",
     "@microsoft/api-extractor-model": "7.33.11",
     "@microsoft/tsdoc": "0.16.0",
-    "@rushstack/node-core-library": "5.22.0"
+    "@rushstack/node-core-library": "5.24.0"
   }
 }
