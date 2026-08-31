@@ -56,6 +56,7 @@
     "mocha": "11.8.0"
   },
   "dependencies": {
-    "diff": "^9.0.0"
+    "diff": "^9.0.0",
+    "webmcp-types": "^0.1.5"
   }
 }
