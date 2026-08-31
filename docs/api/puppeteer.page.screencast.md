@@ -4,7 +4,11 @@ sidebar_label: Page.screencast
 
 # Page.screencast() method
 
-Captures a screencast of this [page](./puppeteer.page.md).
+> Warning: This API is now obsolete.
+>
+> Use [Page.record()](./puppeteer.page.record.md) instead.
+
+Captures a screencast of this [page](./puppeteer.page.md). Works in Chrome 153+.
 
 ### Signature
 

@@ -1006,6 +1006,19 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 </td></tr>
 <tr><td>
 
+<span id="record">[record(options)](./puppeteer.page.record.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Records this [page](./puppeteer.page.md) using the Chrome DevTools Protocol [Page.startScreenRecording](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording) API.
+
+Outputs mp4 video stream.
+
+</td></tr>
+<tr><td>
+
 <span id="reload">[reload(options)](./puppeteer.page.reload.md)</span>
 
 </td><td>
@@ -1054,9 +1067,15 @@ Removes script that injected into page by Page.evaluateOnNewDocument.
 
 </td><td>
 
+`deprecated`
+
 </td><td>
 
-**_(Experimental)_** Captures a screencast of this [page](./puppeteer.page.md).
+Captures a screencast of this [page](./puppeteer.page.md). Works in Chrome 153+.
+
+**Deprecated:**
+
+Use [Page.record()](./puppeteer.page.record.md) instead.
 
 **Remarks:**
 

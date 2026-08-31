@@ -22,6 +22,7 @@ import type {
   HeapSnapshotOptions,
   MediaFeature,
   PageEvents,
+  RecordOptions,
   ReloadOptions,
   WaitTimeoutOptions,
 } from '../api/Page.js';
@@ -70,6 +71,7 @@ import {BidiFrame} from './Frame.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiKeyboard, BidiMouse, BidiTouchscreen} from './Input.js';
 import type {BidiJSHandle} from './JSHandle.js';
+import {BidiScreenRecording} from './ScreenRecording.js';
 import {rewriteNavigationError} from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
 
@@ -1032,6 +1034,15 @@ export class BidiPage extends Page {
 
   override extensionRealms(): Realm[] {
     throw new UnsupportedOperation();
+  }
+
+  /**
+   * @internal
+   */
+  override createScreenRecording(
+    options: Readonly<RecordOptions>,
+  ): BidiScreenRecording {
+    return new BidiScreenRecording(this, options, this.logger);
   }
 }
 

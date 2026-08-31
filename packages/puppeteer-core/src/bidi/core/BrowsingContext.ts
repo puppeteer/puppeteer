@@ -75,6 +75,14 @@ export type SetViewportOptions = Omit<
 /**
  * @internal
  */
+export type StartScreencastOptions = Omit<
+  Bidi.BrowsingContext.StartScreencastParameters,
+  'context'
+>;
+
+/**
+ * @internal
+ */
 export type GetCookiesOptions = Omit<
   Bidi.Storage.GetCookiesParameters,
   'partition'
@@ -388,6 +396,39 @@ export class BrowsingContext extends EventEmitter<{
       ...options,
     });
     return data;
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async startScreencast(
+    options: StartScreencastOptions = {},
+  ): Promise<Bidi.BrowsingContext.StartScreencastResult> {
+    const {result} = await this.#session.send(
+      'browsingContext.startScreencast',
+      {
+        context: this.id,
+        ...options,
+      },
+    );
+    return result;
+  }
+
+  @throwIfDisposed<BrowsingContext>(context => {
+    // SAFETY: Disposal implies this exists.
+    return context.#reason!;
+  })
+  async stopScreencast(
+    screencast: Bidi.BrowsingContext.Screencast,
+  ): Promise<Bidi.BrowsingContext.StopScreencastResult> {
+    const {result} = await this.#session.send(
+      'browsingContext.stopScreencast',
+      {
+        screencast,
+      },
+    );
+    return result;
   }
 
   @throwIfDisposed<BrowsingContext>(context => {

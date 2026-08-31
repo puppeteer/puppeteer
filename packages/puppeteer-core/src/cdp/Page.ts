@@ -20,6 +20,7 @@ import type {JSHandle} from '../api/JSHandle.js';
 import type {
   Credentials,
   HeapSnapshotOptions,
+  RecordOptions,
   ReloadOptions,
 } from '../api/Page.js';
 import {
@@ -81,6 +82,7 @@ import type {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
 import type {NetworkConditions} from './NetworkManager.js';
+import {CdpScreenRecording} from './ScreenRecording.js';
 import type {CdpTarget} from './Target.js';
 import {TargetManagerEvent} from './TargetManageEvents.js';
 import type {TargetManager} from './TargetManager.js';
@@ -1360,6 +1362,15 @@ export class CdpPage extends Page {
 
   override extensionRealms(): Realm[] {
     return this.mainFrame().extensionRealms();
+  }
+
+  /**
+   * @internal
+   */
+  override createScreenRecording(
+    options: Readonly<RecordOptions>,
+  ): CdpScreenRecording {
+    return new CdpScreenRecording(this, options, this.logger);
   }
 }
 
