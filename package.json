@@ -180,7 +180,7 @@
     "eslint": "9.39.5",
     "execa": "10.0.1",
     "expect": "30.4.1",
-    "globals": "17.9.0",
+    "globals": "17.11.0",
     "hereby": "1.15.1",
     "license-checker": "25.0.1",
     "mocha": "11.8.0",
