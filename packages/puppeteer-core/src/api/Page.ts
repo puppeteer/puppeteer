@@ -33,7 +33,6 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
 import type {NetworkConditions} from '../cdp/NetworkManager.js';
-import {ScreenRecording} from '../cdp/ScreenRecording.js';
 import type {Tracing} from '../cdp/Tracing.js';
 import type {WebMCP} from '../cdp/WebMCP.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
@@ -120,6 +119,7 @@ import {
   type AwaitedLocator,
 } from './locators/locators.js';
 import type {Realm} from './Realm.js';
+import type {ScreenRecording} from './ScreenRecording.js';
 import type {Target} from './Target.js';
 import type {WebWorker} from './WebWorker.js';
 
@@ -2680,6 +2680,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
   }
 
   /**
+   * @internal
+   */
+  protected abstract createScreenRecording(
+    options: Readonly<RecordOptions>,
+  ): ScreenRecording;
+
+  /**
    * Records this {@link Page | page} using the Chrome DevTools Protocol
    * {@link https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording | Page.startScreenRecording}
    * API.
@@ -2746,7 +2753,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
         })
       : undefined;
 
-    const recording = new ScreenRecording(this, options, this.logger);
+    const recording = this.createScreenRecording(options);
 
     try {
       await recording._start();

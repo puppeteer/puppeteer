@@ -5,7 +5,7 @@
  */
 
 import {PassThrough, Writable} from 'node:stream';
-import {describe, it} from 'node:test';
+import {afterEach, beforeEach, describe, it} from 'node:test';
 
 import expect from 'expect';
 
@@ -14,6 +14,7 @@ import {environment} from '../environment.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
 
 import {BidiPage} from './Page.js';
+import {BidiScreenRecording} from './ScreenRecording.js';
 
 class MockBrowsingContext extends EventEmitter<any> {
   commands: Array<{method: string; params?: unknown}> = [];
@@ -59,7 +60,9 @@ class MockBidiPage extends BidiPage {
         children: [],
         on() {},
       } as any,
-      undefined as any,
+      (() => {
+        return undefined;
+      }) as any,
     );
     this.mockContext = context;
   }
@@ -72,89 +75,93 @@ class MockBidiPage extends BidiPage {
       },
     };
   }
+
+  override createScreenRecording(options: any): any {
+    return new BidiScreenRecording(this as any, options, this.logger);
+  }
 }
 
 describe('BidiScreenRecording', () => {
+  let originalReadFile: typeof environment.value.readFile;
+
+  beforeEach(() => {
+    originalReadFile = environment.value.readFile;
+  });
+
+  afterEach(() => {
+    environment.value.readFile = originalReadFile;
+  });
+
   it('should start screen recording and read file on stop', async () => {
     const context = new MockBrowsingContext();
     const page = new MockBidiPage(context);
 
-    const originalReadFile = environment.value.readFile;
     environment.value.readFile = (async () => {
       return Buffer.from('video-data');
     }) as any;
 
-    try {
-      const recording = await page.record({
+    const recording = await page.record({
+      audio: true,
+      maxWidth: 1920,
+      maxHeight: 1080,
+      frameRate: 60,
+    });
+
+    expect(context.commands[0]).toEqual({
+      method: 'browsingContext.startScreencast',
+      params: {
         audio: true,
-        maxWidth: 1920,
-        maxHeight: 1080,
-        frameRate: 60,
-      });
-
-      expect(context.commands[0]).toEqual({
-        method: 'browsingContext.startScreencast',
-        params: {
-          audio: true,
-          video: {
-            width: 1920,
-            height: 1080,
-            frameRate: 60,
-          },
+        video: {
+          width: 1920,
+          height: 1080,
+          frameRate: 60,
         },
-      });
+      },
+    });
 
-      const chunks: Buffer[] = [];
-      const dest = new Writable({
-        write(chunk, _encoding, callback) {
-          chunks.push(Buffer.from(chunk));
-          callback();
-        },
-      });
+    const chunks: Buffer[] = [];
+    const dest = new Writable({
+      write(chunk, _encoding, callback) {
+        chunks.push(Buffer.from(chunk));
+        callback();
+      },
+    });
 
-      recording.pipe(dest);
-      await recording.stop();
+    recording.pipe(dest);
+    await recording.stop();
 
-      expect(Buffer.concat(chunks).toString()).toBe('video-data');
-      expect(context.commands).toContainEqual({
-        method: 'browsingContext.stopScreencast',
-        params: {screencast: 'screencast-1'},
-      });
-    } finally {
-      environment.value.readFile = originalReadFile;
-    }
+    expect(Buffer.concat(chunks).toString()).toBe('video-data');
+    expect(context.commands).toContainEqual({
+      method: 'browsingContext.stopScreencast',
+      params: {screencast: 'screencast-1'},
+    });
   });
 
   it('should support fps as alias for frameRate', async () => {
     const context = new MockBrowsingContext();
     const page = new MockBidiPage(context);
 
-    const originalReadFile = environment.value.readFile;
     environment.value.readFile = (async () => {
       return Buffer.from('');
     }) as any;
 
-    try {
-      const recording = await page.record({
-        fps: 24,
-      });
+    const recording = await page.record({
+      fps: 24,
+    });
 
-      expect(context.commands[0]).toEqual({
-        method: 'browsingContext.startScreencast',
-        params: {
-          audio: undefined,
-          video: {
-            width: undefined,
-            height: undefined,
-            frameRate: 24,
-          },
+    expect(context.commands[0]).toEqual({
+      method: 'browsingContext.startScreencast',
+      params: {
+        audio: undefined,
+        video: {
+          width: undefined,
+          height: undefined,
+          frameRate: 24,
         },
-      });
+      },
+    });
 
-      await recording.stop();
-    } finally {
-      environment.value.readFile = originalReadFile;
-    }
+    await recording.stop();
   });
 
   it('should validate options', async () => {
@@ -192,139 +199,114 @@ describe('BidiScreenRecording', () => {
     context.startResponse = {screencast: 'screencast-start', path: ''};
     context.stopResponse = {path: '/tmp/from-stop.mp4'};
 
-    const originalReadFile = environment.value.readFile;
     let readPath = '';
     environment.value.readFile = (async (path: string) => {
       readPath = path;
       return Buffer.from('hello');
     }) as any;
 
-    try {
-      const page = new MockBidiPage(context);
-      const recording = await page.record();
+    const page = new MockBidiPage(context);
+    const recording = await page.record();
 
-      const chunks: Buffer[] = [];
-      const dest = new PassThrough();
-      dest.on('data', chunk => {
-        chunks.push(Buffer.from(chunk));
-      });
+    const chunks: Buffer[] = [];
+    const dest = new PassThrough();
+    dest.on('data', chunk => {
+      chunks.push(Buffer.from(chunk));
+    });
 
-      recording.pipe(dest);
-      await recording.stop();
+    recording.pipe(dest);
+    await recording.stop();
 
-      expect(readPath).toBe('/tmp/from-stop.mp4');
-      expect(Buffer.concat(chunks).toString()).toBe('hello');
-      expect(context.commands).toContainEqual({
-        method: 'browsingContext.stopScreencast',
-        params: {screencast: 'screencast-start'},
-      });
-    } finally {
-      environment.value.readFile = originalReadFile;
-    }
+    expect(readPath).toBe('/tmp/from-stop.mp4');
+    expect(Buffer.concat(chunks).toString()).toBe('hello');
+    expect(context.commands).toContainEqual({
+      method: 'browsingContext.stopScreencast',
+      params: {screencast: 'screencast-start'},
+    });
   });
 
   it('should support async iteration', async () => {
     const context = new MockBrowsingContext();
     const page = new MockBidiPage(context);
 
-    const originalReadFile = environment.value.readFile;
     environment.value.readFile = (async () => {
       return Buffer.from('chunkA');
     }) as any;
 
-    try {
-      const recording = await page.record();
+    const recording = await page.record();
 
-      const stopPromise = recording.stop();
+    const stopPromise = recording.stop();
 
-      const received: Uint8Array[] = [];
-      for await (const chunk of recording) {
-        received.push(chunk);
-      }
-      await stopPromise;
-
-      expect(Buffer.concat(received).toString()).toBe('chunkA');
-    } finally {
-      environment.value.readFile = originalReadFile;
+    const received: Uint8Array[] = [];
+    for await (const chunk of recording) {
+      received.push(chunk);
     }
+    await stopPromise;
+
+    expect(Buffer.concat(received).toString()).toBe('chunkA');
   });
 
   it('should support pipeTo with WritableStream', async () => {
     const context = new MockBrowsingContext();
     const page = new MockBidiPage(context);
 
-    const originalReadFile = environment.value.readFile;
     environment.value.readFile = (async () => {
       return Buffer.from('web-stream-data');
     }) as any;
 
-    try {
-      const recording = await page.record();
+    const recording = await page.record();
 
-      const chunks: Uint8Array[] = [];
-      const writableStream = new WritableStream<Uint8Array>({
-        write(chunk) {
-          chunks.push(chunk);
-        },
-      });
+    const chunks: Uint8Array[] = [];
+    const writableStream = new WritableStream<Uint8Array>({
+      write(chunk) {
+        chunks.push(chunk);
+      },
+    });
 
-      const pipePromise = recording.pipe(writableStream);
-      await recording.stop();
-      await pipePromise;
+    const pipePromise = recording.pipe(writableStream);
+    await recording.stop();
+    await pipePromise;
 
-      expect(Buffer.concat(chunks).toString()).toBe('web-stream-data');
-    } finally {
-      environment.value.readFile = originalReadFile;
-    }
+    expect(Buffer.concat(chunks).toString()).toBe('web-stream-data');
   });
 
   it('should stop on browsing context closed', async () => {
     const context = new MockBrowsingContext();
     const page = new MockBidiPage(context);
 
-    const originalReadFile = environment.value.readFile;
     environment.value.readFile = (async () => {
       return Buffer.from('');
     }) as any;
 
-    try {
-      const recording = await page.record();
+    const recording = await page.record();
 
-      context.emit('closed', undefined);
-      // Calling stop again should be a no-op
-      await recording.stop();
+    context.emit('closed', undefined);
+    // Calling stop again should be a no-op
+    await recording.stop();
 
-      expect(
-        context.commands.filter(c => {
-          return c.method === 'browsingContext.stopScreencast';
-        }).length,
-      ).toBe(1);
-    } finally {
-      environment.value.readFile = originalReadFile;
-    }
+    expect(
+      context.commands.filter(c => {
+        return c.method === 'browsingContext.stopScreencast';
+      }).length,
+    ).toBe(1);
   });
 
   it('should support asyncDisposeSymbol', async () => {
     const context = new MockBrowsingContext();
     const page = new MockBidiPage(context);
 
-    const originalReadFile = environment.value.readFile;
     environment.value.readFile = (async () => {
       return Buffer.from('');
     }) as any;
 
-    try {
-      const recording = await page.record();
+    const recording = await page.record();
 
-      await recording[asyncDisposeSymbol]();
+    await recording[asyncDisposeSymbol]();
 
-      expect(
-        context.commands.filter(c => {
-          return c.method === 'browsingContext.stopScreencast';
-        }).length,
-      ).toBe(1);
-    } finally {
-      environment.value.readFile = originalReadFile;
-    }
+    expect(
+      context.commands.filter(c => {
+        return c.method === 'browsingContext.stopScreencast';
+      }).length,
+    ).toBe(1);
   });
 });

@@ -7,7 +7,7 @@ sidebar_label: ScreenRecording
 ### Signature
 
 ```typescript
-export declare class ScreenRecording extends ReadableStream<Uint8Array>
+export declare abstract class ScreenRecording extends ReadableStream<Uint8Array>
 ```
 
 **Extends:** ReadableStream&lt;Uint8Array&gt;

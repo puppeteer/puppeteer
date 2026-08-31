@@ -5,7 +5,7 @@
  */
 
 import type {RecordOptions} from '../api/Page.js';
-import {ScreenRecording} from '../cdp/ScreenRecording.js';
+import {ScreenRecording} from '../api/ScreenRecording.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {environment} from '../environment.js';
 import {guarded} from '../util/decorators.js';
@@ -23,13 +23,13 @@ export class BidiScreenRecording extends ScreenRecording {
   /**
    * @internal
    */
-  constructor(page: BidiPage, options: RecordOptions = {}, logger?: Logger) {
+  constructor(page: BidiPage, options: RecordOptions = {}, logger: Logger) {
     super(page, options, logger);
 
     const browsingContext = this.page.mainFrame().browsingContext;
     browsingContext?.once?.('closed', () => {
       void this.stop().catch(err => {
-        this.logger?.(DEBUG_PREFIXES.error)?.(err);
+        this.logger(DEBUG_PREFIXES.error)?.(err);
       });
     });
   }
@@ -71,54 +71,36 @@ export class BidiScreenRecording extends ScreenRecording {
     this.stopped = true;
 
     try {
-      if (this.#screencastId) {
-        const result = await this.page
-          .mainFrame()
-          .browsingContext.stopScreencast(this.#screencastId)
-          .catch(err => {
-            this.logger?.(DEBUG_PREFIXES.error)?.(err);
-            return undefined;
-          });
+      if (!this.#screencastId) {
+        return;
+      }
 
-        if (result?.error) {
-          this.logger?.(DEBUG_PREFIXES.error)?.(new Error(result.error));
-        }
+      const result = await this.page
+        .mainFrame()
+        .browsingContext.stopScreencast(this.#screencastId)
+        .catch(err => {
+          this.logger(DEBUG_PREFIXES.error)?.(err);
+          return undefined;
+        });
 
-        const filePath = result?.path ?? this.#path;
-        if (filePath) {
-          try {
-            const buffer = await environment.value.readFile(filePath);
-            this.controller.enqueue(buffer);
-            for (const dest of this.destinations) {
-              dest.write(buffer);
-            }
-          } catch (err) {
-            this.logger?.(DEBUG_PREFIXES.error)?.(err);
+      if (result?.error) {
+        this.logger(DEBUG_PREFIXES.error)?.(result.error);
+      }
+
+      const filePath = result?.path ?? this.#path;
+      if (filePath) {
+        try {
+          const buffer = await environment.value.readFile(filePath);
+          this.controller.enqueue(buffer);
+          for (const dest of this.destinations) {
+            dest.write(buffer);
           }
+        } catch (err) {
+          this.logger(DEBUG_PREFIXES.error)?.(err);
         }
       }
     } finally {
-      try {
-        this.controller.close();
-      } catch {
-        // Controller might already be closed.
-      }
-      for (const dest of this.destinations) {
-        dest.end();
-      }
-      const destinationPromises = Array.from(this.destinations).map(dest => {
-        return new Promise(resolve => {
-          if (dest.writableFinished || dest.closed || dest.destroyed) {
-            resolve(undefined);
-          } else {
-            dest.once?.('finish', resolve);
-            dest.once?.('close', resolve);
-            dest.once?.('error', resolve);
-          }
-        });
-      });
-
-      await Promise.all(destinationPromises);
+      await this.closeDestinations();
     }
   }
 }

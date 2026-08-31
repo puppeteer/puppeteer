@@ -10,7 +10,7 @@ Stops the screen recording.
 
 ```typescript
 class ScreenRecording {
-  stop(): Promise<void>;
+  abstract stop(): Promise<void>;
 }
 ```
 

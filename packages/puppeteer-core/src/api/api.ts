@@ -21,6 +21,7 @@ export type * from './Issue.js';
 export * from './JSHandle.js';
 export * from './Page.js';
 export * from './Realm.js';
+export * from './ScreenRecording.js';
 export * from './Target.js';
 export * from './WebWorker.js';
 export * from './locators/locators.js';

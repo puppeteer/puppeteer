@@ -14,10 +14,12 @@ import {Page} from '../api/Page.js';
 import type {Connection} from '../cdp/Connection.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
 
+import {CdpScreenRecording} from './ScreenRecording.js';
+
 class MockCDPSession extends CDPSession {
   commands: Array<{method: string; params?: unknown}> = [];
   readChunks: Array<{data: string; base64Encoded?: boolean; eof: boolean}> = [];
-  startResponse: {stream?: string} = {};
+  startResponse: {stream?: string} = {stream: 'stream-1'};
   stopResponse: {stream?: string} = {};
 
   override id(): string {
@@ -70,12 +72,16 @@ class MockPage extends Page {
       client: this.mockClient,
     };
   }
+
+  override createScreenRecording(options: any): any {
+    return new CdpScreenRecording(this as any, options, this.logger);
+  }
 }
 
 describe('ScreenRecording', () => {
   it('should start screen recording and read all chunks on stop', async () => {
     const client = new MockCDPSession();
-    client.stopResponse = {stream: 'stream-1'};
+    client.startResponse = {stream: 'stream-1'};
     client.readChunks = [
       {
         data: Buffer.from('chunk1').toString('base64'),
@@ -212,7 +218,7 @@ describe('ScreenRecording', () => {
 
   it('should support async iteration', async () => {
     const client = new MockCDPSession();
-    client.stopResponse = {stream: 'stream-iter'};
+    client.startResponse = {stream: 'stream-iter'};
     client.readChunks = [
       {
         data: Buffer.from('chunkA').toString('base64'),
@@ -242,7 +248,7 @@ describe('ScreenRecording', () => {
 
   it('should support pipeTo with WritableStream', async () => {
     const client = new MockCDPSession();
-    client.stopResponse = {stream: 'stream-web'};
+    client.startResponse = {stream: 'stream-web'};
     client.readChunks = [
       {
         data: Buffer.from('web-stream-data').toString('base64'),
