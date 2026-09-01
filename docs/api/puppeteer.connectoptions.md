@@ -269,7 +269,7 @@ Whether to handle the DevTools windows as pages in Puppeteer. Supported only in 
 
 </td><td>
 
-`optional`
+`optional, deprecated`
 
 </td><td>
 
@@ -278,6 +278,10 @@ Record&lt;string, string&gt;
 </td><td>
 
 Headers to use for the web socket connection.
+
+**Deprecated:**
+
+Use [WsOptions.headers](./puppeteer.wsoptions.md#headers) via [ConnectOptions.wsOptions](./puppeteer.connectoptions.md#wsoptions) instead. When both are set, `wsOptions.headers` wins.
 
 **Remarks:**
 
@@ -305,56 +309,6 @@ boolean
 </td><td>
 
 `true`
-
-</td></tr>
-<tr><td>
-
-<span id="keepalive">keepAlive</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-boolean
-
-</td><td>
-
-Whether to send WebSocket pings and drop the connection when a pong does not come back within the same interval. Detects a connection that died without a close frame, which otherwise leaves calls hanging until `protocolTimeout`.
-
-**Remarks:**
-
-Node.js only. Ignored in the browser build, which has no ping frame API.
-
-</td><td>
-
-`false`
-
-</td></tr>
-<tr><td>
-
-<span id="keepaliveintervalms">keepAliveIntervalMs</span>
-
-</td><td>
-
-`optional`
-
-</td><td>
-
-number
-
-</td><td>
-
-Ping period in milliseconds. Only used when [ConnectOptions.keepAlive](./puppeteer.connectoptions.md#keepalive) is set.
-
-**Remarks:**
-
-Node.js only. Ignored in the browser build.
-
-</td><td>
-
-`30_000`
 
 </td></tr>
 <tr><td>
@@ -494,6 +448,29 @@ Callback to decide if Puppeteer should connect to a given target or not.
 [ConnectionTransport](./puppeteer.connectiontransport.md)
 
 </td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="wsoptions">wsOptions</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[WsOptions](./puppeteer.wsoptions.md)
+
+</td><td>
+
+Options for the WebSocket connection to the browser.
+
+**Remarks:**
+
+Only used in the Node.js environment. The browser build has no ping frame API, so the keep-alive options are ignored there.
 
 </td><td>
 
