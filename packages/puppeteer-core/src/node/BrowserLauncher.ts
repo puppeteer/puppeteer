@@ -407,6 +407,8 @@ export abstract class BrowserLauncher {
       slowMo: number;
       idGenerator: GetIdFn;
       logger: Logger;
+      keepAlive?: boolean;
+      keepAliveIntervalMs?: number;
     },
   ): Promise<Connection> {
     const browserWSEndpoint = await browserProcess.waitForLineOutput(
@@ -417,6 +419,10 @@ export abstract class BrowserLauncher {
       browserWSEndpoint,
       undefined,
       opts.logger,
+      {
+        keepAlive: opts.keepAlive,
+        keepAliveIntervalMs: opts.keepAliveIntervalMs,
+      },
     );
     return new Connection(
       browserWSEndpoint,
@@ -440,6 +446,8 @@ export abstract class BrowserLauncher {
       slowMo: number;
       idGenerator: GetIdFn;
       logger: Logger;
+      keepAlive?: boolean;
+      keepAliveIntervalMs?: number;
     },
   ): Promise<Connection> {
     // stdio was assigned during start(), and the 'pipe' option there adds the
@@ -513,6 +521,8 @@ export abstract class BrowserLauncher {
       networkEnabled?: boolean;
       issuesEnabled?: boolean;
       logger: Logger;
+      keepAlive?: boolean;
+      keepAliveIntervalMs?: number;
     },
   ): Promise<Browser> {
     const browserWSEndpoint =
@@ -524,6 +534,10 @@ export abstract class BrowserLauncher {
       browserWSEndpoint,
       undefined,
       opts.logger,
+      {
+        keepAlive: opts.keepAlive,
+        keepAliveIntervalMs: opts.keepAliveIntervalMs,
+      },
     );
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
     const bidiConnection = new BiDi.BidiConnection(

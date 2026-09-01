@@ -116,7 +116,10 @@ async function getConnectionTransport(
   } else if (browserWSEndpoint) {
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(browserWSEndpoint, headers, options.logger);
+      await WebSocketClass.create(browserWSEndpoint, headers, options.logger, {
+        keepAlive: options.keepAlive,
+        keepAliveIntervalMs: options.keepAliveIntervalMs,
+      });
     return {
       connectionTransport: connectionTransport,
       endpointUrl: browserWSEndpoint,
@@ -125,7 +128,10 @@ async function getConnectionTransport(
     const connectionURL = await getWSEndpoint(browserURL, headers);
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(connectionURL, headers, options.logger);
+      await WebSocketClass.create(connectionURL, headers, options.logger, {
+        keepAlive: options.keepAlive,
+        keepAliveIntervalMs: options.keepAliveIntervalMs,
+      });
     return {
       connectionTransport: connectionTransport,
       endpointUrl: connectionURL,
@@ -169,6 +175,10 @@ async function getConnectionTransport(
         browserWSEndpoint,
         headers,
         options.logger,
+        {
+          keepAlive: options.keepAlive,
+          keepAliveIntervalMs: options.keepAliveIntervalMs,
+        },
       );
       return {
         connectionTransport: connectionTransport,

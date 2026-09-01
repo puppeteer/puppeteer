@@ -309,6 +309,56 @@ boolean
 </td></tr>
 <tr><td>
 
+<span id="keepalive">keepAlive</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to send WebSocket pings and drop the connection when a pong does not come back within the same interval. Detects a connection that died without a close frame, which otherwise leaves calls hanging until `protocolTimeout`.
+
+**Remarks:**
+
+Node.js only. Ignored in the browser build, which has no ping frame API.
+
+</td><td>
+
+`false`
+
+</td></tr>
+<tr><td>
+
+<span id="keepaliveintervalms">keepAliveIntervalMs</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Ping period in milliseconds. Only used when [ConnectOptions.keepAlive](./puppeteer.connectoptions.md#keepalive) is set.
+
+**Remarks:**
+
+Node.js only. Ignored in the browser build.
+
+</td><td>
+
+`30_000`
+
+</td></tr>
+<tr><td>
+
 <span id="logger">logger</span>
 
 </td><td>

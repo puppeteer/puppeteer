@@ -134,6 +134,30 @@ export interface ConnectOptions {
    */
   protocolTimeout?: number;
 
+  /**
+   * Whether to send WebSocket pings and drop the connection when a pong does
+   * not come back within the same interval. Detects a connection that died
+   * without a close frame, which otherwise leaves calls hanging until
+   * `protocolTimeout`.
+   *
+   * @remarks
+   * Node.js only. Ignored in the browser build, which has no ping frame API.
+   *
+   * @defaultValue `false`
+   */
+  keepAlive?: boolean;
+
+  /**
+   * Ping period in milliseconds. Only used when {@link ConnectOptions.keepAlive}
+   * is set.
+   *
+   * @remarks
+   * Node.js only. Ignored in the browser build.
+   *
+   * @defaultValue `30_000`
+   */
+  keepAliveIntervalMs?: number;
+
   browserWSEndpoint?: string;
   browserURL?: string;
   transport?: ConnectionTransport;
