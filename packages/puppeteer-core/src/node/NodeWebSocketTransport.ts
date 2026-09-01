@@ -10,6 +10,29 @@ import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {packageVersion} from '../util/version.js';
 
 /**
+ * How often to ping the browser when keep-alive is enabled, and how long to
+ * wait for the matching pong before treating the connection as dead.
+ *
+ * @internal
+ */
+export const DEFAULT_KEEP_ALIVE_INTERVAL_MS = 30_000;
+
+/**
+ * @internal
+ */
+export interface NodeWebSocketTransportOptions {
+  /**
+   * Detect a connection that died without a TCP close by exchanging
+   * WebSocket ping/pong frames.
+   */
+  keepAlive?: boolean;
+  /**
+   * Ping period in milliseconds. Only used when `keepAlive` is set.
+   */
+  keepAliveIntervalMs?: number;
+}
+
+/**
  * @internal
  */
 export class NodeWebSocketTransport implements ConnectionTransport {
@@ -17,6 +40,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
     url: string,
     headers: Record<string, string> | undefined,
     logger: Logger,
+    options: NodeWebSocketTransportOptions = {},
   ): Promise<NodeWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
@@ -31,7 +55,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
       });
 
       ws.addEventListener('open', () => {
-        return resolve(new NodeWebSocketTransport(ws, logger));
+        return resolve(new NodeWebSocketTransport(ws, logger, options));
       });
       ws.addEventListener('error', reject);
     });
@@ -39,10 +63,15 @@ export class NodeWebSocketTransport implements ConnectionTransport {
 
   #ws: NodeWebSocket;
   #logger: Logger;
+  #keepAliveTimer?: NodeJS.Timeout;
   onmessage?: (message: NodeWebSocket.Data) => void;
   onclose?: () => void;
 
-  constructor(ws: NodeWebSocket, logger: Logger) {
+  constructor(
+    ws: NodeWebSocket,
+    logger: Logger,
+    options: NodeWebSocketTransportOptions = {},
+  ) {
     this.#ws = ws;
     this.#logger = logger;
     this.#ws.addEventListener('message', event => {
@@ -51,6 +80,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
       }
     });
     this.#ws.addEventListener('close', () => {
+      this.#stopKeepAlive();
       if (this.onclose) {
         this.onclose.call(null);
       }
@@ -59,6 +89,46 @@ export class NodeWebSocketTransport implements ConnectionTransport {
     this.#ws.addEventListener('error', err => {
       this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
+    if (options.keepAlive) {
+      this.#startKeepAlive(
+        options.keepAliveIntervalMs ?? DEFAULT_KEEP_ALIVE_INTERVAL_MS,
+      );
+    }
+  }
+
+  /**
+   * The `ws` client only reports a close when the peer sends a TCP FIN. A
+   * connection dropped by a proxy, a load balancer reaping an idle socket or a
+   * killed remote browser leaves a half-open socket that never emits `close`,
+   * so the transport keeps reporting itself as connected until the next
+   * command fails. Ping periodically and terminate when the pong for the
+   * previous ping never arrived.
+   */
+  #startKeepAlive(intervalMs: number): void {
+    let awaitingPong = false;
+    this.#ws.on('pong', () => {
+      awaitingPong = false;
+    });
+    this.#keepAliveTimer = setInterval(() => {
+      if (awaitingPong) {
+        // terminate() rather than close(): the peer is not answering, so a
+        // close handshake would hang. This emits `close` locally, which is
+        // what surfaces the dead connection to the rest of Puppeteer.
+        this.#ws.terminate();
+        return;
+      }
+      awaitingPong = true;
+      this.#ws.ping();
+    }, intervalMs);
+    // Never hold the process open just to keep pinging.
+    this.#keepAliveTimer.unref?.();
+  }
+
+  #stopKeepAlive(): void {
+    if (this.#keepAliveTimer !== undefined) {
+      clearInterval(this.#keepAliveTimer);
+      this.#keepAliveTimer = undefined;
+    }
   }
 
   send(message: string): void {
@@ -66,6 +136,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
   }
 
   close(): void {
+    this.#stopKeepAlive();
     this.#ws.close();
   }
 }

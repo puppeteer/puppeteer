@@ -1596,6 +1596,19 @@ Options for [Browser.uninstallPWA()](./puppeteer.browser.uninstallpwa.md).
 </td><td>
 
 </td></tr>
+<tr><td>
+
+<span id="wsoptions">[WsOptions](./puppeteer.wsoptions.md)</span>
+
+</td><td>
+
+Options for the WebSocket connection to the browser.
+
+**Remarks:**
+
+Only used in the Node.js environment.
+
+</td></tr>
 </tbody></table>
 
 ## Namespaces

@@ -27,6 +27,7 @@ import type {Browser, BrowserCloseCallback} from '../api/Browser.js';
 import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
+import type {WsOptions} from '../common/ConnectOptions.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
@@ -407,6 +408,7 @@ export abstract class BrowserLauncher {
       slowMo: number;
       idGenerator: GetIdFn;
       logger: Logger;
+      wsOptions?: WsOptions;
     },
   ): Promise<Connection> {
     const browserWSEndpoint = await browserProcess.waitForLineOutput(
@@ -417,6 +419,7 @@ export abstract class BrowserLauncher {
       browserWSEndpoint,
       undefined,
       opts.logger,
+      opts.wsOptions,
     );
     return new Connection(
       browserWSEndpoint,
@@ -440,6 +443,7 @@ export abstract class BrowserLauncher {
       slowMo: number;
       idGenerator: GetIdFn;
       logger: Logger;
+      wsOptions?: WsOptions;
     },
   ): Promise<Connection> {
     // stdio was assigned during start(), and the 'pipe' option there adds the
@@ -513,6 +517,7 @@ export abstract class BrowserLauncher {
       networkEnabled?: boolean;
       issuesEnabled?: boolean;
       logger: Logger;
+      wsOptions?: WsOptions;
     },
   ): Promise<Browser> {
     const browserWSEndpoint =
@@ -524,6 +529,7 @@ export abstract class BrowserLauncher {
       browserWSEndpoint,
       undefined,
       opts.logger,
+      opts.wsOptions,
     );
     const BiDi = await import(/* webpackIgnore: true */ '../bidi/bidi.js');
     const bidiConnection = new BiDi.BidiConnection(

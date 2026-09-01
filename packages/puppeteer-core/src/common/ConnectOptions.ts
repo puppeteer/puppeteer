@@ -46,6 +46,39 @@ export type ChromeReleaseChannel =
   'chrome' | 'chrome-beta' | 'chrome-canary' | 'chrome-dev';
 
 /**
+ * Options for the WebSocket connection to the browser.
+ *
+ * @remarks
+ * Only used in the Node.js environment.
+ *
+ * @public
+ */
+export interface WsOptions {
+  /**
+   * Headers to use for the web socket connection.
+   */
+  headers?: Record<string, string>;
+
+  /**
+   * Whether to send WebSocket pings and drop the connection when a pong does
+   * not come back within the same interval. Detects a connection that died
+   * without a close frame, which otherwise leaves calls hanging until
+   * `protocolTimeout`.
+   *
+   * @defaultValue `false`
+   */
+  keepAlive?: boolean;
+
+  /**
+   * Ping period in milliseconds. Only used when {@link WsOptions.keepAlive} is
+   * set.
+   *
+   * @defaultValue `30_000`
+   */
+  keepAliveIntervalMs?: number;
+}
+
+/**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
  * @public
@@ -134,6 +167,15 @@ export interface ConnectOptions {
    */
   protocolTimeout?: number;
 
+  /**
+   * Options for the WebSocket connection to the browser.
+   *
+   * @remarks
+   * Only used in the Node.js environment. The browser build has no ping frame
+   * API, so the keep-alive options are ignored there.
+   */
+  wsOptions?: WsOptions;
+
   browserWSEndpoint?: string;
   browserURL?: string;
   transport?: ConnectionTransport;
@@ -149,6 +191,10 @@ export interface ConnectOptions {
    * Headers to use for the web socket connection.
    * @remarks
    * Only works in the Node.js environment.
+   *
+   * @deprecated Use {@link WsOptions.headers} via
+   * {@link ConnectOptions.wsOptions} instead. When both are set,
+   * `wsOptions.headers` wins.
    */
   headers?: Record<string, string>;
 

@@ -269,7 +269,7 @@ Whether to handle the DevTools windows as pages in Puppeteer. Supported only in 
 
 </td><td>
 
-`optional`
+`optional, deprecated`
 
 </td><td>
 
@@ -278,6 +278,10 @@ Record&lt;string, string&gt;
 </td><td>
 
 Headers to use for the web socket connection.
+
+**Deprecated:**
+
+Use [WsOptions.headers](./puppeteer.wsoptions.md#headers) via [ConnectOptions.wsOptions](./puppeteer.connectoptions.md#wsoptions) instead. When both are set, `wsOptions.headers` wins.
 
 **Remarks:**
 
@@ -444,6 +448,29 @@ Callback to decide if Puppeteer should connect to a given target or not.
 [ConnectionTransport](./puppeteer.connectiontransport.md)
 
 </td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="wsoptions">wsOptions</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+[WsOptions](./puppeteer.wsoptions.md)
+
+</td><td>
+
+Options for the WebSocket connection to the browser.
+
+**Remarks:**
+
+Only used in the Node.js environment. The browser build has no ping frame API, so the keep-alive options are ignored there.
 
 </td><td>
 

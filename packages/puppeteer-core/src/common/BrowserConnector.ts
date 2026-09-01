@@ -94,13 +94,10 @@ export async function _connectToBrowser(
 async function getConnectionTransport(
   options: ConnectOptions & {logger: Logger},
 ): Promise<{connectionTransport: ConnectionTransport; endpointUrl: string}> {
-  const {
-    browserWSEndpoint,
-    browserURL,
-    channel,
-    transport,
-    headers = {},
-  } = options;
+  const {browserWSEndpoint, browserURL, channel, transport} = options;
+  // `wsOptions.headers` supersedes the deprecated top-level `headers`.
+  const headers = options.wsOptions?.headers ?? options.headers ?? {};
+  const wsOptions = options.wsOptions ?? {};
 
   assert(
     Number(!!browserWSEndpoint) +
@@ -116,7 +113,12 @@ async function getConnectionTransport(
   } else if (browserWSEndpoint) {
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(browserWSEndpoint, headers, options.logger);
+      await WebSocketClass.create(
+        browserWSEndpoint,
+        headers,
+        options.logger,
+        wsOptions,
+      );
     return {
       connectionTransport: connectionTransport,
       endpointUrl: browserWSEndpoint,
@@ -125,7 +127,12 @@ async function getConnectionTransport(
     const connectionURL = await getWSEndpoint(browserURL, headers);
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
-      await WebSocketClass.create(connectionURL, headers, options.logger);
+      await WebSocketClass.create(
+        connectionURL,
+        headers,
+        options.logger,
+        wsOptions,
+      );
     return {
       connectionTransport: connectionTransport,
       endpointUrl: connectionURL,
@@ -169,6 +176,7 @@ async function getConnectionTransport(
         browserWSEndpoint,
         headers,
         options.logger,
+        wsOptions,
       );
       return {
         connectionTransport: connectionTransport,
