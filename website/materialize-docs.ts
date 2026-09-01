@@ -14,7 +14,11 @@ import semver from 'semver';
 
 import {
   type BrowserVersionData,
+  ensureRef,
   generateSupportedBrowsersTable,
+  getReleaseTags,
+  getSupportedBrowserData,
+  git,
 } from '../tools/generate-supported-browsers.ts';
 import {mergeChangelogs} from '../tools/merge-changelogs.ts';
 
@@ -32,32 +36,6 @@ const puppeteerCoreChangelogPath = 'packages/puppeteer-core/CHANGELOG.md';
 interface Release {
   ref: string;
   version: string;
-}
-
-async function git(args: string[]): Promise<string> {
-  const {stdout} = await execFile('git', args, {
-    cwd: repoDir,
-    encoding: 'utf-8',
-    maxBuffer: 10 * 1024 * 1024,
-  });
-  return stdout.trim();
-}
-
-async function ensureRef(ref: string): Promise<void> {
-  try {
-    await git(['rev-parse', '--verify', `${ref}^{commit}`]);
-    return;
-  } catch {
-    if (!/^puppeteer-v\d+\.\d+\.\d+$/.test(ref)) {
-      throw new Error(`Git ref does not exist: ${ref}`);
-    }
-  }
-  await git([
-    'fetch',
-    '--depth=1',
-    'origin',
-    `refs/tags/${ref}:refs/tags/${ref}`,
-  ]);
 }
 
 async function getRelease(): Promise<Release> {
@@ -86,45 +64,6 @@ async function getRelease(): Promise<Release> {
   return {ref, version: latest};
 }
 
-async function getReleaseTags(): Promise<string[]> {
-  const localTags = await git(['tag', '--list', 'puppeteer-v*']);
-  let remoteTags = '';
-  if (!localTags) {
-    try {
-      remoteTags = await git([
-        'ls-remote',
-        '--tags',
-        '--refs',
-        'origin',
-        'refs/tags/puppeteer-v*',
-      ]);
-    } catch {
-      throw new Error('Unable to list local or remote Puppeteer release tags.');
-    }
-  }
-  return [...localTags.split('\n'), ...remoteTags.split('\n')]
-    .filter(Boolean)
-    .map(line => {
-      return line.split(/\s+/).at(-1)!;
-    })
-    .map(ref => {
-      return ref.replace(/^refs\/tags\//, '');
-    })
-    .filter(tag => {
-      return tag.startsWith('puppeteer-v');
-    })
-    .map(tag => {
-      return tag.slice('puppeteer-v'.length);
-    })
-    .filter(version => {
-      return semver.valid(version);
-    })
-    .filter((version, index, versions) => {
-      return versions.indexOf(version) === index;
-    })
-    .sort(semver.rcompare);
-}
-
 async function exportRelease(ref: string): Promise<void> {
   const archivePath = path.join(generatedDir, 'release.tar');
   await git([
@@ -135,7 +74,6 @@ async function exportRelease(ref: string): Promise<void> {
     'docs',
     puppeteerChangelogPath,
     puppeteerCoreChangelogPath,
-    'versions.json',
   ]);
   await execFile('tar', ['-xf', archivePath, '-C', releaseSourceDir]);
   await rm(archivePath);
@@ -156,16 +94,17 @@ async function writeCombinedChangelog(
   await writeFile(path.join(target, 'CHANGELOG.md'), changelog);
 }
 
-async function updateSupportedBrowsers(releaseVersion: string): Promise<void> {
-  const versionData = JSON.parse(
-    await readFile(path.join(releaseSourceDir, 'versions.json'), 'utf-8'),
-  ) as BrowserVersionData;
-
-  const filename = path.join(releaseDocsDir, 'supported-browsers.md');
+async function updateSupportedBrowsers(
+  targetDocsDir: string,
+  versionData: BrowserVersionData,
+  releaseVersion?: string,
+): Promise<void> {
+  const filename = path.join(targetDocsDir, 'supported-browsers.md');
   const content = await readFile(filename, 'utf-8');
+  const table = generateSupportedBrowsersTable(versionData, releaseVersion);
   const updated = content.replace(
-    /(?<=(?:\{\/\*)\s*version-start\s*(?:\*\/)\n)[\s\S]*?(?=\n(?:\{\/\*)\s*version-end\s*(?:\*\/))/,
-    generateSupportedBrowsersTable(versionData, releaseVersion),
+    /(?:\{?\/\*?|<!--)\s*version-list\s*(?:\*\/\}?|-->)/,
+    table,
   );
   await writeFile(filename, updated);
 }
@@ -231,9 +170,21 @@ async function main(): Promise<void> {
       JSON.stringify(archivedVersions, null, 2) + '\n',
     ),
   ]);
+  await cp(
+    path.join(repoDir, 'docs', 'supported-browsers.md'),
+    path.join(releaseDocsDir, 'supported-browsers.md'),
+  );
+  const versionData = await getSupportedBrowserData({
+    release,
+    tags,
+    repoDir,
+    websiteDir,
+  });
   await sanitizeMdxComments(releaseDocsDir);
+  await sanitizeMdxComments(nextDocsDir);
   await writeCombinedChangelog(releaseDocsDir, releaseSourceDir);
-  await updateSupportedBrowsers(release.version);
+  await updateSupportedBrowsers(nextDocsDir, versionData);
+  await updateSupportedBrowsers(releaseDocsDir, versionData, release.version);
   await runDocusaurusVersioning(release.version);
   console.log(
     `Materialized next and Puppeteer ${release.version} documentation.`,

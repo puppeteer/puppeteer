@@ -14,30 +14,6 @@ import {task} from 'hereby';
 
 const require = Module.createRequire(import.meta.url);
 
-export const updateVersionTask = task({
-  name: 'update:version',
-  run: async () => {
-    // x-release-please-start-version
-    const version = '25.9.0';
-    // x-release-please-end
-
-    // We only want to do this once we are trying to publish
-    // a new version
-    if (!process.env['PUBLISH']) {
-      return;
-    }
-
-    const fileContent = await readFile('../../versions.json', {
-      encoding: 'utf-8',
-    });
-
-    await writeFile(
-      '../../versions.json',
-      fileContent.replace(`"NEXT"`, `"v${version}"`),
-    );
-  },
-});
-
 export const generateInjectedTask = task({
   name: 'generate:injected',
   run: async () => {
@@ -63,7 +39,7 @@ export const generateInjectedTask = task({
 
 export const generateTask = task({
   name: 'generate',
-  dependencies: [generateInjectedTask, updateVersionTask],
+  dependencies: [generateInjectedTask],
 });
 
 export const buildTscTask = task({
