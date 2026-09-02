@@ -190,7 +190,7 @@
   },
   {
     "testIdPattern": "[page.test] Page Page.record *",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=2066782"
