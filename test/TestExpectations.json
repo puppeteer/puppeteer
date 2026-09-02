@@ -990,6 +990,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[userDataDir.test] userDataDir should report a permission error when the userDataDir is not writable",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "headless-shell can launch from an unwritable user data dir, so it never reports the ProcessSingleton failure this message is derived from"
+  },
+  {
+    "testIdPattern": "[userDataDir.test] userDataDir should report a permission error when the userDataDir is not writable",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "we currently do not detect this situation for Firefox"
+  },
+  {
     "testIdPattern": "[webgl.test] webgl Create webgl context should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
