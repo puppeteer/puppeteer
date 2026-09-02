@@ -987,7 +987,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "we currently do not detect this siutation for Firefox"
+    "comment": "we currently do not detect this situation for Firefox"
   },
   {
     "testIdPattern": "[webgl.test] webgl Create webgl context should work",
