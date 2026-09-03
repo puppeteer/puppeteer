@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.2](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.1...browsers-v3.2.2) (2026-09-03)
+
+
+### 🛠️ Fixes
+
+* revert launch browsers in detached mode on Windows to fix flakiness ([#15415](https://github.com/puppeteer/puppeteer/issues/15415)) ([a84b032](https://github.com/puppeteer/puppeteer/commit/a84b0325de0e860c9c4b60de7bff7c0ae100accd))
+
 ## [3.2.1](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.0...browsers-v3.2.1) (2026-08-17)
 
 
