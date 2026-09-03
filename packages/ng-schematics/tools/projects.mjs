@@ -54,7 +54,10 @@ class AngularProject {
   type = '';
 
   constructor(runner, name) {
-    this.#runner = runner ?? 'node';
+    if (!runner) {
+      throw new Error('A test runner must be specified.');
+    }
+    this.#runner = runner;
     this.#name = name ?? randomUUID();
   }
 

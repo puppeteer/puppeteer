@@ -212,9 +212,19 @@ async function executeE2ETest(
 
     message('\n Running tests 🧪 ... \n', context);
     const testRunnerCommand = getCommandForRunner(options.testRunner);
-    await executeCommand(context, testRunnerCommand, {
+    const env: NodeJS.ProcessEnv = {
       baseUrl: result.baseUrl,
-    });
+    };
+    if (options.testRunner === TestRunner.Jest) {
+      // Jest requires VM modules to load Puppeteer's ESM-only package.
+      env['NODE_OPTIONS'] = [
+        process.env['NODE_OPTIONS'],
+        '--experimental-vm-modules',
+      ]
+        .filter(Boolean)
+        .join(' ');
+    }
+    await executeCommand(context, testRunnerCommand, env);
 
     message('\n 🚀 Test ran successfully! 🚀 ', context, 'success');
     return {success: true};

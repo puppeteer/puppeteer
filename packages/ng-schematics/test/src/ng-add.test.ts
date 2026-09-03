@@ -63,6 +63,7 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
 
       expect(tree.files).toContain('/e2e/jasmine.json');
       expect(devDependencies).toContain('jasmine');
+      expect(devDependencies).toContain('@types/jasmine');
       expect(options['testRunner']).toBe('jasmine');
     });
     void it('should create Jest files and update "package.json"', async () => {
@@ -171,6 +172,7 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
 
       expect(tree.files).toContain(getMultiApplicationFile('e2e/jasmine.json'));
       expect(devDependencies).toContain('jasmine');
+      expect(devDependencies).toContain('@types/jasmine');
       expect(options['testRunner']).toBe('jasmine');
     });
     void it('should create Jest files and update "package.json"', async () => {
