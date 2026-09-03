@@ -1067,6 +1067,20 @@
     "comment": "CDP-specific"
   },
   {
+    "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Firefox WebDriver BiDi does not yet provide a stable remote connection lifecycle for this test."
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[browser.test] Browser specs Browser.process should not return child_process for remote browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
