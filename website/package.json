@@ -15,7 +15,7 @@
     "materialize": "node materialize-docs.ts"
   },
   "dependencies": {
-    "@docsearch/react": "5.0.0",
+    "@docsearch/react": "5.0.3",
     "@docusaurus/core": "3.10.2",
     "@docusaurus/faster": "3.10.2",
     "@docusaurus/plugin-client-redirects": "3.10.2",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@swc/core": "1.15.47"
+    "@swc/core": "1.16.1"
   },
   "browserslist": {
     "production": [
