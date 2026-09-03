@@ -51,8 +51,8 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: Record<string, unknown>) => {
-          return Object.keys(params);
+        execute: ({text}) => {
+          return `hello ${text}`;
         },
         annotations: {readOnlyHint: true, untrustedContentHint: true},
       });
@@ -477,8 +477,8 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: Record<string, unknown>) => {
-          return `hello ${Object.keys(params)}`;
+        execute: ({text}) => {
+          return `hello ${text}`;
         },
       });
     });
@@ -496,7 +496,7 @@ describe('Page.webmcp', function () {
       const [tool] = await document.modelContext!.getTools();
       (document as any).modelContext.executeTool(
         tool,
-        JSON.stringify({world: true}),
+        JSON.stringify({text: 'world'}),
       );
     });
 
@@ -623,8 +623,8 @@ describe('Page.webmcp', function () {
           },
           required: ['text'],
         },
-        execute: (params: Record<string, unknown>) => {
-          return `hello ${Object.keys(params)}`;
+        execute: ({text}) => {
+          return `hello ${text}`;
         },
       });
     });
@@ -638,7 +638,7 @@ describe('Page.webmcp', function () {
     });
 
     // Invoke WebMCP tool.
-    const response = await tool!.execute({world: true});
+    const response = await tool!.execute({text: 'world'});
 
     const call = await toolCalled;
 
