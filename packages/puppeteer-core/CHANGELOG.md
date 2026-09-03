@@ -1,5 +1,30 @@
 # Changelog
 
+## [25.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.9.0...puppeteer-core-v25.10.0) (2026-09-03)
+
+
+### 🎉 Features
+
+* implement video-stream-based screen recording via page.record() ([#15387](https://github.com/puppeteer/puppeteer/issues/15387)) ([f6d5e28](https://github.com/puppeteer/puppeteer/commit/f6d5e28021f207d80c10528956738b3b01b41609))
+* roll to Firefox 155.0 ([#15408](https://github.com/puppeteer/puppeteer/issues/15408)) ([ed544f7](https://github.com/puppeteer/puppeteer/commit/ed544f71fbfadf8748040008453ea1fdedfc5ec9))
+
+
+### 🛠️ Fixes
+
+* detect a websocket connection that died without a close ([#15406](https://github.com/puppeteer/puppeteer/issues/15406)) ([8c3576b](https://github.com/puppeteer/puppeteer/commit/8c3576b789440cc3b9627e9d6749369a6f175ff3))
+* distinguish an unwritable userDataDir from a running browser ([#15405](https://github.com/puppeteer/puppeteer/issues/15405)) ([b464f6d](https://github.com/puppeteer/puppeteer/commit/b464f6d6ea6e119cac48fed961d706325d50d8a9))
+* do not miss the first screencast frame while startScreencast is in flight ([#15389](https://github.com/puppeteer/puppeteer/issues/15389)) ([1969426](https://github.com/puppeteer/puppeteer/commit/1969426492e7201e9ff78c49c918cdd1cbbeef2a))
+* roll to Chrome 152.0.7977.64 ([#15395](https://github.com/puppeteer/puppeteer/issues/15395)) ([974e536](https://github.com/puppeteer/puppeteer/commit/974e53667e81363e36f634222eb300a054c1fb6c))
+* roll to Chrome 152.0.7977.75 ([#15409](https://github.com/puppeteer/puppeteer/issues/15409)) ([89f3f18](https://github.com/puppeteer/puppeteer/commit/89f3f187827fed44fe33bf2ab80f01d1fce20f40))
+* roll to Firefox 154.0.1 ([#15397](https://github.com/puppeteer/puppeteer/issues/15397)) ([8ac76fd](https://github.com/puppeteer/puppeteer/commit/8ac76fdbdee170902a2ac4e831c9c82cafe17b65))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.1 to 3.2.2
+
 ## [25.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.8.0...puppeteer-core-v25.9.0) (2026-08-24)
 
 
