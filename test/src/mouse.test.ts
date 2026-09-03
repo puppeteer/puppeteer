@@ -284,6 +284,9 @@ describe('Mouse', function () {
 
     expect(await page.evaluate('result')).toEqual({x: 30, y: 40});
   });
+  // Exercises the WebDriver BiDi behavior: BidiMouse keeps no button state and
+  // forwards the repeated down() to the browser. CdpMouse deliberately throws
+  // instead, so this is expected to fail on CDP (see TestExpectations.json).
   it('should not throw if buttons are pressed twice', async () => {
     const {page, server} = await getTestState();
 
@@ -383,6 +386,10 @@ describe('Mouse', function () {
     });
   });
 
+  // Exercises the WebDriver BiDi release order: the pressed buttons are
+  // released in the reverse order they were pressed and the pointer stays where
+  // it is. CdpMouse releases in a fixed order and moves the pointer back to
+  // (0, 0), so this is skipped on CDP (see TestExpectations.json).
   it('should reset properly', async () => {
     const {page, server, isChrome} = await getTestState();
 

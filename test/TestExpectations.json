@@ -625,14 +625,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The test exercises the WebDriver BiDi behavior: BidiMouse keeps no button state and forwards a repeated down() to the browser, while CdpMouse deliberately throws on a duplicate down(). Kept for CDP compatibility, see https://github.com/puppeteer/puppeteer/issues/15379"
   },
   {
     "testIdPattern": "[mouse.test] Mouse should reset properly",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The test asserts the WebDriver BiDi release order: pressed buttons are released in the reverse order they were pressed, so the page sees the right button's mouseup and auxclick first, and the pointer is left where it is. CdpMouse releases in a fixed Left, Middle, Right, Forward, Back order and moves the pointer back to (0, 0) as documented for Mouse.reset(), see https://github.com/puppeteer/puppeteer/issues/15379"
   },
   {
     "testIdPattern": "[mouse.test] Mouse should select the text with mouse",
