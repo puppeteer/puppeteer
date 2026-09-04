@@ -473,27 +473,54 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       return;
     }
 
-    const requestWillBeSentEvent = (() => {
-      const requestWillBeSentEvent =
-        this.#networkEventManager.getRequestWillBeSent(networkRequestId);
-
-      // redirect requests have the same `requestId`,
+    const requestWillBeSentEvent =
+      this.#networkEventManager.getRequestWillBeSent(networkRequestId);
+    if (!requestWillBeSentEvent) {
+      // Chrome may restart a request and send a second Fetch.requestPaused
+      // for a request Puppeteer already emitted (crbug.com/1196004). Repoint
+      // that request instead of emitting a duplicate that never finishes.
+      const request = this.#networkEventManager.getRequest(networkRequestId);
       if (
-        requestWillBeSentEvent &&
-        (requestWillBeSentEvent.request.url !== event.request.url ||
-          requestWillBeSentEvent.request.method !== event.request.method)
+        request &&
+        request.url() === event.request.url &&
+        request.method() === event.request.method
       ) {
-        this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+        this.#onRequestRestarted(request, fetchRequestId);
         return;
       }
-      return requestWillBeSentEvent;
-    })();
-
-    if (requestWillBeSentEvent) {
-      this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
-      this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
-    } else {
       this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      return;
+    }
+
+    // Redirect requests have the same `requestId`. Wait for the redirect's
+    // own Network.requestWillBeSent.
+    if (
+      requestWillBeSentEvent.request.url !== event.request.url ||
+      requestWillBeSentEvent.request.method !== event.request.method
+    ) {
+      this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      return;
+    }
+
+    this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
+    this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
+  }
+
+  #onRequestRestarted(
+    request: CdpHTTPRequest,
+    fetchRequestId: FetchRequestId,
+  ): void {
+    request._interceptionId = fetchRequestId;
+    if (
+      this.#userRequestInterceptionEnabled &&
+      request.isInterceptResolutionHandled()
+    ) {
+      // The user already resolved the interception; the restarted job needs
+      // the same resolution or the request hangs.
+      void request._continue(request.continueRequestOverrides()).catch(err => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+      });
     }
   }
 
@@ -603,6 +630,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
     request._fromMemoryCache = fromMemoryCache;
     this.#networkEventManager.storeRequest(event.requestId, request);
+    this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
     this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
   }

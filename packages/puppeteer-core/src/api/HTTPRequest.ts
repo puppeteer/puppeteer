@@ -432,10 +432,10 @@ export abstract class HTTPRequest {
       return;
     }
 
+    this.interception.requestOverrides = overrides;
     if (priority === undefined) {
       return await this._continue(overrides);
     }
-    this.interception.requestOverrides = overrides;
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority
