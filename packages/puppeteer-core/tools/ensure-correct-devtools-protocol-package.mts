@@ -59,16 +59,14 @@ async function main() {
 
   console.log(`Revisions for ${chromeVersion}: ${chromeRevision}`);
 
+  const command = `npm view "devtools-protocol@<=0.0.${chromeRevision}" version --json`;
   console.log(
     'Checking npm for devtools-protocol revisions:\n',
-    `'npm view "devtools-protocol@<=0.0.${chromeRevision}" version --json'`,
+    `'${command}'`,
     '\n',
   );
 
-  const output = execSync(
-    `npm view "devtools-protocol@<=0.0.${chromeRevision}" version --json`,
-    {encoding: 'utf8'},
-  );
+  const output = execSync(command, {encoding: 'utf8'});
 
   const versions = JSON.parse(output) as string | string[];
   const bestRevisionFromNpm = (
