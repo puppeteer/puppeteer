@@ -59,19 +59,21 @@ async function main() {
 
   console.log(`Revisions for ${chromeVersion}: ${chromeRevision}`);
 
-  const command = `npm view "devtools-protocol@<=0.0.${chromeRevision}" version | tail -1`;
-
   console.log(
     'Checking npm for devtools-protocol revisions:\n',
-    `'${command}'`,
+    `'npm view "devtools-protocol@<=0.0.${chromeRevision}" version --json'`,
     '\n',
   );
 
-  const output = execSync(command, {
-    encoding: 'utf8',
-  });
+  const output = execSync(
+    `npm view "devtools-protocol@<=0.0.${chromeRevision}" version --json`,
+    {encoding: 'utf8'},
+  );
 
-  const bestRevisionFromNpm = output.split(' ')[1]!.replace(/'|\n/g, '');
+  const versions = JSON.parse(output) as string | string[];
+  const bestRevisionFromNpm = (
+    Array.isArray(versions) ? versions.at(-1) : versions
+  )!.trim();
 
   if (currentProtocolPackageInstalledVersion !== bestRevisionFromNpm) {
     console.log(`ERROR: bad devtools-protocol revision detected:
