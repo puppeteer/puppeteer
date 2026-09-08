@@ -188,10 +188,12 @@ async function runDocusaurusVersioning(version: string): Promise<void> {
   const docusaurus = path.join(
     websiteDir,
     'node_modules',
-    '.bin',
-    'docusaurus',
+    '@docusaurus',
+    'core',
+    'bin',
+    'docusaurus.mjs',
   );
-  await execFile(docusaurus, ['docs:version', version], {
+  await execFile(process.execPath, [docusaurus, 'docs:version', version], {
     cwd: websiteDir,
     env: {...process.env, DOCS_PATH: releaseDocsDir},
     maxBuffer: 10 * 1024 * 1024,
