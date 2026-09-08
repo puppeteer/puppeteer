@@ -198,7 +198,10 @@ async function getWSEndpoint(
   browserURL: string,
   headers?: Record<string, string>,
 ): Promise<string> {
-  const endpointURL = new URL('/json/version', browserURL);
+  const endpointURL = new URL(browserURL);
+  endpointURL.pathname =
+    endpointURL.pathname.replace(/\/?$/, '') + '/json/version';
+  endpointURL.hash = '';
 
   try {
     const result = await globalThis.fetch(endpointURL.toString(), {

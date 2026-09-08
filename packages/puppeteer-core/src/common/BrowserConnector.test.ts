@@ -51,6 +51,35 @@ describe('BrowserConnector', () => {
         ],
       ).toBe('Bearer test-token');
     });
+
+    it('should preserve the browserURL path prefix', async () => {
+      const capturedRequests: string[] = [];
+
+      mock.method(
+        globalThis,
+        'fetch',
+        async (url: string | URL | Request) => {
+          capturedRequests.push(String(url));
+          return new Response(
+            JSON.stringify({
+              webSocketDebuggerUrl: 'ws://localhost:1234/devtools/browser/1',
+            }),
+            {status: 200, headers: {'Content-Type': 'application/json'}},
+          );
+        },
+      );
+
+      await _connectToBrowser({
+        browserURL: 'http://localhost:1234/t/session/?token=secret',
+        logger: () => {
+          return undefined;
+        },
+      }).catch(() => {});
+
+      expect(capturedRequests).toEqual([
+        'http://localhost:1234/t/session/json/version?token=secret',
+      ]);
+    });
   });
 
   describe('_connectToBrowser', () => {
