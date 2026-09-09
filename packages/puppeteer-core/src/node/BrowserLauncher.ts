@@ -3,7 +3,7 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import {accessSync, constants, existsSync} from 'node:fs';
+import {accessSync, constants, existsSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
@@ -185,9 +185,13 @@ export abstract class BrowserLauncher {
     const usePipe = launchArgs.args.includes('--remote-debugging-pipe');
 
     const onProcessExit = async () => {
-      await this.cleanUserDataDir(launchArgs.userDataDir, {
-        isTemp: launchArgs.isTempUserDataDir,
-      });
+      try {
+        await this.cleanUserDataDir(launchArgs.userDataDir, {
+          isTemp: launchArgs.isTempUserDataDir,
+        });
+      } finally {
+        removeTempUserDataDirOnExit?.();
+      }
     };
 
     if (
@@ -200,19 +204,32 @@ export abstract class BrowserLauncher {
       );
     }
 
-    const browserProcess = launch({
-      executablePath: launchArgs.executablePath,
-      args: launchArgs.args,
-      handleSIGHUP,
-      handleSIGTERM,
-      handleSIGINT,
-      dumpio,
-      env,
-      pipe: usePipe,
-      onExit: onProcessExit,
-      signal: options.signal,
-      logger: options.logger,
-    });
+    const removeTempUserDataDirOnExit = launchArgs.isTempUserDataDir
+      ? registerProcessExitCleanup(launchArgs.userDataDir, this.#logger)
+      : undefined;
+
+    let browserProcess: ReturnType<typeof launch>;
+    try {
+      browserProcess = launch({
+        executablePath: launchArgs.executablePath,
+        args: launchArgs.args,
+        handleSIGHUP,
+        handleSIGTERM,
+        handleSIGINT,
+        dumpio,
+        env,
+        pipe: usePipe,
+        onExit: onProcessExit,
+        signal: options.signal,
+        logger: options.logger,
+      });
+    } catch (error) {
+      removeTempUserDataDirOnExit?.();
+      await this.cleanUserDataDir(launchArgs.userDataDir, {
+        isTemp: launchArgs.isTempUserDataDir,
+      });
+      throw error;
+    }
 
     let browser: Browser;
     let cdpConnection: Connection;
@@ -651,4 +668,34 @@ export abstract class BrowserLauncher {
     }
     return executablePath;
   }
+}
+
+interface ProcessExitEmitter {
+  once(event: 'exit', listener: () => void): void;
+  off(event: 'exit', listener: () => void): void;
+}
+
+/**
+ * Registers a synchronous fallback for removing a temporary profile when the
+ * host process exits before the browser process can run its async cleanup.
+ *
+ * @internal
+ */
+export function registerProcessExitCleanup(
+  userDataDir: string,
+  logger: Logger,
+  processEmitter: ProcessExitEmitter = process,
+): () => void {
+  const onExit = (): void => {
+    try {
+      rmSync(userDataDir, {recursive: true, force: true});
+    } catch (error) {
+      logger(DEBUG_PREFIXES.error)?.(error);
+    }
+  };
+
+  processEmitter.once('exit', onExit);
+  return () => {
+    processEmitter.off('exit', onExit);
+  };
 }
