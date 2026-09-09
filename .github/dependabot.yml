@@ -1,0 +1,79 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    labels: []
+    schedule:
+      interval: weekly
+      day: 'sunday'
+      time: '02:00'
+      timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
+      exclude:
+        - devtools-protocol
+        - chromium-bidi
+        - '@types/chrome'
+    ignore:
+      - dependency-name: devtools-protocol
+      - dependency-name: chromium-bidi
+      - dependency-name: '@types/node'
+      - dependency-name: '@angular-devkit/*'
+    groups:
+      dependencies:
+        dependency-type: production
+        patterns:
+          - '*'
+      dev-dependencies:
+        dependency-type: development
+        patterns:
+          - '*'
+  - package-ecosystem: npm
+    directory: /website
+    labels: []
+    schedule:
+      interval: weekly
+      day: 'sunday'
+      time: '03:00'
+      timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
+    groups:
+      all:
+        patterns:
+          - '*'
+  - package-ecosystem: github-actions
+    directory: /
+    labels: []
+    schedule:
+      interval: weekly
+      day: 'sunday'
+      time: '04:00'
+      timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
+    groups:
+      all:
+        patterns:
+          - '*'
+  - package-ecosystem: docker
+    directory: /docker
+    labels: []
+    schedule:
+      interval: weekly
+      day: 'sunday'
+      time: '05:00'
+      timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: node
+        versions:
+          # Remove once NodeJS v24 is LTS
+          - '24'
+          - '23'
+          - '25'
+    groups:
+      all:
+        patterns:
+          - '*'

@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'one-style';
+  src: url('./one-style.woff') format('woff');
+}
+
+body {
+  background-color: pink;
+  font-family: 'one-style', sans-serif;
+}

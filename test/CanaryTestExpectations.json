@@ -1,0 +1,58 @@
+[
+  {
+    "testIdPattern": "[webExtension.test] webExtension can install and uninstall an extension",
+    "platforms": ["darwin", "linux"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": ["win32"],
+    "parameters": ["cdp"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Needs investigation"
+  },
+  {
+    "testIdPattern": "[waittask.test] waittask specs protocol timeout *",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "headful", "webDriverBiDi"],
+    "expectations": ["PASS"],
+    "comment": "Fixed by https://bugzilla.mozilla.org/show_bug.cgi?id=2010507"
+  },
+  {
+    "testIdPattern": "[console.test] console should work for different console API calls with group functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097"
+  },
+  {
+    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolinvoked events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
+  },
+  {
+    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with success",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
+  },
+  {
+    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with exception",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
+  },
+  {
+    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with errorText",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["FAIL"],
+    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
+  }
+]

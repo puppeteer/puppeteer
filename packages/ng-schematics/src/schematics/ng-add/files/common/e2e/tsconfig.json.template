@@ -1,0 +1,11 @@
+{
+  "extends": "<%= tsConfigPath %>",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "tests/",
+    "outDir": "build/",
+    "types": ["<%= testRunner %>"]
+  },
+  "include": ["tests/**/*.ts"]
+}

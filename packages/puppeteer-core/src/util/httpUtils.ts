@@ -1,0 +1,25 @@
+/**
+ * @license
+ * Copyright 2025 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * Normalizes HTTP header values by handling multiline values.
+ * Multiline header values are joined with commas according to HTTP/1.1 spec.
+ *
+ * @internal
+ */
+export function normalizeHeaderValue(name: string, value: string): string {
+  if (!value.includes('\n')) {
+    return value;
+  }
+
+  return value
+    .split('\n')
+    .map(v => {
+      return v.trim();
+    })
+    .filter(Boolean)
+    .join(name === 'set-cookie' ? '\n ' : ', ');
+}

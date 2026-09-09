@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib/puppeteer",
+    "rootDir": "./src",
+    "paths": {
+      "puppeteer-core/internal/*": ["../puppeteer-core/lib/puppeteer/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

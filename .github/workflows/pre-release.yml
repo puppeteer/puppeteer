@@ -1,0 +1,55 @@
+name: Pre-release
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - release-please-*
+
+jobs:
+  check-changes:
+    uses: ./.github/workflows/changed-packages.yml
+
+  pre-release:
+    if: |
+      startsWith(github.event.head_commit.message, 'chore: release main') &&
+      contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer')
+    needs: check-changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          cache: npm
+          node-version-file: '.nvmrc'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build all packages
+        env:
+          PUBLISH: 1
+        run: |
+          npm run build
+      - name: Build docs
+        env:
+          PUBLISH: 1
+        run: |
+          npm run docs
+      - name: Format
+        run: npm run format
+      # Release-please does not update the package-lock
+      - name: Install to refresh package-lock
+        run: npm install
+      - name: Commit
+        run: |
+          git config --global user.name 'release-please[bot]'
+          git config --global user.email '55107282+release-please[bot]@users.noreply.github.com'
+          git add .
+          git diff --staged --quiet || (git commit -m 'chore: update versions.json' --no-verify && git push)

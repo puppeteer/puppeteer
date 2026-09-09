@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "declaration": false,
+    "declarationMap": false,
+    "composite": false,
+    "removeComments": true
+  }
+}

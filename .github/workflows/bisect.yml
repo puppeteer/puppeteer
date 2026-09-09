@@ -1,0 +1,89 @@
+name: Bisect Chrome for Testing
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bisect-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: Path to a script or test name to bisect (e.g. test:chrome:headless)
+        required: true
+        type: string
+        default: 'test:chrome:headless'
+      tests:
+        description: Tests to run (e.g. '[network.spec] *')
+        required: false
+        type: string
+      good:
+        description: Last known good version (e.g. 152.0.7946.0)
+        required: true
+        type: string
+      bad:
+        description: First known bad version (e.g. 152.0.7942.0)
+        required: true
+        type: string
+      cft:
+        description: Use Chrome for Testing (-cft)
+        required: false
+        type: boolean
+        default: true
+      os:
+        description: On which OS to run?
+        required: true
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-15
+        default: ubuntu-latest
+
+jobs:
+  bisect:
+    name: Bisect on ${{ inputs.os }}
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          cache: npm
+          node-version-file: '.nvmrc'
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Disable AppArmor
+        if: ${{ inputs.os == 'ubuntu-latest' }}
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Build packages
+        run: npm run build
+      - name: Run bisect (Non-Linux)
+        if: ${{ inputs.os != 'ubuntu-latest' }}
+        run: node packages/browsers/lib/main-cli.js bisect "$SCRIPT" -g "$GOOD" -b "$BAD" "$CFT"
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: 3
+          SCRIPT: ${{ inputs.script }}
+          GOOD: ${{ inputs.good }}
+          BAD: ${{ inputs.bad }}
+          CFT: ${{ inputs.cft && '--cft' || '--no-cft' }}
+      - name: Run bisect (Linux)
+        if: ${{ inputs.os == 'ubuntu-latest' }}
+        run: xvfb-run --auto-servernum node packages/browsers/lib/main-cli.js bisect "$SCRIPT" -g "$GOOD" -b "$BAD" "$CFT"
+        env:
+          PUPPETEER_DEFLAKE_TESTS: '${{ inputs.tests }}'
+          PUPPETEER_DEFLAKE_RETRIES: 3
+          SCRIPT: ${{ inputs.script }}
+          GOOD: ${{ inputs.good }}
+          BAD: ${{ inputs.bad }}
+          CFT: ${{ inputs.cft && '--cft' || '--no-cft' }}

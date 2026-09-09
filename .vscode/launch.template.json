@@ -1,0 +1,45 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "suit",
+      "description": "Which test suit to run?",
+      "options": [
+        "chrome-headless",
+        "chrome-headful",
+        "chrome-headless-shell",
+        "firefox-headless",
+        "firefox-headful",
+        "chrome-bidi"
+      ],
+      "default": "chrome-headless"
+    }
+  ],
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Tests",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "npm",
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": [
+        "run-script",
+        "test",
+        "--",
+        "--test-suite",
+        "${input:suit}",
+        "--no-coverage",
+        "--no-suggestions"
+      ],
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "env": {
+        "DEBUGGER_ATTACHED": true
+      }
+    }
+  ]
+}

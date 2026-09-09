@@ -1,0 +1,110 @@
+/**
+ * @license
+ * Copyright 2026 Google Inc.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import type {Page, Target, WebWorker} from '../api/api.js';
+import {Extension} from '../api/api.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {isErrorLike} from '../util/ErrorLike.js';
+
+import type {CdpBrowser} from './Browser.js';
+import {isTargetClosedError} from './Connection.js';
+
+export class CdpExtension extends Extension {
+  // needed to access the CDPSession to trigger an extension action.
+  #browser: CdpBrowser;
+  #logger?: Logger;
+
+  /*
+   * @internal
+   */
+  constructor(
+    id: string,
+    version: string,
+    name: string,
+    path: string,
+    enabled: boolean,
+    browser: CdpBrowser,
+    logger?: Logger,
+  ) {
+    super(id, version, name, path, enabled);
+    this.#browser = browser;
+    this.#logger = logger;
+  }
+
+  async workers(): Promise<WebWorker[]> {
+    const targets = this.#browser.targets();
+
+    const extensionWorkers = targets.filter((target: Target) => {
+      const targetUrl = target.url();
+      return (
+        target.type() === 'service_worker' &&
+        targetUrl.startsWith('chrome-extension://' + this.id)
+      );
+    });
+
+    const workers = await Promise.all(
+      extensionWorkers.map(async target => {
+        try {
+          return await target.worker();
+        } catch (err) {
+          if (this.#canIgnoreError(err)) {
+            this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+            return null;
+          }
+          throw err;
+        }
+      }),
+    );
+
+    return workers.filter((worker): worker is WebWorker => {
+      return worker !== null;
+    });
+  }
+
+  async pages(): Promise<Page[]> {
+    const targets = this.#browser.targets();
+
+    const extensionPages = targets.filter((target: Target) => {
+      const targetUrl = target.url();
+      return (
+        (target.type() === 'page' || target.type() === 'background_page') &&
+        targetUrl.startsWith('chrome-extension://' + this.id)
+      );
+    });
+
+    const pages = await Promise.all(
+      extensionPages.map(async target => {
+        try {
+          return await target.asPage();
+        } catch (err) {
+          if (this.#canIgnoreError(err)) {
+            this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+            return null;
+          }
+          throw err;
+        }
+      }),
+    );
+
+    return pages.filter((page): page is Page => {
+      return page !== null;
+    });
+  }
+
+  async triggerAction(page: Page): Promise<void> {
+    await this.#browser._connection.send('Extensions.triggerAction', {
+      id: this.id,
+      targetId: page._tabId,
+    });
+  }
+
+  #canIgnoreError(error: unknown): boolean {
+    return (
+      isErrorLike(error) &&
+      (isTargetClosedError(error) ||
+        error.message.includes('No target with given id found'))
+    );
+  }
+}

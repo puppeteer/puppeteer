@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+
+# Production
+build/
+lib/
+bin/
+
+# Generated files
+**/*.tsbuildinfo
+*.api.json
+*.tgz
+yarn.lock
+.docusaurus/
+.cache-loader
+test/output-*/
+.dev_profile*
+coverage/
+generated/
+.eslintcache
+.cache/
+website/.generated-docs/
+website/versioned_docs/
+website/versioned_sidebars/
+website/versions.json
+website/versionsArchived.json
+
+# IDE Artifacts
+.vscode/*
+!.vscode/extensions.json
+!.vscode/*.template.json
+.devcontainer
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Wireit
+.wireit

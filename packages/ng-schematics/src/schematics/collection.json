@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Add Puppeteer to an Angular project",
+      "factory": "./ng-add/index#ngAdd",
+      "schema": "./ng-add/schema.json"
+    },
+    "e2e": {
+      "description": "Create a single test file",
+      "factory": "./e2e/index#e2e",
+      "schema": "./e2e/schema.json"
+    },
+    "config": {
+      "description": "Eject Puppeteer config file",
+      "factory": "./config/index#config",
+      "schema": "./config/schema.json"
+    }
+  }
+}

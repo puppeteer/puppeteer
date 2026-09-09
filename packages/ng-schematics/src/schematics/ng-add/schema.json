@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "Puppeteer",
+  "title": "Puppeteer Install Schema",
+  "type": "object",
+  "properties": {
+    "testRunner": {
+      "type": "string",
+      "enum": ["jasmine", "jest", "mocha", "node"],
+      "default": "jasmine",
+      "alias": "t",
+      "x-prompt": {
+        "message": "Which test runners do you wish to use?",
+        "type": "list",
+        "items": [
+          {
+            "value": "jasmine",
+            "label": "Use Jasmine [https://jasmine.github.io/]"
+          },
+          {
+            "value": "jest",
+            "label": "Use Jest [https://jestjs.io/]"
+          },
+          {
+            "value": "mocha",
+            "label": "Use Mocha [https://mochajs.org/]"
+          },
+          {
+            "value": "node",
+            "label": "Use Node Test Runner [https://nodejs.org/api/test.html]"
+          }
+        ]
+      }
+    }
+  },
+  "required": []
+}

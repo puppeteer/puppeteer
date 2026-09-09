@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const iframe = document.createElement('iframe');
+    const url = new URL(location.href);
+    url.hostname = 'domain1.test';
+    url.pathname = '/inner-frame2.html';
+    iframe.src = url.toString();
+    document.body.appendChild(iframe);
+  }, false);
+</script>
