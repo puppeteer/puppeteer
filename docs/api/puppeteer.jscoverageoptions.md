@@ -89,6 +89,8 @@ boolean
 
 Whether to reset coverage on every navigation.
 
+Setting this to `false` does not guarantee that coverage survives a navigation. Chrome may discard the previous page's JavaScript execution environment, including its coverage data, when navigating. To preserve coverage, call [Coverage.stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md) before navigating away, then start a new collection for the next page and merge the reports.
+
 </td><td>
 
 </td></tr>
