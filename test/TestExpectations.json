@@ -183,13 +183,6 @@
   },
   {
     "testIdPattern": "[page.test] Page Page.record *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Screen recording is not supported until Chrome 153"
-  },
-  {
-    "testIdPattern": "[page.test] Page Page.record *",
     "platforms": ["linux"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
@@ -779,6 +772,13 @@
     "parameters": ["headful"],
     "expectations": ["FAIL"],
     "comment": "Not testable in headful"
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.record *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Screen recording is not supported in WebDriver BiDi in Chrome yet"
   },
   {
     "testIdPattern": "[page.test] Page Page.reload should enable or disable the cache based on reload params",
