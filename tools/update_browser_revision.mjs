@@ -153,13 +153,15 @@ async function updateDevToolsProtocolVersion(browserVersion) {
   }
 
   const currentProtocol = packageJson.dependencies['devtools-protocol'];
-  const command = `npm view "devtools-protocol@<=0.0.${revision}" version | tail -1`;
-
-  const bestNewProtocol = execSync(command, {
-    encoding: 'utf8',
-  })
-    .split(' ')[1]
-    .replace(/'|\n/g, '');
+  const command = `npm view "devtools-protocol@<=0.0.${revision}" version --json`;
+  const versions = JSON.parse(
+    execSync(command, {
+      encoding: 'utf8',
+    }),
+  );
+  const bestNewProtocol = (
+    Array.isArray(versions) ? versions.at(-1) : versions
+  ).trim();
 
   await replaceInFile(
     './packages/puppeteer-core/package.json',
