@@ -31,8 +31,10 @@ import {
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {Extension} from './Extension.js';
+import type {HTTPRequest} from './HTTPRequest.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 /**
@@ -204,6 +206,16 @@ export const enum BrowserEvent {
    * @internal
    */
   TargetDiscovered = 'targetdiscovered',
+  /**
+   * Emitted when JavaScript within the page calls one of console API methods,
+   * e.g. `console.log` or `console.dir`. Also emitted if the page throws an
+   * error or a warning.
+   */
+  Console = 'console',
+  /**
+   * Emitted when a page issues a request and contains a {@link HTTPRequest}.
+   */
+  Request = 'request',
 }
 
 /**
@@ -218,6 +230,8 @@ export interface BrowserEvents extends Record<EventType, unknown> {
    * @internal
    */
   [BrowserEvent.TargetDiscovered]: Protocol.Target.TargetInfo;
+  [BrowserEvent.Console]: ConsoleMessage;
+  [BrowserEvent.Request]: HTTPRequest;
 }
 
 /**
