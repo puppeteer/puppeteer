@@ -576,7 +576,84 @@ describe('NetworkManager', () => {
       networkId: '11ACE9783588040D644B905E8B55285B',
     });
 
-    expect(requests).toHaveLength(2);
+    expect(requests).toHaveLength(1);
+  });
+  it(`should emit requestfinished for a stylesheet font request that Chrome restarts (github.com/puppeteer/puppeteer/issues/11641)`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = createNetworkManager();
+    await manager.addClient(mockCDPSession);
+    await manager.setRequestInterception(true);
+
+    const finished: HTTPRequest[] = [];
+    manager.on(NetworkManagerEvent.Request, async (request: HTTPRequest) => {
+      await request.continue();
+    });
+    manager.on(NetworkManagerEvent.RequestFinished, (request: HTTPRequest) => {
+      finished.push(request);
+    });
+
+    const fontRequest = {
+      url: 'https://example.com/fonts/font.woff2',
+      method: 'GET',
+      headers: {},
+      initialPriority: 'VeryHigh',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+    } as const;
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
+      loaderId: '11ACE9783588040D644B905E8B55285B',
+      documentURL: 'https://example.com/',
+      request: {...fontRequest, mixedContentType: 'none', isSameSite: true},
+      timestamp: 224604.980827,
+      wallTime: 1637955746.786191,
+      initiator: {type: 'parser', url: 'https://example.com/style.css'},
+      redirectHasExtraInfo: false,
+      type: 'Font',
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      hasUserGesture: false,
+    });
+    // Chrome restarts the font fetch and pauses it again under a new
+    // interception id (crbug.com/1196004).
+    for (const requestId of ['interception-job-1.0', 'interception-job-2.0']) {
+      mockCDPSession.emit('Fetch.requestPaused', {
+        requestId,
+        request: fontRequest,
+        frameId: '84AC261A351B86932B775B76D1DD79F8',
+        resourceType: 'Font',
+        networkId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
+      });
+    }
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
+      loaderId: '11ACE9783588040D644B905E8B55285B',
+      timestamp: 224605.0,
+      type: 'Font',
+      response: {
+        url: fontRequest.url,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        mimeType: 'font/woff2',
+        charset: '',
+        connectionReused: false,
+        connectionId: 1,
+        encodedDataLength: 100,
+        securityState: 'secure',
+      },
+      hasExtraInfo: false,
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+    });
+    mockCDPSession.emit('Network.loadingFinished', {
+      requestId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
+      timestamp: 224605.1,
+      encodedDataLength: 100,
+    });
+
+    expect(
+      finished.map(r => {
+        return r.url();
+      }),
+    ).toEqual([fontRequest.url]);
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();
