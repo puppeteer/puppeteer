@@ -9,6 +9,7 @@ import assert from 'node:assert';
 import expect from 'expect';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {html} from './utils.js';
 
 async function getDragState() {
   const {page} = await getTestState({skipLaunch: true});
@@ -150,5 +151,55 @@ describe("Drag n' Drop", () => {
     await dropzone.drop(draggable);
 
     expect(await getDragState()).toBe(1234);
+  });
+  it('should release the mouse button when the drop fails', async () => {
+    const {page} = await getTestState();
+
+    // The page re-renders while the drag is in flight, which detaches the
+    // dragged node, as a reactive list would. The drop then fails.
+    await page.setContent(html`
+      <div id="drag">drag me</div>
+      <div id="drop">drop here</div>
+      <script>
+        let rerendered = false;
+        document.addEventListener('mousemove', () => {
+          if (rerendered) {
+            return;
+          }
+          rerendered = true;
+          const drag = document.getElementById('drag');
+          drag.replaceWith(drag.cloneNode(true));
+        });
+      </script>
+    `);
+
+    using draggable = await page.$('#drag');
+    assert(draggable);
+    using dropzone = await page.$('#drop');
+    assert(dropzone);
+
+    await draggable.drag(dropzone);
+    await expect(dropzone.drop(draggable)).rejects.toThrow();
+
+    // The drag pressed the mouse button down. If the failed drop leaves it
+    // pressed, every later mouse event still carries it, and the next click
+    // fires twice.
+    await page.evaluate(() => {
+      (globalThis as unknown as {buttons?: number}).buttons = undefined;
+      document.addEventListener(
+        'mousemove',
+        event => {
+          (globalThis as unknown as {buttons?: number}).buttons = event.buttons;
+        },
+        {once: true},
+      );
+    });
+    await page.mouse.move(20, 20);
+
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as unknown as {buttons?: number}).buttons;
+      }),
+    ).toBe(0);
   });
 });

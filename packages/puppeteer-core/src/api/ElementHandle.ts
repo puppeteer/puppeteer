@@ -19,7 +19,11 @@ import type {
   NodeFor,
 } from '../common/types.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
-import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
+import {
+  debugError,
+  isString,
+  withSourcePuppeteerURLIfNone,
+} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
@@ -830,20 +834,25 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     target: Point | ElementHandle<Element>,
   ): Promise<Protocol.Input.DragData | void> {
-    await this.scrollIntoViewIfNeeded();
     const page = this.frame.page();
     if (page.isDragInterceptionEnabled()) {
+      await this.scrollIntoViewIfNeeded();
       const source = await this.clickablePoint();
       if (target instanceof ElementHandle) {
         target = await target.clickablePoint();
       }
       return await page.mouse.drag(source, target);
     }
+    // The button is down either because an earlier `drag()` pressed it, or
+    // because this call is about to.
+    let isMouseDown = page._isDragging;
     try {
+      await this.scrollIntoViewIfNeeded();
       if (!page._isDragging) {
         page._isDragging = true;
         await this.hover();
         await page.mouse.down();
+        isMouseDown = true;
       }
       if (target instanceof ElementHandle) {
         await target.hover();
@@ -852,6 +861,12 @@ export abstract class ElementHandle<
       }
     } catch (error) {
       page._isDragging = false;
+      if (isMouseDown) {
+        // `drop()` is the only thing that releases the button and it will never
+        // run now, so without this the button stays pressed for the rest of the
+        // session. It must not mask the error that got us here.
+        await page.mouse.up().catch(debugError);
+      }
       throw error;
     }
   }
