@@ -3,7 +3,7 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import {accessSync, constants, existsSync} from 'node:fs';
+import {accessSync, constants, existsSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
@@ -185,9 +185,13 @@ export abstract class BrowserLauncher {
     const usePipe = launchArgs.args.includes('--remote-debugging-pipe');
 
     const onProcessExit = async () => {
-      await this.cleanUserDataDir(launchArgs.userDataDir, {
-        isTemp: launchArgs.isTempUserDataDir,
-      });
+      try {
+        await this.cleanUserDataDir(launchArgs.userDataDir, {
+          isTemp: launchArgs.isTempUserDataDir,
+        });
+      } finally {
+        removeTempUserDataDirOnExit?.();
+      }
     };
 
     if (
@@ -200,19 +204,36 @@ export abstract class BrowserLauncher {
       );
     }
 
-    const browserProcess = launch({
-      executablePath: launchArgs.executablePath,
-      args: launchArgs.args,
-      handleSIGHUP,
-      handleSIGTERM,
-      handleSIGINT,
-      dumpio,
-      env,
-      pipe: usePipe,
-      onExit: onProcessExit,
-      signal: options.signal,
-      logger: options.logger,
-    });
+    let removeTempUserDataDirOnExit: (() => void) | undefined;
+
+    let browserProcess: ReturnType<typeof launch>;
+    try {
+      browserProcess = launch({
+        executablePath: launchArgs.executablePath,
+        args: launchArgs.args,
+        handleSIGHUP,
+        handleSIGTERM,
+        handleSIGINT,
+        dumpio,
+        env,
+        pipe: usePipe,
+        onExit: onProcessExit,
+        signal: options.signal,
+        logger: options.logger,
+      });
+      // Register after @puppeteer/browsers has installed its process-exit
+      // dispatcher. That dispatcher kills the browser before this synchronous
+      // fallback removes the profile directory.
+      removeTempUserDataDirOnExit = launchArgs.isTempUserDataDir
+        ? registerProcessExitCleanup(launchArgs.userDataDir, this.#logger)
+        : undefined;
+    } catch (error) {
+      removeTempUserDataDirOnExit?.();
+      await this.cleanUserDataDir(launchArgs.userDataDir, {
+        isTemp: launchArgs.isTempUserDataDir,
+      });
+      throw error;
+    }
 
     let browser: Browser;
     let cdpConnection: Connection;
@@ -651,4 +672,62 @@ export abstract class BrowserLauncher {
     }
     return executablePath;
   }
+}
+
+interface ProcessExitEmitter {
+  once(event: 'exit', listener: () => void): void;
+  off(event: 'exit', listener: () => void): void;
+}
+
+interface ProcessExitCleanupEntry {
+  userDataDir: string;
+  logger: Logger;
+}
+
+const processExitCleanupEntries = new WeakMap<
+  ProcessExitEmitter,
+  {entries: Set<ProcessExitCleanupEntry>; onExit: () => void}
+>();
+
+/**
+ * Registers a synchronous fallback for removing a temporary profile when the
+ * host process exits before the browser process can run its async cleanup.
+ *
+ * @internal
+ */
+export function registerProcessExitCleanup(
+  userDataDir: string,
+  logger: Logger,
+  processEmitter: ProcessExitEmitter = process,
+): () => void {
+  let cleanup = processExitCleanupEntries.get(processEmitter);
+  if (!cleanup) {
+    const entries = new Set<ProcessExitCleanupEntry>();
+    const onExit = (): void => {
+      for (const entry of entries) {
+        try {
+          rmSync(entry.userDataDir, {
+            recursive: true,
+            force: true,
+            maxRetries: 3,
+            retryDelay: 100,
+          });
+        } catch (error) {
+          entry.logger(DEBUG_PREFIXES.error)?.(error);
+        }
+      }
+    };
+    cleanup = {entries, onExit};
+    processExitCleanupEntries.set(processEmitter, cleanup);
+    processEmitter.once('exit', onExit);
+  }
+  const entry = {userDataDir, logger};
+  cleanup.entries.add(entry);
+  return () => {
+    if (!cleanup?.entries.delete(entry) || cleanup.entries.size > 0) {
+      return;
+    }
+    processEmitter.off('exit', cleanup.onExit);
+    processExitCleanupEntries.delete(processEmitter);
+  };
 }
