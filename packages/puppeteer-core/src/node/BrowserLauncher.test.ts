@@ -16,6 +16,10 @@ import {registerProcessExitCleanup} from './BrowserLauncher.js';
 class ProcessEmitter {
   #listeners = new Set<() => void>();
 
+  get listenerCount(): number {
+    return this.#listeners.size;
+  }
+
   once(_event: 'exit', listener: () => void): void {
     this.#listeners.add(listener);
   }
@@ -66,5 +70,24 @@ describe('registerProcessExitCleanup', () => {
 
     expect(existsSync(userDataDir)).toBe(true);
     rmSync(userDataDir, {recursive: true, force: true});
+  });
+
+  it('uses one process-exit listener for multiple temporary profiles', () => {
+    const firstDir = mkdtempSync(
+      join(tmpdir(), 'puppeteer-process-exit-cleanup-'),
+    );
+    const secondDir = mkdtempSync(
+      join(tmpdir(), 'puppeteer-process-exit-cleanup-'),
+    );
+    const processEmitter = new ProcessEmitter();
+
+    registerProcessExitCleanup(firstDir, logger, processEmitter);
+    registerProcessExitCleanup(secondDir, logger, processEmitter);
+    expect(processEmitter.listenerCount).toBe(1);
+
+    processEmitter.emit('exit');
+
+    expect(existsSync(firstDir)).toBe(false);
+    expect(existsSync(secondDir)).toBe(false);
   });
 });

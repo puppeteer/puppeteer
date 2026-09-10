@@ -204,9 +204,7 @@ export abstract class BrowserLauncher {
       );
     }
 
-    const removeTempUserDataDirOnExit = launchArgs.isTempUserDataDir
-      ? registerProcessExitCleanup(launchArgs.userDataDir, this.#logger)
-      : undefined;
+    let removeTempUserDataDirOnExit: (() => void) | undefined;
 
     let browserProcess: ReturnType<typeof launch>;
     try {
@@ -223,6 +221,12 @@ export abstract class BrowserLauncher {
         signal: options.signal,
         logger: options.logger,
       });
+      // Register after @puppeteer/browsers has installed its process-exit
+      // dispatcher. That dispatcher kills the browser before this synchronous
+      // fallback removes the profile directory.
+      removeTempUserDataDirOnExit = launchArgs.isTempUserDataDir
+        ? registerProcessExitCleanup(launchArgs.userDataDir, this.#logger)
+        : undefined;
     } catch (error) {
       removeTempUserDataDirOnExit?.();
       await this.cleanUserDataDir(launchArgs.userDataDir, {
@@ -675,6 +679,16 @@ interface ProcessExitEmitter {
   off(event: 'exit', listener: () => void): void;
 }
 
+interface ProcessExitCleanupEntry {
+  userDataDir: string;
+  logger: Logger;
+}
+
+const processExitCleanupEntries = new WeakMap<
+  ProcessExitEmitter,
+  {entries: Set<ProcessExitCleanupEntry>; onExit: () => void}
+>();
+
 /**
  * Registers a synchronous fallback for removing a temporary profile when the
  * host process exits before the browser process can run its async cleanup.
@@ -686,16 +700,34 @@ export function registerProcessExitCleanup(
   logger: Logger,
   processEmitter: ProcessExitEmitter = process,
 ): () => void {
-  const onExit = (): void => {
-    try {
-      rmSync(userDataDir, {recursive: true, force: true});
-    } catch (error) {
-      logger(DEBUG_PREFIXES.error)?.(error);
-    }
-  };
-
-  processEmitter.once('exit', onExit);
+  let cleanup = processExitCleanupEntries.get(processEmitter);
+  if (!cleanup) {
+    const entries = new Set<ProcessExitCleanupEntry>();
+    const onExit = (): void => {
+      for (const entry of entries) {
+        try {
+          rmSync(entry.userDataDir, {
+            recursive: true,
+            force: true,
+            maxRetries: 3,
+            retryDelay: 100,
+          });
+        } catch (error) {
+          entry.logger(DEBUG_PREFIXES.error)?.(error);
+        }
+      }
+    };
+    cleanup = {entries, onExit};
+    processExitCleanupEntries.set(processEmitter, cleanup);
+    processEmitter.once('exit', onExit);
+  }
+  const entry = {userDataDir, logger};
+  cleanup.entries.add(entry);
   return () => {
-    processEmitter.off('exit', onExit);
+    if (!cleanup?.entries.delete(entry) || cleanup.entries.size > 0) {
+      return;
+    }
+    processEmitter.off('exit', cleanup.onExit);
+    processExitCleanupEntries.delete(processEmitter);
   };
 }
