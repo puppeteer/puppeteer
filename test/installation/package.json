@@ -46,7 +46,7 @@
     }
   },
   "files": [
-    ".mocharc.cjs",
+    ".mocharc.js",
     "puppeteer-*.tgz",
     "build",
     "assets"

@@ -4,10 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/**
- * This file needs to be kept CJS until Mocha starts accepting ESM
- * for custom interfaces
- */
 
 import Mocha from 'mocha';
 // @ts-expect-error
