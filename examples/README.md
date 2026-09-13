@@ -5,7 +5,7 @@ including third-party ones, see [pptr.dev/examples](https://pptr.dev/examples).
 
 ## Run
 
-Check out this repository and and install the package dependencies, using the following command:
+Check out this repository and install the package dependencies, using the following command:
 
 ```bash
 npm install
