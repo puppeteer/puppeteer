@@ -11,7 +11,7 @@
 
 import Mocha from 'mocha';
 // @ts-expect-error
-import commonInterface from 'mocha/lib/interfaces/common.js';
+import {createCommon as commonInterface} from 'mocha/lib/interfaces/common.js';
 import {
   setLogCapture,
   getCapturedLogs,
@@ -192,4 +192,4 @@ function customBDDInterface(suite: Mocha.Suite) {
 
 customBDDInterface.description = 'Custom BDD';
 
-module.exports = customBDDInterface;
+export default customBDDInterface;
