@@ -18,12 +18,12 @@ import {BidiHTTPRequest} from './HTTPRequest.js';
 class FakeRequest extends EventEmitter<{authenticate: void}> {
   readonly id = 'requestId';
   readonly isBlocked = true;
-  continueWithAuthError: Error | undefined;
+  continueWithAuthError: unknown;
   calls: Array<Record<string, unknown>> = [];
 
   async continueWithAuth(parameters: Record<string, unknown>): Promise<void> {
     this.calls.push(parameters);
-    if (this.continueWithAuthError) {
+    if (this.continueWithAuthError !== undefined) {
       throw this.continueWithAuthError;
     }
   }
@@ -67,6 +67,21 @@ async function drainMicrotasks(): Promise<void> {
   await new Promise(resolve => {
     return setImmediate(resolve);
   });
+}
+
+async function collectRejections(action: () => void): Promise<unknown[]> {
+  const rejections: unknown[] = [];
+  const onUnhandledRejection = (reason: unknown) => {
+    rejections.push(reason);
+  };
+  process.on('unhandledRejection', onUnhandledRejection);
+  try {
+    action();
+    await drainMicrotasks();
+  } finally {
+    process.off('unhandledRejection', onUnhandledRejection);
+  }
+  return rejections;
 }
 
 /**
@@ -143,6 +158,55 @@ describe('BidiHTTPRequest', () => {
     expect(logged[0]![1]).toEqual([error]);
   });
 
+  it('should log the error when canceling the authentication fails', async () => {
+    const logged: Array<[string, unknown[]]> = [];
+    const fakeRequest = createRequest(null, prefix => {
+      return (...args: unknown[]) => {
+        logged.push([prefix, args]);
+      };
+    });
+    const error = new ProtocolError('No such request with the given id');
+    fakeRequest.continueWithAuthError = error;
+
+    fakeRequest.emit('authenticate', undefined);
+    await drainMicrotasks();
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(fakeRequest.calls[0]!['action']).toBe('cancel');
+    expect(logged).toHaveLength(1);
+    expect(logged[0]![0]).toBe(DEBUG_PREFIXES.error);
+    expect(logged[0]![1]).toEqual([error]);
+  });
+
+  it('should not reject when continueWithAuth fails with a non-Error value', async () => {
+    const fakeRequest = createRequest({username: 'user', password: 'pass'});
+    fakeRequest.continueWithAuthError = 'No such request with the given id';
+
+    const rejections = await collectRejections(() => {
+      fakeRequest.emit('authenticate', undefined);
+    });
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(rejections).toHaveLength(0);
+  });
+
+  it('should not reject when continueWithAuth fails and logging is unavailable', async () => {
+    const fakeRequest = createRequest(
+      {username: 'user', password: 'pass'},
+      undefined as unknown as Logger,
+    );
+    fakeRequest.continueWithAuthError = new ProtocolError(
+      'No such request with the given id',
+    );
+
+    const rejections = await collectRejections(() => {
+      fakeRequest.emit('authenticate', undefined);
+    });
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(rejections).toHaveLength(0);
+  });
+
   it('should provide credentials only once and cancel afterwards', async () => {
     const fakeRequest = createRequest({username: 'user', password: 'pass'});
 
@@ -154,5 +218,32 @@ describe('BidiHTTPRequest', () => {
     expect(fakeRequest.calls).toHaveLength(2);
     expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
     expect(fakeRequest.calls[1]!['action']).toBe('cancel');
+  });
+
+  it('should cancel the second challenge emitted before the first one settles', async () => {
+    const fakeRequest = createRequest({username: 'user', password: 'pass'});
+
+    fakeRequest.emit('authenticate', undefined);
+    fakeRequest.emit('authenticate', undefined);
+    await drainMicrotasks();
+
+    expect(fakeRequest.calls).toHaveLength(2);
+    expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
+    expect(fakeRequest.calls[1]!['action']).toBe('cancel');
+  });
+
+  it('should provide empty credentials as-is', async () => {
+    const fakeRequest = createRequest({username: '', password: ''});
+
+    fakeRequest.emit('authenticate', undefined);
+    await drainMicrotasks();
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
+    expect(fakeRequest.calls[0]!['credentials']).toEqual({
+      type: 'password',
+      username: '',
+      password: '',
+    });
   });
 });
