@@ -208,6 +208,39 @@ export class Cache {
       retryDelay: 500,
     });
   }
+  /**
+   * Removes all but the `keep` newest installed versions of each browser for
+   * each platform. Set `keep` to `0` to remove all installed browsers, which
+   * is equivalent to {@link Cache.clear}.
+   *
+   * @param keep - The number of the latest installed versions to keep for each
+   * (browser, platform) pair.
+   * @returns The list of the removed installations.
+   */
+  clearOld(keep: number): InstalledBrowser[] {
+    const installed = this.getInstalledBrowsers();
+    const groups = new Map<string, InstalledBrowser[]>();
+    for (const browser of installed) {
+      const key = `${browser.browser}-${browser.platform}`;
+      const group = groups.get(key) ?? [];
+      group.push(browser);
+      groups.set(key, group);
+    }
+
+    const toRemove: InstalledBrowser[] = [];
+    for (const group of groups.values()) {
+      group.sort((a, b) => {
+        return getVersionComparator(a.browser)(a.buildId, b.buildId);
+      });
+      const removeCount = Math.max(0, group.length - keep);
+      toRemove.push(...group.slice(0, removeCount));
+    }
+
+    for (const browser of toRemove) {
+      this.uninstall(browser.browser, browser.platform, browser.buildId);
+    }
+    return toRemove;
+  }
 
   uninstall(
     browser: Browser,

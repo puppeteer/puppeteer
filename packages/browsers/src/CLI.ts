@@ -450,13 +450,25 @@ export class CLI {
           ? 'Removes all installed browsers from the specified cache directory'
           : `Removes all installed browsers from ${this.#cachePath}`,
         yargs => {
-          return this.#definePathParameter(yargs, true);
+          return this.#definePathParameter(yargs, true)
+            .option('keep', {
+              type: 'number',
+              default: 0,
+              desc: 'Number of the latest installed versions to keep for each browser and platform. Set to 0 (default) to remove all installed browsers.',
+            })
+            .example(
+              '$0 clear --keep 1',
+              'Remove all installed browsers except the latest version of each browser and platform',
+            );
         },
         async args => {
           const cacheDir = args.path ?? this.#cachePath;
+          const keep = args.keep ?? 0;
           const rl = this.#rl ?? readline.createInterface({input, output});
           rl.question(
-            `Do you want to permanently and recursively delete the content of ${cacheDir} (yes/No)? `,
+            keep > 0
+              ? `Do you want to permanently delete old installed browsers in ${cacheDir}, keeping the latest ${keep} version(s) of each browser and platform (yes/No)? `
+              : `Do you want to permanently and recursively delete the content of ${cacheDir} (yes/No)? `,
             answer => {
               rl.close();
               if (!['y', 'yes'].includes(answer.toLowerCase().trim())) {
@@ -464,8 +476,17 @@ export class CLI {
                 return;
               }
               const cache = new Cache(cacheDir);
-              cache.clear();
-              console.log(`${cacheDir} cleared.`);
+              if (keep > 0) {
+                const removed = cache.clearOld(keep);
+                if (removed.length === 0) {
+                  console.log('Nothing to remove.');
+                } else {
+                  console.log(`Removed ${removed.length} old installation(s).`);
+                }
+              } else {
+                cache.clear();
+                console.log(`${cacheDir} cleared.`);
+              }
             },
           );
         },
