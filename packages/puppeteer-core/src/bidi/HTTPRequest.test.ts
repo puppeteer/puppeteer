@@ -8,7 +8,7 @@ import {describe, it} from 'node:test';
 import expect from 'expect';
 
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
-import {ProtocolError} from '../common/Errors.js';
+import {ProtocolError, TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 
 import type {Request} from './core/Request.js';
@@ -252,5 +252,103 @@ describe('BidiHTTPRequest', () => {
       username: '',
       password: '',
     });
+  });
+  it('should not reject when canceling fails with a non-Error value', async () => {
+    const fakeRequest = createRequest(null);
+    fakeRequest.continueWithAuthError = 'No such request with the given id';
+
+    const rejections = await collectRejections(() => {
+      fakeRequest.emit('authenticate', undefined);
+    });
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(fakeRequest.calls[0]!['action']).toBe('cancel');
+    expect(rejections).toHaveLength(0);
+  });
+
+  it('should not reject when canceling fails and logging is unavailable', async () => {
+    const fakeRequest = createRequest(null, undefined as unknown as Logger);
+    fakeRequest.continueWithAuthError = new ProtocolError(
+      'No such request with the given id',
+    );
+
+    const rejections = await collectRejections(() => {
+      fakeRequest.emit('authenticate', undefined);
+    });
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(fakeRequest.calls[0]!['action']).toBe('cancel');
+    expect(rejections).toHaveLength(0);
+  });
+
+  it('should not reject when the page closes while the challenge is outstanding', async () => {
+    const fakeRequest = createRequest({username: 'user', password: 'pass'});
+    fakeRequest.continueWithAuthError = new TargetCloseError('Target closed');
+
+    const rejections = await collectRejections(() => {
+      fakeRequest.emit('authenticate', undefined);
+    });
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(rejections).toHaveLength(0);
+  });
+
+  it('should not reject when both arms fail in turn', async () => {
+    const fakeRequest = createRequest({username: 'user', password: 'pass'});
+    fakeRequest.continueWithAuthError = new ProtocolError(
+      'No such request with the given id',
+    );
+
+    const rejections = await collectRejections(() => {
+      fakeRequest.emit('authenticate', undefined);
+    });
+    const moreRejections = await collectRejections(() => {
+      fakeRequest.emit('authenticate', undefined);
+    });
+
+    expect(fakeRequest.calls).toHaveLength(2);
+    expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
+    expect(fakeRequest.calls[1]!['action']).toBe('cancel');
+    expect(rejections).toHaveLength(0);
+    expect(moreRejections).toHaveLength(0);
+  });
+
+  // Control: passes with and without the fix. Credentials set only after a
+  // first challenge was already canceled - the reverse of the order the other
+  // cases exercise - still provides them on the second challenge.
+  it('should provide credentials set after an earlier challenge was canceled (control)', async () => {
+    const holder: {
+      credentials: {username: string; password: string} | null;
+    } = {credentials: null};
+    const fakeRequest = new FakeRequest();
+    const frame = {
+      page() {
+        return {
+          _credentials: holder.credentials,
+          trustedEmitter: {
+            emit() {},
+          },
+        };
+      },
+    } as unknown as BidiFrame;
+    BidiHTTPRequest.from(
+      fakeRequest as unknown as Request,
+      frame,
+      false,
+      undefined,
+      () => {
+        return undefined;
+      },
+    );
+
+    fakeRequest.emit('authenticate', undefined);
+    await drainMicrotasks();
+    holder.credentials = {username: 'user', password: 'pass'};
+    fakeRequest.emit('authenticate', undefined);
+    await drainMicrotasks();
+
+    expect(fakeRequest.calls).toHaveLength(2);
+    expect(fakeRequest.calls[0]!['action']).toBe('cancel');
+    expect(fakeRequest.calls[1]!['action']).toBe('provideCredentials');
   });
 });
