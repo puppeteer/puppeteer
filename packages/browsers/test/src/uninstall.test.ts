@@ -60,4 +60,37 @@ describe('common', () => {
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
   });
+
+  it('should drop the aliases of the uninstalled build', async () => {
+    const cache = new Cache(tmpDir);
+    cache.writeMetadata(Browser.CHROME, {
+      aliases: {stable: testChromeBuildId, canary: '999.0.9999.999'},
+    });
+
+    await uninstall({
+      cacheDir: tmpDir,
+      browser: Browser.CHROME,
+      platform: BrowserPlatform.LINUX,
+      buildId: testChromeBuildId,
+    });
+
+    assert.deepStrictEqual(cache.readMetadata(Browser.CHROME).aliases, {
+      canary: '999.0.9999.999',
+    });
+    assert.strictEqual(cache.resolveAlias(Browser.CHROME, 'stable'), undefined);
+  });
+
+  it('should not create a metadata file when there is nothing to drop', async () => {
+    await uninstall({
+      cacheDir: tmpDir,
+      browser: Browser.CHROME,
+      platform: BrowserPlatform.LINUX,
+      buildId: testChromeBuildId,
+    });
+
+    assert.strictEqual(
+      fs.existsSync(path.join(tmpDir, 'chrome', '.metadata')),
+      false,
+    );
+  });
 });
