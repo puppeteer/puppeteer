@@ -207,6 +207,8 @@ describe('BidiHTTPRequest', () => {
     expect(rejections).toHaveLength(0);
   });
 
+  // Control: passes with and without the fix. Pins that answering the
+  // challenge still happens exactly once when nothing rejects.
   it('should provide credentials only once and cancel afterwards', async () => {
     const fakeRequest = createRequest({username: 'user', password: 'pass'});
 
@@ -220,6 +222,9 @@ describe('BidiHTTPRequest', () => {
     expect(fakeRequest.calls[1]!['action']).toBe('cancel');
   });
 
+  // Control: passes with and without the fix. The fix awaits
+  // `continueWithAuth`, so this pins that the handled flag is still set before
+  // the call and a re-entrant challenge cannot provide credentials twice.
   it('should cancel the second challenge emitted before the first one settles', async () => {
     const fakeRequest = createRequest({username: 'user', password: 'pass'});
 
@@ -232,6 +237,8 @@ describe('BidiHTTPRequest', () => {
     expect(fakeRequest.calls[1]!['action']).toBe('cancel');
   });
 
+  // Control: passes with and without the fix. Empty strings are falsy but
+  // valid credentials and must not be turned into a cancel.
   it('should provide empty credentials as-is', async () => {
     const fakeRequest = createRequest({username: '', password: ''});
 
