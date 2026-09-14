@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import Mocha from 'mocha';
 
 class SpecJSONReporter extends Mocha.reporters.Spec {

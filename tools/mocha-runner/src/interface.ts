@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import Mocha from 'mocha';
-// @ts-expect-error
+// @ts-expect-error No types for mocha's internal API
 import {createCommon as commonInterface} from 'mocha/lib/interfaces/common.js';
 import {
   setLogCapture,
@@ -61,7 +60,7 @@ function dumpLogsIfFail(this: Mocha.Context) {
   setLogCapture(false);
 }
 
-function customBDDInterface(suite: Mocha.Suite) {
+function customBDDInterface(suite: Mocha.Suite): void {
   const suites: [Mocha.Suite] = [suite];
 
   suite.on(
