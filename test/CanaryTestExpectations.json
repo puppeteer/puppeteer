@@ -57,32 +57,32 @@
   },
   {
     "testIdPattern": "[webmcp.test] Page.webmcp should list tools",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headful", "cdp"],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
     "expectations": ["TIMEOUT"]
   },
   {
     "testIdPattern": "[webmcp.test] Page.webmcp should fire toolsadded events",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headful", "cdp"],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
     "expectations": ["TIMEOUT"]
   },
   {
     "testIdPattern": "[webmcp.test] Page.webmcp should fire toolsremoved events",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headful", "cdp"],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
     "expectations": ["TIMEOUT"]
   },
   {
     "testIdPattern": "[webmcp.test] Page.webmcp should remove tools on frame navigation",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headful", "cdp"],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
     "expectations": ["TIMEOUT"]
   },
   {
     "testIdPattern": "[webmcp.test] Page.webmcp should not reset tools on same-document navigation",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headful", "cdp"],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
     "expectations": ["TIMEOUT"]
   },
   {
