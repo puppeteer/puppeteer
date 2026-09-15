@@ -183,13 +183,6 @@
   },
   {
     "testIdPattern": "[page.test] Page Page.record *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Screen recording is not supported until Chrome 153"
-  },
-  {
-    "testIdPattern": "[page.test] Page Page.record *",
     "platforms": ["linux"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
@@ -781,6 +774,13 @@
     "comment": "Not testable in headful"
   },
   {
+    "testIdPattern": "[page.test] Page Page.record *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Screen recording is not supported in WebDriver BiDi in Chrome yet"
+  },
+  {
     "testIdPattern": "[page.test] Page Page.reload should enable or disable the cache based on reload params",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1065,6 +1065,20 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "CDP-specific"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Firefox WebDriver BiDi does not yet provide a stable remote connection lifecycle for this test."
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[browser.test] Browser specs Browser.process should not return child_process for remote browser",
