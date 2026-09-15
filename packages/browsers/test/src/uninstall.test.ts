@@ -83,4 +83,32 @@ describe('common', () => {
       fs.rmSync(siblingDir, {recursive: true, force: true});
     }
   });
+
+  it('should remove the alias of an uninstalled browser', async function () {
+    this.timeout(60000);
+    await install({
+      cacheDir: tmpDir,
+      browser: Browser.CHROME,
+      platform: BrowserPlatform.LINUX,
+      buildId: testChromeBuildId,
+      buildIdAlias: 'stable',
+      baseUrl: getServerUrl(),
+    });
+    assert.strictEqual(
+      new Cache(tmpDir).resolveAlias(Browser.CHROME, 'stable'),
+      testChromeBuildId,
+    );
+
+    await uninstall({
+      cacheDir: tmpDir,
+      browser: Browser.CHROME,
+      platform: BrowserPlatform.LINUX,
+      buildId: testChromeBuildId,
+    });
+
+    assert.strictEqual(
+      new Cache(tmpDir).resolveAlias(Browser.CHROME, 'stable'),
+      undefined,
+    );
+  });
 });
