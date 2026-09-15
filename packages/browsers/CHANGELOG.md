@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.3](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.2...browsers-v3.2.3) (2026-09-15)
+
+
+### 📄 Documentation
+
+* mention support for Linux ARM64 ([#15457](https://github.com/puppeteer/puppeteer/issues/15457)) ([40cef6d](https://github.com/puppeteer/puppeteer/commit/40cef6dfe744fd75c646407887125cc3a2b6d2e3))
+
 ## [3.2.2](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.1...browsers-v3.2.2) (2026-09-03)
 
 

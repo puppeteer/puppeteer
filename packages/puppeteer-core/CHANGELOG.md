@@ -1,5 +1,19 @@
 # Changelog
 
+## [25.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.11.0...puppeteer-core-v25.11.1) (2026-09-15)
+
+
+### 🛠️ Fixes
+
+* return the shadow host for a text node in a shadow root in SerializedAXNode.elementHandle ([#15451](https://github.com/puppeteer/puppeteer/issues/15451)) ([101c7d5](https://github.com/puppeteer/puppeteer/commit/101c7d501555072510b4f2df00c549617b515c57))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.2 to 3.2.3
+
 ## [25.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.10.0...puppeteer-core-v25.11.0) (2026-09-13)
 
 
