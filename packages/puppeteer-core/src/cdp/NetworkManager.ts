@@ -480,11 +480,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       // for a request Puppeteer already emitted (crbug.com/1196004). Repoint
       // that request instead of emitting a duplicate that never finishes.
       const request = this.#networkEventManager.getRequest(networkRequestId);
-      if (
-        request &&
-        request.url() === event.request.url &&
-        request.method() === event.request.method
-      ) {
+      if (request && this.#isRestartedRequest(request, event)) {
         this.#onRequestRestarted(request, fetchRequestId);
         return;
       }
@@ -505,6 +501,24 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
     this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
     this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
+  }
+
+  #isRestartedRequest(
+    request: CdpHTTPRequest,
+    event: Protocol.Fetch.RequestPausedEvent,
+  ): boolean {
+    // Only a request with no response yet can be restarted. Redirects are
+    // excluded by id because in a same-URL redirect, the pause can arrive
+    // before the response does.
+    if (event.redirectedRequestId || request.response()) {
+      return false;
+    }
+    // Chrome pauses the request the user continued to, not the original.
+    const overrides = request.continueRequestOverrides();
+    return (
+      (overrides.url ?? request.url()) === event.request.url &&
+      (overrides.method ?? request.method()) === event.request.method
+    );
   }
 
   #onRequestRestarted(

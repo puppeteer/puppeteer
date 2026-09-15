@@ -6,6 +6,7 @@
 
 import {describe, it} from 'node:test';
 
+import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
@@ -578,20 +579,9 @@ describe('NetworkManager', () => {
 
     expect(requests).toHaveLength(1);
   });
-  it(`should emit requestfinished for a stylesheet font request that Chrome restarts (github.com/puppeteer/puppeteer/issues/11641)`, async () => {
-    const mockCDPSession = new MockCDPSession();
-    const manager = createNetworkManager();
-    await manager.addClient(mockCDPSession);
-    await manager.setRequestInterception(true);
-
-    const finished: HTTPRequest[] = [];
-    manager.on(NetworkManagerEvent.Request, async (request: HTTPRequest) => {
-      await request.continue();
-    });
-    manager.on(NetworkManagerEvent.RequestFinished, (request: HTTPRequest) => {
-      finished.push(request);
-    });
-
+  describe('restarted requests (crbug.com/1196004)', () => {
+    const networkId = '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50';
+    const frameId = '84AC261A351B86932B775B76D1DD79F8';
     const fontRequest = {
       url: 'https://example.com/fonts/font.woff2',
       method: 'GET',
@@ -599,61 +589,207 @@ describe('NetworkManager', () => {
       initialPriority: 'VeryHigh',
       referrerPolicy: 'strict-origin-when-cross-origin',
     } as const;
-    mockCDPSession.emit('Network.requestWillBeSent', {
-      requestId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
-      loaderId: '11ACE9783588040D644B905E8B55285B',
-      documentURL: 'https://example.com/',
-      request: {...fontRequest, mixedContentType: 'none', isSameSite: true},
-      timestamp: 224604.980827,
-      wallTime: 1637955746.786191,
-      initiator: {type: 'parser', url: 'https://example.com/style.css'},
-      redirectHasExtraInfo: false,
-      type: 'Font',
-      frameId: '84AC261A351B86932B775B76D1DD79F8',
-      hasUserGesture: false,
-    });
-    // Chrome restarts the font fetch and pauses it again under a new
-    // interception id (crbug.com/1196004).
-    for (const requestId of ['interception-job-1.0', 'interception-job-2.0']) {
+
+    function emitRequestWillBeSent(
+      mockCDPSession: MockCDPSession,
+      redirectResponse?: Protocol.Network.Response,
+    ) {
+      mockCDPSession.emit('Network.requestWillBeSent', {
+        requestId: networkId,
+        loaderId: '11ACE9783588040D644B905E8B55285B',
+        documentURL: 'https://example.com/',
+        request: {...fontRequest, mixedContentType: 'none', isSameSite: true},
+        timestamp: 224604.980827,
+        wallTime: 1637955746.786191,
+        initiator: {type: 'parser', url: 'https://example.com/style.css'},
+        redirectHasExtraInfo: false,
+        redirectResponse,
+        type: 'Font',
+        frameId,
+        hasUserGesture: false,
+      });
+    }
+
+    function emitRequestPaused(
+      mockCDPSession: MockCDPSession,
+      requestId: string,
+      overrides: Partial<Protocol.Fetch.RequestPausedEvent> = {},
+    ) {
       mockCDPSession.emit('Fetch.requestPaused', {
         requestId,
         request: fontRequest,
-        frameId: '84AC261A351B86932B775B76D1DD79F8',
+        frameId,
         resourceType: 'Font',
-        networkId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
+        networkId,
+        ...overrides,
       });
     }
-    mockCDPSession.emit('Network.responseReceived', {
-      requestId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
-      loaderId: '11ACE9783588040D644B905E8B55285B',
-      timestamp: 224605.0,
-      type: 'Font',
-      response: {
+
+    function finishRequest(mockCDPSession: MockCDPSession) {
+      mockCDPSession.emit('Network.responseReceived', {
+        requestId: networkId,
+        loaderId: '11ACE9783588040D644B905E8B55285B',
+        timestamp: 224605.0,
+        type: 'Font',
+        response: {
+          url: fontRequest.url,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          mimeType: 'font/woff2',
+          charset: '',
+          connectionReused: false,
+          connectionId: 1,
+          encodedDataLength: 100,
+          securityState: 'secure',
+        },
+        hasExtraInfo: false,
+        frameId,
+      });
+      mockCDPSession.emit('Network.loadingFinished', {
+        requestId: networkId,
+        timestamp: 224605.1,
+        encodedDataLength: 100,
+      });
+    }
+
+    async function setup(onRequest: (request: HTTPRequest) => Promise<void>) {
+      const commands: Array<{method: string; params: unknown}> = [];
+      const mockCDPSession = new MockCDPSession();
+      mockCDPSession.send = (async (method: string, params: unknown) => {
+        commands.push({method, params});
+      }) as any;
+      const manager = createNetworkManager();
+      await manager.addClient(mockCDPSession);
+      await manager.setRequestInterception(true);
+
+      const requests: HTTPRequest[] = [];
+      const finished: HTTPRequest[] = [];
+      manager.on(NetworkManagerEvent.Request, async (request: HTTPRequest) => {
+        requests.push(request);
+        await onRequest(request);
+      });
+      manager.on(
+        NetworkManagerEvent.RequestFinished,
+        (request: HTTPRequest) => {
+          finished.push(request);
+        },
+      );
+
+      return {
+        mockCDPSession,
+        requests,
+        finished,
+        continueRequests() {
+          return commands
+            .filter(command => {
+              return command.method === 'Fetch.continueRequest';
+            })
+            .map(command => {
+              return command.params;
+            });
+        },
+      };
+    }
+
+    it('should continue the restarted request with the same overrides', async () => {
+      const headers = {'x-test': '1'};
+      const {mockCDPSession, requests, finished, continueRequests} =
+        await setup(async request => {
+          await request.continue({headers});
+        });
+
+      emitRequestWillBeSent(mockCDPSession);
+      emitRequestPaused(mockCDPSession, 'interception-job-1.0');
+      emitRequestPaused(mockCDPSession, 'interception-job-2.0');
+      finishRequest(mockCDPSession);
+
+      expect(requests).toHaveLength(1);
+      expect(continueRequests()).toEqual([
+        {
+          requestId: 'interception-job-1.0',
+          headers: [{name: 'x-test', value: '1'}],
+        },
+        {
+          requestId: 'interception-job-2.0',
+          headers: [{name: 'x-test', value: '1'}],
+        },
+      ]);
+      expect(
+        finished.map(r => {
+          return r.url();
+        }),
+      ).toEqual([fontRequest.url]);
+    });
+
+    it('should detect the restart when the URL and method were overridden', async () => {
+      const url = 'https://example.com/fonts/other.woff2';
+      const method = 'POST';
+      const {mockCDPSession, requests, finished, continueRequests} =
+        await setup(async request => {
+          await request.continue({url, method});
+        });
+
+      emitRequestWillBeSent(mockCDPSession);
+      emitRequestPaused(mockCDPSession, 'interception-job-1.0');
+      // Chrome pauses the restarted request with the overridden URL and
+      // method.
+      emitRequestPaused(mockCDPSession, 'interception-job-2.0', {
+        request: {...fontRequest, url, method},
+      });
+      finishRequest(mockCDPSession);
+
+      expect(requests).toHaveLength(1);
+      expect(continueRequests()).toEqual([
+        {requestId: 'interception-job-1.0', url, method},
+        {requestId: 'interception-job-2.0', url, method},
+      ]);
+      expect(
+        finished.map(r => {
+          return r.url();
+        }),
+      ).toEqual([fontRequest.url]);
+    });
+
+    it('should not mistake a same-URL redirect for a restart', async () => {
+      const {mockCDPSession, requests, finished, continueRequests} =
+        await setup(async request => {
+          await request.continue();
+        });
+
+      emitRequestWillBeSent(mockCDPSession);
+      emitRequestPaused(mockCDPSession, 'interception-job-1.0');
+      // The redirect's Fetch.requestPaused can arrive before its
+      // Network.requestWillBeSent.
+      emitRequestPaused(mockCDPSession, 'interception-job-2.0', {
+        redirectedRequestId: 'interception-job-1.0',
+      });
+      emitRequestWillBeSent(mockCDPSession, {
         url: fontRequest.url,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        mimeType: 'font/woff2',
+        status: 307,
+        statusText: 'Temporary Redirect',
+        headers: {location: fontRequest.url},
+        mimeType: '',
         charset: '',
         connectionReused: false,
         connectionId: 1,
         encodedDataLength: 100,
         securityState: 'secure',
-      },
-      hasExtraInfo: false,
-      frameId: '84AC261A351B86932B775B76D1DD79F8',
-    });
-    mockCDPSession.emit('Network.loadingFinished', {
-      requestId: '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50',
-      timestamp: 224605.1,
-      encodedDataLength: 100,
-    });
+      });
+      finishRequest(mockCDPSession);
 
-    expect(
-      finished.map(r => {
-        return r.url();
-      }),
-    ).toEqual([fontRequest.url]);
+      expect(requests).toHaveLength(2);
+      expect(requests[1]!.redirectChain()).toEqual([requests[0]]);
+      expect(continueRequests()).toEqual([
+        {requestId: 'interception-job-1.0'},
+        {requestId: 'interception-job-2.0'},
+      ]);
+      expect(
+        finished.map(r => {
+          return r.response()?.status();
+        }),
+      ).toEqual([307, 200]);
+    });
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();
