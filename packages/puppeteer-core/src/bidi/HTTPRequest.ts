@@ -328,7 +328,7 @@ export class BidiHTTPRequest extends HTTPRequest {
           // The request may have been canceled or the page closed before the
           // auth challenge could be answered. Tolerate these errors instead of
           // rejecting, which would surface as an unhandled rejection.
-          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+          this.#logger(DEBUG_PREFIXES.error)?.(error);
         });
     } else {
       await this.#request
@@ -336,7 +336,7 @@ export class BidiHTTPRequest extends HTTPRequest {
           action: 'cancel',
         })
         .catch(error => {
-          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+          this.#logger(DEBUG_PREFIXES.error)?.(error);
         });
     }
   };

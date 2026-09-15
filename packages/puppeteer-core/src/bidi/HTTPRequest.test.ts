@@ -190,10 +190,12 @@ describe('BidiHTTPRequest', () => {
     expect(rejections).toHaveLength(0);
   });
 
-  it('should not reject when continueWithAuth fails and logging is unavailable', async () => {
+  it('should not reject when continueWithAuth fails and the channel is disabled', async () => {
     const fakeRequest = createRequest(
       {username: 'user', password: 'pass'},
-      undefined as unknown as Logger,
+      () => {
+        return undefined;
+      },
     );
     fakeRequest.continueWithAuthError = new ProtocolError(
       'No such request with the given id',
@@ -266,8 +268,10 @@ describe('BidiHTTPRequest', () => {
     expect(rejections).toHaveLength(0);
   });
 
-  it('should not reject when canceling fails and logging is unavailable', async () => {
-    const fakeRequest = createRequest(null, undefined as unknown as Logger);
+  it('should not reject when canceling fails and the channel is disabled', async () => {
+    const fakeRequest = createRequest(null, () => {
+      return undefined;
+    });
     fakeRequest.continueWithAuthError = new ProtocolError(
       'No such request with the given id',
     );
