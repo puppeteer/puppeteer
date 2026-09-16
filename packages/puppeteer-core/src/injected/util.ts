@@ -18,9 +18,13 @@ export const checkVisibility = (
   if (visible === undefined) {
     return node;
   }
+  // A text node placed directly in a shadow root has no parent element, so
+  // fall back to the shadow host.
   const element = (
-    node.nodeType === Node.TEXT_NODE ? node.parentElement : node
-  ) as Element | null;
+    node.nodeType === Node.TEXT_NODE
+      ? (node.parentElement ?? (node.parentNode as ShadowRoot | null)?.host)
+      : node
+  ) as Element | null | undefined;
   if (!element) {
     return visible === false;
   }

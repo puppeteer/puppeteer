@@ -282,6 +282,25 @@ describe('ElementHandle specs', function () {
       await expect(textHandle.isHidden()).resolves.toBeTruthy();
       await expect(textHandle.isVisible()).resolves.toBeFalsy();
     });
+
+    it('should use the shadow host for a text node placed directly in a shadow root', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div id="host"></div>`);
+      using handle = await page.evaluateHandle(() => {
+        const host = document.getElementById('host')!;
+        const root = host.attachShadow({mode: 'open'});
+        root.textContent = 'hello';
+        return root.firstChild!;
+      });
+      using textHandle = handle.asElement()!;
+      await expect(textHandle.isVisible()).resolves.toBeTruthy();
+      await expect(textHandle.isHidden()).resolves.toBeFalsy();
+      await page.evaluate(() => {
+        document.getElementById('host')!.style.visibility = 'hidden';
+      });
+      await expect(textHandle.isVisible()).resolves.toBeFalsy();
+      await expect(textHandle.isHidden()).resolves.toBeTruthy();
+    });
   });
 
   describe('ElementHandle.click', function () {
