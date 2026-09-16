@@ -7,7 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
-import type {Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
 import type {
@@ -19,11 +19,7 @@ import type {
   NodeFor,
 } from '../common/types.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
-import {
-  debugError,
-  isString,
-  withSourcePuppeteerURLIfNone,
-} from '../common/util.js';
+import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
@@ -865,7 +861,9 @@ export abstract class ElementHandle<
         // `drop()` is the only thing that releases the button and it will never
         // run now, so without this the button stays pressed for the rest of the
         // session. It must not mask the error that got us here.
-        await page.mouse.up().catch(debugError);
+        await page.mouse.up().catch(error => {
+          this.logger(DEBUG_PREFIXES.error)?.(error);
+        });
       }
       throw error;
     }
