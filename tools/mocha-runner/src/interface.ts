@@ -145,7 +145,6 @@ function customBDDInterface(suite: Mocha.Suite): void {
           });
           context['after'](() => {
             setLogCapture(false);
-            clearCapturedLogs();
           });
           context['describe'](description, body);
         });
@@ -174,7 +173,6 @@ function customBDDInterface(suite: Mocha.Suite): void {
           });
           deflakeSuit.afterAll(function () {
             setLogCapture(false);
-            clearCapturedLogs();
           });
           for (let i = 0; i < deflakeRetries; i++) {
             deflakeSuit.addTest(test.clone());
