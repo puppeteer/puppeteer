@@ -14,35 +14,25 @@ import {environment} from 'puppeteer-core/internal/environment.js';
 
 import {testIdMatchesExpectationPattern} from './utils.js';
 
-const LOG_STATE_SYMBOL = Symbol.for('puppeteer.mocha-runner.logState');
-interface LogState {
-  capturedLogs: string[];
-  captureLogs: boolean;
-}
-const globalWithState = globalThis as unknown as {
-  [LOG_STATE_SYMBOL]?: LogState;
-};
-const logState: LogState = (globalWithState[LOG_STATE_SYMBOL] ??= {
-  capturedLogs: [],
-  captureLogs: Boolean(process.env['RUNNER_DEBUG']),
-});
+let capturedLogs: string[] = [];
+let captureLogs = Boolean(process.env['RUNNER_DEBUG']);
 
 export function setLogCapture(value: boolean): void {
-  logState.captureLogs = Boolean(process.env['RUNNER_DEBUG']) || value;
+  captureLogs = Boolean(process.env['RUNNER_DEBUG']) || value;
 }
 
 export function getCapturedLogs(): string[] {
-  return logState.capturedLogs;
+  return capturedLogs;
 }
 
 export function clearCapturedLogs(): void {
-  logState.capturedLogs = [];
+  capturedLogs = [];
 }
 
 export const logger: Logger = (prefix: string) => {
   return (...args: unknown[]) => {
-    if (logState.captureLogs) {
-      logState.capturedLogs.push(`${prefix} ${format(...args)}`);
+    if (captureLogs) {
+      capturedLogs.push(`${prefix} ${format(...args)}`);
     }
   };
 };
