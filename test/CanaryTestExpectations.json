@@ -28,89 +28,10 @@
     "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097"
   },
   {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolinvoked events",
+    "testIdPattern": "[webmcp.test] Page.webmcp *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with success",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with exception",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with errorText",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should list tools",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolsadded events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolsremoved events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should remove tools on frame navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should not reset tools on same-document navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolinvoked events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL", "TIMEOUT"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with success",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL", "TIMEOUT"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with exception",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL", "TIMEOUT"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-  {
-    "testIdPattern": "[webmcp.test] Page.webmcp should fire toolresponded event with errorText",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL", "TIMEOUT"],
+    "expectations": ["SKIP", "FAIL", "TIMEOUT"],
     "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
   }
 ]
