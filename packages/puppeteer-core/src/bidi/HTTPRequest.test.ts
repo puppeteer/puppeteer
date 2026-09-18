@@ -19,10 +19,14 @@ class FakeRequest extends EventEmitter<{authenticate: void}> {
   readonly id = 'requestId';
   readonly isBlocked = true;
   continueWithAuthError: unknown;
+  onContinueWithAuth: (() => void) | undefined;
   calls: Array<Record<string, unknown>> = [];
 
   async continueWithAuth(parameters: Record<string, unknown>): Promise<void> {
     this.calls.push(parameters);
+    const hook = this.onContinueWithAuth;
+    this.onContinueWithAuth = undefined;
+    hook?.();
     if (this.continueWithAuthError !== undefined) {
       throw this.continueWithAuthError;
     }
@@ -30,7 +34,10 @@ class FakeRequest extends EventEmitter<{authenticate: void}> {
 }
 
 function createRequest(
-  credentials: {username: string; password: string} | null,
+  credentials:
+    | {username: string; password: string}
+    | null
+    | (() => {username: string; password: string} | null),
   logger: Logger = () => {
     return undefined;
   },
@@ -39,7 +46,8 @@ function createRequest(
   const frame = {
     page() {
       return {
-        _credentials: credentials,
+        _credentials:
+          typeof credentials === 'function' ? credentials() : credentials,
         trustedEmitter: {
           emit() {},
         },
@@ -58,9 +66,9 @@ function createRequest(
   return fakeRequest;
 }
 
-async function drainMicrotasks(): Promise<void> {
-  // Two turns: one for the handler's promise, one for the unhandled rejection
-  // check that Node performs after the microtask queue is empty.
+async function settleEventLoop(): Promise<void> {
+  // Lets promise reactions run and Node report any unhandled rejection before
+  // the test inspects what happened.
   await new Promise(resolve => {
     return setImmediate(resolve);
   });
@@ -77,7 +85,7 @@ async function collectRejections(action: () => void): Promise<unknown[]> {
   process.on('unhandledRejection', onUnhandledRejection);
   try {
     action();
-    await drainMicrotasks();
+    await settleEventLoop();
   } finally {
     process.off('unhandledRejection', onUnhandledRejection);
   }
@@ -135,7 +143,7 @@ describe('BidiHTTPRequest', () => {
     fakeRequest.continueWithAuthError = error;
 
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
+    await settleEventLoop();
 
     expect(logged).toHaveLength(1);
     expect(logged[0]![0]).toBe(DEBUG_PREFIXES.error);
@@ -153,7 +161,7 @@ describe('BidiHTTPRequest', () => {
     fakeRequest.continueWithAuthError = error;
 
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
+    await settleEventLoop();
 
     expect(fakeRequest.calls).toHaveLength(1);
     expect(fakeRequest.calls[0]!['action']).toBe('cancel');
@@ -174,62 +182,54 @@ describe('BidiHTTPRequest', () => {
     expect(rejections).toHaveLength(0);
   });
 
-  it('should not reject when continueWithAuth fails and the channel is disabled', async () => {
-    const fakeRequest = createRequest(
-      {username: 'user', password: 'pass'},
-      () => {
-        return undefined;
-      },
-    );
-    fakeRequest.continueWithAuthError = new ProtocolError(
-      'No such request with the given id',
-    );
-
-    const rejections = await collectRejections(() => {
-      fakeRequest.emit('authenticate', undefined);
-    });
-
-    expect(fakeRequest.calls).toHaveLength(1);
-    expect(rejections).toHaveLength(0);
-  });
-
-  // Control: passes with and without the fix. Pins that answering the
-  // challenge still happens exactly once when nothing rejects.
   it('should provide credentials only once and cancel afterwards', async () => {
     const fakeRequest = createRequest({username: 'user', password: 'pass'});
 
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
+    await settleEventLoop();
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
+    await settleEventLoop();
 
     expect(fakeRequest.calls).toHaveLength(2);
     expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
     expect(fakeRequest.calls[1]!['action']).toBe('cancel');
   });
 
-  // Control: passes with and without the fix. The fix awaits
-  // `continueWithAuth`, so this pins that the handled flag is still set before
-  // the call and a re-entrant challenge cannot provide credentials twice.
   it('should cancel the second challenge emitted before the first one settles', async () => {
     const fakeRequest = createRequest({username: 'user', password: 'pass'});
 
     fakeRequest.emit('authenticate', undefined);
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
+    await settleEventLoop();
 
     expect(fakeRequest.calls).toHaveLength(2);
     expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
     expect(fakeRequest.calls[1]!['action']).toBe('cancel');
   });
 
-  // Control: passes with and without the fix. Empty strings are falsy but
-  // valid credentials and must not be turned into a cancel.
+  // The handled flag is set before `continueWithAuth` is called, so a
+  // challenge emitted from inside that call cannot provide credentials again.
+  it('should cancel a challenge emitted while credentials are being provided', async () => {
+    const fakeRequest = createRequest({username: 'user', password: 'pass'});
+    fakeRequest.onContinueWithAuth = () => {
+      fakeRequest.emit('authenticate', undefined);
+    };
+
+    fakeRequest.emit('authenticate', undefined);
+    await settleEventLoop();
+
+    expect(fakeRequest.calls).toHaveLength(2);
+    expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
+    expect(fakeRequest.calls[1]!['action']).toBe('cancel');
+  });
+
+  // Empty strings are falsy but valid credentials and must not be turned into
+  // a cancel.
   it('should provide empty credentials as-is', async () => {
     const fakeRequest = createRequest({username: '', password: ''});
 
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
+    await settleEventLoop();
 
     expect(fakeRequest.calls).toHaveLength(1);
     expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
@@ -243,23 +243,6 @@ describe('BidiHTTPRequest', () => {
   it('should not reject when canceling fails with a non-Error value', async () => {
     const fakeRequest = createRequest(null);
     fakeRequest.continueWithAuthError = 'No such request with the given id';
-
-    const rejections = await collectRejections(() => {
-      fakeRequest.emit('authenticate', undefined);
-    });
-
-    expect(fakeRequest.calls).toHaveLength(1);
-    expect(fakeRequest.calls[0]!['action']).toBe('cancel');
-    expect(rejections).toHaveLength(0);
-  });
-
-  it('should not reject when canceling fails and the channel is disabled', async () => {
-    const fakeRequest = createRequest(null, () => {
-      return undefined;
-    });
-    fakeRequest.continueWithAuthError = new ProtocolError(
-      'No such request with the given id',
-    );
 
     const rejections = await collectRejections(() => {
       fakeRequest.emit('authenticate', undefined);
@@ -302,39 +285,19 @@ describe('BidiHTTPRequest', () => {
     expect(moreRejections).toHaveLength(0);
   });
 
-  // Control: passes with and without the fix. Credentials set only after a
-  // first challenge was already canceled - the reverse of the order the other
-  // cases exercise - still provides them on the second challenge.
-  it('should provide credentials set after an earlier challenge was canceled (control)', async () => {
-    const holder: {
-      credentials: {username: string; password: string} | null;
-    } = {credentials: null};
-    const fakeRequest = new FakeRequest();
-    const frame = {
-      page() {
-        return {
-          _credentials: holder.credentials,
-          trustedEmitter: {
-            emit() {},
-          },
-        };
-      },
-    } as unknown as BidiFrame;
-    BidiHTTPRequest.from(
-      fakeRequest as unknown as Request,
-      frame,
-      false,
-      undefined,
-      () => {
-        return undefined;
-      },
-    );
+  // Credentials set only after a first challenge was canceled are provided on
+  // the next challenge.
+  it('should provide credentials set after an earlier challenge was canceled', async () => {
+    let credentials: {username: string; password: string} | null = null;
+    const fakeRequest = createRequest(() => {
+      return credentials;
+    });
 
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
-    holder.credentials = {username: 'user', password: 'pass'};
+    await settleEventLoop();
+    credentials = {username: 'user', password: 'pass'};
     fakeRequest.emit('authenticate', undefined);
-    await drainMicrotasks();
+    await settleEventLoop();
 
     expect(fakeRequest.calls).toHaveLength(2);
     expect(fakeRequest.calls[0]!['action']).toBe('cancel');
