@@ -97,17 +97,9 @@ describe('BidiHTTPRequest', () => {
       'No such request with the given id',
     );
 
-    const rejections: unknown[] = [];
-    const onUnhandledRejection = (reason: unknown) => {
-      rejections.push(reason);
-    };
-    process.on('unhandledRejection', onUnhandledRejection);
-    try {
+    const rejections = await collectRejections(() => {
       fakeRequest.emit('authenticate', undefined);
-      await drainMicrotasks();
-    } finally {
-      process.off('unhandledRejection', onUnhandledRejection);
-    }
+    });
 
     expect(fakeRequest.calls).toHaveLength(1);
     expect(fakeRequest.calls[0]!['action']).toBe('provideCredentials');
@@ -120,17 +112,9 @@ describe('BidiHTTPRequest', () => {
       'No such request with the given id',
     );
 
-    const rejections: unknown[] = [];
-    const onUnhandledRejection = (reason: unknown) => {
-      rejections.push(reason);
-    };
-    process.on('unhandledRejection', onUnhandledRejection);
-    try {
+    const rejections = await collectRejections(() => {
       fakeRequest.emit('authenticate', undefined);
-      await drainMicrotasks();
-    } finally {
-      process.off('unhandledRejection', onUnhandledRejection);
-    }
+    });
 
     expect(fakeRequest.calls).toHaveLength(1);
     expect(fakeRequest.calls[0]!['action']).toBe('cancel');
@@ -255,6 +239,7 @@ describe('BidiHTTPRequest', () => {
       password: '',
     });
   });
+
   it('should not reject when canceling fails with a non-Error value', async () => {
     const fakeRequest = createRequest(null);
     fakeRequest.continueWithAuthError = 'No such request with the given id';
