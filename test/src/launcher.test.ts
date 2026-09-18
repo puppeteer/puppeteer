@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import assert from 'node:assert';
-import {once} from 'node:events';
 import fs from 'node:fs';
 import {mkdtemp, readFile, writeFile} from 'node:fs/promises';
 import os from 'node:os';
@@ -124,13 +123,17 @@ describe('Launcher specs', function () {
           const browserProcess = browser.process()!;
           const connection = (browser as BidiBrowser).connection;
           const send = connection.send.bind(connection);
-          sinon.stub(connection, 'send').callsFake((method, params, opts) => {
-            if (method === 'browser.close') {
-              return Promise.reject(new Error('browser.close failed'));
-            }
-            return send(method, params, opts);
+          sinon
+            .stub(connection, 'send')
+            .callsFake((method, params, timeout) => {
+              if (method === 'browser.close') {
+                return Promise.reject(new Error('browser.close failed'));
+              }
+              return send(method, params, timeout);
+            });
+          const exited = new Promise(resolve => {
+            return browserProcess.once('exit', resolve);
           });
-          const exited = once(browserProcess, 'exit');
           await browser.close();
           await exited;
         } finally {
