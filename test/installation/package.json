@@ -46,14 +46,14 @@
     }
   },
   "files": [
-    ".mocharc.cjs",
+    ".mocharc.js",
     "puppeteer-*.tgz",
     "build",
     "assets"
   ],
   "devDependencies": {
     "glob": "13.0.6",
-    "mocha": "11.8.0"
+    "mocha": "12.0.0"
   },
   "dependencies": {
     "diff": "^9.0.0",

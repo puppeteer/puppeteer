@@ -182,13 +182,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[page.test] Page Page.record *",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"],
-    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=2066782"
-  },
-  {
     "testIdPattern": "[pipe.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -493,6 +486,12 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[drag-and-drop.test] Drag n' Drop should release the mouse button when the drop fails",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateFocusedPage should reset focus",

@@ -834,6 +834,35 @@ describe('Accessibility', function () {
           }),
         ).toEqual('<b>Hello, </b> world!');
       });
+
+      it('should get the shadow host ElementHandle from a text node in a shadow root', async () => {
+        const {page} = await getTestState();
+
+        await page.setContent(html`<div id="host"></div>`);
+        await page.evaluate(() => {
+          document
+            .querySelector('#host')!
+            .attachShadow({mode: 'open'}).textContent = 'Shadow text';
+        });
+        using host = (await page.$('#host'))!;
+
+        const snapshot = await page.accessibility.snapshot({
+          root: host,
+          interestingOnly: false,
+        });
+        const textNode = snapshot!.children!.find(child => {
+          return child.name === 'Shadow text';
+        })!;
+        expect(textNode).toMatchObject({role: 'StaticText'});
+
+        using textNodeHandle = await textNode.elementHandle();
+        expect(textNodeHandle?.asElement()).toBeTruthy();
+        expect(
+          await textNodeHandle?.evaluate(element => {
+            return element.id;
+          }),
+        ).toEqual('host');
+      });
     });
 
     it('should not report Document as leaf node', async () => {

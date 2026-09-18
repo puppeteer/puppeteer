@@ -132,6 +132,7 @@ class SimpleMirrorProvider implements BrowserProvider {
     const {buildId, platform} = options;
     const filenameMap = {
       [BrowserPlatform.LINUX]: 'chrome-linux64.zip',
+      [BrowserPlatform.LINUX_ARM]: 'chrome-linux-arm64.zip',
       [BrowserPlatform.MAC]: 'chrome-mac-x64.zip',
       [BrowserPlatform.MAC_ARM]: 'chrome-mac-arm64.zip',
       [BrowserPlatform.WIN32]: 'chrome-win32.zip',
@@ -151,6 +152,8 @@ class SimpleMirrorProvider implements BrowserProvider {
       return 'chrome-mac/Chromium.app/Contents/MacOS/Chromium';
     } else if (platform === BrowserPlatform.LINUX) {
       return 'chrome-linux64/chrome';
+    } else if (platform === BrowserPlatform.LINUX_ARM) {
+      return 'chrome-linux-arm64/chrome';
     } else if (platform.includes('win')) {
       return 'chrome-win64/chrome.exe';
     }

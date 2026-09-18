@@ -3,9 +3,13 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-module.exports = {
+process.env.NODE_DEBUG = 'puppeteer:*';
+
+export default {
   logLevel: 'debug',
   spec: 'test/build/**/*.test.js',
+  require: ['source-map-support/register'],
   exit: !!process.env.CI,
-  reporter: process.env.CI ? 'spec' : 'dot',
+  reporter: 'spec',
+  timeout: 10_000,
 };

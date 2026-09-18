@@ -152,14 +152,6 @@ common ones are provided below. Also, see
 https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json
 for the up-to-date list of dependencies declared by the Chrome installer.
 
-:::caution
-
-Chrome currently does not provide arm64 binaries for Linux.
-There are only arm64 binaries for Mac ARM.
-That means that Linux binaries downloaded by default will not work on Linux arm64.
-
-:::
-
 <details>
 <summary>Debian (e.g. Ubuntu) Dependencies</summary>
 
