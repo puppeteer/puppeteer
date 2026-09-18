@@ -13,6 +13,7 @@ import type {TLSSocket} from 'node:tls';
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {BidiBrowser} from 'puppeteer-core/internal/bidi/Browser.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
@@ -107,6 +108,34 @@ describe('Launcher specs', function () {
             ]);
             expect(message).not.toContain('Timeout');
           }
+        } finally {
+          await close();
+        }
+      });
+
+      it('should stop the browser process when the close command fails', async function () {
+        const {defaultBrowserOptions} = await getTestState({skipLaunch: true});
+        if (defaultBrowserOptions.protocol !== 'webDriverBiDi') {
+          this.skip();
+        }
+        const {browser, close} = await launch({});
+        try {
+          const browserProcess = browser.process()!;
+          const connection = (browser as BidiBrowser).connection;
+          const send = connection.send.bind(connection);
+          sinon
+            .stub(connection, 'send')
+            .callsFake((method, params, timeout) => {
+              if (method === 'browser.close') {
+                return Promise.reject(new Error('browser.close failed'));
+              }
+              return send(method, params, timeout);
+            });
+          const exited = new Promise(resolve => {
+            return browserProcess.once('exit', resolve);
+          });
+          await browser.close();
+          await exited;
         } finally {
           await close();
         }

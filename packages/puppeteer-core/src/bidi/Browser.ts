@@ -262,6 +262,12 @@ export class BidiBrowser extends Browser {
 
     try {
       await this.#browserCore.close();
+    } catch (error) {
+      // Fail silently.
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+    }
+
+    try {
       await this.#closeCallback?.call(null);
     } catch (error) {
       // Fail silently.
