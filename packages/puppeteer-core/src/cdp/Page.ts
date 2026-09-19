@@ -266,7 +266,7 @@ export class CdpPage extends Page {
         this.#closed = true;
       })
       .catch(error => {
-        this.logger?.(DEBUG_PREFIXES.error)?.(error);
+        this.logger(DEBUG_PREFIXES.error)?.(error);
       });
 
     this.#setupPrimaryTargetListeners();
@@ -320,12 +320,12 @@ export class CdpPage extends Page {
       return;
     }
     void this.#frameManager.registerSpeculativeSession(session).catch(error => {
-      this.logger?.(DEBUG_PREFIXES.error)?.(error);
+      this.logger(DEBUG_PREFIXES.error)?.(error);
     });
     void this.#emulationManager
       .registerSpeculativeSession(session)
       .catch(error => {
-        this.logger?.(DEBUG_PREFIXES.error)?.(error);
+        this.logger(DEBUG_PREFIXES.error)?.(error);
       });
   }
 
@@ -394,7 +394,7 @@ export class CdpPage extends Page {
           // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
           for (const arg of message.args()) {
             void arg.dispose().catch(error => {
-              this.logger?.(DEBUG_PREFIXES.error)?.(error);
+              this.logger(DEBUG_PREFIXES.error)?.(error);
             });
           }
           return;
@@ -419,7 +419,7 @@ export class CdpPage extends Page {
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {
-        this.logger?.(DEBUG_PREFIXES.error)?.(err);
+        this.logger(DEBUG_PREFIXES.error)?.(err);
       } else {
         throw err;
       }
@@ -967,7 +967,7 @@ export class CdpPage extends Page {
         // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
         for (const value of values) {
           void value.dispose().catch(error => {
-            this.logger?.(DEBUG_PREFIXES.error)?.(error);
+            this.logger(DEBUG_PREFIXES.error)?.(error);
           });
         }
       }
@@ -1176,7 +1176,7 @@ export class CdpPage extends Page {
         await this.#emulationManager
           .resetDefaultBackgroundColor()
           .catch(error => {
-            this.logger?.(DEBUG_PREFIXES.error)?.(error);
+            this.logger(DEBUG_PREFIXES.error)?.(error);
           });
       });
     }
