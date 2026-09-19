@@ -12,13 +12,11 @@ export function registerLogListeners(runner: Mocha.Runner): void {
   runner.on(Mocha.Runner.constants.EVENT_TEST_BEGIN, () => {
     clearCapturedLogs();
   });
-  runner.on(Mocha.Runner.constants.EVENT_HOOK_BEGIN, (hook: Mocha.Hook) => {
-    if (
-      hook.title.includes('"before all"') ||
-      hook.title.includes('"after all"')
-    ) {
-      clearCapturedLogs();
-    }
+  runner.on(Mocha.Runner.constants.EVENT_HOOK_BEGIN, () => {
+    clearCapturedLogs();
+  });
+  runner.on(Mocha.Runner.constants.EVENT_HOOK_END, () => {
+    clearCapturedLogs();
   });
   runner.on(
     Mocha.Runner.constants.EVENT_TEST_FAIL,

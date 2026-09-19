@@ -275,6 +275,14 @@ describe('logger and Mocha Runner integration', async () => {
       const mocha = new Mocha({reporter: 'base'});
       const suite = Mocha.Suite.create(mocha.suite, 'Test Suite');
 
+      suite.beforeAll('setup all', () => {
+        logFn?.('log from beforeAll');
+      });
+
+      suite.beforeEach('setup each', () => {
+        logFn?.('log from beforeEach');
+      });
+
       suite.addTest(
         new Mocha.Test('passing test', () => {
           logFn?.('log from passing test');
@@ -296,6 +304,14 @@ describe('logger and Mocha Runner integration', async () => {
       });
 
       const fullOutput = dumpedOutputs.join('\n');
+      assert.ok(
+        !fullOutput.includes('log from beforeAll'),
+        'beforeAll logs should not be dumped when test fails',
+      );
+      assert.ok(
+        !fullOutput.includes('log from beforeEach'),
+        'beforeEach logs should not be dumped when test fails',
+      );
       assert.ok(
         !fullOutput.includes('log from passing test'),
         'Passing test logs should not be dumped',

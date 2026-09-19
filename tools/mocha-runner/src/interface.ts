@@ -140,10 +140,10 @@ function customBDDInterface(suite: Mocha.Suite): void {
         body: (this: Mocha.Suite) => void,
       ): void {
         context['describe']('with Debug Logs', () => {
-          context['before'](() => {
+          context['beforeEach'](() => {
             setLogCapture(true);
           });
-          context['after'](() => {
+          context['afterEach'](() => {
             setLogCapture(false);
           });
           context['describe'](description, body);
@@ -168,10 +168,10 @@ function customBDDInterface(suite: Mocha.Suite): void {
         if (shouldDeflakeTest(test)) {
           const deflakeSuit = Mocha.Suite.create(suite, 'with Debug Logs');
           test.file = file;
-          deflakeSuit.beforeAll(function () {
+          deflakeSuit.beforeEach(function () {
             setLogCapture(true);
           });
-          deflakeSuit.afterAll(function () {
+          deflakeSuit.afterEach(function () {
             setLogCapture(false);
           });
           for (let i = 0; i < deflakeRetries; i++) {
