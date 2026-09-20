@@ -15,7 +15,7 @@
     "materialize": "node materialize-docs.ts"
   },
   "dependencies": {
-    "@docsearch/react": "5.0.5",
+    "@docsearch/react": "5.1.0",
     "@docusaurus/core": "3.10.2",
     "@docusaurus/faster": "3.10.2",
     "@docusaurus/plugin-client-redirects": "3.10.2",
@@ -28,9 +28,9 @@
     "clsx": "2.1.1",
     "docusaurus-plugin-copy-page-button": "0.8.4",
     "prism-react-renderer": "2.4.1",
-    "react": "19.2.8",
+    "react": "19.3.0",
     "react-cookie-consent": "10.0.2",
-    "react-dom": "19.2.8",
+    "react-dom": "19.3.0",
     "semver": "7.8.5"
   },
   "devDependencies": {
