@@ -109,9 +109,6 @@ export const debug: Logger = (prefix): LoggerFunction | undefined => {
     }
 
     return (...logArgs: unknown[]) => {
-      if (captureLogs) {
-        capturedLogs.push(prefix + logArgs);
-      }
       (nodeDebug as LoggerFunction)(...logArgs);
     };
   }
@@ -142,27 +139,3 @@ export const debug: Logger = (prefix): LoggerFunction | undefined => {
     console.log(`${prefix}:`, ...logArgs);
   };
 };
-
-/**
- * @internal
- */
-let capturedLogs: string[] = [];
-/**
- * @internal
- */
-let captureLogs = false;
-
-/**
- * @internal
- */
-export function setLogCapture(value: boolean): void {
-  capturedLogs = [];
-  captureLogs = value;
-}
-
-/**
- * @internal
- */
-export function getCapturedLogs(): string[] {
-  return capturedLogs;
-}

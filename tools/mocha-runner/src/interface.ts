@@ -4,15 +4,61 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {debuglog as nodeUtilDebuglog, format} from 'node:util';
+
 import Mocha from 'mocha';
 // @ts-expect-error No types for mocha's internal API
 import {createCommon as commonInterface} from 'mocha/lib/interfaces/common.js';
-import {
-  setLogCapture,
-  getCapturedLogs,
-} from 'puppeteer-core/internal/common/Debug.js';
+import type {Logger} from 'puppeteer-core/internal/common/Debug.js';
+import {environment} from 'puppeteer-core/internal/environment.js';
 
 import {testIdMatchesExpectationPattern} from './utils.js';
+
+let capturedLogs: string[] = [];
+let captureLogs = Boolean(process.env['RUNNER_DEBUG']);
+
+export function setLogCapture(value: boolean): void {
+  captureLogs = Boolean(process.env['RUNNER_DEBUG']) || value;
+}
+
+export function getCapturedLogs(): string[] {
+  return capturedLogs;
+}
+
+export function clearCapturedLogs(): void {
+  capturedLogs = [];
+}
+
+export const logger: Logger = (prefix: string) => {
+  return (...args: unknown[]) => {
+    if (captureLogs) {
+      capturedLogs.push(`${prefix} ${format(...args)}`);
+    }
+  };
+};
+
+environment.value.debuglog = (prefix: string) => {
+  const nodeDebug = nodeUtilDebuglog(prefix);
+  const testLog = logger(prefix);
+  return Object.assign(
+    (...args: unknown[]) => {
+      testLog?.(...args);
+      if (nodeDebug.enabled) {
+        (nodeDebug as (...args: unknown[]) => void)(...args);
+      }
+    },
+    {enabled: true},
+  );
+};
+
+export function dumpLogs(runnable: Mocha.Runnable): void {
+  const logs = getCapturedLogs();
+  if (logs.length > 0) {
+    console.log(`\n"${runnable.fullTitle()}" failed. Here is a debug log:`);
+    console.log(logs.join('\n') + '\n');
+  }
+  clearCapturedLogs();
+}
 
 type SuiteFunction = ((this: Mocha.Suite) => void) | undefined;
 type ExclusiveSuiteFunction = (this: Mocha.Suite) => void;
@@ -48,16 +94,6 @@ function shouldDeflakeTest(test: Mocha.Test): boolean {
     return testIdMatchesExpectationPattern(test, deflakeTestPattern);
   }
   return false;
-}
-
-function dumpLogsIfFail(this: Mocha.Context) {
-  if (this.currentTest?.state === 'failed') {
-    console.log(
-      `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`,
-    );
-    console.log(getCapturedLogs().join('\n') + '\n');
-  }
-  setLogCapture(false);
 }
 
 function customBDDInterface(suite: Mocha.Suite): void {
@@ -107,7 +143,9 @@ function customBDDInterface(suite: Mocha.Suite): void {
           context['beforeEach'](() => {
             setLogCapture(true);
           });
-          context['afterEach'](dumpLogsIfFail);
+          context['afterEach'](() => {
+            setLogCapture(false);
+          });
           context['describe'](description, body);
         });
       };
@@ -133,7 +171,9 @@ function customBDDInterface(suite: Mocha.Suite): void {
           deflakeSuit.beforeEach(function () {
             setLogCapture(true);
           });
-          deflakeSuit.afterEach(dumpLogsIfFail);
+          deflakeSuit.afterEach(function () {
+            setLogCapture(false);
+          });
           for (let i = 0; i < deflakeRetries; i++) {
             deflakeSuit.addTest(test.clone());
           }
