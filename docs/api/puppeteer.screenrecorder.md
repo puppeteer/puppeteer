@@ -50,5 +50,9 @@ Description
 
 Stops the recorder.
 
+**Remarks:**
+
+Rejects if ffmpeg fails. A failure that happened before `stop()` was called is still reported, instead of resolving an empty recording.
+
 </td></tr>
 </tbody></table>

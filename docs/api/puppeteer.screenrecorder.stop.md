@@ -17,3 +17,7 @@ class ScreenRecorder {
 **Returns:**
 
 Promise&lt;void&gt;
+
+## Remarks
+
+Rejects if ffmpeg fails. A failure that happened before `stop()` was called is still reported, instead of resolving an empty recording.

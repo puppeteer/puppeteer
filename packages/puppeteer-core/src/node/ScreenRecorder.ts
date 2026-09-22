@@ -62,6 +62,10 @@ export function countFrames(
   return Math.max(0, end - start);
 }
 
+function roundPixelDimension(value: number): number {
+  return Math.round(value);
+}
+
 /**
  * @internal
  */
@@ -91,6 +95,8 @@ export class ScreenRecorder extends PassThrough {
 
   #fps: number;
   #logger?: Logger;
+  #encoderError?: Error;
+  #closed: Promise<void>;
 
   /**
    * @internal
@@ -134,15 +140,31 @@ export class ScreenRecorder extends PassThrough {
       throw error;
     }
 
+    // crop rounds fractional dimensions, while pad truncates them. The same
+    // fractional input can make the padded size smaller than the cropped
+    // frame, and ffmpeg exits. Both filters have to receive the same integer.
+    const pixelWidth = roundPixelDimension(width);
+    const pixelHeight = roundPixelDimension(height);
+    const pixelCrop = crop
+      ? {
+          x: roundPixelDimension(crop.x),
+          y: roundPixelDimension(crop.y),
+          width: roundPixelDimension(crop.width),
+          height: roundPixelDimension(crop.height),
+        }
+      : undefined;
+
     const filters = [
-      `crop='min(${width},iw):min(${height},ih):0:0'`,
-      `pad=${width}:${height}:0:0`,
+      `crop='min(${pixelWidth},iw):min(${pixelHeight},ih):0:0'`,
+      `pad=${pixelWidth}:${pixelHeight}:0:0`,
     ];
     if (speed) {
       filters.push(`setpts=${1 / speed}*PTS`);
     }
-    if (crop) {
-      filters.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
+    if (pixelCrop) {
+      filters.push(
+        `crop=${pixelCrop.width}:${pixelCrop.height}:${pixelCrop.x}:${pixelCrop.y}`,
+      );
     }
     if (scale) {
       filters.push(`scale=iw*${scale}:-1:flags=lanczos`);
@@ -202,6 +224,18 @@ export class ScreenRecorder extends PassThrough {
       ].flat(),
       {stdio: ['pipe', 'pipe', 'pipe']},
     );
+    // ffmpeg exiting closes stdin. The next frame write emits EPIPE here,
+    // and with no listener Node terminates the process.
+    this.#process.stdin.on('error', error => {
+      this.#captureEncoderError(error);
+    });
+    // Registered at spawn: stop() can run after 'close' has already fired.
+    this.#closed = new Promise(resolve => {
+      this.#process.once('close', (code, signal) => {
+        this.#captureEncoderExit(code, signal);
+        resolve();
+      });
+    });
     this.#process.stdout.pipe(this);
     this.#process.stderr.on('data', (data: Buffer) => {
       this.#logger?.(DEBUG_PREFIXES.ffmpeg)?.(data.toString('utf8'));
@@ -320,51 +354,99 @@ export class ScreenRecorder extends PassThrough {
     }
   }
 
+  #captureEncoderError(error: Error): void {
+    if (this.#encoderError) {
+      return;
+    }
+    this.#encoderError = error;
+    this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+  }
+
+  #captureEncoderExit(
+    code: number | null,
+    signal: NodeJS.Signals | null,
+  ): void {
+    if (code !== null && code !== 0) {
+      this.#captureEncoderError(new Error(`ffmpeg exited with code ${code}.`));
+      return;
+    }
+    if (signal) {
+      this.#captureEncoderError(
+        new Error(`ffmpeg was killed with signal ${signal}.`),
+      );
+    }
+  }
+
+  #encoderHasExited(): boolean {
+    return this.#process.exitCode !== null || this.#process.signalCode !== null;
+  }
+
   @guarded()
-  async #writeFrame(buffer: Buffer) {
+  async #writeFrame(buffer: Buffer): Promise<void> {
+    if (
+      this.#encoderError ||
+      this.#encoderHasExited() ||
+      this.#process.stdin.destroyed
+    ) {
+      return;
+    }
     const error = await new Promise<Error | null | undefined>(resolve => {
       this.#process.stdin.write(buffer, resolve);
     });
     if (error) {
-      console.log(`ffmpeg failed to write: ${error.message}.`);
+      this.#captureEncoderError(error);
     }
   }
 
   /**
    * Stops the recorder.
    *
+   * @remarks
+   * Rejects if ffmpeg fails. A failure that happened before `stop()` was
+   * called is still reported, instead of resolving an empty recording.
+   *
    * @public
    */
   @guarded()
   async stop(): Promise<void> {
     if (this.#controller.signal.aborted) {
+      if (this.#encoderError) {
+        throw this.#encoderError;
+      }
       return;
     }
     // Stopping the screencast will flush the frames.
-    await this.#page._stopScreencast().catch(err => {
-      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+    await this.#page._stopScreencast().catch(error => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
 
     this.#controller.abort();
 
     // Repeat the last frame for the remaining frames.
     const [buffer, timestamp] = await this.#lastFrame;
-    await Promise.all(
-      Array<Buffer>(
-        Math.max(
-          1,
-          Math.round((this.#fps * (performance.now() - timestamp)) / 1000),
-        ),
-      )
-        .fill(buffer)
-        .map(this.#writeFrame.bind(this)),
-    );
+    if (!this.#encoderError && !this.#encoderHasExited()) {
+      await Promise.all(
+        Array<Buffer>(
+          Math.max(
+            1,
+            Math.round((this.#fps * (performance.now() - timestamp)) / 1000),
+          ),
+        )
+          .fill(buffer)
+          .map(this.#writeFrame.bind(this)),
+      );
+    }
 
-    // Close stdin to notify FFmpeg we are done.
-    this.#process.stdin.end();
-    await new Promise(resolve => {
-      this.#process.once('close', resolve);
-    });
+    // Close stdin to notify FFmpeg we are done. Skip this when the process
+    // has already exited: its 'close' event has fired, and ending a destroyed
+    // stdin only produces another pipe error.
+    if (!this.#encoderHasExited() && !this.#process.stdin.destroyed) {
+      this.#process.stdin.end();
+    }
+    await this.#closed;
+    if (this.#encoderError) {
+      throw this.#encoderError;
+    }
   }
 
   override async [asyncDisposeSymbol](): Promise<void> {
