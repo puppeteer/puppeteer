@@ -274,6 +274,27 @@ describe('navigation', function () {
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
     });
+    it('should respect the timeout when the page navigates again while loading', async () => {
+      const {page, server} = await getTestState();
+
+      // The document loads, then navigates again from its own load handler.
+      server.setRoute('/navigate-on-load.html', (_, res) => {
+        res.end(
+          `<html><body onload="location.href='/hang.html'">ok</body></html>`,
+        );
+      });
+      // Hang for the request the page navigates to.
+      server.setRoute('/hang.html', () => {});
+
+      let error!: Error;
+      await page
+        .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 1000})
+        .catch(error_ => {
+          return (error = error_);
+        });
+      expect(error.message).toContain('Navigation timeout of 1000 ms exceeded');
+      expect(error).toBeInstanceOf(TimeoutError);
+    });
     it('should fail when exceeding default maximum navigation timeout', async () => {
       const {page, server} = await getTestState();
 
