@@ -115,8 +115,25 @@ export function downloadFile(
 ): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     let downloadedBytes = 0;
-    let totalBytes = 0;
+    let totalBytes: number | undefined;
     const verifier = expectedHash ? new HashVerifier() : null;
+
+    const cleanup = (): void => {
+      try {
+        unlinkSync(destinationPath);
+      } catch {}
+    };
+
+    const downloadError = (): Error => {
+      if (totalBytes === undefined) {
+        return new Error(
+          `Download failed: connection closed before the download completed. URL: ${url}`,
+        );
+      }
+      return new Error(
+        `Download failed: expected ${totalBytes} bytes, received ${downloadedBytes} bytes. URL: ${url}`,
+      );
+    };
 
     try {
       const request = await httpRequest(url, 'GET', response => {
@@ -131,6 +148,11 @@ export function downloadFile(
         }
         const file = createWriteStream(destinationPath);
         file.on('close', () => {
+          if (totalBytes !== undefined && downloadedBytes !== totalBytes) {
+            cleanup();
+            reject(downloadError());
+            return;
+          }
           if (verifier && expectedHash) {
             try {
               verifier.verify(url, destinationPath, expectedHash);
@@ -142,14 +164,27 @@ export function downloadFile(
           return resolve();
         });
         file.on('error', error => {
+          cleanup();
           return reject(error);
         });
-        totalBytes = parseInt(response.headers['content-length']!, 10);
+        const contentLength = Number.parseInt(
+          response.headers['content-length'] ?? '',
+          10,
+        );
+        totalBytes = Number.isFinite(contentLength) ? contentLength : undefined;
+        response.on('aborted', () => {
+          cleanup();
+          reject(downloadError());
+        });
+        response.on('error', error => {
+          cleanup();
+          reject(error);
+        });
         response.on('data', (chunk: Buffer) => {
           downloadedBytes += chunk.length;
           verifier?.update(chunk);
           if (progressCallback) {
-            progressCallback(downloadedBytes, totalBytes);
+            progressCallback(downloadedBytes, totalBytes ?? 0);
           }
         });
         response.pipe(file);
