@@ -57,6 +57,6 @@
   },
   "dependencies": {
     "diff": "^9.0.0",
-    "webmcp-types": "^0.1.5"
+    "webmcp-types": "^0.1.8"
   }
 }
