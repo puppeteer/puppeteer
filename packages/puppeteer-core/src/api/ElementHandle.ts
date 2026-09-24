@@ -1452,15 +1452,19 @@ export abstract class ElementHandle<
     }
     const elementClip = await this.#nonEmptyVisibleBoundingBox();
 
-    const [pageLeft, pageTop] = await this.evaluate(() => {
-      if (!window.visualViewport) {
-        throw new Error('window.visualViewport is not supported.');
-      }
-      return [
-        window.visualViewport.pageLeft,
-        window.visualViewport.pageTop,
-      ] as const;
-    });
+    // The bounding box is relative to the main frame's viewport.
+    const [pageLeft, pageTop] = await page
+      .mainFrame()
+      .isolatedRealm()
+      .evaluate(() => {
+        if (!window.visualViewport) {
+          throw new Error('window.visualViewport is not supported.');
+        }
+        return [
+          window.visualViewport.pageLeft,
+          window.visualViewport.pageTop,
+        ] as const;
+      });
     elementClip.x += pageLeft;
     elementClip.y += pageTop;
     if (clip) {
