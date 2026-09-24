@@ -60,10 +60,10 @@ describe('Page.webmcp', function () {
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
       const form = document.createElement('form');
-      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('toolname', 'declarative-tool-name');
       form.setAttribute('tooldescription', 'tool description');
       form.setAttribute('toolautosubmit', '');
-      (window as any).document.body.appendChild(form);
+      document.body.appendChild(form);
     });
 
     await toolsAddedPromise;
@@ -87,7 +87,7 @@ describe('Page.webmcp', function () {
     expect(await tools[0]!.formElement).toBeUndefined();
     expect(tools[0]!.location).toBeDefined();
 
-    expect(tools[1]!.name).toBe('declarative tool name');
+    expect(tools[1]!.name).toBe('declarative-tool-name');
     expect(tools[1]!.description).toBe('tool description');
     expect(tools[1]!.inputSchema).toStrictEqual({
       type: 'object',
@@ -148,9 +148,9 @@ describe('Page.webmcp', function () {
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
       const form = document.createElement('form');
-      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('toolname', 'declarative-tool-name');
       form.setAttribute('tooldescription', 'tool description');
-      (window as any).document.body.appendChild(form);
+      document.body.appendChild(form);
     });
 
     const declarativeToolAdded = new Promise<WebMCPTool[]>(resolve => {
@@ -161,7 +161,7 @@ describe('Page.webmcp', function () {
 
     addedTools = await declarativeToolAdded;
     expect(addedTools.length).toBe(1);
-    expect(addedTools[0]!.name).toBe('declarative tool name');
+    expect(addedTools[0]!.name).toBe('declarative-tool-name');
     expect(addedTools[0]!.description).toBe('tool description');
     expect(addedTools[0]!.annotations).toBeUndefined();
     expect(addedTools[0]!.inputSchema).toStrictEqual({
@@ -231,9 +231,9 @@ describe('Page.webmcp', function () {
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
       const form = document.createElement('form');
-      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('toolname', 'declarative-tool-name');
       form.setAttribute('tooldescription', 'tool description');
-      (window as any).document.body.appendChild(form);
+      document.body.appendChild(form);
     });
 
     await new Promise<WebMCPTool[]>(resolve => {
@@ -255,7 +255,7 @@ describe('Page.webmcp', function () {
 
     removedTools = await declarativeToolRemoved;
     expect(removedTools.length).toBe(1);
-    expect(removedTools[0]!.name).toBe('declarative tool name');
+    expect(removedTools[0]!.name).toBe('declarative-tool-name');
     expect(removedTools[0]!.description).toBe('tool description');
     expect(removedTools[0]!.inputSchema).toStrictEqual({
       type: 'object',
@@ -281,7 +281,7 @@ describe('Page.webmcp', function () {
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
       const form = document.createElement('form');
-      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('toolname', 'declarative-tool-name');
       form.setAttribute('tooldescription', 'tool description');
       document.body.appendChild(form);
     });
@@ -299,7 +299,7 @@ describe('Page.webmcp', function () {
 
     const removedTools = await toolsRemovedPromise;
     expect(removedTools.length).toBe(1);
-    expect(removedTools[0]!.name).toBe('declarative tool name');
+    expect(removedTools[0]!.name).toBe('declarative-tool-name');
     expect(page.webmcp.tools().length).toBe(0);
   });
 
@@ -371,7 +371,7 @@ describe('Page.webmcp', function () {
     });
     await page.evaluate(() => {
       const form = document.createElement('form');
-      form.setAttribute('toolname', 'declarative tool name');
+      form.setAttribute('toolname', 'declarative-tool-name');
       form.setAttribute('tooldescription', 'tool description');
       document.body.appendChild(form);
     });
@@ -383,7 +383,7 @@ describe('Page.webmcp', function () {
 
     // Tools should still be present because context was not destroyed.
     expect(page.webmcp.tools().length).toBe(1);
-    expect(page.webmcp.tools()[0]!.name).toBe('declarative tool name');
+    expect(page.webmcp.tools()[0]!.name).toBe('declarative-tool-name');
   });
 
   it('should fire toolinvoked events', async () => {
@@ -427,10 +427,7 @@ describe('Page.webmcp', function () {
     // Execute WebMCP tool.
     await page.evaluate(async () => {
       const [tool] = await document.modelContext!.getTools();
-      (document as any).modelContext.executeTool(
-        tool,
-        JSON.stringify({text: 'test'}),
-      );
+      void document.modelContext!.executeTool(tool!, {text: 'test'});
     });
 
     const [addedToolCall, toolCall] = await Promise.all([
@@ -494,10 +491,7 @@ describe('Page.webmcp', function () {
     // Execute WebMCP tool.
     await page.evaluate(async () => {
       const [tool] = await document.modelContext!.getTools();
-      (document as any).modelContext.executeTool(
-        tool,
-        JSON.stringify({text: 'world'}),
-      );
+      void document.modelContext!.executeTool(tool!, {text: 'world'});
     });
 
     const call = await toolCalled;
@@ -539,7 +533,7 @@ describe('Page.webmcp', function () {
     // Execute WebMCP tool.
     await page.evaluate(async () => {
       const [tool] = await document.modelContext!.getTools();
-      (document as any).modelContext.executeTool(tool, '{}');
+      void document.modelContext!.executeTool(tool!);
     });
 
     const call = await toolCalled;
@@ -587,7 +581,11 @@ describe('Page.webmcp', function () {
     // Execute unknown WebMCP tool.
     await page.evaluate(async () => {
       const [tool] = await document.modelContext!.getTools();
-      (document as any).modelContext.executeTool(tool, 'invalid json');
+      void document.modelContext!.executeTool(tool!, {
+        toJSON: () => {
+          return 'invalid json';
+        },
+      });
     });
 
     const call = await toolCalled;
