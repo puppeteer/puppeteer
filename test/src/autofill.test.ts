@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
@@ -24,7 +24,7 @@ describe('Autofill', function () {
           cvc: '123',
         },
       });
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           const result = [];
           for (const el of document.querySelectorAll('input')) {
@@ -32,7 +32,8 @@ describe('Autofill', function () {
           }
           return result.join(',');
         }),
-      ).toBe('John Smith,4444444444444444,01,2030,Submit');
+        'John Smith,4444444444444444,01,2030,Submit',
+      );
     });
 
     it('should fill out an address', async () => {
@@ -49,7 +50,7 @@ describe('Autofill', function () {
           ],
         },
       });
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           const result = [];
           for (const el of document.querySelectorAll('input')) {
@@ -57,7 +58,8 @@ describe('Autofill', function () {
           }
           return result.join(',');
         }),
-      ).toBe('Jane Doe,123 Main St,Anytown,12345,Submit');
+        'Jane Doe,123 Main St,Anytown,12345,Submit',
+      );
     });
   });
 });

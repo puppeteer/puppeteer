@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {
   buildTestingTree,
@@ -19,15 +19,16 @@ void describe('@puppeteer/ng-schematics: config', () => {
   void describe('Single Project', () => {
     void it('should create default file', async () => {
       const tree = await buildTestingTree('config', 'single');
-      expect(tree.files).toContain('/.puppeteerrc.mjs');
+      assert.include(tree.files, '/.puppeteerrc.mjs');
     });
   });
 
   void describe('Multi projects', () => {
     void it('should create default file', async () => {
       const tree = await buildTestingTree('config', 'multi');
-      expect(tree.files).toContain('/.puppeteerrc.mjs');
-      expect(tree.files).not.toContain(
+      assert.include(tree.files, '/.puppeteerrc.mjs');
+      assert.notInclude(
+        tree.files,
         getMultiApplicationFile('.puppeteerrc.mjs'),
       );
     });

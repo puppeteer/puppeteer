@@ -6,10 +6,10 @@
 
 import {statSync} from 'node:fs';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
-import {getUniqueVideoFilePlaceholder} from '../utils.js';
+import {assertRejects, getUniqueVideoFilePlaceholder} from '../utils.js';
 
 describe('Screencasts', function () {
   setupTestBrowserHooks();
@@ -33,7 +33,7 @@ describe('Screencasts', function () {
 
       await recorder.stop();
 
-      expect(statSync(file.filename).size).toBeGreaterThan(0);
+      assert.isAbove(statSync(file.filename).size, 0);
     });
     it('should work concurrently', async () => {
       using file1 = getUniqueVideoFilePlaceholder();
@@ -60,65 +60,63 @@ describe('Screencasts', function () {
 
       // We use a range because we cannot be precise.
       const DELTA = 1.3;
-      expect(ratio).toBeGreaterThan(2 - DELTA);
-      expect(ratio).toBeLessThan(2 + DELTA);
+      assert.isAbove(ratio, 2 - DELTA);
+      assert.isBelow(ratio, 2 + DELTA);
     });
     it('should validate options', async () => {
       const {page} = await getTestState();
 
-      await expect(page.screencast({scale: 0})).rejects.toBeDefined();
-      await expect(page.screencast({scale: -1})).rejects.toBeDefined();
+      await assertRejects(page.screencast({scale: 0}));
+      await assertRejects(page.screencast({scale: -1}));
 
-      await expect(page.screencast({speed: 0})).rejects.toBeDefined();
-      await expect(page.screencast({speed: -1})).rejects.toBeDefined();
+      await assertRejects(page.screencast({speed: 0}));
+      await assertRejects(page.screencast({speed: -1}));
 
-      await expect(
+      await assertRejects(
         page.screencast({crop: {x: 0, y: 0, height: 1, width: 0}}),
-      ).rejects.toBeDefined();
-      await expect(
+      );
+      await assertRejects(
         page.screencast({crop: {x: 0, y: 0, height: 0, width: 1}}),
-      ).rejects.toBeDefined();
-      await expect(
+      );
+      await assertRejects(
         page.screencast({crop: {x: -1, y: 0, height: 1, width: 1}}),
-      ).rejects.toBeDefined();
-      await expect(
+      );
+      await assertRejects(
         page.screencast({crop: {x: 0, y: -1, height: 1, width: 1}}),
-      ).rejects.toBeDefined();
-      await expect(
+      );
+      await assertRejects(
         page.screencast({crop: {x: 0, y: 0, height: 10000, width: 1}}),
-      ).rejects.toBeDefined();
-      await expect(
+      );
+      await assertRejects(
         page.screencast({crop: {x: 0, y: 0, height: 1, width: 10000}}),
-      ).rejects.toBeDefined();
+      );
 
-      await expect(page.screencast({format: 'gif'})).rejects.toBeDefined();
-      await expect(page.screencast({format: 'webm'})).rejects.toBeDefined();
-      await expect(page.screencast({format: 'mp4'})).rejects.toBeDefined();
+      await assertRejects(page.screencast({format: 'gif'}));
+      await assertRejects(page.screencast({format: 'webm'}));
+      await assertRejects(page.screencast({format: 'mp4'}));
 
-      await expect(page.screencast({fps: 0})).rejects.toBeDefined();
-      await expect(page.screencast({fps: -1})).rejects.toBeDefined();
+      await assertRejects(page.screencast({fps: 0}));
+      await assertRejects(page.screencast({fps: -1}));
 
-      await expect(page.screencast({loop: 0})).rejects.toBeDefined();
-      await expect(page.screencast({loop: -1})).rejects.toBeDefined();
-      await expect(page.screencast({loop: Infinity})).rejects.toBeDefined();
+      await assertRejects(page.screencast({loop: 0}));
+      await assertRejects(page.screencast({loop: -1}));
+      await assertRejects(page.screencast({loop: Infinity}));
 
-      await expect(page.screencast({delay: 0})).rejects.toBeDefined();
-      await expect(page.screencast({delay: -1})).rejects.toBeDefined();
+      await assertRejects(page.screencast({delay: 0}));
+      await assertRejects(page.screencast({delay: -1}));
 
-      await expect(page.screencast({quality: 0})).rejects.toBeDefined();
-      await expect(page.screencast({quality: -1})).rejects.toBeDefined();
+      await assertRejects(page.screencast({quality: 0}));
+      await assertRejects(page.screencast({quality: -1}));
 
-      await expect(page.screencast({colors: 0})).rejects.toBeDefined();
-      await expect(page.screencast({colors: -1})).rejects.toBeDefined();
+      await assertRejects(page.screencast({colors: 0}));
+      await assertRejects(page.screencast({colors: -1}));
 
-      await expect(page.screencast({path: 'test.webm'})).rejects.toBeDefined();
+      await assertRejects(page.screencast({path: 'test.webm'}));
 
-      await expect(page.screencast({overwrite: true})).rejects.toBeDefined();
-      await expect(page.screencast({overwrite: false})).rejects.toBeDefined();
+      await assertRejects(page.screencast({overwrite: true}));
+      await assertRejects(page.screencast({overwrite: false}));
 
-      await expect(
-        page.screencast({ffmpegPath: 'non-existent-path'}),
-      ).rejects.toBeDefined();
+      await assertRejects(page.screencast({ffmpegPath: 'non-existent-path'}));
     });
   });
 });

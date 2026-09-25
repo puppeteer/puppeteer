@@ -7,7 +7,7 @@
 import {spawn, execSync} from 'node:child_process';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
@@ -39,7 +39,7 @@ describe('Fixtures', function () {
     await new Promise(resolve => {
       return res.on('close', resolve);
     });
-    expect(dumpioData).toContain('message from dumpio');
+    assert.include(dumpioData, 'message from dumpio');
   });
   it('should dump browser process stderr', async () => {
     const {defaultBrowserOptions, isFirefox, puppeteerPath} =
@@ -59,9 +59,9 @@ describe('Fixtures', function () {
       return res.on('close', resolve);
     });
     if (isFirefox && defaultBrowserOptions.protocol === 'webDriverBiDi') {
-      expect(dumpioData).toContain('WebDriver BiDi listening on ws://');
+      assert.include(dumpioData, 'WebDriver BiDi listening on ws://');
     } else {
-      expect(dumpioData).toContain('DevTools listening on ws://');
+      assert.include(dumpioData, 'DevTools listening on ws://');
     }
   });
   it('should close the browser when the node process closes', async () => {

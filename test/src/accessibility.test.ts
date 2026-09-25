@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
-
-import expect from 'expect';
+import {assert} from 'chai';
 import type {SerializedAXNode} from 'puppeteer-core/internal/cdp/Accessibility.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, html, htmlRaw} from './utils.js';
+import {assertMatchObject, attachFrame, html, htmlRaw} from './utils.js';
 
 describe('Accessibility', function () {
   setupTestBrowserHooks();
@@ -49,7 +47,7 @@ describe('Accessibility', function () {
     );
 
     await page.focus('[placeholder="Empty input"]');
-    expect(await page.accessibility.snapshot()).toMatchObject({
+    assertMatchObject(await page.accessibility.snapshot(), {
       role: 'RootWebArea',
       name: 'Accessibility Test',
       children: [
@@ -93,7 +91,8 @@ describe('Accessibility', function () {
     const snapshot = await page.accessibility.snapshot();
 
     try {
-      expect(snapshot).toMatchObject(
+      assertMatchObject(
+        snapshot,
         buildTestAxTree([
           // State before 149.0.7819.0. TODO: remove after roll
           {
@@ -110,7 +109,8 @@ describe('Accessibility', function () {
       );
     } catch {
       // State after 149.0.7819.0
-      expect(snapshot).toMatchObject(
+      assertMatchObject(
+        snapshot,
         buildTestAxTree([
           {
             role: 'search',
@@ -126,29 +126,30 @@ describe('Accessibility', function () {
 
     await page.setContent(html`<textarea>hi</textarea>`);
     await page.focus('textarea');
-    expect(
+    assertMatchObject(
       findFocusedNode(
         await page.accessibility.snapshot({interestingOnly: false}),
       ),
-    ).toMatchObject({
-      role: 'textbox',
-      name: '',
-      value: 'hi',
-      focused: true,
-      multiline: true,
-      children: [
-        {
-          role: 'generic',
-          name: '',
-          children: [
-            {
-              role: 'StaticText',
-              name: 'hi',
-            },
-          ],
-        },
-      ],
-    });
+      {
+        role: 'textbox',
+        name: '',
+        value: 'hi',
+        focused: true,
+        multiline: true,
+        children: [
+          {
+            role: 'generic',
+            name: '',
+            children: [
+              {
+                role: 'StaticText',
+                name: 'hi',
+              },
+            ],
+          },
+        ],
+      },
+    );
   });
   it('get snapshots while the tree is re-calculated', async () => {
     // see https://github.com/puppeteer/puppeteer/issues/9404
@@ -197,7 +198,7 @@ describe('Accessibility', function () {
       return (await page.accessibility.snapshot({root: element})).name;
     }
     using button = await page.$('button');
-    expect(await getAccessibleName(page, button)).toEqual('Show');
+    assert.strictEqual(await getAccessibleName(page, button), 'Show');
     await button?.click();
     await page.waitForSelector('aria/Hide');
   });
@@ -216,7 +217,7 @@ describe('Accessibility', function () {
     assert(snapshot);
     assert(snapshot.children);
     assert(snapshot.children[0]);
-    expect(snapshot.children[0]!.roledescription).toBeUndefined();
+    assert.isUndefined(snapshot.children[0]!.roledescription);
   });
   it('orientation', async () => {
     const {page} = await getTestState();
@@ -233,7 +234,7 @@ describe('Accessibility', function () {
     assert(snapshot);
     assert(snapshot.children);
     assert(snapshot.children[0]);
-    expect(snapshot.children[0]!.orientation).toEqual('vertical');
+    assert.strictEqual(snapshot.children[0]!.orientation, 'vertical');
   });
   it('autocomplete', async () => {
     const {page} = await getTestState();
@@ -248,7 +249,7 @@ describe('Accessibility', function () {
     assert(snapshot);
     assert(snapshot.children);
     assert(snapshot.children[0]);
-    expect(snapshot.children[0]!.autocomplete).toEqual('list');
+    assert.strictEqual(snapshot.children[0]!.autocomplete, 'list');
   });
   it('multiselectable', async () => {
     const {page} = await getTestState();
@@ -266,7 +267,7 @@ describe('Accessibility', function () {
     assert(snapshot);
     assert(snapshot.children);
     assert(snapshot.children[0]);
-    expect(snapshot.children[0]!.multiselectable).toEqual(true);
+    assert.isTrue(snapshot.children[0]!.multiselectable);
   });
 
   describe('iframes', () => {
@@ -282,7 +283,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot({
         interestingOnly: true,
       });
-      expect(snapshot).toMatchObject({
+      assertMatchObject(snapshot, {
         role: 'RootWebArea',
         name: '',
       });
@@ -301,7 +302,7 @@ describe('Accessibility', function () {
         interestingOnly: true,
         includeIframes: true,
       });
-      expect(snapshot).toMatchObject({
+      assertMatchObject(snapshot, {
         role: 'RootWebArea',
         name: '',
         children: [
@@ -342,7 +343,7 @@ describe('Accessibility', function () {
         interestingOnly: true,
         includeIframes: true,
       });
-      expect(snapshot).toMatchObject({
+      assertMatchObject(snapshot, {
         role: 'RootWebArea',
         name: '',
         children: [
@@ -379,7 +380,7 @@ describe('Accessibility', function () {
         interestingOnly: false,
         includeIframes: true,
       });
-      expect(snapshot).toMatchObject({
+      assertMatchObject(snapshot, {
         role: 'RootWebArea',
         name: '',
         children: [
@@ -452,7 +453,7 @@ describe('Accessibility', function () {
     assert(snapshot);
     assert(snapshot.children);
     assert(snapshot.children[0]);
-    expect(snapshot.children[0]!.keyshortcuts).toEqual('foo');
+    assert.strictEqual(snapshot.children[0]!.keyshortcuts, 'foo');
   });
   describe('filtering children of leaf nodes', function () {
     it('should not report text nodes inside controls', async () => {
@@ -469,7 +470,7 @@ describe('Accessibility', function () {
         </div>`,
       );
 
-      expect(await page.accessibility.snapshot()).toMatchObject({
+      assertMatchObject(await page.accessibility.snapshot(), {
         role: 'RootWebArea',
         name: 'My test page',
         children: [
@@ -500,7 +501,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject({
+      assertMatchObject(snapshot.children[0], {
         role: 'generic',
         name: '',
         value: 'Edit this image: ',
@@ -535,7 +536,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject({
+      assertMatchObject(snapshot.children[0], {
         role: 'textbox',
         name: '',
         value: 'Edit this image: ',
@@ -566,7 +567,7 @@ describe('Accessibility', function () {
         const snapshot = await page.accessibility.snapshot();
         assert(snapshot);
         assert(snapshot.children);
-        expect(snapshot.children[0]).toMatchObject({
+        assertMatchObject(snapshot.children[0], {
           role: 'textbox',
           name: '',
           value: 'Edit this image:',
@@ -595,7 +596,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject({
+      assertMatchObject(snapshot.children[0], {
         role: 'textbox',
         name: 'my favorite textbox',
         value: 'this is the inner content ',
@@ -621,7 +622,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject({
+      assertMatchObject(snapshot.children[0], {
         role: 'checkbox',
         name: 'my favorite checkbox',
         checked: true,
@@ -645,7 +646,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]).toMatchObject({
+      assertMatchObject(snapshot.children[0], {
         role: 'checkbox',
         name: 'this is the inner content yo',
         checked: true,
@@ -659,12 +660,10 @@ describe('Accessibility', function () {
         await page.setContent(html`<button>My Button</button>`);
 
         using button = (await page.$('button'))!;
-        expect(await page.accessibility.snapshot({root: button})).toMatchObject(
-          {
-            role: 'button',
-            name: 'My Button',
-          },
-        );
+        assertMatchObject(await page.accessibility.snapshot({root: button}), {
+          role: 'button',
+          name: 'My Button',
+        });
       });
       it('should work an input', async () => {
         const {page} = await getTestState();
@@ -677,7 +676,7 @@ describe('Accessibility', function () {
         );
 
         using input = (await page.$('input'))!;
-        expect(await page.accessibility.snapshot({root: input})).toMatchObject({
+        assertMatchObject(await page.accessibility.snapshot({root: input}), {
           role: 'textbox',
           name: 'My Input',
           value: 'My Value',
@@ -698,7 +697,7 @@ describe('Accessibility', function () {
         `);
 
         using menu = (await page.$('div[role="menu"]'))!;
-        expect(await page.accessibility.snapshot({root: menu})).toMatchObject({
+        assertMatchObject(await page.accessibility.snapshot({root: menu}), {
           role: 'menu',
           name: 'My Menu',
           children: [
@@ -717,7 +716,7 @@ describe('Accessibility', function () {
         await page.$eval('button', button => {
           return button.remove();
         });
-        expect(await page.accessibility.snapshot({root: button})).toEqual(null);
+        assert.isNull(await page.accessibility.snapshot({root: button}));
       });
       it('should support the interestingOnly option', async () => {
         const {page} = await getTestState();
@@ -727,30 +726,32 @@ describe('Accessibility', function () {
             ><div class="uninteresting"></div>`,
         );
         using div = (await page.$('div.uninteresting'))!;
-        expect(await page.accessibility.snapshot({root: div})).toEqual(null);
+        assert.isNull(await page.accessibility.snapshot({root: div}));
         using divWithButton = (await page.$('div'))!;
-        expect(
+        assertMatchObject(
           await page.accessibility.snapshot({root: divWithButton}),
-        ).toMatchObject({
-          name: 'My Button',
-          role: 'button',
-        });
-        expect(
+          {
+            name: 'My Button',
+            role: 'button',
+          },
+        );
+        assertMatchObject(
           await page.accessibility.snapshot({
             root: divWithButton,
             interestingOnly: false,
           }),
-        ).toMatchObject({
-          role: 'generic',
-          name: '',
-          children: [
-            {
-              role: 'button',
-              name: 'My Button',
-              children: [{role: 'StaticText', name: 'My Button'}],
-            },
-          ],
-        });
+          {
+            role: 'generic',
+            name: '',
+            children: [
+              {
+                role: 'button',
+                name: 'My Button',
+                children: [{role: 'StaticText', name: 'My Button'}],
+              },
+            ],
+          },
+        );
       });
       it('should work with nested button inside h1 with interestingOnly:true', async () => {
         const {page} = await getTestState();
@@ -764,12 +765,10 @@ describe('Accessibility', function () {
         `);
 
         using button = (await page.$('button'))!;
-        expect(await page.accessibility.snapshot({root: button})).toMatchObject(
-          {
-            role: 'button',
-            name: 'My Button',
-          },
-        );
+        assertMatchObject(await page.accessibility.snapshot({root: button}), {
+          role: 'button',
+          name: 'My Button',
+        });
       });
     });
 
@@ -781,17 +780,18 @@ describe('Accessibility', function () {
 
         using button = (await page.$('button'))!;
         const snapshot = await page.accessibility.snapshot({root: button});
-        expect(snapshot).toMatchObject({
+        assertMatchObject(snapshot, {
           role: 'button',
           name: 'My Button',
         });
 
         using buttonHandle = await snapshot!.elementHandle();
-        expect(
+        assert.strictEqual(
           await buttonHandle?.evaluate(button => {
             return button.innerHTML;
           }),
-        ).toEqual('My Button');
+          'My Button',
+        );
       });
 
       it('should get the parent ElementHandle from a text node accessibility node', async () => {
@@ -804,7 +804,7 @@ describe('Accessibility', function () {
           root: div,
           interestingOnly: false,
         });
-        expect(parentSnapshot).toMatchObject({
+        assertMatchObject(parentSnapshot, {
           role: 'generic',
           name: '',
           children: [
@@ -817,7 +817,7 @@ describe('Accessibility', function () {
           return el.lastChild!;
         }))!;
         const snapshot = await page.accessibility.snapshot({root: textNode});
-        expect(snapshot).toMatchObject({
+        assertMatchObject(snapshot, {
           role: 'StaticText',
           name: 'world!',
         });
@@ -826,13 +826,14 @@ describe('Accessibility', function () {
         // This should be the parent's handle, not the text node's.
         using parentNodeHandle = await parentSnapshot!.elementHandle();
         using textNodeHandle = await snapshot!.elementHandle();
-        expect(parentNodeHandle).toEqual(textNodeHandle);
+        assert.deepEqual(parentNodeHandle, textNodeHandle);
 
-        expect(
+        assert.strictEqual(
           await textNodeHandle?.evaluate(button => {
             return button.innerHTML;
           }),
-        ).toEqual('<b>Hello, </b> world!');
+          '<b>Hello, </b> world!',
+        );
       });
 
       it('should get the shadow host ElementHandle from a text node in a shadow root', async () => {
@@ -853,15 +854,16 @@ describe('Accessibility', function () {
         const textNode = snapshot!.children!.find(child => {
           return child.name === 'Shadow text';
         })!;
-        expect(textNode).toMatchObject({role: 'StaticText'});
+        assertMatchObject(textNode, {role: 'StaticText'});
 
         using textNodeHandle = await textNode.elementHandle();
-        expect(textNodeHandle?.asElement()).toBeTruthy();
-        expect(
+        assert.ok(textNodeHandle?.asElement());
+        assert.strictEqual(
           await textNodeHandle?.evaluate(element => {
             return element.id;
           }),
-        ).toEqual('host');
+          'host',
+        );
       });
     });
 
@@ -873,7 +875,7 @@ describe('Accessibility', function () {
       );
 
       const snapshot = await page.accessibility.snapshot();
-      expect(snapshot).toMatchObject({
+      assertMatchObject(snapshot, {
         role: 'RootWebArea',
         name: 'My test page',
         children: [
@@ -932,7 +934,7 @@ describe('Accessibility', function () {
     );
 
     const snapshot = await page.accessibility.snapshot();
-    expect(snapshot).toMatchObject({
+    assertMatchObject(snapshot, {
       role: 'RootWebArea',
       children: [
         {

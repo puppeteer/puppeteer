@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -24,11 +24,11 @@ describe('decorators', function () {
         }
       }
       const t = new Test();
-      expect(spy.callCount).toBe(0);
+      assert.strictEqual(spy.callCount, 0);
       const obj1 = {};
       const obj2 = {};
       t.test(obj1, obj2);
-      expect(spy.callCount).toBe(1);
+      assert.strictEqual(spy.callCount, 1);
     });
 
     it('should prevent repeated calls', () => {
@@ -40,19 +40,19 @@ describe('decorators', function () {
         }
       }
       const t = new Test();
-      expect(spy.callCount).toBe(0);
+      assert.strictEqual(spy.callCount, 0);
       const obj1 = {};
       const obj2 = {};
       t.test(obj1, obj2);
-      expect(spy.callCount).toBe(1);
-      expect(spy.lastCall.calledWith(obj1, obj2)).toBeTruthy();
+      assert.strictEqual(spy.callCount, 1);
+      assert.ok(spy.lastCall.calledWith(obj1, obj2));
       t.test(obj1, obj2);
-      expect(spy.callCount).toBe(1);
-      expect(spy.lastCall.calledWith(obj1, obj2)).toBeTruthy();
+      assert.strictEqual(spy.callCount, 1);
+      assert.ok(spy.lastCall.calledWith(obj1, obj2));
       const obj3 = {};
       t.test(obj1, obj3);
-      expect(spy.callCount).toBe(2);
-      expect(spy.lastCall.calledWith(obj1, obj3)).toBeTruthy();
+      assert.strictEqual(spy.callCount, 2);
+      assert.ok(spy.lastCall.calledWith(obj1, obj3));
     });
 
     it('should throw an error for dynamic argumetns', () => {
@@ -62,9 +62,9 @@ describe('decorators', function () {
       }
       const t = new Test();
       t.test({});
-      expect(() => {
+      assert.throws(() => {
         t.test({}, {});
-      }).toThrow();
+      });
     });
 
     it('should throw an error for non object arguments', () => {
@@ -73,9 +73,9 @@ describe('decorators', function () {
         test(..._args: unknown[]) {}
       }
       const t = new Test();
-      expect(() => {
+      assert.throws(() => {
         t.test(1);
-      }).toThrow();
+      });
     });
   });
 
@@ -91,15 +91,15 @@ describe('decorators', function () {
       t.on('a', spy);
 
       t.field.emit('a', true);
-      expect(spy.callCount).toBe(1);
-      expect(spy.calledWithExactly(true)).toBeTruthy();
+      assert.strictEqual(spy.callCount, 1);
+      assert.ok(spy.calledWithExactly(true));
 
       // Set a new emitter.
       t.field = new EventEmitter();
 
       t.field.emit('a', false);
-      expect(spy.callCount).toBe(2);
-      expect(spy.calledWithExactly(false)).toBeTruthy();
+      assert.strictEqual(spy.callCount, 2);
+      assert.ok(spy.calledWithExactly(false));
     });
 
     it('should not bubble down', () => {
@@ -113,10 +113,10 @@ describe('decorators', function () {
       t.field.on('a', spy);
 
       t.emit('a', true);
-      expect(spy.callCount).toBe(0);
+      assert.strictEqual(spy.callCount, 0);
 
       t.field.emit('a', true);
-      expect(spy.callCount).toBe(1);
+      assert.strictEqual(spy.callCount, 1);
     });
 
     it('should be assignable during construction', () => {
@@ -135,10 +135,10 @@ describe('decorators', function () {
       t.field.on('a', spy);
 
       t.emit('a', true);
-      expect(spy.callCount).toBe(0);
+      assert.strictEqual(spy.callCount, 0);
 
       t.field.emit('a', true);
-      expect(spy.callCount).toBe(1);
+      assert.strictEqual(spy.callCount, 1);
     });
   });
 });

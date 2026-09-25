@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -71,8 +71,8 @@ describe('followSymlinks', () => {
       } catch (err) {
         error = err as Error;
       }
-      expect(error).toBeDefined();
-      expect((error as NodeJS.ErrnoException).code).toBe('ELOOP');
+      assert.isDefined(error);
+      assert.strictEqual((error as NodeJS.ErrnoException).code, 'ELOOP');
     });
 
     it('should allow addScriptTag with a regular file path', async () => {
@@ -83,7 +83,7 @@ describe('followSymlinks', () => {
       const result = await page.evaluate(() => {
         return (globalThis as unknown as {__injected?: number}).__injected;
       });
-      expect(result).toBe(123);
+      assert.strictEqual(result, 123);
     });
 
     it('should reject addStyleTag with a symlinked path', async function () {
@@ -99,8 +99,8 @@ describe('followSymlinks', () => {
       } catch (err) {
         error = err as Error;
       }
-      expect(error).toBeDefined();
-      expect((error as NodeJS.ErrnoException).code).toBe('ELOOP');
+      assert.isDefined(error);
+      assert.strictEqual((error as NodeJS.ErrnoException).code, 'ELOOP');
     });
 
     it('should allow addStyleTag with a regular file path', async () => {
@@ -113,7 +113,7 @@ describe('followSymlinks', () => {
           .getComputedStyle(document.body)
           .getPropertyValue('background-color');
       });
-      expect(result).toBe('rgb(0, 255, 0)');
+      assert.strictEqual(result, 'rgb(0, 255, 0)');
     });
 
     it('should reject screenshot to an existing symlink path', async function () {
@@ -134,8 +134,8 @@ describe('followSymlinks', () => {
       } catch (err) {
         error = err as Error;
       }
-      expect(error).toBeDefined();
-      expect((error as NodeJS.ErrnoException).code).toBe('ELOOP');
+      assert.isDefined(error);
+      assert.strictEqual((error as NodeJS.ErrnoException).code, 'ELOOP');
     });
 
     it('should reject pdf to an existing symlink path', async function () {
@@ -156,8 +156,8 @@ describe('followSymlinks', () => {
       } catch (err) {
         error = err as Error;
       }
-      expect(error).toBeDefined();
-      expect((error as NodeJS.ErrnoException).code).toBe('ELOOP');
+      assert.isDefined(error);
+      assert.strictEqual((error as NodeJS.ErrnoException).code, 'ELOOP');
     });
 
     it('should reject screencast to an existing symlink path', async function () {
@@ -178,8 +178,8 @@ describe('followSymlinks', () => {
       } catch (err) {
         error = err as Error;
       }
-      expect(error).toBeDefined();
-      expect((error as NodeJS.ErrnoException).code).toBe('ELOOP');
+      assert.isDefined(error);
+      assert.strictEqual((error as NodeJS.ErrnoException).code, 'ELOOP');
     });
 
     it('should reject screencast when overwrite is false and file exists', async function () {
@@ -198,8 +198,8 @@ describe('followSymlinks', () => {
       } catch (err) {
         error = err as Error;
       }
-      expect(error).toBeDefined();
-      expect((error as NodeJS.ErrnoException).code).toBe('EEXIST');
+      assert.isDefined(error);
+      assert.strictEqual((error as NodeJS.ErrnoException).code, 'EEXIST');
     });
   });
 
@@ -217,7 +217,7 @@ describe('followSymlinks', () => {
       const result = await page.evaluate(() => {
         return (globalThis as unknown as {__injected?: number}).__injected;
       });
-      expect(result).toBe(123);
+      assert.strictEqual(result, 123);
     });
 
     it('should allow addStyleTag with a symlinked path', async function () {
@@ -233,7 +233,7 @@ describe('followSymlinks', () => {
           .getComputedStyle(document.body)
           .getPropertyValue('background-color');
       });
-      expect(result).toBe('rgb(0, 255, 0)');
+      assert.strictEqual(result, 'rgb(0, 255, 0)');
     });
 
     it('should allow screenshot to a symlink path', async function () {
@@ -250,7 +250,7 @@ describe('followSymlinks', () => {
 
       await page.screenshot({path: linkFile});
       const content = await fs.promises.readFile(targetFile);
-      expect(content.length).toBeGreaterThan(0);
+      assert.isAbove(content.length, 0);
     });
   });
 });

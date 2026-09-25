@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/// <reference lib="esnext.disposable" />
+
 declare global {
   interface SymbolConstructor {
     /**

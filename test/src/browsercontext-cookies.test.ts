@@ -3,7 +3,7 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 import type {DeleteCookiesRequest} from 'puppeteer-core';
 
 import {
@@ -20,7 +20,7 @@ describe('BrowserContext cookies', () => {
     it('should find no cookies in new context', async () => {
       const {browser} = state;
       using context = await browser.createBrowserContext();
-      expect(await context.cookies()).toEqual([]);
+      assert.deepEqual(await context.cookies(), []);
     });
     it('should find cookie created in page', async () => {
       const {page, server, context} = state;
@@ -64,10 +64,11 @@ describe('BrowserContext cookies', () => {
             },
       });
       const cookies = await context.cookies();
-      expect(cookies.length).toEqual(1);
+      assert.strictEqual(cookies.length, 1);
       // In Firefox with WebDriver BiDi, we do not know the actual
       // partition.
-      expect(cookies[0]?.partitionKey).toEqual(
+      assert.deepEqual(
+        cookies[0]?.partitionKey,
         isChrome
           ? {
               sourceOrigin: topLevelSite,
@@ -91,9 +92,9 @@ describe('BrowserContext cookies', () => {
       const cookie = cookies.find(c => {
         return c.name === name;
       });
-      expect(cookie).toBeDefined();
+      assert.isDefined(cookie);
       // Different browsers have different sameSite values for the "Default" sameSite.
-      expect(['Default', 'Lax', undefined]).toContain(cookie!.sameSite);
+      assert.include(['Default', 'Lax', undefined], cookie!.sameSite);
       await context.deleteMatchingCookies({name, domain: 'localhost'});
     });
   });
@@ -113,11 +114,12 @@ describe('BrowserContext cookies', () => {
 
       await page.goto(server.EMPTY_PAGE);
 
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.cookie;
         }),
-      ).toEqual('infoCookie=secret');
+        'infoCookie=secret',
+      );
     });
 
     it('should set cookie with a partition key', async () => {
@@ -140,11 +142,12 @@ describe('BrowserContext cookies', () => {
 
       await page.goto(url.toString());
 
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.cookie;
         }),
-      ).toEqual('infoCookie=secret');
+        'infoCookie=secret',
+      );
     });
   });
 
@@ -174,11 +177,12 @@ describe('BrowserContext cookies', () => {
           sourceScheme: 'NonSecure',
         },
       );
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.cookie;
         }),
-      ).toEqual('cookie1=1; cookie2=2');
+        'cookie1=1; cookie2=2',
+      );
       await context.deleteCookie({
         name: 'cookie1',
         value: '1',
@@ -191,11 +195,12 @@ describe('BrowserContext cookies', () => {
         session: true,
         sourceScheme: 'NonSecure',
       });
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.cookie;
         }),
-      ).toEqual('cookie2=2');
+        'cookie2=2',
+      );
     });
 
     it('should be able to delete "Default" sameSite cookie', async () => {
@@ -212,14 +217,14 @@ describe('BrowserContext cookies', () => {
       const cookie = cookies.find(c => {
         return c.name === name;
       });
-      expect(cookie).toBeDefined();
+      assert.isDefined(cookie);
       await context.deleteMatchingCookies({name, domain: 'localhost'});
       const cookiesAfter = await context.cookies();
-      expect(
+      assert.isUndefined(
         cookiesAfter.find(c => {
           return c.name === name;
         }),
-      ).toBeUndefined();
+      );
     });
   });
 
@@ -251,7 +256,7 @@ describe('BrowserContext cookies', () => {
       it(`should delete cookies matching ${JSON.stringify(filter)}`, async () => {
         const {page, context, server, isChrome} = state;
         await page.goto(server.EMPTY_PAGE);
-        expect(await context.cookies()).toHaveLength(0);
+        assert.lengthOf(await context.cookies(), 0);
         const topLevelSite = 'https://example.test';
         await context.setCookie(
           {
@@ -285,11 +290,11 @@ describe('BrowserContext cookies', () => {
               : undefined,
           },
         );
-        expect(await context.cookies()).toHaveLength(2);
+        assert.lengthOf(await context.cookies(), 2);
         await context.deleteMatchingCookies(filter);
         const cookies = await context.cookies();
-        expect(cookies).toHaveLength(1);
-        expect(cookies[0]!.name).toBe('cookie2');
+        assert.lengthOf(cookies, 1);
+        assert.strictEqual(cookies[0]!.name, 'cookie2');
       });
     }
   });

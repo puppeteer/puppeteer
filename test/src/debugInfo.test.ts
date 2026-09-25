@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
@@ -25,7 +25,7 @@ describe('DebugInfo', function () {
       }
 
       // Insure that the previous test are flushed
-      expect(browser.debugInfo.pendingProtocolErrors).toHaveLength(0);
+      assert.lengthOf(browser.debugInfo.pendingProtocolErrors, 0);
 
       const promise = page.evaluate(() => {
         return new Promise(resolve => {
@@ -34,7 +34,7 @@ describe('DebugInfo', function () {
         });
       });
       try {
-        expect(browser.debugInfo.pendingProtocolErrors).toHaveLength(1);
+        assert.lengthOf(browser.debugInfo.pendingProtocolErrors, 1);
       } finally {
         await page.evaluate(() => {
           // @ts-expect-error another context
@@ -42,7 +42,7 @@ describe('DebugInfo', function () {
         });
       }
       await promise;
-      expect(browser.debugInfo.pendingProtocolErrors).toHaveLength(0);
+      assert.lengthOf(browser.debugInfo.pendingProtocolErrors, 0);
     });
   });
 });

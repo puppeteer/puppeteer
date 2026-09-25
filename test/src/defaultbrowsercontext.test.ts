@@ -3,7 +3,7 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {
   expectCookieEquals,
@@ -44,11 +44,12 @@ describe('DefaultBrowserContext', function () {
       name: 'username',
       value: 'John Doe',
     });
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.cookie;
       }),
-    ).toBe('username=John Doe');
+      'username=John Doe',
+    );
     await expectCookieEquals(await page.cookies(), [
       {
         name: 'username',
@@ -78,9 +79,12 @@ describe('DefaultBrowserContext', function () {
         value: '2',
       },
     );
-    expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2');
+    assert.strictEqual(
+      await page.evaluate('document.cookie'),
+      'cookie1=1; cookie2=2',
+    );
     await page.deleteCookie({name: 'cookie2'});
-    expect(await page.evaluate('document.cookie')).toBe('cookie1=1');
+    assert.strictEqual(await page.evaluate('document.cookie'), 'cookie1=1');
     await expectCookieEquals(await page.cookies(), [
       {
         name: 'cookie1',

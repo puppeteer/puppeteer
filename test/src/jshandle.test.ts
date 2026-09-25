@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {JSHandle} from 'puppeteer-core/internal/api/JSHandle.js';
 import {
   asyncDisposeSymbol,
@@ -12,7 +12,11 @@ import {
 } from 'puppeteer-core/internal/util/disposable.js';
 import sinon from 'sinon';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  assertAtLeastOneToContain,
+  getTestState,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 import {html} from './utils.js';
 
 describe('JSHandle', function () {
@@ -25,7 +29,7 @@ describe('JSHandle', function () {
       using windowHandle = await page.evaluateHandle(() => {
         return window;
       });
-      expect(windowHandle).toBeTruthy();
+      assert.ok(windowHandle);
     });
     it('should return the RemoteObject', async () => {
       const {page} = await getTestState();
@@ -33,7 +37,7 @@ describe('JSHandle', function () {
       using windowHandle = await page.evaluateHandle(() => {
         return window;
       });
-      expect(windowHandle.remoteObject()).toBeTruthy();
+      assert.ok(windowHandle.remoteObject());
     });
     it('should accept object handle as an argument', async () => {
       const {page} = await getTestState();
@@ -44,7 +48,7 @@ describe('JSHandle', function () {
       const text = await page.evaluate(e => {
         return e.userAgent;
       }, navigatorHandle);
-      expect(text).toContain('Mozilla');
+      assert.include(text, 'Mozilla');
     });
     it('should accept object handle to primitive types', async () => {
       const {page} = await getTestState();
@@ -55,7 +59,7 @@ describe('JSHandle', function () {
       const isFive = await page.evaluate(e => {
         return Object.is(e, 5);
       }, aHandle);
-      expect(isFive).toBeTruthy();
+      assert.ok(isFive);
     });
     it('should warn about recursive objects', async () => {
       const {page} = await getTestState();
@@ -70,7 +74,7 @@ describe('JSHandle', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toContain('Recursive objects are not allowed.');
+      assert.include(error.message, 'Recursive objects are not allowed.');
     });
     it('should accept object handle to unserializable value', async () => {
       const {page} = await getTestState();
@@ -78,11 +82,11 @@ describe('JSHandle', function () {
       using aHandle = await page.evaluateHandle(() => {
         return Infinity;
       });
-      expect(
+      assert.isTrue(
         await page.evaluate(e => {
           return Object.is(e, Infinity);
         }, aHandle),
-      ).toBe(true);
+      );
     });
     it('should use the same JS wrappers', async () => {
       const {page} = await getTestState();
@@ -91,11 +95,12 @@ describe('JSHandle', function () {
         (globalThis as any).FOO = 123;
         return window;
       });
-      expect(
+      assert.strictEqual(
         await page.evaluate(e => {
           return (e as any).FOO;
         }, aHandle),
-      ).toBe(123);
+        123,
+      );
     });
   });
 
@@ -111,7 +116,7 @@ describe('JSHandle', function () {
         };
       });
       using twoHandle = await aHandle.getProperty('two');
-      expect(await twoHandle.jsonValue()).toEqual(2);
+      assert.deepEqual(await twoHandle.jsonValue(), 2);
     });
   });
 
@@ -123,7 +128,7 @@ describe('JSHandle', function () {
         return {foo: 'bar'};
       });
       const json = await aHandle.jsonValue();
-      expect(json).toEqual({foo: 'bar'});
+      assert.deepEqual(json, {foo: 'bar'});
     });
 
     it('works with jsonValues that are not objects', async () => {
@@ -133,7 +138,7 @@ describe('JSHandle', function () {
         return ['a', 'b'];
       });
       const json = await aHandle.jsonValue();
-      expect(json).toEqual(['a', 'b']);
+      assert.deepEqual(json, ['a', 'b']);
     });
 
     it('works with jsonValues that are primitives', async () => {
@@ -142,12 +147,12 @@ describe('JSHandle', function () {
       using aHandle = await page.evaluateHandle(() => {
         return 'foo';
       });
-      expect(await aHandle.jsonValue()).toEqual('foo');
+      assert.deepEqual(await aHandle.jsonValue(), 'foo');
 
       using bHandle = await page.evaluateHandle(() => {
         return undefined;
       });
-      expect(await bHandle.jsonValue()).toEqual(undefined);
+      assert.isUndefined(await bHandle.jsonValue());
     });
 
     it('should work with dates', async () => {
@@ -157,8 +162,8 @@ describe('JSHandle', function () {
         return new Date('2017-09-26T00:00:00.000Z');
       });
       const date = await dateHandle.jsonValue();
-      expect(date).toBeInstanceOf(Date);
-      expect(date.toISOString()).toEqual('2017-09-26T00:00:00.000Z');
+      assert.instanceOf(date, Date);
+      assert.deepEqual(date.toISOString(), '2017-09-26T00:00:00.000Z');
     });
     it('should not throw for circular objects', async () => {
       const {page} = await getTestState();
@@ -183,8 +188,8 @@ describe('JSHandle', function () {
       });
       const properties = await aHandle.getProperties();
       using foo = properties.get('foo')!;
-      expect(foo).toBeTruthy();
-      expect(await foo.jsonValue()).toBe('bar');
+      assert.ok(foo);
+      assert.strictEqual(await foo.jsonValue(), 'bar');
     });
     it('should return even non-own properties', async () => {
       const {page} = await getTestState();
@@ -206,8 +211,8 @@ describe('JSHandle', function () {
         return new B();
       });
       const properties = await aHandle.getProperties();
-      expect(await properties.get('a')!.jsonValue()).toBe('1');
-      expect(await properties.get('b')!.jsonValue()).toBe('2');
+      assert.strictEqual(await properties.get('a')!.jsonValue(), '1');
+      assert.strictEqual(await properties.get('b')!.jsonValue(), '2');
     });
   });
 
@@ -219,7 +224,7 @@ describe('JSHandle', function () {
         return document.body;
       });
       using element = aHandle.asElement();
-      expect(element).toBeTruthy();
+      assert.ok(element);
     });
     it('should return null for non-elements', async () => {
       const {page} = await getTestState();
@@ -228,7 +233,7 @@ describe('JSHandle', function () {
         return 2;
       });
       using element = aHandle.asElement();
-      expect(element).toBeFalsy();
+      assert.notOk(element);
     });
     it('should return ElementHandle for TextNodes', async () => {
       const {page} = await getTestState();
@@ -238,8 +243,8 @@ describe('JSHandle', function () {
         return document.querySelector('div')!.firstChild;
       });
       using element = aHandle.asElement();
-      expect(element).toBeTruthy();
-      expect(
+      assert.ok(element);
+      assert.isTrue(
         await page.evaluate(e => {
           return e?.nodeType === Node.TEXT_NODE;
         }, element),
@@ -254,11 +259,11 @@ describe('JSHandle', function () {
       using numberHandle = await page.evaluateHandle(() => {
         return 2;
       });
-      expect(numberHandle.toString()).toBe('JSHandle:2');
+      assert.strictEqual(numberHandle.toString(), 'JSHandle:2');
       using stringHandle = await page.evaluateHandle(() => {
         return 'a';
       });
-      expect(stringHandle.toString()).toBe('JSHandle:a');
+      assert.strictEqual(stringHandle.toString(), 'JSHandle:a');
     });
     it('should work for complicated objects', async () => {
       const {page} = await getTestState();
@@ -266,7 +271,7 @@ describe('JSHandle', function () {
       using aHandle = await page.evaluateHandle(() => {
         return window;
       });
-      expect(aHandle.toString()).atLeastOneToContain([
+      assertAtLeastOneToContain(aHandle.toString(), [
         'JSHandle@object',
         'JSHandle@window',
       ]);
@@ -274,66 +279,88 @@ describe('JSHandle', function () {
     it('should work with different subtypes', async () => {
       const {page} = await getTestState();
 
-      expect((await page.evaluateHandle('(function(){})')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('(function(){})')).toString(),
         'JSHandle@function',
       );
-      expect((await page.evaluateHandle('12')).toString()).toBe('JSHandle:12');
-      expect((await page.evaluateHandle('true')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('12')).toString(),
+        'JSHandle:12',
+      );
+      assert.strictEqual(
+        (await page.evaluateHandle('true')).toString(),
         'JSHandle:true',
       );
-      expect((await page.evaluateHandle('undefined')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('undefined')).toString(),
         'JSHandle:undefined',
       );
-      expect((await page.evaluateHandle('"foo"')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('"foo"')).toString(),
         'JSHandle:foo',
       );
-      expect((await page.evaluateHandle('Symbol()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('Symbol()')).toString(),
         'JSHandle@symbol',
       );
-      expect((await page.evaluateHandle('new Map()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new Map()')).toString(),
         'JSHandle@map',
       );
-      expect((await page.evaluateHandle('new Set()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new Set()')).toString(),
         'JSHandle@set',
       );
-      expect((await page.evaluateHandle('[]')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('[]')).toString(),
         'JSHandle@array',
       );
-      expect((await page.evaluateHandle('null')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('null')).toString(),
         'JSHandle:null',
       );
-      expect((await page.evaluateHandle('/foo/')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('/foo/')).toString(),
         'JSHandle@regexp',
       );
-      expect((await page.evaluateHandle('document.body')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('document.body')).toString(),
         'JSHandle@node',
       );
-      expect((await page.evaluateHandle('new Date()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new Date()')).toString(),
         'JSHandle@date',
       );
-      expect((await page.evaluateHandle('new WeakMap()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new WeakMap()')).toString(),
         'JSHandle@weakmap',
       );
-      expect((await page.evaluateHandle('new WeakSet()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new WeakSet()')).toString(),
         'JSHandle@weakset',
       );
-      expect((await page.evaluateHandle('new Error()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new Error()')).toString(),
         'JSHandle@error',
       );
-      expect((await page.evaluateHandle('new Int32Array()')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new Int32Array()')).toString(),
         'JSHandle@typedarray',
       );
-      expect((await page.evaluateHandle('new Proxy({}, {})')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('new Proxy({}, {})')).toString(),
         'JSHandle@proxy',
       );
     });
     it('should work with window subtypes', async () => {
       const {page} = await getTestState();
 
-      expect((await page.evaluateHandle('window')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('window')).toString(),
         'JSHandle@window',
       );
-      expect((await page.evaluateHandle('globalThis')).toString()).toBe(
+      assert.strictEqual(
+        (await page.evaluateHandle('globalThis')).toString(),
         'JSHandle@window',
       );
     });
@@ -347,9 +374,9 @@ describe('JSHandle', function () {
       {
         using _ = handle;
       }
-      expect(handle).toBeInstanceOf(JSHandle);
-      expect(spy.calledOnce).toBeTruthy();
-      expect(handle.disposed).toBeTruthy();
+      assert.isTrue(handle instanceof JSHandle);
+      assert.ok(spy.calledOnce);
+      assert.ok(handle.disposed);
     });
   });
 
@@ -361,9 +388,9 @@ describe('JSHandle', function () {
       {
         await using _ = handle;
       }
-      expect(handle).toBeInstanceOf(JSHandle);
-      expect(spy.calledOnce).toBeTruthy();
-      expect(handle.disposed).toBeTruthy();
+      assert.isTrue(handle instanceof JSHandle);
+      assert.ok(spy.calledOnce);
+      assert.ok(handle.disposed);
     });
   });
 
@@ -376,9 +403,9 @@ describe('JSHandle', function () {
         using _ = handle;
         handle.move();
       }
-      expect(handle).toBeInstanceOf(JSHandle);
-      expect(spy.calledOnce).toBeTruthy();
-      expect(handle.disposed).toBeFalsy();
+      assert.isTrue(handle instanceof JSHandle);
+      assert.ok(spy.calledOnce);
+      assert.notOk(handle.disposed);
     });
   });
 });

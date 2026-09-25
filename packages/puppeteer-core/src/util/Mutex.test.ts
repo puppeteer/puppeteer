@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {disposeSymbol} from './disposable.js';
@@ -16,7 +16,7 @@ describe('Mutex', () => {
   it('should lock and release', async () => {
     const mutex = new Mutex();
     const guard = await mutex.acquire();
-    expect(guard).toBeDefined();
+    assert.isDefined(guard);
     guard[disposeSymbol]();
   });
 
@@ -35,7 +35,7 @@ describe('Mutex', () => {
     results.push(2);
     second[disposeSymbol]();
 
-    expect(results).toEqual([1, 2]);
+    assert.deepEqual(results, [1, 2]);
   });
 
   it('should call onRelease when disposed', async () => {
@@ -43,7 +43,7 @@ describe('Mutex', () => {
     const onRelease = sinon.spy();
     const guard = await mutex.acquire(onRelease);
     guard[disposeSymbol]();
-    expect(onRelease.calledOnce).toBeTruthy();
+    assert.ok(onRelease.calledOnce);
   });
 
   it('should call onRelease when disposed for queued acquirers', async () => {
@@ -57,6 +57,6 @@ describe('Mutex', () => {
     const second = await secondPromise;
 
     second[disposeSymbol]();
-    expect(onRelease.calledOnce).toBeTruthy();
+    assert.ok(onRelease.calledOnce);
   });
 });

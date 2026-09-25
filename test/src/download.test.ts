@@ -8,10 +8,8 @@ import {mkdtemp, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
-import expect from 'expect';
-
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitForFileExistence} from './utils.js';
+import {assertRejects, waitForFileExistence} from './utils.js';
 
 describe('Download', () => {
   setupTestBrowserHooks();
@@ -56,9 +54,7 @@ describe('Download', () => {
       const page = await context.newPage();
       await page.goto(server.PREFIX + '/download.html');
       await page.click('#download');
-      await expect(
-        waitForFileExistence(join(tempDir, 'download.txt')),
-      ).rejects.toThrow();
+      await assertRejects(waitForFileExistence(join(tempDir, 'download.txt')));
     });
   });
 });

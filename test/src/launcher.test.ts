@@ -3,20 +3,23 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import assert from 'node:assert';
 import fs from 'node:fs';
 import {mkdtemp, readFile, writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import type {TLSSocket} from 'node:tls';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {
+  assertAtLeastOneToContain,
+  getTestState,
+  launch,
+} from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
@@ -44,7 +47,7 @@ describe('Launcher specs', function () {
           await server.waitForRequest('/one-style.css');
           await remote.disconnect();
           const error = await navigationPromise;
-          expect(
+          assert.ok(
             [
               'Navigating frame was detached',
               'Protocol error (Page.navigate): Target closed.',
@@ -53,7 +56,7 @@ describe('Launcher specs', function () {
             ].some(message => {
               return error.message.startsWith(message);
             }),
-          ).toBeTruthy();
+          );
         } finally {
           await close();
         }
@@ -74,7 +77,10 @@ describe('Launcher specs', function () {
             });
           await remote.disconnect();
           const error = await watchdog;
-          expect(error.message).toBe('Waiting for selector `div` failed');
+          assert.strictEqual(
+            error.message,
+            'Waiting for selector `div` failed',
+          );
         } finally {
           await close();
         }
@@ -100,12 +106,12 @@ describe('Launcher specs', function () {
           ]);
           for (let i = 0; i < 2; i++) {
             const message = results[i].message;
-            expect(message).atLeastOneToContain([
+            assertAtLeastOneToContain(message, [
               'Target closed',
               'Page closed!',
               'Browser already closed',
             ]);
-            expect(message).not.toContain('Timeout');
+            assert.notInclude(message, 'Timeout');
           }
         } finally {
           await close();
@@ -148,7 +154,7 @@ describe('Launcher specs', function () {
           process.setMaxListeners(10);
         }
         process.off('warning', warningHandler);
-        expect(warning?.stack).toBe(undefined);
+        assert.isUndefined(warning?.stack);
       });
       it('should have default url when launching browser', async function () {
         const {browser, close} = await launch({});
@@ -158,7 +164,7 @@ describe('Launcher specs', function () {
               return page.url();
             },
           );
-          expect(pages).toEqual(['about:blank']);
+          assert.deepEqual(pages, ['about:blank']);
         } finally {
           await close();
         }
@@ -189,7 +195,7 @@ describe('Launcher specs', function () {
           });
         await close();
         await neverResolves;
-        expect(error.message).toContain('Protocol error');
+        assert.include(error.message, 'Protocol error');
       });
       it('should reject if executable path is invalid', async () => {
         let waitError!: Error;
@@ -198,7 +204,8 @@ describe('Launcher specs', function () {
         }).catch(error => {
           return (waitError = error);
         });
-        expect(waitError.message).toBe(
+        assert.strictEqual(
+          waitError.message,
           'Browser was not found at the configured executablePath (random-invalid-path)',
         );
       });
@@ -208,12 +215,12 @@ describe('Launcher specs', function () {
         // Open a page to make sure its functional.
         try {
           await browser.newPage();
-          expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+          assert.isAbove(fs.readdirSync(userDataDir).length, 0);
         } finally {
           await close();
         }
 
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        assert.isAbove(fs.readdirSync(userDataDir).length, 0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         try {
           rmSync(userDataDir);
@@ -234,16 +241,16 @@ describe('Launcher specs', function () {
         });
 
         // Path should be empty before starting the browser.
-        expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
+        assert.lengthOf(fs.readdirSync(testTmpDir), 0);
         const {browser, close} = await launch({});
         try {
           // One profile folder should have been created at this moment.
           const profiles = fs.readdirSync(testTmpDir);
-          expect(profiles).toHaveLength(1);
+          assert.lengthOf(profiles, 1);
           const expectedProfile = isFirefox
             ? 'puppeteer_dev_firefox_profile-'
             : 'puppeteer_dev_chrome_profile-';
-          expect(profiles[0]?.startsWith(expectedProfile)).toBe(true);
+          assert.isTrue(profiles[0]?.startsWith(expectedProfile));
 
           // Open a page to make sure its functional.
           await browser.newPage();
@@ -252,7 +259,7 @@ describe('Launcher specs', function () {
         }
 
         // Profile should be deleted after closing the browser
-        expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
+        assert.lengthOf(fs.readdirSync(testTmpDir), 0);
       });
       it('userDataDir option restores preferences', async () => {
         const userDataDir = await mkdtemp(TMP_FOLDER);
@@ -267,12 +274,18 @@ describe('Launcher specs', function () {
         try {
           // Open a page to make sure its functional.
           await browser.newPage();
-          expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+          assert.isAbove(fs.readdirSync(userDataDir).length, 0);
           await close();
-          expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+          assert.isAbove(fs.readdirSync(userDataDir).length, 0);
 
-          expect(await readFile(prefsJSPath, 'utf8')).toBe(prefsJSContent);
-          expect(await readFile(userJSPath, 'utf8')).toBe(prefsJSContent);
+          assert.strictEqual(
+            await readFile(prefsJSPath, 'utf8'),
+            prefsJSContent,
+          );
+          assert.strictEqual(
+            await readFile(userJSPath, 'utf8'),
+            prefsJSContent,
+          );
         } finally {
           await close();
         }
@@ -297,9 +310,9 @@ describe('Launcher specs', function () {
           options.args = [...(options.args || []), '-profile', userDataDir];
         }
         const {close} = await launch(options);
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        assert.isAbove(fs.readdirSync(userDataDir).length, 0);
         await close();
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        assert.isAbove(fs.readdirSync(userDataDir).length, 0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         try {
           rmSync(userDataDir);
@@ -326,9 +339,9 @@ describe('Launcher specs', function () {
           ];
         }
         const {close} = await launch(options);
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        assert.isAbove(fs.readdirSync(userDataDir).length, 0);
         await close();
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        assert.isAbove(fs.readdirSync(userDataDir).length, 0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         try {
           rmSync(userDataDir);
@@ -352,11 +365,12 @@ describe('Launcher specs', function () {
         try {
           const page2 = await browser2.newPage();
           await page2.goto(server.EMPTY_PAGE);
-          expect(
+          assert.strictEqual(
             await page2.evaluate(() => {
               return localStorage['hey'];
             }),
-          ).toBe('hello');
+            'hello',
+          );
         } finally {
           await close2();
         }
@@ -384,11 +398,12 @@ describe('Launcher specs', function () {
         try {
           const page2 = await browser2.newPage();
           await page2.goto(server.EMPTY_PAGE);
-          expect(
+          assert.strictEqual(
             await page2.evaluate(() => {
               return document.cookie;
             }),
-          ).toBe('doSomethingOnlyOnce=true');
+            'doSomethingOnlyOnce=true',
+          );
         } finally {
           await close2();
         }
@@ -404,39 +419,47 @@ describe('Launcher specs', function () {
         });
 
         if (isChrome) {
-          expect(await puppeteer.defaultArgs()).toContain('--no-first-run');
-          expect(await puppeteer.defaultArgs()).toContain('--headless=new');
-          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
+          assert.include(await puppeteer.defaultArgs(), '--no-first-run');
+          assert.include(await puppeteer.defaultArgs(), '--headless=new');
+          assert.notInclude(
+            await puppeteer.defaultArgs({headless: false}),
             '--headless=new',
           );
-          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          assert.include(
+            await puppeteer.defaultArgs({userDataDir: 'foo'}),
             `--user-data-dir=${path.resolve('foo')}`,
           );
         } else if (isFirefox) {
-          expect(await puppeteer.defaultArgs()).toContain('--headless');
+          assert.include(await puppeteer.defaultArgs(), '--headless');
           if (os.platform() === 'darwin') {
-            expect(await puppeteer.defaultArgs()).toContain('--foreground');
+            assert.include(await puppeteer.defaultArgs(), '--foreground');
           } else {
-            expect(await puppeteer.defaultArgs()).not.toContain('--foreground');
+            assert.notInclude(await puppeteer.defaultArgs(), '--foreground');
           }
-          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
+          assert.notInclude(
+            await puppeteer.defaultArgs({headless: false}),
             '--headless',
           );
-          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          assert.include(
+            await puppeteer.defaultArgs({userDataDir: 'foo'}),
             '--profile',
           );
-          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          assert.include(
+            await puppeteer.defaultArgs({userDataDir: 'foo'}),
             'foo',
           );
         } else {
-          expect(await puppeteer.defaultArgs()).toContain('-headless');
-          expect(await puppeteer.defaultArgs({headless: false})).not.toContain(
+          assert.include(await puppeteer.defaultArgs(), '-headless');
+          assert.notInclude(
+            await puppeteer.defaultArgs({headless: false}),
             '-headless',
           );
-          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          assert.include(
+            await puppeteer.defaultArgs({userDataDir: 'foo'}),
             '-profile',
           );
-          expect(await puppeteer.defaultArgs({userDataDir: 'foo'})).toContain(
+          assert.include(
+            await puppeteer.defaultArgs({userDataDir: 'foo'}),
             path.resolve('foo'),
           );
         }
@@ -446,9 +469,9 @@ describe('Launcher specs', function () {
           skipLaunch: true,
         });
         if (isChrome) {
-          expect(await puppeteer.lastLaunchedBrowser()).toBe('chrome');
+          assert.strictEqual(await puppeteer.lastLaunchedBrowser(), 'chrome');
         } else if (isFirefox) {
-          expect(await puppeteer.lastLaunchedBrowser()).toBe('firefox');
+          assert.strictEqual(await puppeteer.lastLaunchedBrowser(), 'firefox');
         }
       });
       it('should filter out ignored default arguments in Chrome', async () => {
@@ -468,9 +491,9 @@ describe('Launcher specs', function () {
           if (!spawnargs) {
             throw new Error('spawnargs not present');
           }
-          expect(spawnargs.indexOf(defaultArgs[0]!)).toBe(-1);
-          expect(spawnargs.indexOf(defaultArgs[1]!)).not.toBe(-1);
-          expect(spawnargs.indexOf(defaultArgs[2]!)).toBe(-1);
+          assert.strictEqual(spawnargs.indexOf(defaultArgs[0]!), -1);
+          assert.notStrictEqual(spawnargs.indexOf(defaultArgs[1]!), -1);
+          assert.strictEqual(spawnargs.indexOf(defaultArgs[2]!), -1);
         } finally {
           await close();
         }
@@ -492,7 +515,7 @@ describe('Launcher specs', function () {
           if (!spawnargs) {
             throw new Error('spawnargs not present');
           }
-          expect(spawnargs.indexOf(defaultArgs[0]!)).not.toBe(-1);
+          assert.notStrictEqual(spawnargs.indexOf(defaultArgs[0]!), -1);
         } finally {
           await close();
         }
@@ -503,7 +526,7 @@ describe('Launcher specs', function () {
           const pages = (await browser.pages()).map(page => {
             return page.url();
           });
-          expect(pages).toEqual(['about:blank']);
+          assert.deepEqual(pages, ['about:blank']);
         } finally {
           await close();
         }
@@ -518,12 +541,12 @@ describe('Launcher specs', function () {
         const {browser, close} = await launch(options);
         try {
           const pages = await browser.pages();
-          expect(pages).toHaveLength(1);
+          assert.lengthOf(pages, 1);
           const page = pages[0]!;
           if (page.url() !== server.EMPTY_PAGE) {
             await page.waitForNavigation();
           }
-          expect(page.url()).toBe(server.EMPTY_PAGE);
+          assert.strictEqual(page.url(), server.EMPTY_PAGE);
         } finally {
           await close();
         }
@@ -535,7 +558,7 @@ describe('Launcher specs', function () {
         }).catch(error_ => {
           return (error = error_);
         });
-        expect(error).toBeInstanceOf(TimeoutError);
+        assert.instanceOf(error, TimeoutError);
       });
       it('should work with timeout = 0', async () => {
         const {close} = await launch({
@@ -553,8 +576,8 @@ describe('Launcher specs', function () {
 
         try {
           const page = await browser.newPage();
-          expect(await page.evaluate('window.innerWidth')).toBe(456);
-          expect(await page.evaluate('window.innerHeight')).toBe(789);
+          assert.strictEqual(await page.evaluate('window.innerWidth'), 456);
+          assert.strictEqual(await page.evaluate('window.innerHeight'), 789);
         } finally {
           await close();
         }
@@ -565,7 +588,7 @@ describe('Launcher specs', function () {
         });
         try {
           const page = await browser.newPage();
-          expect(page.viewport()).toBe(null);
+          assert.isNull(page.viewport());
         } finally {
           await close();
         }
@@ -577,7 +600,7 @@ describe('Launcher specs', function () {
         });
         try {
           const url = new URL(browser.wsEndpoint());
-          expect(url.port).toBe('9999');
+          assert.strictEqual(url.port, '9999');
         } finally {
           await close();
         }
@@ -592,7 +615,7 @@ describe('Launcher specs', function () {
         await launch(options).catch(error_ => {
           return (error = error_);
         });
-        expect(error.message).toContain('either pipe or debugging port');
+        assert.include(error.message, 'either pipe or debugging port');
       });
 
       it('throws an error if executable path is not valid with pipe=true', async () => {
@@ -604,7 +627,8 @@ describe('Launcher specs', function () {
         await launch(options).catch(error_ => {
           return (error = error_);
         });
-        expect(error.message).toContain(
+        assert.include(
+          error.message,
           'Browser was not found at the configured executablePath (/tmp/does-not-exist)',
         );
       });
@@ -633,19 +657,21 @@ describe('Launcher specs', function () {
             protocol: browser.protocol,
           });
           const page = await otherBrowser.newPage();
-          expect(
+          assert.strictEqual(
             await page.evaluate(() => {
               return 7 * 8;
             }),
-          ).toBe(56);
+            56,
+          );
           await otherBrowser.disconnect();
 
           const secondPage = await browser.newPage();
-          expect(
+          assert.strictEqual(
             await secondPage.evaluate(() => {
               return 7 * 6;
             }),
-          ).toBe(42);
+            42,
+          );
         } finally {
           await close();
         }
@@ -702,12 +728,12 @@ describe('Launcher specs', function () {
             httpsServer.waitForRequest('/empty.html'),
             page.goto(httpsServer.EMPTY_PAGE),
           ]);
-          expect(response!.ok()).toBe(true);
-          expect(response!.securityDetails()).toBeTruthy();
+          assert.isTrue(response!.ok());
+          assert.ok(response!.securityDetails());
           const protocol = (serverRequest.socket as TLSSocket)
             .getProtocol()!
             .replace('v', ' ');
-          expect(response!.securityDetails()!.protocol()).toBe(protocol);
+          assert.strictEqual(response!.securityDetails()!.protocol(), protocol);
           await page.close();
         } finally {
           await close();
@@ -723,12 +749,12 @@ describe('Launcher specs', function () {
         });
         try {
           const targets = browser.targets();
-          expect(targets).toHaveLength(1);
-          expect(
+          assert.lengthOf(targets, 1);
+          assert.isUndefined(
             targets.find(target => {
               return target.type() === 'page';
             }),
-          ).toBeUndefined();
+          );
         } finally {
           await close();
         }
@@ -755,13 +781,14 @@ describe('Launcher specs', function () {
 
           const pages = await remoteBrowser.pages();
 
-          expect(
+          assert.deepEqual(
             pages
               .map((p: Page) => {
                 return p.url();
               })
               .sort(),
-          ).toEqual(['about:blank', server.EMPTY_PAGE]);
+            ['about:blank', server.EMPTY_PAGE],
+          );
 
           await page2.close();
           await page1.close();
@@ -790,18 +817,19 @@ describe('Launcher specs', function () {
           const restoredPage = pages.find(page => {
             return page.url() === server.PREFIX + '/frames/nested-frames.html';
           })!;
-          expect(await dumpFrames(restoredPage.mainFrame())).toEqual([
+          assert.deepEqual(await dumpFrames(restoredPage.mainFrame()), [
             'http://localhost:<PORT>/frames/nested-frames.html',
             '    http://localhost:<PORT>/frames/two-frames.html (2frames)',
             '        http://localhost:<PORT>/frames/frame.html (uno)',
             '        http://localhost:<PORT>/frames/frame.html (dos)',
             '    http://localhost:<PORT>/frames/frame.html (aframe)',
           ]);
-          expect(
+          assert.strictEqual(
             await restoredPage.evaluate(() => {
               return 7 * 8;
             }),
-          ).toBe(56);
+            56,
+          );
         } finally {
           await remoteClose();
           await close();
@@ -825,16 +853,18 @@ describe('Launcher specs', function () {
             browserTwo.newPage(),
           ]);
           assert(page1);
-          expect(
+          assert.strictEqual(
             await page1.evaluate(() => {
               return 7 * 8;
             }),
-          ).toBe(56);
-          expect(
+            56,
+          );
+          assert.strictEqual(
             await page2.evaluate(() => {
               return 7 * 6;
             }),
-          ).toBe(42);
+            42,
+          );
         } finally {
           await close();
         }
@@ -880,8 +910,8 @@ describe('Launcher specs', function () {
         });
 
         const executablePath = await puppeteer.executablePath();
-        expect(fs.existsSync(executablePath)).toBe(true);
-        expect(fs.realpathSync(executablePath)).toBe(executablePath);
+        assert.isTrue(fs.existsSync(executablePath));
+        assert.strictEqual(fs.realpathSync(executablePath), executablePath);
       });
       it('returns executablePath for channel', async () => {
         const {puppeteer} = await getTestState({
@@ -889,7 +919,7 @@ describe('Launcher specs', function () {
         });
 
         const executablePath = await puppeteer.executablePath('chrome');
-        expect(executablePath).toBeTruthy();
+        assert.ok(executablePath);
       });
       describe('when executable path is configured', () => {
         const sandbox = sinon.createSandbox();
@@ -914,9 +944,7 @@ describe('Launcher specs', function () {
           try {
             await puppeteer.executablePath();
           } catch (error) {
-            expect((error as Error).message).toContain(
-              'SOME_CUSTOM_EXECUTABLE',
-            );
+            assert.include((error as Error).message, 'SOME_CUSTOM_EXECUTABLE');
           }
         });
       });
@@ -941,7 +969,7 @@ describe('Launcher specs', function () {
         const page = await browser.newPage();
         await page.goto(server.EMPTY_PAGE);
         await page.close();
-        expect(events).toEqual([
+        assert.deepEqual(events, [
           'CREATED: about:blank',
           `CHANGED: ${server.EMPTY_PAGE}`,
           `DESTROYED: ${server.EMPTY_PAGE}`,
@@ -984,9 +1012,9 @@ describe('Launcher specs', function () {
           remoteBrowser2.disconnect(),
         ]);
 
-        expect(disconnectedOriginal).toBe(0);
-        expect(disconnectedRemote1).toBe(0);
-        expect(disconnectedRemote2).toBe(1);
+        assert.strictEqual(disconnectedOriginal, 0);
+        assert.strictEqual(disconnectedRemote1, 0);
+        assert.strictEqual(disconnectedRemote2, 1);
 
         await Promise.all([
           waitEvent(remoteBrowser1, 'disconnected'),
@@ -994,9 +1022,9 @@ describe('Launcher specs', function () {
           browser.close(),
         ]);
 
-        expect(disconnectedOriginal).toBe(1);
-        expect(disconnectedRemote1).toBe(1);
-        expect(disconnectedRemote2).toBe(1);
+        assert.strictEqual(disconnectedOriginal, 1);
+        assert.strictEqual(disconnectedRemote1, 1);
+        assert.strictEqual(disconnectedRemote2, 1);
       } finally {
         await close();
       }

@@ -3,13 +3,12 @@
  * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import assert from 'node:assert';
 import fs from 'node:fs';
 import {mkdtemp} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {launch} from '../mocha-utils.js';
 
@@ -23,7 +22,7 @@ describe('userDataDir', function () {
       // Open a page to make sure its functional.
       try {
         await browser.newPage();
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        assert.isAbove(fs.readdirSync(userDataDir).length, 0);
 
         try {
           const {close: close2} = await launch({

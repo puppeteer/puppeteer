@@ -9,7 +9,7 @@ import {mkdtemp, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 
@@ -32,11 +32,11 @@ describe('Heap Snapshot', function () {
 
     await page.captureHeapSnapshot({path: filePath});
 
-    expect(fs.existsSync(filePath)).toBe(true);
+    assert.isTrue(fs.existsSync(filePath));
     const content = fs.readFileSync(filePath, 'utf8');
     const snapshot = JSON.parse(content);
-    expect(snapshot.snapshot).toBeDefined();
-    expect(snapshot.nodes).toBeDefined();
-    expect(snapshot.edges).toBeDefined();
+    assert.isDefined(snapshot.snapshot);
+    assert.isDefined(snapshot.nodes);
+    assert.isDefined(snapshot.edges);
   });
 });

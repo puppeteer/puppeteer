@@ -6,10 +6,10 @@
 
 import os from 'node:os';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, html} from './utils.js';
+import {assertMatchObject, attachFrame, html} from './utils.js';
 
 describe('Keyboard', function () {
   setupTestBrowserHooks();
@@ -24,42 +24,46 @@ describe('Keyboard', function () {
     });
     const text = 'Hello world. I am the text that was typed!';
     await page.keyboard.type(text);
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe(text);
+      text,
+    );
   });
   it('should move with the arrow keys', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.type('textarea', 'Hello World!');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe('Hello World!');
+      'Hello World!',
+    );
     for (const _ of 'World!') {
       await page.keyboard.press('ArrowLeft');
     }
     await page.keyboard.type('inserted ');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe('Hello inserted World!');
+      'Hello inserted World!',
+    );
     await page.keyboard.down('Shift');
     for (const _ of 'inserted ') {
       await page.keyboard.press('ArrowLeft');
     }
     await page.keyboard.up('Shift');
     await page.keyboard.press('Backspace');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe('Hello World!');
+      'Hello World!',
+    );
   });
   // @see https://github.com/puppeteer/puppeteer/issues/1313
   it('should trigger commands of keyboard shortcuts', async () => {
@@ -83,11 +87,12 @@ describe('Keyboard', function () {
     await page.keyboard.press('v', {commands: ['Paste']});
     await page.keyboard.up(cmdKey);
 
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe('hellohello');
+      'hellohello',
+    );
   });
   it('should send a character with ElementHandle.press', async () => {
     const {page, server} = await getTestState();
@@ -95,11 +100,12 @@ describe('Keyboard', function () {
     await page.goto(server.PREFIX + '/input/textarea.html');
     using textarea = (await page.$('textarea'))!;
     await textarea.press('a');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe('a');
+      'a',
+    );
 
     await page.evaluate(() => {
       return window.addEventListener(
@@ -112,11 +118,12 @@ describe('Keyboard', function () {
     });
 
     await textarea.press('b');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe('a');
+      'a',
+    );
   });
   it('ElementHandle.press should not support |text| option', async () => {
     const {page, server} = await getTestState();
@@ -124,11 +131,12 @@ describe('Keyboard', function () {
     await page.goto(server.PREFIX + '/input/textarea.html');
     using textarea = (await page.$('textarea'))!;
     await textarea.press('a', {text: 'ё'});
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       }),
-    ).toBe('a');
+      'a',
+    );
   });
   it('should send a character with sendCharacter', async () => {
     const {page, server} = await getTestState();
@@ -156,7 +164,7 @@ describe('Keyboard', function () {
     });
 
     await page.keyboard.sendCharacter('嗨');
-    expect(
+    assertMatchObject(
       await page.$eval('textarea', textarea => {
         return {
           value: textarea.value,
@@ -164,10 +172,11 @@ describe('Keyboard', function () {
           keyDowns: (globalThis as any).keyDownCount,
         };
       }),
-    ).toMatchObject({value: '嗨', inputs: 1, keyDowns: 0});
+      {value: '嗨', inputs: 1, keyDowns: 0},
+    );
 
     await page.keyboard.sendCharacter('a');
-    expect(
+    assertMatchObject(
       await page.$eval('textarea', textarea => {
         return {
           value: textarea.value,
@@ -175,7 +184,8 @@ describe('Keyboard', function () {
           keyDowns: (globalThis as any).keyDownCount,
         };
       }),
-    ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
+      {value: '嗨a', inputs: 2, keyDowns: 0},
+    );
   });
   it('should send a character with sendCharacter in iframe', async () => {
     this.timeout(2000);
@@ -219,7 +229,7 @@ describe('Keyboard', function () {
     });
 
     await page.keyboard.sendCharacter('嗨');
-    expect(
+    assertMatchObject(
       await frame.$eval('textarea', textarea => {
         return {
           value: textarea.value,
@@ -227,10 +237,11 @@ describe('Keyboard', function () {
           keyDowns: (globalThis as any).keyDownCount,
         };
       }),
-    ).toMatchObject({value: '嗨', inputs: 1, keyDowns: 0});
+      {value: '嗨', inputs: 1, keyDowns: 0},
+    );
 
     await page.keyboard.sendCharacter('a');
-    expect(
+    assertMatchObject(
       await frame.$eval('textarea', textarea => {
         return {
           value: textarea.value,
@@ -238,7 +249,8 @@ describe('Keyboard', function () {
           keyDowns: (globalThis as any).keyDownCount,
         };
       }),
-    ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
+      {value: '嗨a', inputs: 2, keyDowns: 0},
+    );
   });
   it('should report modifiers', async () => {
     const {page, server} = await getTestState();
@@ -248,85 +260,97 @@ describe('Keyboard', function () {
 
     // Shift modifier
     await keyboard.down('Shift');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: Shift ShiftLeft [Shift]');
+      'Keydown: Shift ShiftLeft [Shift]',
+    );
     await keyboard.down('!');
     // Shift + ! produces an input event.
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe(`Keydown: ! Digit1 [Shift]\n` + `input: ! insertText false`);
+      `Keydown: ! Digit1 [Shift]\n` + `input: ! insertText false`,
+    );
     await keyboard.up('!');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: ! Digit1 [Shift]');
+      'Keyup: ! Digit1 [Shift]',
+    );
     await keyboard.up('Shift');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: Shift ShiftLeft []');
+      'Keyup: Shift ShiftLeft []',
+    );
 
     // Alt modifier
     await keyboard.down('Alt');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: Alt AltLeft [Alt]');
+      'Keydown: Alt AltLeft [Alt]',
+    );
     await keyboard.down('!');
     // Alt + ! should NOT produce an input event in Puppeteer for cross-platform
     // consistency.
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: ! Digit1 [Alt]');
+      'Keydown: ! Digit1 [Alt]',
+    );
     await keyboard.up('!');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: ! Digit1 [Alt]');
+      'Keyup: ! Digit1 [Alt]',
+    );
     await keyboard.up('Alt');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: Alt AltLeft []');
+      'Keyup: Alt AltLeft []',
+    );
 
     // Control modifier
     await keyboard.down('Control');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: Control ControlLeft [Control]');
+      'Keydown: Control ControlLeft [Control]',
+    );
     await keyboard.down('!');
     // Control + ! should NOT produce an input event.
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: ! Digit1 [Control]');
+      'Keydown: ! Digit1 [Control]',
+    );
     await keyboard.up('!');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: ! Digit1 [Control]');
+      'Keyup: ! Digit1 [Control]',
+    );
     await keyboard.up('Control');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: Control ControlLeft []');
+      'Keyup: Control ControlLeft []',
+    );
   });
   it('should report multiple modifiers', async () => {
     const {page, server} = await getTestState();
@@ -334,52 +358,57 @@ describe('Keyboard', function () {
     await page.goto(server.PREFIX + '/input/keyboard.html');
     const keyboard = page.keyboard;
     await keyboard.down('Control');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: Control ControlLeft [Control]');
+      'Keydown: Control ControlLeft [Control]',
+    );
     await keyboard.down('Alt');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: Alt AltLeft [Alt Control]');
+      'Keydown: Alt AltLeft [Alt Control]',
+    );
     await keyboard.down(';');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keydown: ; Semicolon [Alt Control]');
+      'Keydown: ; Semicolon [Alt Control]',
+    );
     await keyboard.up(';');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: ; Semicolon [Alt Control]');
+      'Keyup: ; Semicolon [Alt Control]',
+    );
     await keyboard.up('Control');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: Control ControlLeft [Alt]');
+      'Keyup: Control ControlLeft [Alt]',
+    );
     await keyboard.up('Alt');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe('Keyup: Alt AltLeft []');
+      'Keyup: Alt AltLeft []',
+    );
   });
   it('should send proper codes while typing', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
     await page.keyboard.type('!');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe(
       [
         'Keydown: ! Digit1 []',
         'input: ! insertText false',
@@ -387,11 +416,10 @@ describe('Keyboard', function () {
       ].join('\n'),
     );
     await page.keyboard.type('^');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe(
       [
         'Keydown: ^ Digit6 []',
         'input: ^ insertText false',
@@ -406,11 +434,10 @@ describe('Keyboard', function () {
     const keyboard = page.keyboard;
     await keyboard.down('Shift');
     await page.keyboard.type('~');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
       }),
-    ).toBe(
       [
         'Keydown: Shift ShiftLeft [Shift]',
         'Keydown: ~ Backquote [Shift]',
@@ -442,11 +469,12 @@ describe('Keyboard', function () {
       );
     });
     await page.keyboard.type('Hello World!');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).textarea.value;
       }),
-    ).toBe('He Wrd!');
+      'He Wrd!',
+    );
   });
   it('should specify repeat property', async () => {
     const {page, server} = await getTestState();
@@ -463,38 +491,38 @@ describe('Keyboard', function () {
       );
     });
     await page.keyboard.down('a');
-    expect(
+    assert.isFalse(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
       }),
-    ).toBe(false);
+    );
     await page.keyboard.press('a');
-    expect(
+    assert.isTrue(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
       }),
-    ).toBe(true);
+    );
 
     await page.keyboard.down('b');
-    expect(
+    assert.isFalse(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
       }),
-    ).toBe(false);
+    );
     await page.keyboard.down('b');
-    expect(
+    assert.isTrue(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
       }),
-    ).toBe(true);
+    );
 
     await page.keyboard.up('a');
     await page.keyboard.down('a');
-    expect(
+    assert.isFalse(
       await page.evaluate(() => {
         return (globalThis as any).lastEvent.repeat;
       }),
-    ).toBe(false);
+    );
   });
   it('should type all kinds of characters', async () => {
     const {page, server} = await getTestState();
@@ -503,7 +531,7 @@ describe('Keyboard', function () {
     await page.focus('textarea');
     const text = 'This text goes onto two lines.\nThis character is 嗨.';
     await page.keyboard.type(text);
-    expect(await page.evaluate('result')).toBe(text);
+    assert.strictEqual(await page.evaluate('result'), text);
   });
   it('should specify location', async () => {
     const {page, server} = await getTestState();
@@ -521,16 +549,16 @@ describe('Keyboard', function () {
     using textarea = (await page.$('textarea'))!;
 
     await textarea.press('Digit5');
-    expect(await page.evaluate('keyLocation')).toBe(0);
+    assert.strictEqual(await page.evaluate('keyLocation'), 0);
 
     await textarea.press('ControlLeft');
-    expect(await page.evaluate('keyLocation')).toBe(1);
+    assert.strictEqual(await page.evaluate('keyLocation'), 1);
 
     await textarea.press('ControlRight');
-    expect(await page.evaluate('keyLocation')).toBe(2);
+    assert.strictEqual(await page.evaluate('keyLocation'), 2);
 
     await textarea.press('NumpadSubtract');
-    expect(await page.evaluate('keyLocation')).toBe(3);
+    assert.strictEqual(await page.evaluate('keyLocation'), 3);
   });
   it('should throw on unknown keys', async () => {
     const {page} = await getTestState();
@@ -541,18 +569,19 @@ describe('Keyboard', function () {
       .catch(error_ => {
         return error_;
       });
-    expect(error.message).toBe('Unknown key: "NotARealKey"');
+    assert.strictEqual(error.message, 'Unknown key: "NotARealKey"');
   });
   it('should type emoji', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.type('textarea', '👹 Tokyo street Japan 🇯🇵');
-    expect(
+    assert.strictEqual(
       await page.$eval('textarea', textarea => {
         return textarea.value;
       }),
-    ).toBe('👹 Tokyo street Japan 🇯🇵');
+      '👹 Tokyo street Japan 🇯🇵',
+    );
   });
   it('should type emoji into an iframe', async () => {
     const {page, server} = await getTestState();
@@ -566,11 +595,12 @@ describe('Keyboard', function () {
     const frame = page.frames()[1]!;
     using textarea = (await frame.$('textarea'))!;
     await textarea.type('👹 Tokyo street Japan 🇯🇵');
-    expect(
+    assert.strictEqual(
       await frame.$eval('textarea', textarea => {
         return textarea.value;
       }),
-    ).toBe('👹 Tokyo street Japan 🇯🇵');
+      '👹 Tokyo street Japan 🇯🇵',
+    );
   });
   it('should press the meta key', async () => {
     // This test only makes sense on macOS.
@@ -595,8 +625,8 @@ describe('Keyboard', function () {
       string,
       boolean,
     ];
-    expect(key).toBe('Meta');
-    expect(code).toBe('MetaLeft');
-    expect(metaKey).toBe(true);
+    assert.strictEqual(key, 'Meta');
+    assert.strictEqual(code, 'MetaLeft');
+    assert.isTrue(metaKey);
   });
 });

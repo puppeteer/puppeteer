@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
@@ -34,15 +34,15 @@ describe('network', function () {
         }),
       ]);
 
-      expect(request).toBeTruthy();
-      expect(request.postData()).toBe('{"foo":"bar"}');
+      assert.ok(request);
+      assert.strictEqual(request.postData(), '{"foo":"bar"}');
     });
 
     it('should be |undefined| when there is no post data', async () => {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.request().postData()).toBe(undefined);
+      assert.isUndefined(response.request().postData());
     });
 
     it('should work with blobs', async () => {
@@ -67,10 +67,10 @@ describe('network', function () {
         }),
       ]);
 
-      expect(request).toBeTruthy();
-      expect(request.postData()).toBe(undefined);
-      expect(request.hasPostData()).toBe(true);
-      expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
+      assert.ok(request);
+      assert.isUndefined(request.postData());
+      assert.isTrue(request.hasPostData());
+      assert.strictEqual(await request.fetchPostData(), '{"foo":"bar"}');
     });
   });
 });

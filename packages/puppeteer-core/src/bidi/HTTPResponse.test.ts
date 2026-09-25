@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {BidiHTTPRequest} from './HTTPRequest.js';
@@ -38,7 +38,7 @@ describe('BidiHTTPResponse', () => {
     } as unknown as Bidi.Network.ResponseData;
 
     const response = BidiHTTPResponse.from(data, request, false);
-    expect(response.headers()['set-cookie']).toBe('a=b\n c=d');
+    assert.strictEqual(response.headers()['set-cookie'], 'a=b\n c=d');
   });
 
   it('should combine other duplicate headers using ,', () => {
@@ -63,6 +63,9 @@ describe('BidiHTTPResponse', () => {
     } as unknown as Bidi.Network.ResponseData;
 
     const response = BidiHTTPResponse.from(data, request, false);
-    expect(response.headers()['cache-control']).toBe('no-cache, no-store');
+    assert.strictEqual(
+      response.headers()['cache-control'],
+      'no-cache, no-store',
+    );
   });
 });

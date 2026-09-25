@@ -6,7 +6,7 @@
 
 import {statSync} from 'node:fs';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 import {getUniqueVideoFilePlaceholder} from '../utils.js';
@@ -23,11 +23,12 @@ describe('Prerender', function () {
 
     using link = await page.waitForSelector('a');
     await Promise.all([page.waitForNavigation(), link?.click()]);
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('div')?.innerText;
       }),
-    ).toBe('true');
+      'true',
+    );
   });
 
   it('can navigate to a prerendered page via Locator', async () => {
@@ -53,11 +54,12 @@ describe('Prerender', function () {
           .click();
         await Promise.all(promises);
       }
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.querySelector('div')?.innerText;
         }),
-      ).toBe('true');
+        'true',
+      );
     }
   });
 
@@ -69,11 +71,12 @@ describe('Prerender', function () {
     await button?.click();
 
     await page.goto(server.PREFIX + '/prerender/target.html');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('div')?.innerText;
       }),
-    ).toBe('false');
+      'false',
+    );
   });
 
   describe('via frame', () => {
@@ -87,13 +90,14 @@ describe('Prerender', function () {
       const mainFrame = page.mainFrame();
       using link = await mainFrame.waitForSelector('a');
       await Promise.all([mainFrame.waitForNavigation(), link?.click()]);
-      expect(mainFrame).toBe(page.mainFrame());
-      expect(
+      assert.strictEqual(mainFrame, page.mainFrame());
+      assert.strictEqual(
         await mainFrame.evaluate(() => {
           return document.querySelector('div')?.innerText;
         }),
-      ).toBe('true');
-      expect(mainFrame).toBe(page.mainFrame());
+        'true',
+      );
+      assert.strictEqual(mainFrame, page.mainFrame());
     });
 
     it('can navigate to a prerendered page via Puppeteer', async () => {
@@ -105,12 +109,13 @@ describe('Prerender', function () {
 
       const mainFrame = page.mainFrame();
       await mainFrame.goto(server.PREFIX + '/prerender/target.html');
-      expect(
+      assert.strictEqual(
         await mainFrame.evaluate(() => {
           return document.querySelector('div')?.innerText;
         }),
-      ).toBe('false');
-      expect(mainFrame).toBe(page.mainFrame());
+        'false',
+      );
+      assert.strictEqual(mainFrame, page.mainFrame());
     });
   });
 
@@ -138,7 +143,7 @@ describe('Prerender', function () {
 
     await recorder.stop();
 
-    expect(statSync(file.filename).size).toBeGreaterThan(0);
+    assert.isAbove(statSync(file.filename).size, 0);
   });
 
   describe('with network requests', () => {
@@ -156,28 +161,29 @@ describe('Prerender', function () {
       const mainFrame = page.mainFrame();
       using link = await mainFrame.waitForSelector('a');
       await Promise.all([mainFrame.waitForNavigation(), link?.click()]);
-      expect(mainFrame).toBe(page.mainFrame());
-      expect(
+      assert.strictEqual(mainFrame, page.mainFrame());
+      assert.strictEqual(
         await mainFrame.evaluate(() => {
           return document.querySelector('div')?.innerText;
         }),
-      ).toBe('true');
-      expect(mainFrame).toBe(page.mainFrame());
-      expect(
+        'true',
+      );
+      assert.strictEqual(mainFrame, page.mainFrame());
+      assert.ok(
         urls.find(url => {
           return url.endsWith('prerender/target.html');
         }),
-      ).toBeTruthy();
-      expect(
+      );
+      assert.ok(
         urls.find(url => {
           return url.includes('prerender/index.html');
         }),
-      ).toBeTruthy();
-      expect(
+      );
+      assert.ok(
         urls.find(url => {
           return url.includes('prerender/target.html?fromPrerendered');
         }),
-      ).toBeTruthy();
+      );
     });
   });
 
@@ -200,13 +206,16 @@ describe('Prerender', function () {
           dpr: window.devicePixelRatio,
         };
       });
-      expect({
-        width: result.width,
-        height: result.height,
-      }).toStrictEqual({
-        width: 300 * result.dpr,
-        height: 400 * result.dpr,
-      });
+      assert.deepEqual(
+        {
+          width: result.width,
+          height: result.height,
+        },
+        {
+          width: 300 * result.dpr,
+          height: 400 * result.dpr,
+        },
+      );
     });
   });
 });

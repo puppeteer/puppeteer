@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {parsePSelectors} from './PSelectorParser.js';
 
@@ -15,48 +15,50 @@ describe('PSelectorParser', () => {
     it('parses nested selectors', () => {
       const [updatedSelector, isPureCSS, hasPseudoClasses] =
         parsePSelectors('& > div');
-      expect(updatedSelector).toEqual([[['&>div']]]);
-      expect(isPureCSS).toBeTruthy();
-      expect(hasPseudoClasses).toBeFalsy();
+      assert.deepEqual(updatedSelector, [[['&>div']]]);
+      assert.ok(isPureCSS);
+      assert.notOk(hasPseudoClasses);
     });
 
     it('parses nested selectors with p-selector syntax', () => {
       const [updatedSelector, isPureCSS, hasPseudoClasses] =
         parsePSelectors('& > div >>> button');
-      expect(updatedSelector).toEqual([[['&>div'], '>>>', ['button']]]);
-      expect(isPureCSS).toBeFalsy();
-      expect(hasPseudoClasses).toBeFalsy();
+      assert.deepEqual<unknown>(updatedSelector, [
+        [['&>div'], '>>>', ['button']],
+      ]);
+      assert.notOk(isPureCSS);
+      assert.notOk(hasPseudoClasses);
     });
 
     it('parses selectors with pseudo classes', () => {
       const [updatedSelector, isPureCSS, hasPseudoClasses] =
         parsePSelectors('div:focus');
-      expect(updatedSelector).toEqual([[['div:focus']]]);
-      expect(isPureCSS).toBeTruthy();
-      expect(hasPseudoClasses).toBeTruthy();
+      assert.deepEqual(updatedSelector, [[['div:focus']]]);
+      assert.ok(isPureCSS);
+      assert.ok(hasPseudoClasses);
     });
 
     it('parses nested selectors with pseudo classes and p-selector syntax', () => {
       const [updatedSelector, isPureCSS, hasPseudoClasses] = parsePSelectors(
         '& > div:focus >>>> button:focus',
       );
-      expect(updatedSelector).toEqual([
+      assert.deepEqual<unknown>(updatedSelector, [
         [['&>div:focus'], '>>>>', ['button:focus']],
       ]);
-      expect(isPureCSS).toBeFalsy();
-      expect(hasPseudoClasses).toBeTruthy();
+      assert.notOk(isPureCSS);
+      assert.ok(hasPseudoClasses);
     });
 
     describe('hasAria', () => {
       it('returns false if no aria query is present', () => {
         const [, , , hasAria] = parsePSelectors('div:focus');
-        expect(hasAria).toEqual(false);
+        assert.isFalse(hasAria);
       });
       it('returns true if an aria query is present', () => {
         const [, , , hasAria] = parsePSelectors(
           'div:focus >>> ::-p-aria(Text)',
         );
-        expect(hasAria).toEqual(true);
+        assert.isTrue(hasAria);
       });
     });
   });

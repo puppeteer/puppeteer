@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {
   buildTestingTree,
@@ -21,8 +21,8 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
       const tree = await buildTestingTree('e2e', 'single', {
         name: 'myTest',
       });
-      expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
-      expect(tree.files).not.toContain('/e2e/tests/my-test.test.ts');
+      assert.include(tree.files, '/e2e/tests/my-test.e2e.ts');
+      assert.notInclude(tree.files, '/e2e/tests/my-test.test.ts');
     });
 
     void it('should create Node file', async () => {
@@ -30,8 +30,8 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
         testRunner: 'node',
       });
-      expect(tree.files).not.toContain('/e2e/tests/my-test.e2e.ts');
-      expect(tree.files).toContain('/e2e/tests/my-test.test.ts');
+      assert.notInclude(tree.files, '/e2e/tests/my-test.e2e.ts');
+      assert.include(tree.files, '/e2e/tests/my-test.test.ts');
     });
 
     void it('should create file with route', async () => {
@@ -40,8 +40,9 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
         route,
       });
-      expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
-      expect(tree.readContent('/e2e/tests/my-test.e2e.ts')).toContain(
+      assert.include(tree.files, '/e2e/tests/my-test.e2e.ts');
+      assert.include(
+        tree.readContent('/e2e/tests/my-test.e2e.ts'),
         `setupBrowserHooks('${route}');`,
       );
     });
@@ -52,8 +53,9 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
         route,
       });
-      expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
-      expect(tree.readContent('/e2e/tests/my-test.e2e.ts')).toContain(
+      assert.include(tree.files, '/e2e/tests/my-test.e2e.ts');
+      assert.include(
+        tree.readContent('/e2e/tests/my-test.e2e.ts'),
         `setupBrowserHooks('home');`,
       );
     });
@@ -64,10 +66,12 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
       const tree = await buildTestingTree('e2e', 'multi', {
         name: 'myTest',
       });
-      expect(tree.files).toContain(
+      assert.include(
+        tree.files,
         getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
-      expect(tree.files).not.toContain(
+      assert.notInclude(
+        tree.files,
         getMultiApplicationFile('e2e/tests/my-test.test.ts'),
       );
     });
@@ -77,10 +81,12 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
         testRunner: 'node',
       });
-      expect(tree.files).not.toContain(
+      assert.notInclude(
+        tree.files,
         getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
-      expect(tree.files).toContain(
+      assert.include(
+        tree.files,
         getMultiApplicationFile('e2e/tests/my-test.test.ts'),
       );
     });
@@ -91,12 +97,14 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
         route,
       });
-      expect(tree.files).toContain(
+      assert.include(
+        tree.files,
         getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
-      expect(
+      assert.include(
         tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts')),
-      ).toContain(`setupBrowserHooks('${route}');`);
+        `setupBrowserHooks('${route}');`,
+      );
     });
 
     void it('should create with route with starting slash', async () => {
@@ -105,12 +113,14 @@ void describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
         route,
       });
-      expect(tree.files).toContain(
+      assert.include(
+        tree.files,
         getMultiApplicationFile('e2e/tests/my-test.e2e.ts'),
       );
-      expect(
+      assert.include(
         tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts')),
-      ).toContain(`setupBrowserHooks('home');`);
+        `setupBrowserHooks('home');`,
+      );
     });
   });
 });

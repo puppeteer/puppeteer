@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {
   ChromeLauncher,
@@ -16,54 +16,54 @@ import {
 describe('getFeatures', () => {
   it('returns an empty array when no options are provided', () => {
     const result = getFeatures('--foo');
-    expect(result).toEqual([]);
+    assert.deepEqual(result, []);
   });
 
   it('returns an empty array when no options match the flag', () => {
     const result = getFeatures('--foo', ['--bar', '--baz']);
-    expect(result).toEqual([]);
+    assert.deepEqual(result, []);
   });
 
   it('returns an array of values when options match the flag', () => {
     const result = getFeatures('--foo', ['--foo=bar', '--foo=baz']);
-    expect(result).toEqual(['bar', 'baz']);
+    assert.deepEqual(result, ['bar', 'baz']);
   });
 
   it('does not handle whitespace', () => {
     const result = getFeatures('--foo', ['--foo bar', '--foo baz ']);
-    expect(result).toEqual([]);
+    assert.deepEqual(result, []);
   });
 
   it('handles equals sign around the flag and value', () => {
     const result = getFeatures('--foo', ['--foo=bar', '--foo=baz ']);
-    expect(result).toEqual(['bar', 'baz']);
+    assert.deepEqual(result, ['bar', 'baz']);
   });
 
   it('handles comma-separated values', () => {
     const result = getFeatures('--foo', ['--foo=bar,baz', '--foo=qux']);
-    expect(result).toEqual(['bar', 'baz', 'qux']);
+    assert.deepEqual(result, ['bar', 'baz', 'qux']);
   });
 });
 
 describe('removeMatchingFlags', () => {
   it('empty', () => {
     const a: string[] = [];
-    expect(removeMatchingFlags(a, '--foo')).toEqual([]);
+    assert.deepEqual(removeMatchingFlags(a, '--foo'), []);
   });
 
   it('with one match', () => {
     const a: string[] = ['--foo=1', '--bar=baz'];
-    expect(removeMatchingFlags(a, '--foo')).toEqual(['--bar=baz']);
+    assert.deepEqual(removeMatchingFlags(a, '--foo'), ['--bar=baz']);
   });
 
   it('with multiple matches', () => {
     const a: string[] = ['--foo=1', '--foo=2', '--bar=baz'];
-    expect(removeMatchingFlags(a, '--foo')).toEqual(['--bar=baz']);
+    assert.deepEqual(removeMatchingFlags(a, '--foo'), ['--bar=baz']);
   });
 
   it('with no matches', () => {
     const a: string[] = ['--foo=1', '--bar=baz'];
-    expect(removeMatchingFlags(a, '--baz')).toEqual(['--foo=1', '--bar=baz']);
+    assert.deepEqual(removeMatchingFlags(a, '--baz'), ['--foo=1', '--bar=baz']);
   });
 });
 
@@ -78,8 +78,8 @@ describe('ChromeLauncher', () => {
     const disableFeaturesFlag = args.find(arg => {
       return arg.startsWith('--disable-features=');
     });
-    expect(disableFeaturesFlag).toBeDefined();
+    assert.isDefined(disableFeaturesFlag);
     const disabledFeatures = disableFeaturesFlag!.split('=')[1]!.split(',');
-    expect(disabledFeatures).not.toContain('Translate');
+    assert.notInclude(disabledFeatures, 'Translate');
   });
 });

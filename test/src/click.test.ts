@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {KnownDevices} from 'puppeteer';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, html} from './utils.js';
+import {assertMatchObject, attachFrame, html} from './utils.js';
 
 describe('Page.click', function () {
   setupTestBrowserHooks();
@@ -18,11 +18,12 @@ describe('Page.click', function () {
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.click('button');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
   it('should click svg', async () => {
     const {page} = await getTestState();
@@ -44,11 +45,12 @@ describe('Page.click', function () {
       </svg>
     `);
     await page.click('circle');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).__CLICKED;
       }),
-    ).toBe(42);
+      42,
+    );
   });
   it('should click the button if window.Node is removed', async () => {
     const {page, server} = await getTestState();
@@ -59,11 +61,12 @@ describe('Page.click', function () {
       return delete window.Node;
     });
     await page.click('button');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4281
   it('should click on a span with an inline element inside', async () => {
@@ -78,11 +81,12 @@ describe('Page.click', function () {
       <span onclick="javascript:window.CLICKED=42"></span>
     `);
     await page.click('span');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).CLICKED;
       }),
-    ).toBe(42);
+      42,
+    );
   });
   it('should not throw UnhandledPromiseRejection when page closes', async () => {
     const {page} = await getTestState();
@@ -99,11 +103,12 @@ describe('Page.click', function () {
     await page.click('button');
     await page.goto(server.PREFIX + '/input/button.html');
     await page.click('button');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
   it('should click with disabled javascript', async () => {
     const {page, server} = await getTestState();
@@ -111,7 +116,7 @@ describe('Page.click', function () {
     await page.setJavaScriptEnabled(false);
     await page.goto(server.PREFIX + '/wrappedlink.html');
     await Promise.all([page.click('a'), page.waitForNavigation()]);
-    expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
+    assert.strictEqual(page.url(), server.PREFIX + '/wrappedlink.html#clicked');
   });
   it('should scroll and click with disabled javascript', async () => {
     const {page, server} = await getTestState();
@@ -123,7 +128,7 @@ describe('Page.click', function () {
       el.style.paddingTop = '3000px';
     });
     await Promise.all([page.click('a'), page.waitForNavigation()]);
-    expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
+    assert.strictEqual(page.url(), server.PREFIX + '/wrappedlink.html#clicked');
   });
   it('should click when one of inline box children is outside of viewport', async () => {
     const {page} = await getTestState();
@@ -140,11 +145,12 @@ describe('Page.click', function () {
       >
     `);
     await page.click('span');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).CLICKED;
       }),
-    ).toBe(42);
+      42,
+    );
   });
   it('should select the text by triple clicking', async () => {
     const {page, server} = await getTestState();
@@ -161,12 +167,13 @@ describe('Page.click', function () {
       });
     });
     await page.click('textarea', {count: 3});
-    expect(
+    assertMatchObject(
       await page.evaluate(() => {
         return (window as any).clicks;
       }),
-    ).toMatchObject({0: 1, 1: 2, 2: 3});
-    expect(
+      {0: 1, 1: 2, 2: 3},
+    );
+    assert.strictEqual(
       await page.evaluate(() => {
         const textarea = document.querySelector('textarea');
         return textarea!.value.substring(
@@ -174,7 +181,8 @@ describe('Page.click', function () {
           textarea!.selectionEnd,
         );
       }),
-    ).toBe(text);
+      text,
+    );
   });
   it('should click offscreen buttons', async () => {
     const {page, server} = await getTestState();
@@ -194,7 +202,7 @@ describe('Page.click', function () {
       });
       await page.click(`#btn${i}`);
     }
-    expect(messages).toEqual([
+    assert.deepEqual(messages, [
       'button #0 clicked',
       'button #1 clicked',
       'button #2 clicked',
@@ -233,19 +241,19 @@ describe('Page.click', function () {
         ></div>`,
     );
     await page.click('#target');
-    expect(
+    assert.isTrue(
       await page.evaluate(() => {
         return (globalThis as any).CLICKED;
       }),
-    ).toBe(true);
+    );
     using element = await page.locator('#target').waitHandle();
-    expect(await element.boundingBox()).toStrictEqual({
+    assert.deepEqual(await element.boundingBox(), {
       height: 200,
       width: 200,
       x: -150,
       y: -150,
     });
-    expect(await element.clickablePoint()).toStrictEqual({
+    assert.deepEqual(await element.clickablePoint(), {
       x: 25,
       y: 25,
     });
@@ -256,76 +264,78 @@ describe('Page.click', function () {
 
     await page.goto(server.PREFIX + '/wrappedlink.html');
     await page.click('a');
-    expect(
+    assert.isTrue(
       await page.evaluate(() => {
         return (globalThis as any).__clicked;
       }),
-    ).toBe(true);
+    );
   });
 
   it('should click on checkbox input and toggle', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/checkbox.html');
-    expect(
+    assert.isNull(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
       }),
-    ).toBe(null);
+    );
     await page.click('input#agree');
-    expect(
+    assert.isTrue(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
       }),
-    ).toBe(true);
-    expect(
+    );
+    assert.deepEqual(
       await page.evaluate(() => {
         return (globalThis as any).result.events;
       }),
-    ).toEqual([
-      'mouseover',
-      'mouseenter',
-      'mousemove',
-      'mousedown',
-      'mouseup',
-      'click',
-      'input',
-      'change',
-    ]);
+      [
+        'mouseover',
+        'mouseenter',
+        'mousemove',
+        'mousedown',
+        'mouseup',
+        'click',
+        'input',
+        'change',
+      ],
+    );
     await page.click('input#agree');
-    expect(
+    assert.isFalse(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
       }),
-    ).toBe(false);
+    );
   });
 
   it('should click on checkbox label and toggle', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/checkbox.html');
-    expect(
+    assert.isNull(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
       }),
-    ).toBe(null);
+    );
     await page.click('label[for="agree"]');
-    expect(
+    assert.isTrue(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
       }),
-    ).toBe(true);
-    expect(
+    );
+    assert.deepEqual(
       await page.evaluate(() => {
         return (globalThis as any).result.events;
       }),
-    ).toEqual(['click', 'input', 'change']);
+      ['click', 'input', 'change'],
+    );
     await page.click('label[for="agree"]');
-    expect(
+    assert.isFalse(
       await page.evaluate(() => {
         return (globalThis as any).result.check;
       }),
-    ).toBe(false);
+    );
   });
 
   it('should fail to click a missing button', async () => {
@@ -336,7 +346,8 @@ describe('Page.click', function () {
     await page.click('button.does-not-exist').catch(error_ => {
       return (error = error_);
     });
-    expect(error.message).toBe(
+    assert.strictEqual(
+      error.message,
       'No element found for selector: button.does-not-exist',
     );
   });
@@ -354,17 +365,19 @@ describe('Page.click', function () {
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-5');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('#button-5')!.textContent;
       }),
-    ).toBe('clicked');
+      'clicked',
+    );
     await page.click('#button-80');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('#button-80')!.textContent;
       }),
-    ).toBe('clicked');
+      'clicked',
+    );
   });
   it('should double click the button', async () => {
     const {page, server} = await getTestState();
@@ -379,8 +392,8 @@ describe('Page.click', function () {
     });
     using button = (await page.$('button'))!;
     await button!.click({count: 2});
-    expect(await page.evaluate('double')).toBe(true);
-    expect(await page.evaluate('result')).toBe('Clicked');
+    assert.isTrue(await page.evaluate('double'));
+    assert.strictEqual(await page.evaluate('result'), 'Clicked');
   });
   it('should double multiple times', async () => {
     const {page, server} = await getTestState();
@@ -396,7 +409,7 @@ describe('Page.click', function () {
     using button = (await page.$('button'))!;
     await button!.click({count: 2});
     await button!.click({count: 2});
-    expect(await page.evaluate('count')).toBe(2);
+    assert.strictEqual(await page.evaluate('count'), 2);
   });
   it('should click a partially obscured button', async () => {
     const {page, server} = await getTestState();
@@ -409,66 +422,72 @@ describe('Page.click', function () {
       button!.style.left = '368px';
     });
     await page.click('button');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
   it('should click a rotated button', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/rotatedButton.html');
     await page.click('button');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
   it('should fire contextmenu event on right click', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'right'});
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
       }),
-    ).toBe('context menu');
+      'context menu',
+    );
   });
   it('should fire aux event on middle click', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'middle'});
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
       }),
-    ).toBe('aux click');
+      'aux click',
+    );
   });
   it('should fire back click', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'back'});
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
       }),
-    ).toBe('back click');
+      'back click',
+    );
   });
   it('should fire forward click', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'forward'});
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('#button-8')!.textContent;
       }),
-    ).toBe('forward click');
+      'forward click',
+    );
   });
   // @see https://github.com/puppeteer/puppeteer/issues/206
   it('should click links which cause navigation', async () => {
@@ -493,11 +512,12 @@ describe('Page.click', function () {
     const frame = page.frames()[1];
     using button = await frame!.$('button');
     await button!.click();
-    expect(
+    assert.strictEqual(
       await frame!.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4110
   it('should click the button with fixed position inside an iframe', async () => {
@@ -518,21 +538,23 @@ describe('Page.click', function () {
       return button.style.setProperty('position', 'fixed');
     });
     await frame!.click('button');
-    expect(
+    assert.strictEqual(
       await frame!.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
   it('should click the button with deviceScaleFactor set', async () => {
     const {page, server} = await getTestState();
 
     await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return window.devicePixelRatio;
       }),
-    ).toBe(5);
+      5,
+    );
     await page.setContent(
       html`<div style="width:100px;height:100px">spacer</div>`,
     );
@@ -544,10 +566,11 @@ describe('Page.click', function () {
     const frame = page.frames()[1];
     using button = await frame!.$('button');
     await button!.click();
-    expect(
+    assert.strictEqual(
       await frame!.evaluate(() => {
         return (globalThis as any).result;
       }),
-    ).toBe('Clicked');
+      'Clicked',
+    );
   });
 });

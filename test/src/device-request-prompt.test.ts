@@ -3,10 +3,11 @@
  * Copyright 2023 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 import {TimeoutError} from 'puppeteer';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
+import {assertRejects} from './utils.js';
 
 describe('device request prompt', function () {
   const state = setupSeparateTestBrowserHooks({
@@ -22,11 +23,12 @@ describe('device request prompt', function () {
 
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    await expect(
+    const error = await assertRejects(
       page.waitForDevicePrompt({
         timeout: 10,
       }),
-    ).rejects.toThrow(TimeoutError);
+    );
+    assert.instanceOf(error, TimeoutError);
   });
 
   it('can be aborted', async function () {
@@ -38,6 +40,7 @@ describe('device request prompt', function () {
     });
 
     abortController.abort();
-    await expect(task).rejects.toThrow(/aborted/);
+    const error = await assertRejects(task);
+    assert.match(error.message, /aborted/);
   });
 });

@@ -5,12 +5,13 @@
  */
 import os from 'node:os';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {MouseButton} from 'puppeteer-core/internal/api/Input.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {assertMatchObject} from './utils.js';
 
 interface ClickData {
   type: string;
@@ -63,12 +64,12 @@ describe('Mouse', function () {
     const event = await page.evaluate(() => {
       return (globalThis as any).clickPromise;
     });
-    expect(event.type).toBe('click');
-    expect(event.detail).toBe(1);
-    expect(event.clientX).toBe(50);
-    expect(event.clientY).toBe(60);
-    expect(event.isTrusted).toBe(true);
-    expect(event.button).toBe(0);
+    assert.strictEqual(event.type, 'click');
+    assert.strictEqual(event.detail, 1);
+    assert.strictEqual(event.clientX, 50);
+    assert.strictEqual(event.clientY, 60);
+    assert.isTrue(event.isTrusted);
+    assert.strictEqual(event.button, 0);
   });
   it('should resize the textarea', async () => {
     const {page, server} = await getTestState();
@@ -81,8 +82,8 @@ describe('Mouse', function () {
     await mouse.move(x + width + 100, y + height + 100);
     await mouse.up();
     const newDimensions = await page.evaluate(dimensions);
-    expect(newDimensions.width).toBe(Math.round(width + 104));
-    expect(newDimensions.height).toBe(Math.round(height + 104));
+    assert.strictEqual(newDimensions.width, Math.round(width + 104));
+    assert.strictEqual(newDimensions.height, Math.round(height + 104));
   });
   it('should select the text with mouse', async () => {
     const {page, server} = await getTestState();
@@ -106,37 +107,41 @@ describe('Mouse', function () {
     await page.mouse.down();
     await page.mouse.move(100, 100);
     await page.mouse.up();
-    expect(
+    assert.strictEqual(
       await handle.evaluate(element => {
         return element.value.substring(
           element.selectionStart,
           element.selectionEnd,
         );
       }),
-    ).toBe(text);
+      text,
+    );
   });
   it('should trigger hover state', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.hover('#button-6');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
       }),
-    ).toBe('button-6');
+      'button-6',
+    );
     await page.hover('#button-2');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
       }),
-    ).toBe('button-2');
+      'button-2',
+    );
     await page.hover('#button-91');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
       }),
-    ).toBe('button-91');
+      'button-91',
+    );
   });
   it('should trigger hover state with removed window.Node', async () => {
     const {page, server} = await getTestState();
@@ -147,11 +152,12 @@ describe('Mouse', function () {
       return delete window.Node;
     });
     await page.hover('#button-6');
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return document.querySelector('button:hover')!.id;
       }),
-    ).toBe('button-6');
+      'button-6',
+    );
   });
   it('should set modifier keys on click', async () => {
     const {page, server, isFirefox} = await getTestState();
@@ -205,7 +211,7 @@ describe('Mouse', function () {
     await page.goto(server.PREFIX + '/input/wheel.html');
     using elem = (await page.$('div'))!;
     const boundingBoxBefore = (await elem.boundingBox())!;
-    expect(boundingBoxBefore).toMatchObject({
+    assertMatchObject(boundingBoxBefore, {
       width: 115,
       height: 115,
     });
@@ -217,7 +223,7 @@ describe('Mouse', function () {
 
     await page.mouse.wheel({deltaY: -100});
     const boundingBoxAfter = await elem.boundingBox();
-    expect(boundingBoxAfter).toMatchObject({
+    assertMatchObject(boundingBoxAfter, {
       width: 230,
       height: 230,
     });
@@ -246,7 +252,7 @@ describe('Mouse', function () {
       await page.mouse.wheel({deltaY: 100});
     }
     await page.keyboard.up('Control');
-    expect(await ctrlKey).toBeTruthy();
+    assert.ok(await ctrlKey);
   });
   it('should tween mouse movement', async () => {
     const {page} = await getTestState();
@@ -259,7 +265,7 @@ describe('Mouse', function () {
       });
     });
     await page.mouse.move(200, 300, {steps: 5});
-    expect(await page.evaluate('result')).toEqual([
+    assert.deepEqual(await page.evaluate('result'), [
       [120, 140],
       [140, 180],
       [160, 220],
@@ -282,7 +288,7 @@ describe('Mouse', function () {
 
     await page.mouse.click(30, 40);
 
-    expect(await page.evaluate('result')).toEqual({x: 30, y: 40});
+    assert.deepEqual(await page.evaluate('result'), {x: 30, y: 40});
   });
   // Exercises the WebDriver BiDi behavior: BidiMouse keeps no button state and
   // forwards the repeated down() to the browser. CdpMouse deliberately throws
@@ -346,7 +352,7 @@ describe('Mouse', function () {
       clientX: 0,
       button: 0,
     };
-    expect(data.splice(0, 3)).toMatchObject({
+    assertMatchObject(data.splice(0, 3), {
       0: {
         type: 'mousedown',
         buttons: 1,
@@ -367,7 +373,7 @@ describe('Mouse', function () {
       clientX: 6,
       clientY: 10,
     });
-    expect(data).toMatchObject({
+    assertMatchObject(data, {
       0: {
         type: 'mousedown',
         buttons: 1,
@@ -414,7 +420,7 @@ describe('Mouse', function () {
       clientX: 5,
     };
 
-    expect(data.slice(0, 2)).toMatchObject([
+    assertMatchObject(data.slice(0, 2), [
       {
         ...commonAttrs,
         button: 2,
@@ -432,7 +438,7 @@ describe('Mouse', function () {
     ]);
     // TODO(crbug/1485040): This should align with the firefox implementation.
     if (isChrome) {
-      expect(data.slice(2)).toMatchObject([
+      assertMatchObject(data.slice(2), [
         {
           ...commonAttrs,
           button: 1,
@@ -450,7 +456,7 @@ describe('Mouse', function () {
       ]);
       return;
     }
-    expect(data.slice(2)).toMatchObject([
+    assertMatchObject(data.slice(2), [
       {
         ...commonAttrs,
         button: 1,

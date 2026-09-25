@@ -6,7 +6,7 @@
 
 import {afterEach, describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import type {CDPSessionEvents, CommandOptions} from '../api/CDPSession.js';
@@ -75,10 +75,10 @@ describe('CdpBrowser', function () {
         timeout: 123,
       });
 
-      expect(result).toBe(page);
-      expect(connection.commandTimeout).toBeUndefined();
-      expect(waitForTarget.calledOnce).toBe(true);
-      expect(waitForTarget.firstCall.args[1]).toEqual({timeout: 123});
+      assert.strictEqual(result, page);
+      assert.isUndefined(connection.commandTimeout);
+      assert.isTrue(waitForTarget.calledOnce);
+      assert.deepEqual(waitForTarget.firstCall.args[1], {timeout: 123});
     });
   });
 });

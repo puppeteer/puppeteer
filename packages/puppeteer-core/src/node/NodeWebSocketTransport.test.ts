@@ -5,7 +5,7 @@
  */
 import {describe, it, beforeEach, afterEach} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {WebSocket} from 'ws';
 import {WebSocketServer} from 'ws';
 
@@ -54,7 +54,7 @@ describe('NodeWebSocketTransport', () => {
     connection.send('m1');
     connection.send('m2');
     await result;
-    expect(log).toEqual([
+    assert.deepEqual(log, [
       'message received m1',
       'microtask1 m1',
       'microtask2 m1',
@@ -113,7 +113,7 @@ describe('NodeWebSocketTransport', () => {
       await new Promise(resolve => {
         return setTimeout(resolve, 300);
       });
-      expect(closed).toBe(false);
+      assert.isFalse(closed);
     });
 
     it('does not ping when keepAlive is not enabled', async () => {
@@ -139,8 +139,8 @@ describe('NodeWebSocketTransport', () => {
       await new Promise(resolve => {
         return setTimeout(resolve, 300);
       });
-      expect(pings).toBe(0);
-      expect(closed).toBe(false);
+      assert.strictEqual(pings, 0);
+      assert.isFalse(closed);
     });
   });
 });

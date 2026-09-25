@@ -3,14 +3,13 @@
  * Copyright 2018 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import assert from 'node:assert';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {Puppeteer} from 'puppeteer-core';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {html} from './utils.js';
+import {assertMatchObject, html} from './utils.js';
 
 describe('Query handler tests', function () {
   setupTestBrowserHooks();
@@ -41,7 +40,7 @@ describe('Query handler tests', function () {
       const text = await div.evaluate(element => {
         return element.textContent;
       });
-      expect(text).toBe('Hello');
+      assert.strictEqual(text, 'Hello');
     });
     it('should find all elements in shadow', async () => {
       const {page} = await setUpPage();
@@ -55,7 +54,7 @@ describe('Query handler tests', function () {
           });
         }),
       );
-      expect(text.join(' ')).toBe('Hello World');
+      assert.strictEqual(text.join(' '), 'Hello World');
     });
     it('should find first child element', async () => {
       const {page} = await setUpPage();
@@ -66,7 +65,7 @@ describe('Query handler tests', function () {
       const text = await childElement.evaluate(element => {
         return element.textContent;
       });
-      expect(text).toBe('Hello');
+      assert.strictEqual(text, 'Hello');
     });
     it('should find all child elements', async () => {
       const {page} = await setUpPage();
@@ -81,7 +80,7 @@ describe('Query handler tests', function () {
           });
         }),
       );
-      expect(text.join(' ')).toBe('Hello World');
+      assert.strictEqual(text.join(' '), 'Hello World');
     });
   });
 
@@ -92,14 +91,14 @@ describe('Query handler tests', function () {
 
         await page.setContent(html`<section>test</section>`);
 
-        expect(await page.$('text/test')).toBeTruthy();
-        expect(await page.$$('text/test')).toHaveLength(1);
+        assert.ok(await page.$('text/test'));
+        assert.lengthOf(await page.$$('text/test'), 1);
       });
       it('should return empty array for non-existing element', async () => {
         const {page} = await getTestState();
 
-        expect(await page.$('text/test')).toBeFalsy();
-        expect(await page.$$('text/test')).toHaveLength(0);
+        assert.notOk(await page.$('text/test'));
+        assert.lengthOf(await page.$$('text/test'), 0);
       });
       it('should return first element', async () => {
         const {page} = await getTestState();
@@ -107,11 +106,12 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div id="1">a</div> <div>a</div>`);
 
         using element = await page.$('text/a');
-        expect(
+        assert.strictEqual(
           await element?.evaluate(e => {
             return e.id;
           }),
-        ).toBe('1');
+          '1',
+        );
       });
       it('should return multiple elements', async () => {
         const {page} = await getTestState();
@@ -119,7 +119,7 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div>a</div> <div>a</div>`);
 
         const elements = await page.$$('text/a');
-        expect(elements).toHaveLength(2);
+        assert.lengthOf(elements, 2);
       });
       it('should pierce shadow DOM', async () => {
         const {page} = await getTestState();
@@ -137,11 +137,12 @@ describe('Query handler tests', function () {
         });
 
         using element = await page.$('text/a');
-        expect(
+        assert.strictEqual(
           await element?.evaluate(e => {
             return e.textContent;
           }),
-        ).toBe('a');
+          'a',
+        );
       });
       it('should query deeply nested text', async () => {
         const {page} = await getTestState();
@@ -154,11 +155,12 @@ describe('Query handler tests', function () {
         );
 
         using element = await page.$('text/a');
-        expect(
+        assert.strictEqual(
           await element?.evaluate(e => {
             return e.textContent;
           }),
-        ).toBe('a');
+          'a',
+        );
       });
       it('should query inputs', async () => {
         const {page} = await getTestState();
@@ -168,18 +170,19 @@ describe('Query handler tests', function () {
         using element = (await page.$(
           'text/a',
         )) as ElementHandle<HTMLInputElement>;
-        expect(
+        assert.strictEqual(
           await element?.evaluate(e => {
             return e.value;
           }),
-        ).toBe('a');
+          'a',
+        );
       });
       it('should not query radio', async () => {
         const {page} = await getTestState();
 
         await page.setContent(html`<radio value="a"></radio>`);
 
-        expect(await page.$('text/a')).toBeNull();
+        assert.isNull(await page.$('text/a'));
       });
       it('should query text spanning multiple elements', async () => {
         const {page} = await getTestState();
@@ -187,11 +190,12 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div><span>a</span> <span>b</span></div>`);
 
         using element = await page.$('text/a b');
-        expect(
+        assert.strictEqual(
           await element?.evaluate(e => {
             return e.textContent;
           }),
-        ).toBe('a b');
+          'a b',
+        );
       });
       it('should clear caches', async () => {
         const {page} = await getTestState();
@@ -212,28 +216,31 @@ describe('Query handler tests', function () {
         await div.evaluate(div => {
           div.textContent = 'text';
         });
-        expect(
+        assert.strictEqual(
           await page.$eval(`text/text`, e => {
             return e.id;
           }),
-        ).toBe('target1');
+          'target1',
+        );
         await div.evaluate(div => {
           div.textContent = 'foo';
         });
-        expect(
+        assert.strictEqual(
           await page.$eval(`text/text`, e => {
             return e.id;
           }),
-        ).toBe('target2');
+          'target2',
+        );
         await input.evaluate(input => {
           input.value = '';
         });
         await input.type('foo');
-        expect(
+        assert.strictEqual(
           await page.$eval(`text/text`, e => {
             return e.id;
           }),
-        ).toBe('target3');
+          'target3',
+        );
 
         await div.evaluate(div => {
           div.textContent = 'text';
@@ -242,28 +249,31 @@ describe('Query handler tests', function () {
           input.value = '';
         });
         await input.type('text');
-        expect(
+        assert.strictEqual(
           await page.$$eval(`text/text`, es => {
             return es.length;
           }),
-        ).toBe(3);
+          3,
+        );
         await div.evaluate(div => {
           div.textContent = 'foo';
         });
-        expect(
+        assert.strictEqual(
           await page.$$eval(`text/text`, es => {
             return es.length;
           }),
-        ).toBe(2);
+          2,
+        );
         await input.evaluate(input => {
           input.value = '';
         });
         await input.type('foo');
-        expect(
+        assert.strictEqual(
           await page.$$eval(`text/text`, es => {
             return es.length;
           }),
-        ).toBe(1);
+          1,
+        );
       });
     });
     describe('in ElementHandles', function () {
@@ -273,8 +283,8 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div class="a"><span>a</span></div>`);
 
         using elementHandle = (await page.$('div'))!;
-        expect(await elementHandle.$(`text/a`)).toBeTruthy();
-        expect(await elementHandle.$$(`text/a`)).toHaveLength(1);
+        assert.ok(await elementHandle.$(`text/a`));
+        assert.lengthOf(await elementHandle.$$(`text/a`), 1);
       });
 
       it('should return null for non-existing element', async () => {
@@ -283,8 +293,8 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div class="a"></div>`);
 
         using elementHandle = (await page.$('div'))!;
-        expect(await elementHandle.$(`text/a`)).toBeFalsy();
-        expect(await elementHandle.$$(`text/a`)).toHaveLength(0);
+        assert.notOk(await elementHandle.$(`text/a`));
+        assert.lengthOf(await elementHandle.$$(`text/a`), 0);
       });
     });
   });
@@ -296,18 +306,17 @@ describe('Query handler tests', function () {
 
         await page.setContent(html`<section>test</section>`);
 
-        expect(await page.$('xpath/html/body/section')).toBeTruthy();
-        expect(await page.$$('xpath/html/body/section')).toHaveLength(1);
+        assert.ok(await page.$('xpath/html/body/section'));
+        assert.lengthOf(await page.$$('xpath/html/body/section'), 1);
       });
       it('should return empty array for non-existing element', async () => {
         const {page} = await getTestState();
 
-        expect(
-          await page.$('xpath/html/body/non-existing-element'),
-        ).toBeFalsy();
-        expect(
+        assert.notOk(await page.$('xpath/html/body/non-existing-element'));
+        assert.lengthOf(
           await page.$$('xpath/html/body/non-existing-element'),
-        ).toHaveLength(0);
+          0,
+        );
       });
       it('should return first element', async () => {
         const {page} = await getTestState();
@@ -315,11 +324,11 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div>a</div> <div></div>`);
 
         using element = await page.$('xpath/html/body/div');
-        expect(
+        assert.ok(
           await element?.evaluate(e => {
             return e.textContent === 'a';
           }),
-        ).toBeTruthy();
+        );
       });
       it('should return multiple elements', async () => {
         const {page} = await getTestState();
@@ -327,7 +336,7 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div></div> <div></div>`);
 
         const elements = await page.$$('xpath/html/body/div');
-        expect(elements).toHaveLength(2);
+        assert.lengthOf(elements, 2);
       });
     });
     describe('in ElementHandles', function () {
@@ -337,8 +346,8 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div class="a">a<span></span></div>`);
 
         using elementHandle = (await page.$('div'))!;
-        expect(await elementHandle.$(`xpath/span`)).toBeTruthy();
-        expect(await elementHandle.$$(`xpath/span`)).toHaveLength(1);
+        assert.ok(await elementHandle.$(`xpath/span`));
+        assert.lengthOf(await elementHandle.$$(`xpath/span`), 1);
       });
 
       it('should return null for non-existing element', async () => {
@@ -347,8 +356,8 @@ describe('Query handler tests', function () {
         await page.setContent(html`<div class="a">a</div>`);
 
         using elementHandle = (await page.$('div'))!;
-        expect(await elementHandle.$(`xpath/span`)).toBeFalsy();
-        expect(await elementHandle.$$(`xpath/span`)).toHaveLength(0);
+        assert.notOk(await elementHandle.$(`xpath/span`));
+        assert.lengthOf(await elementHandle.$$(`xpath/span`), 0);
       });
     });
   });
@@ -363,20 +372,20 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('div > button');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
 
       using root = await page.$('div');
       using button = await root!.$('& > button');
       assert(button, 'Could not find element');
-      expect(
+      assert.ok(
         await button.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
 
       // Should parse more complex CSS selectors. Listing a few problematic
       // cases from bug reports.
@@ -395,11 +404,11 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('button::-p-text(world)');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work with deep combinators', async () => {
@@ -408,38 +417,38 @@ describe('Query handler tests', function () {
       {
         using element = await page.$('div >>>> div');
         assert(element, 'Could not find element');
-        expect(
+        assert.ok(
           await element.evaluate(element => {
             return element.id === 'c';
           }),
-        ).toBeTruthy();
+        );
       }
       {
         const elements = await page.$$('div >>> div');
         assert(elements[1], 'Could not find element');
-        expect(
+        assert.ok(
           await elements[1]?.evaluate(element => {
             return element.id === 'd';
           }),
-        ).toBeTruthy();
+        );
       }
       {
         const elements = await page.$$('#c >>>> div');
         assert(elements[0], 'Could not find element');
-        expect(
+        assert.ok(
           await elements[0]?.evaluate(element => {
             return element.id === 'd';
           }),
-        ).toBeTruthy();
+        );
       }
       {
         const elements = await page.$$('#c >>> div');
         assert(elements[0], 'Could not find element');
-        expect(
+        assert.ok(
           await elements[0]?.evaluate(element => {
             return element.id === 'd';
           }),
-        ).toBeTruthy();
+        );
       }
     });
 
@@ -448,11 +457,11 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('div ::-p-text(world)');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work ARIA selectors', async () => {
@@ -460,11 +469,11 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('div ::-p-aria(world)');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work for ARIA selectors in multiple isolated worlds', async () => {
@@ -472,20 +481,20 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.waitForSelector('::-p-aria(world)');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
       // $ would add ARIA query handler to the main world.
       await element.$('::-p-aria(world)');
       using element2 = await page.waitForSelector('::-p-aria(world)');
       assert(element2, 'Could not find element');
-      expect(
+      assert.ok(
         await element2.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work ARIA selectors with role', async () => {
@@ -493,11 +502,11 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('::-p-aria(world[role="button"])');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work ARIA selectors with name and role', async () => {
@@ -505,11 +514,11 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('::-p-aria([name="world"][role="button"])');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work XPath selectors', async () => {
@@ -517,11 +526,11 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('div ::-p-xpath(//button)');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'b';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work with custom selectors', async () => {
@@ -535,11 +544,11 @@ describe('Query handler tests', function () {
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       using element = await page.$('::-p-div');
       assert(element, 'Could not find element');
-      expect(
+      assert.ok(
         await element.evaluate(element => {
           return element.id === 'a';
         }),
-      ).toBeTruthy();
+      );
     });
 
     it('should work with custom selectors with args', async () => {
@@ -558,38 +567,38 @@ describe('Query handler tests', function () {
       {
         using element = await page.$('::-p-div(true)');
         assert(element, 'Could not find element');
-        expect(
+        assert.ok(
           await element.evaluate(element => {
             return element.id === 'a';
           }),
-        ).toBeTruthy();
+        );
       }
       {
         using element = await page.$('::-p-div("true")');
         assert(element, 'Could not find element');
-        expect(
+        assert.ok(
           await element.evaluate(element => {
             return element.id === 'a';
           }),
-        ).toBeTruthy();
+        );
       }
       {
         using element = await page.$("::-p-div('true')");
         assert(element, 'Could not find element');
-        expect(
+        assert.ok(
           await element.evaluate(element => {
             return element.id === 'a';
           }),
-        ).toBeTruthy();
+        );
       }
       {
         using element = await page.$('::-p-div');
         assert(element, 'Could not find element');
-        expect(
+        assert.ok(
           await element.evaluate(element => {
             return element.id === 'b';
           }),
-        ).toBeTruthy();
+        );
       }
     });
 
@@ -605,14 +614,14 @@ describe('Query handler tests', function () {
       const value = await button2.evaluate(span => {
         return {textContent: span.textContent, tagName: span.tagName};
       });
-      expect(value).toMatchObject({textContent: 'world', tagName: 'BUTTON'});
+      assertMatchObject(value, {textContent: 'world', tagName: 'BUTTON'});
     });
 
     it('should work with selector lists', async () => {
       const {server, page} = await getTestState();
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       const elements = await page.$$('div, ::-p-text(world)');
-      expect(elements).toHaveLength(3);
+      assert.lengthOf(elements, 3);
     });
 
     const permute = <T>(inputs: T[]): T[][] => {
@@ -651,7 +660,7 @@ describe('Query handler tests', function () {
             });
           }),
         );
-        expect(actual.join()).toStrictEqual('a,b,f,c');
+        assert.deepEqual(actual.join(), 'a,b,f,c');
       }
     });
 
@@ -659,7 +668,7 @@ describe('Query handler tests', function () {
       const {server, page} = await getTestState();
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       const elements = await page.$$('::-p-text(world), button');
-      expect(elements).toHaveLength(1);
+      assert.lengthOf(elements, 1);
     });
 
     it('should handle escapes', async () => {
@@ -668,19 +677,19 @@ describe('Query handler tests', function () {
       using element = await page.$(
         ':scope >>> ::-p-text(My name is Jun \\(pronounced like "June"\\))',
       );
-      expect(element).toBeTruthy();
+      assert.ok(element);
       using element2 = await page.$(
         ':scope >>> ::-p-text("My name is Jun (pronounced like \\"June\\")")',
       );
-      expect(element2).toBeTruthy();
+      assert.ok(element2);
       using element3 = await page.$(
         ':scope >>> ::-p-text(My name is Jun \\(pronounced like "June"\\)")',
       );
-      expect(element3).toBeFalsy();
+      assert.notOk(element3);
       using element4 = await page.$(
         ':scope >>> ::-p-text("My name is Jun \\(pronounced like "June"\\))',
       );
-      expect(element4).toBeFalsy();
+      assert.notOk(element4);
     });
   });
 });

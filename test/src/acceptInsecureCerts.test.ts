@@ -6,7 +6,7 @@
 
 import type {TLSSocket} from 'node:tls';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
@@ -29,15 +29,15 @@ describe('acceptInsecureCerts', async () => {
         page.goto(httpsServer.EMPTY_PAGE),
       ]);
       const securityDetails = response!.securityDetails()!;
-      expect(securityDetails.issuer()).toBe('puppeteer-tests');
+      assert.strictEqual(securityDetails.issuer(), 'puppeteer-tests');
       const protocol = (serverRequest.socket as TLSSocket)
         .getProtocol()!
         .replace('v', ' ');
-      expect(securityDetails.protocol()).toBe(protocol);
-      expect(securityDetails.subjectName()).toBe('puppeteer-tests');
-      expect(securityDetails.validFrom()).toBe(1589357069);
-      expect(securityDetails.validTo()).toBe(1904717069);
-      expect(securityDetails.subjectAlternativeNames()).toEqual([
+      assert.strictEqual(securityDetails.protocol(), protocol);
+      assert.strictEqual(securityDetails.subjectName(), 'puppeteer-tests');
+      assert.strictEqual(securityDetails.validFrom(), 1589357069);
+      assert.strictEqual(securityDetails.validTo(), 1904717069);
+      assert.deepEqual(securityDetails.subjectAlternativeNames(), [
         'www.puppeteer-tests.test',
         'www.puppeteer-tests-1.test',
       ]);
@@ -46,7 +46,7 @@ describe('acceptInsecureCerts', async () => {
       const {server, page} = state;
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.securityDetails()).toBe(null);
+      assert.isNull(response.securityDetails());
     });
     it('Network redirects should report SecurityDetails', async () => {
       const {httpsServer, page} = state;
@@ -60,13 +60,13 @@ describe('acceptInsecureCerts', async () => {
         httpsServer.waitForRequest('/plzredirect'),
         page.goto(httpsServer.PREFIX + '/plzredirect'),
       ]);
-      expect(responses).toHaveLength(2);
-      expect(responses[0]!.status()).toBe(302);
+      assert.lengthOf(responses, 2);
+      assert.strictEqual(responses[0]!.status(), 302);
       const securityDetails = responses[0]!.securityDetails()!;
       const protocol = (serverRequest.socket as TLSSocket)
         .getProtocol()!
         .replace('v', ' ');
-      expect(securityDetails.protocol()).toBe(protocol);
+      assert.strictEqual(securityDetails.protocol(), protocol);
     });
   });
 
@@ -77,8 +77,8 @@ describe('acceptInsecureCerts', async () => {
     const response = await page.goto(httpsServer.EMPTY_PAGE).catch(error_ => {
       return (error = error_);
     });
-    expect(error).toBeUndefined();
-    expect(response.ok()).toBe(true);
+    assert.isUndefined(error);
+    assert.isTrue(response.ok());
   });
   it('should work with request interception', async () => {
     const {httpsServer, page} = state;
@@ -88,7 +88,7 @@ describe('acceptInsecureCerts', async () => {
       return request.continue();
     });
     const response = (await page.goto(httpsServer.EMPTY_PAGE))!;
-    expect(response.status()).toBe(200);
+    assert.strictEqual(response.status(), 200);
   });
   it('should work with mixed content', async () => {
     const {server, httpsServer, page} = state;
@@ -99,11 +99,11 @@ describe('acceptInsecureCerts', async () => {
     await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {
       waitUntil: 'load',
     });
-    expect(page.frames()).toHaveLength(2);
+    assert.lengthOf(page.frames(), 2);
     // Make sure blocked iframe has functional execution context
     // @see https://github.com/puppeteer/puppeteer/issues/2709
-    expect(await page.frames()[0]!.evaluate('1 + 2')).toBe(3);
-    expect(await page.frames()[1]!.evaluate('2 + 3')).toBe(5);
+    assert.strictEqual(await page.frames()[0]!.evaluate('1 + 2'), 3);
+    assert.strictEqual(await page.frames()[1]!.evaluate('2 + 3'), 5);
   });
   it('works for service worker', async () => {
     const {httpsServer, page} = state;

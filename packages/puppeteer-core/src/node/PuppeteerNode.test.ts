@@ -8,7 +8,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {describe, it, beforeEach, afterEach} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {PuppeteerNode} from './PuppeteerNode.js';
 
@@ -33,7 +33,7 @@ describe('PuppeteerNode', () => {
           });
         },
       });
-      expect(await puppeteer.executablePath()).toContain('chrome');
+      assert.include(await puppeteer.executablePath(), 'chrome');
     });
 
     it('returns the default path based on the default browser configuration', async () => {
@@ -46,7 +46,8 @@ describe('PuppeteerNode', () => {
           });
         },
       });
-      expect((await puppeteer.executablePath()).toLowerCase()).toContain(
+      assert.include(
+        (await puppeteer.executablePath()).toLowerCase(),
         'firefox',
       );
     });
@@ -60,9 +61,10 @@ describe('PuppeteerNode', () => {
           });
         },
       });
-      expect(
+      assert.include(
         (await puppeteer.executablePath('chrome')).toLowerCase(),
-      ).toContain('chrome');
+        'chrome',
+      );
     });
 
     it('returns the default path for chrome-headless-shell', async () => {
@@ -74,13 +76,14 @@ describe('PuppeteerNode', () => {
           });
         },
       });
-      expect(
+      assert.include(
         (
           await puppeteer.executablePath({
             headless: 'shell',
           })
         ).toLowerCase(),
-      ).toContain('chrome-headless-shell');
+        'chrome-headless-shell',
+      );
     });
   });
 
@@ -95,7 +98,7 @@ describe('PuppeteerNode', () => {
         },
       });
       const args = await puppeteer.defaultArgs();
-      expect(args).toBeInstanceOf(Array);
+      assert.instanceOf(args, Array);
     });
   });
 });

@@ -3,9 +3,10 @@
  * Copyright 2025 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
+import {assertRejects} from './utils.js';
 
 const DEVICE_NAME = 'SOME_NAME';
 const SIMULATED_PERIPHERAL = {
@@ -53,7 +54,7 @@ describe('request prompt for emulated bluetooth device', function () {
     await devicePrompt.cancel();
 
     // Expect the navigator request to fail.
-    await expect(navigatorRequestDevicePromise).rejects.toThrow();
+    await assertRejects(navigatorRequestDevicePromise);
   });
 
   it('can be selected', async function () {
@@ -76,6 +77,6 @@ describe('request prompt for emulated bluetooth device', function () {
     await devicePrompt.select(devicePrompt.devices[0]!);
 
     // Assert the device is accessed.
-    expect(await navigatorRequestDevicePromise).toEqual(DEVICE_NAME);
+    assert.strictEqual(await navigatorRequestDevicePromise, DEVICE_NAME);
   });
 });

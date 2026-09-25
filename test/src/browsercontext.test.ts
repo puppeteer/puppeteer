@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
@@ -19,7 +19,7 @@ describe('BrowserContext', function () {
       skipContextCreation: true,
     });
 
-    expect(browser.browserContexts().length).toBeGreaterThanOrEqual(1);
+    assert.isAtLeast(browser.browserContexts().length, 1);
   });
   it('should not be able to close default context', async () => {
     const {browser} = await getTestState({
@@ -27,13 +27,13 @@ describe('BrowserContext', function () {
     });
 
     const defaultContext = browser.defaultBrowserContext();
-    expect(defaultContext).toBeDefined();
+    assert.isDefined(defaultContext);
 
     const error = await defaultContext!.close().catch(error => {
       return error;
     });
-    expect(error).toBeInstanceOf(Error);
-    expect(error.message).toContain('cannot be closed');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, 'cannot be closed');
   });
   it('should create new context', async () => {
     const {browser} = await getTestState({
@@ -41,27 +41,27 @@ describe('BrowserContext', function () {
     });
 
     const contextCount = browser.browserContexts().length;
-    expect(contextCount).toBeGreaterThanOrEqual(1);
+    assert.isAtLeast(contextCount, 1);
     const context = await browser.createBrowserContext();
-    expect(browser.browserContexts()).toHaveLength(contextCount + 1);
-    expect(browser.browserContexts().indexOf(context) !== -1).toBe(true);
+    assert.lengthOf(browser.browserContexts(), contextCount + 1);
+    assert.isTrue(browser.browserContexts().indexOf(context) !== -1);
     await context.close();
-    expect(browser.browserContexts()).toHaveLength(contextCount);
+    assert.lengthOf(browser.browserContexts(), contextCount);
   });
   it('should close all belonging targets once closing context', async () => {
     const {browser} = await getTestState({
       skipContextCreation: true,
     });
 
-    expect(await browser.pages()).toHaveLength(1);
+    assert.lengthOf(await browser.pages(), 1);
 
     const context = await browser.createBrowserContext();
     await context.newPage();
-    expect(await browser.pages()).toHaveLength(2);
-    expect(await context.pages()).toHaveLength(1);
+    assert.lengthOf(await browser.pages(), 2);
+    assert.lengthOf(await context.pages(), 1);
 
     await context.close();
-    expect(await browser.pages()).toHaveLength(1);
+    assert.lengthOf(await browser.pages(), 1);
   });
   it('window.open should use parent tab context', async () => {
     const {browser, server, page, context} = await getTestState();
@@ -73,7 +73,7 @@ describe('BrowserContext', function () {
         return window.open(url);
       }, server.EMPTY_PAGE),
     ]);
-    expect(popupTarget.browserContext()).toBe(context);
+    assert.strictEqual(popupTarget.browserContext(), context);
   });
   it('should fire target events', async () => {
     const {server, context} = await getTestState();
@@ -91,7 +91,7 @@ describe('BrowserContext', function () {
     const page = await context.newPage();
     await page.goto(server.EMPTY_PAGE);
     await page.close();
-    expect(events).toEqual([
+    assert.deepEqual(events, [
       'CREATED: about:blank',
       `CHANGED: ${server.EMPTY_PAGE}`,
       `DESTROYED: ${server.EMPTY_PAGE}`,
@@ -118,11 +118,11 @@ describe('BrowserContext', function () {
         }
       });
     const page = await context.newPage();
-    expect(resolved).toBe(false);
+    assert.isFalse(resolved);
     await page.goto(server.EMPTY_PAGE);
     try {
       const target = await targetPromise;
-      expect(await target.page()).toBe(page);
+      assert.strictEqual(await target.page(), page);
     } catch (error) {
       if (error instanceof TimeoutError) {
         console.error(error);
@@ -148,7 +148,7 @@ describe('BrowserContext', function () {
       .catch(error_ => {
         return error_;
       });
-    expect(error).toBeInstanceOf(TimeoutError);
+    assert.instanceOf(error, TimeoutError);
     await context.close();
   });
 
@@ -161,8 +161,8 @@ describe('BrowserContext', function () {
     // Create two incognito contexts.
     const context1 = await browser.createBrowserContext();
     const context2 = await browser.createBrowserContext();
-    expect(context1.targets()).toHaveLength(0);
-    expect(context2.targets()).toHaveLength(0);
+    assert.lengthOf(context1.targets(), 0);
+    assert.lengthOf(context2.targets(), 0);
 
     // Create a page in first incognito context.
     const page1 = await context1.newPage();
@@ -172,8 +172,8 @@ describe('BrowserContext', function () {
       document.cookie = 'name=page1';
     });
 
-    expect(context1.targets()).toHaveLength(1);
-    expect(context2.targets()).toHaveLength(0);
+    assert.lengthOf(context1.targets(), 1);
+    assert.lengthOf(context2.targets(), 0);
 
     // Create a page in second incognito context.
     const page2 = await context2.newPage();
@@ -183,36 +183,40 @@ describe('BrowserContext', function () {
       document.cookie = 'name=page2';
     });
 
-    expect(context1.targets()).toHaveLength(1);
-    expect(await context1.targets()[0]?.page()).toBe(page1);
-    expect(context2.targets()).toHaveLength(1);
-    expect(await context2.targets()[0]?.page()).toBe(page2);
+    assert.lengthOf(context1.targets(), 1);
+    assert.strictEqual(await context1.targets()[0]?.page(), page1);
+    assert.lengthOf(context2.targets(), 1);
+    assert.strictEqual(await context2.targets()[0]?.page(), page2);
 
     // Make sure pages don't share localstorage or cookies.
-    expect(
+    assert.strictEqual(
       await page1.evaluate(() => {
         return localStorage.getItem('name');
       }),
-    ).toBe('page1');
-    expect(
+      'page1',
+    );
+    assert.strictEqual(
       await page1.evaluate(() => {
         return document.cookie;
       }),
-    ).toBe('name=page1');
-    expect(
+      'name=page1',
+    );
+    assert.strictEqual(
       await page2.evaluate(() => {
         return localStorage.getItem('name');
       }),
-    ).toBe('page2');
-    expect(
+      'page2',
+    );
+    assert.strictEqual(
       await page2.evaluate(() => {
         return document.cookie;
       }),
-    ).toBe('name=page2');
+      'name=page2',
+    );
 
     // Cleanup contexts.
     await Promise.all([context1.close(), context2.close()]);
-    expect(browser.browserContexts()).toHaveLength(contextCount);
+    assert.lengthOf(browser.browserContexts(), contextCount);
   });
 
   it('should work across sessions', async () => {
@@ -220,16 +224,16 @@ describe('BrowserContext', function () {
       skipContextCreation: true,
     });
 
-    expect(browser.browserContexts()).toHaveLength(1);
+    assert.lengthOf(browser.browserContexts(), 1);
     const context = await browser.createBrowserContext();
     try {
-      expect(browser.browserContexts()).toHaveLength(2);
+      assert.lengthOf(browser.browserContexts(), 2);
       using remoteBrowser = await puppeteer.connect({
         browserWSEndpoint: browser.wsEndpoint(),
         protocol: browser.protocol,
       });
       const contexts = remoteBrowser.browserContexts();
-      expect(contexts).toHaveLength(2);
+      assert.lengthOf(contexts, 2);
     } finally {
       await context.close();
     }
@@ -242,11 +246,11 @@ describe('BrowserContext', function () {
 
     const contextCount = browser.browserContexts().length;
 
-    expect(contextCount).toBeGreaterThanOrEqual(1);
+    assert.isAtLeast(contextCount, 1);
 
     const context = await browser.createBrowserContext();
-    expect(browser.browserContexts()).toHaveLength(contextCount + 1);
-    expect(context.id).toBeDefined();
+    assert.lengthOf(browser.browserContexts(), contextCount + 1);
+    assert.isDefined(context.id);
     await context.close();
   });
 
@@ -263,14 +267,14 @@ describe('BrowserContext', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'prompt');
     });
     it('should deny permission when not listed', async () => {
       const {page, server, context} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, []);
-      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'denied');
     });
     it('should fail when bad permission is given', async () => {
       const {page, server, context} = await getTestState();
@@ -283,23 +287,23 @@ describe('BrowserContext', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toBe('Unknown permission: foo');
+      assert.strictEqual(error.message, 'Unknown permission: foo');
     });
     it('should grant permission when listed', async () => {
       const {page, server, context} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
-      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'granted');
     });
     it('should reset permissions', async () => {
       const {page, server, context} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
-      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'granted');
       await context.clearPermissionOverrides();
-      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'prompt');
     });
     it('should trigger permission onchange', async () => {
       const {page, server, context} = await getTestState();
@@ -316,29 +320,33 @@ describe('BrowserContext', function () {
             };
           });
       });
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).events;
         }),
-      ).toEqual(['prompt']);
+        ['prompt'],
+      );
       await context.overridePermissions(server.EMPTY_PAGE, []);
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).events;
         }),
-      ).toEqual(['prompt', 'denied']);
+        ['prompt', 'denied'],
+      );
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).events;
         }),
-      ).toEqual(['prompt', 'denied', 'granted']);
+        ['prompt', 'denied', 'granted'],
+      );
       await context.clearPermissionOverrides();
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).events;
         }),
-      ).toEqual(['prompt', 'denied', 'granted', 'prompt']);
+        ['prompt', 'denied', 'granted', 'prompt'],
+      );
     });
     it('should isolate permissions between browser contexts', async () => {
       const {page, server, context, browser} = await getTestState();
@@ -347,19 +355,28 @@ describe('BrowserContext', function () {
       const otherContext = await browser.createBrowserContext();
       const otherPage = await otherContext.newPage();
       await otherPage.goto(server.EMPTY_PAGE);
-      expect(await getPermission(page, 'geolocation')).toBe('prompt');
-      expect(await getPermission(otherPage, 'geolocation')).toBe('prompt');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'prompt');
+      assert.strictEqual(
+        await getPermission(otherPage, 'geolocation'),
+        'prompt',
+      );
 
       await context.overridePermissions(server.EMPTY_PAGE, []);
       await otherContext.overridePermissions(server.EMPTY_PAGE, [
         'geolocation',
       ]);
-      expect(await getPermission(page, 'geolocation')).toBe('denied');
-      expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'denied');
+      assert.strictEqual(
+        await getPermission(otherPage, 'geolocation'),
+        'granted',
+      );
 
       await context.clearPermissionOverrides();
-      expect(await getPermission(page, 'geolocation')).toBe('prompt');
-      expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'prompt');
+      assert.strictEqual(
+        await getPermission(otherPage, 'geolocation'),
+        'granted',
+      );
 
       await otherContext.close();
     });
@@ -367,13 +384,17 @@ describe('BrowserContext', function () {
       const {page, server, context} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      expect(await getPermission(page, 'persistent-storage')).not.toBe(
+      assert.notStrictEqual(
+        await getPermission(page, 'persistent-storage'),
         'granted',
       );
       await context.overridePermissions(server.EMPTY_PAGE, [
         'persistent-storage',
       ]);
-      expect(await getPermission(page, 'persistent-storage')).toBe('granted');
+      assert.strictEqual(
+        await getPermission(page, 'persistent-storage'),
+        'granted',
+      );
     });
   });
 
@@ -394,17 +415,17 @@ describe('BrowserContext', function () {
         permission: {name: 'geolocation'},
         state: 'granted',
       });
-      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'granted');
       await context.setPermission(server.EMPTY_PAGE, {
         permission: {name: 'geolocation'},
         state: 'denied',
       });
-      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'denied');
       await context.setPermission(server.EMPTY_PAGE, {
         permission: {name: 'geolocation'},
         state: 'prompt',
       });
-      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'prompt');
     });
 
     it('should support * as origin', async () => {
@@ -415,17 +436,17 @@ describe('BrowserContext', function () {
         permission: {name: 'geolocation'},
         state: 'granted',
       });
-      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'granted');
       await context.setPermission('*', {
         permission: {name: 'geolocation'},
         state: 'denied',
       });
-      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'denied');
       await context.setPermission('*', {
         permission: {name: 'geolocation'},
         state: 'prompt',
       });
-      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'prompt');
     });
 
     it('should support multiple permissions', async () => {
@@ -437,24 +458,24 @@ describe('BrowserContext', function () {
         {permission: {name: 'geolocation'}, state: 'granted'},
         {permission: {name: 'midi'}, state: 'granted'},
       );
-      expect(await getPermission(page, 'geolocation')).toBe('granted');
-      expect(await getPermission(page, 'midi')).toBe('granted');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'granted');
+      assert.strictEqual(await getPermission(page, 'midi'), 'granted');
 
       await context.setPermission(
         server.EMPTY_PAGE,
         {permission: {name: 'geolocation'}, state: 'denied'},
         {permission: {name: 'midi'}, state: 'denied'},
       );
-      expect(await getPermission(page, 'geolocation')).toBe('denied');
-      expect(await getPermission(page, 'midi')).toBe('denied');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'denied');
+      assert.strictEqual(await getPermission(page, 'midi'), 'denied');
 
       await context.setPermission(
         server.EMPTY_PAGE,
         {permission: {name: 'geolocation'}, state: 'prompt'},
         {permission: {name: 'midi'}, state: 'prompt'},
       );
-      expect(await getPermission(page, 'geolocation')).toBe('prompt');
-      expect(await getPermission(page, 'midi')).toBe('prompt');
+      assert.strictEqual(await getPermission(page, 'geolocation'), 'prompt');
+      assert.strictEqual(await getPermission(page, 'midi'), 'prompt');
     });
   });
 });

@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {CdpFrame} from 'puppeteer-core/internal/cdp/Frame.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
-import {attachFrame} from '../utils.js';
+import {assertMatchObject, attachFrame} from '../utils.js';
 
 describe('Accessibility loaderId', function () {
   setupTestBrowserHooks();
@@ -31,12 +31,12 @@ describe('Accessibility loaderId', function () {
     const mainLoaderId = (page.mainFrame() as CdpFrame)._loaderId;
     const frame1LoaderId = (frame1 as CdpFrame)._loaderId;
 
-    expect(typeof mainLoaderId).toBe('string');
-    expect(mainLoaderId).toBeTruthy();
-    expect(typeof frame1LoaderId).toBe('string');
-    expect(frame1LoaderId).toBeTruthy();
+    assert.strictEqual(typeof mainLoaderId, 'string');
+    assert.ok(mainLoaderId);
+    assert.strictEqual(typeof frame1LoaderId, 'string');
+    assert.ok(frame1LoaderId);
 
-    expect(snapshot).toMatchObject({
+    assertMatchObject(snapshot, {
       role: 'RootWebArea',
       name: '',
       loaderId: mainLoaderId,

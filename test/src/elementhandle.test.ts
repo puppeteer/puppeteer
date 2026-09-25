@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {Puppeteer} from 'puppeteer';
 import type {Point, Quad} from 'puppeteer-core/internal/api/ElementHandle.js';
 import {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
@@ -15,12 +15,13 @@ import {
 import sinon from 'sinon';
 
 import {
+  assertAtLeastOneToContain,
   getTestState,
   setupTestBrowserHooks,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
 import {initializeTouchEventReport} from './touch-event-utils.js';
-import {attachFrame, html} from './utils.js';
+import {assertRejects, attachFrame, html} from './utils.js';
 
 describe('ElementHandle specs', function () {
   setupTestBrowserHooks();
@@ -33,7 +34,7 @@ describe('ElementHandle specs', function () {
       await page.goto(server.PREFIX + '/grid.html');
       using elementHandle = (await page.$('.box:nth-of-type(13)'))!;
       const box = await elementHandle.boundingBox();
-      expect(box).toEqual({x: 100, y: 50, width: 50, height: 50});
+      assert.deepEqual(box, {x: 100, y: 50, width: 50, height: 50});
     });
     it('should handle nested frames', async () => {
       const {page, server} = await getTestState();
@@ -43,14 +44,14 @@ describe('ElementHandle specs', function () {
       const nestedFrame = page.frames()[1]!.childFrames()[1]!;
       using elementHandle = (await nestedFrame.$('div'))!;
       const box = await elementHandle.boundingBox();
-      expect(box).toEqual({x: 28, y: 182, width: 300, height: 18});
+      assert.deepEqual(box, {x: 28, y: 182, width: 300, height: 18});
     });
     it('should return null for invisible elements', async () => {
       const {page} = await getTestState();
 
       await page.setContent(html`<div style="display:none">hi</div>`);
       using element = (await page.$('div'))!;
-      expect(await element.boundingBox()).toBe(null);
+      assert.isNull(await element.boundingBox());
     });
     it('should force a layout', async () => {
       const {page} = await getTestState();
@@ -64,7 +65,7 @@ describe('ElementHandle specs', function () {
         return (element.style.height = '200px');
       }, elementHandle);
       const box = await elementHandle.boundingBox();
-      expect(box).toEqual({x: 8, y: 8, width: 100, height: 200});
+      assert.deepEqual(box, {x: 8, y: 8, width: 100, height: 200});
     });
     it('should work with SVG nodes', async () => {
       const {page} = await getTestState();
@@ -92,7 +93,7 @@ describe('ElementHandle specs', function () {
         const rect = e.getBoundingClientRect();
         return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
       }, element);
-      expect(pptrBoundingBox).toEqual(webBoundingBox);
+      assert.deepEqual(pptrBoundingBox, webBoundingBox);
     });
   });
 
@@ -132,21 +133,21 @@ describe('ElementHandle specs', function () {
 
       // Step 3: query div's boxModel and assert box values.
       const box = (await divHandle.boxModel())!;
-      expect(box.width).toBe(6);
-      expect(box.height).toBe(7);
-      expect(box.margin[0]).toEqual({
+      assert.strictEqual(box.width, 6);
+      assert.strictEqual(box.height, 7);
+      assert.deepEqual(box.margin[0], {
         x: 1 + 4, // frame.left + div.left
         y: 2 + 5,
       });
-      expect(box.border[0]).toEqual({
+      assert.deepEqual(box.border[0], {
         x: 1 + 4 + 3, // frame.left + div.left + div.margin-left
         y: 2 + 5,
       });
-      expect(box.padding[0]).toEqual({
+      assert.deepEqual(box.padding[0], {
         x: 1 + 4 + 3 + 1, // frame.left + div.left + div.marginLeft + div.borderLeft
         y: 2 + 5,
       });
-      expect(box.content[0]).toEqual({
+      assert.deepEqual(box.content[0], {
         x: 1 + 4 + 3 + 1 + 2, // frame.left + div.left + div.marginLeft + div.borderLeft + div.paddingLeft
         y: 2 + 5,
       });
@@ -157,7 +158,7 @@ describe('ElementHandle specs', function () {
 
       await page.setContent(html`<div style="display:none">hi</div>`);
       using element = (await page.$('div'))!;
-      expect(await element.boxModel()).toBe(null);
+      assert.isNull(await element.boxModel());
     });
 
     it('should correctly compute box model with offsets', async () => {
@@ -199,7 +200,7 @@ describe('ElementHandle specs', function () {
         ];
       }
 
-      expect(boxModel).toEqual({
+      assert.deepEqual(boxModel, {
         content: makeQuad(
           {
             x: horizontalOffset + padding + margin + border,
@@ -254,7 +255,7 @@ describe('ElementHandle specs', function () {
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       using elementHandle = (await page.$('#frame1'))!;
       const frame = await elementHandle.contentFrame();
-      expect(frame).toBe(page.frames()[1]);
+      assert.strictEqual(frame, page.frames()[1]);
     });
   });
 
@@ -263,13 +264,13 @@ describe('ElementHandle specs', function () {
       const {page} = await getTestState();
       await page.setContent(html`<div style="display: none">text</div>`);
       using element = (await page.waitForSelector('div'))!;
-      await expect(element.isVisible()).resolves.toBeFalsy();
-      await expect(element.isHidden()).resolves.toBeTruthy();
+      assert.notOk(await element.isVisible());
+      assert.ok(await element.isHidden());
       await element.evaluate(e => {
         e.style.removeProperty('display');
       });
-      await expect(element.isVisible()).resolves.toBeTruthy();
-      await expect(element.isHidden()).resolves.toBeFalsy();
+      assert.ok(await element.isVisible());
+      assert.notOk(await element.isHidden());
     });
 
     it('should not throw for a detached text node with no parent element', async () => {
@@ -279,8 +280,8 @@ describe('ElementHandle specs', function () {
         return document.createTextNode('orphan');
       });
       using textHandle = handle.asElement()!;
-      await expect(textHandle.isHidden()).resolves.toBeTruthy();
-      await expect(textHandle.isVisible()).resolves.toBeFalsy();
+      assert.ok(await textHandle.isHidden());
+      assert.notOk(await textHandle.isVisible());
     });
   });
 
@@ -291,11 +292,12 @@ describe('ElementHandle specs', function () {
       await page.goto(server.PREFIX + '/input/button.html');
       using button = (await page.$('button'))!;
       await button.click();
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).result;
         }),
-      ).toBe('Clicked');
+        'Clicked',
+      );
     });
     it('should return Point data', async () => {
       const {page} = await getTestState();
@@ -326,7 +328,7 @@ describe('ElementHandle specs', function () {
         },
       });
       await shortWaitForArrayToHaveAtLeastNElements(clicks, 2);
-      expect(clicks).toEqual([
+      assert.deepEqual(clicks, [
         [45 + 60, 45 + 30], // margin + middle point offset
         [30 + 10, 30 + 15], // margin + offset
       ]);
@@ -340,12 +342,12 @@ describe('ElementHandle specs', function () {
         return button as HTMLButtonElement;
       });
       await buttonHandle.click();
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           // @ts-expect-error clicked is expected to be in the page's scope.
           return clicked;
         }),
-      ).toBe(true);
+      );
     });
     it('should not work for TextNodes', async () => {
       const {page, server} = await getTestState();
@@ -358,7 +360,7 @@ describe('ElementHandle specs', function () {
       await buttonTextNode.click().catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Node is not of type HTMLElement',
         'no such node',
       ]);
@@ -375,7 +377,7 @@ describe('ElementHandle specs', function () {
       await button.click().catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Node is detached from document',
         'no such node',
       ]);
@@ -391,7 +393,7 @@ describe('ElementHandle specs', function () {
       const error = await button.click().catch(error_ => {
         return error_;
       });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Node is either not clickable or not an Element',
         'no such element',
       ]);
@@ -407,7 +409,7 @@ describe('ElementHandle specs', function () {
       const error = await button.click().catch(error_ => {
         return error_;
       });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Node is either not clickable or not an Element',
         'no such element',
       ]);
@@ -420,7 +422,7 @@ describe('ElementHandle specs', function () {
       const error = await br.click().catch(error_ => {
         return error_;
       });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Node is either not clickable or not an Element',
         'no such node',
       ]);
@@ -446,7 +448,7 @@ describe('ElementHandle specs', function () {
 
       const expectedTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
 
-      expect(events).toEqual([
+      assert.deepEqual(events, [
         {
           changed: [expectedTouchLocation],
           touches: [expectedTouchLocation],
@@ -474,7 +476,7 @@ describe('ElementHandle specs', function () {
 
       const expectedTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
 
-      expect(events).toEqual([
+      assert.deepEqual(events, [
         {
           changed: [expectedTouchLocation],
           touches: [expectedTouchLocation],
@@ -508,7 +510,7 @@ describe('ElementHandle specs', function () {
       await shortWaitForArrayToHaveAtLeastNElements(events, 2);
 
       const expectedDivTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
-      expect(events).toEqual([
+      assert.deepEqual(events, [
         {
           changed: [[200, 200]],
           touches: [[200, 200]],
@@ -541,7 +543,7 @@ describe('ElementHandle specs', function () {
 
       const expectedDivTouchLocation = [45 + 60, 45 + 30]; // margin + middle point offset
 
-      expect(events).toEqual([
+      assert.deepEqual(events, [
         {
           changed: [[200, 200]],
           touches: [[200, 200]],
@@ -580,7 +582,7 @@ describe('ElementHandle specs', function () {
       await divHandle.touchEnd();
       await shortWaitForArrayToHaveAtLeastNElements(events, 2);
 
-      expect(events).toEqual([
+      assert.deepEqual(events, [
         {
           changed: [[100, 100]],
           touches: [[100, 100]],
@@ -610,19 +612,20 @@ describe('ElementHandle specs', function () {
         });
       });
       using divHandle = (await page.$('div'))!;
-      expect(await divHandle.clickablePoint()).toEqual({
+      assert.deepEqual(await divHandle.clickablePoint(), {
         x: 45 + 60, // margin + middle point offset
         y: 45 + 30, // margin + middle point offset
       });
-      expect(
+      assert.deepEqual(
         await divHandle.clickablePoint({
           x: 10,
           y: 15,
         }),
-      ).toEqual({
-        x: 30 + 10, // margin + offset
-        y: 30 + 15, // margin + offset
-      });
+        {
+          x: 30 + 10, // margin + offset
+          y: 30 + 15, // margin + offset
+        },
+      );
     });
 
     it('should not work if the click box is not visible', async () => {
@@ -634,7 +637,7 @@ describe('ElementHandle specs', function () {
         ></button>`,
       );
       using handle = await page.locator('button').waitHandle();
-      await expect(handle.clickablePoint()).rejects.toBeInstanceOf(Error);
+      assert.instanceOf(await assertRejects(handle.clickablePoint()), Error);
 
       await page.setContent(
         html`<button
@@ -642,7 +645,7 @@ describe('ElementHandle specs', function () {
         ></button>`,
       );
       using handle2 = await page.locator('button').waitHandle();
-      await expect(handle2.clickablePoint()).rejects.toBeInstanceOf(Error);
+      assert.instanceOf(await assertRejects(handle2.clickablePoint()), Error);
 
       await page.setContent(
         html`<button
@@ -650,7 +653,7 @@ describe('ElementHandle specs', function () {
         ></button>`,
       );
       using handle3 = await page.locator('button').waitHandle();
-      await expect(handle3.clickablePoint()).rejects.toBeInstanceOf(Error);
+      assert.instanceOf(await assertRejects(handle3.clickablePoint()), Error);
 
       await page.setContent(
         html`<button
@@ -658,7 +661,7 @@ describe('ElementHandle specs', function () {
         ></button>`,
       );
       using handle4 = await page.locator('button').waitHandle();
-      await expect(handle4.clickablePoint()).rejects.toBeInstanceOf(Error);
+      assert.instanceOf(await assertRejects(handle4.clickablePoint()), Error);
     });
 
     it('should not work if the click box is not visible due to the iframe', async () => {
@@ -683,7 +686,7 @@ describe('ElementHandle specs', function () {
       });
 
       using handle = await frame.locator('button').waitHandle();
-      await expect(handle.clickablePoint()).rejects.toBeInstanceOf(Error);
+      assert.instanceOf(await assertRejects(handle.clickablePoint()), Error);
 
       await page.setContent(
         html`<iframe
@@ -704,7 +707,7 @@ describe('ElementHandle specs', function () {
       });
 
       using handle2 = await frame2.locator('button').waitHandle();
-      await expect(handle2.clickablePoint()).rejects.toBeInstanceOf(Error);
+      assert.instanceOf(await assertRejects(handle2.clickablePoint()), Error);
     });
 
     it('should work for iframes', async () => {
@@ -723,19 +726,20 @@ describe('ElementHandle specs', function () {
       });
       const frame = page.frames()[1]!;
       using divHandle = (await frame.$('div'))!;
-      expect(await divHandle.clickablePoint()).toEqual({
+      assert.deepEqual(await divHandle.clickablePoint(), {
         x: 20 + 45 + 60, // iframe pos + margin + middle point offset
         y: 20 + 45 + 30, // iframe pos + margin + middle point offset
       });
-      expect(
+      assert.deepEqual(
         await divHandle.clickablePoint({
           x: 10,
           y: 15,
         }),
-      ).toEqual({
-        x: 20 + 30 + 10, // iframe pos + margin + offset
-        y: 20 + 30 + 15, // iframe pos + margin + offset
-      });
+        {
+          x: 20 + 30 + 10, // iframe pos + margin + offset
+          y: 20 + 30 + 15, // iframe pos + margin + offset
+        },
+      );
     });
   });
 
@@ -755,7 +759,7 @@ describe('ElementHandle specs', function () {
       if (element instanceof Error) {
         throw element;
       }
-      expect(element).toBeDefined();
+      assert.isDefined(element);
 
       const innerWaitFor = element.waitForSelector('.bar').catch(err => {
         return err;
@@ -767,12 +771,13 @@ describe('ElementHandle specs', function () {
       if (element2 instanceof Error) {
         throw element2;
       }
-      expect(element2).toBeDefined();
-      expect(
+      assert.isDefined(element2);
+      assert.strictEqual(
         await element2.evaluate(el => {
           return el.innerText;
         }),
-      ).toStrictEqual('bar1');
+        'bar1',
+      );
     });
 
     it('should wait correctly with waitForSelector and xpath on an element', async () => {
@@ -793,11 +798,12 @@ describe('ElementHandle specs', function () {
       using elByXpath = (await elById.waitForSelector(
         'xpath/.//div',
       )) as ElementHandle<HTMLDivElement>;
-      expect(
+      assert.strictEqual(
         await elByXpath.evaluate(el => {
           return el.id;
         }),
-      ).toStrictEqual('el2');
+        'el2',
+      );
     });
   });
 
@@ -808,11 +814,12 @@ describe('ElementHandle specs', function () {
       await page.goto(server.PREFIX + '/input/scrollable.html');
       using button = (await page.$('#button-6'))!;
       await button.hover();
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.querySelector('button:hover')!.id;
         }),
-      ).toBe('button-6');
+        'button-6',
+      );
     });
   });
 
@@ -836,7 +843,7 @@ describe('ElementHandle specs', function () {
       for (let i = 0; i < 11; ++i) {
         // All but last button are visible.
         const visible = i < 10;
-        expect(buttonVisibility[i]).toBe(visible);
+        assert.strictEqual(buttonVisibility[i], visible);
       }
     });
     it('should work with threshold', async () => {
@@ -846,11 +853,11 @@ describe('ElementHandle specs', function () {
       // a button almost cannot be seen
       // sometimes we expect to return false by isIntersectingViewport1
       using button = (await page.$('#btn11'))!;
-      expect(
+      assert.isFalse(
         await button.isIntersectingViewport({
           threshold: 0.001,
         }),
-      ).toBe(false);
+      );
     });
     it('should work with threshold of 1', async () => {
       const {page, server} = await getTestState();
@@ -859,11 +866,11 @@ describe('ElementHandle specs', function () {
       // a button almost cannot be seen
       // sometimes we expect to return false by isIntersectingViewport1
       using button = (await page.$('#btn0'))!;
-      expect(
+      assert.isTrue(
         await button.isIntersectingViewport({
           threshold: 1,
         }),
-      ).toBe(true);
+      );
     });
     it('should work with svg elements', async () => {
       const {page, server} = await getTestState();
@@ -896,10 +903,10 @@ describe('ElementHandle specs', function () {
         }),
       ]);
 
-      expect(circleThresholdOne).toBe(true);
-      expect(circleThresholdZero).toBe(true);
-      expect(svgThresholdOne).toBe(true);
-      expect(svgThresholdZero).toBe(true);
+      assert.isTrue(circleThresholdOne);
+      assert.isTrue(circleThresholdZero);
+      assert.isTrue(svgThresholdOne);
+      assert.isTrue(svgThresholdZero);
 
       const [invisibleCircle, invisibleSvg] = await Promise.all([
         page.$('div circle'),
@@ -928,10 +935,10 @@ describe('ElementHandle specs', function () {
         }),
       ]);
 
-      expect(invisibleCircleThresholdOne).toBe(false);
-      expect(invisibleCircleThresholdZero).toBe(false);
-      expect(invisibleSvgThresholdOne).toBe(false);
-      expect(invisibleSvgThresholdZero).toBe(false);
+      assert.isFalse(invisibleCircleThresholdOne);
+      assert.isFalse(invisibleCircleThresholdZero);
+      assert.isFalse(invisibleSvgThresholdOne);
+      assert.isFalse(invisibleSvgThresholdZero);
     });
   });
 
@@ -954,13 +961,14 @@ describe('ElementHandle specs', function () {
       using element = (await page.$(
         'getById/foo',
       )) as ElementHandle<HTMLDivElement>;
-      expect(
+      assert.strictEqual(
         await page.evaluate(element => {
           return element.id;
         }, element),
-      ).toBe('foo');
+        'foo',
+      );
       const handlerNamesAfterRegistering = Puppeteer.customQueryHandlerNames();
-      expect(handlerNamesAfterRegistering.includes('getById')).toBeTruthy();
+      assert.ok(handlerNamesAfterRegistering.includes('getById'));
 
       // Unregister.
       Puppeteer.unregisterCustomQueryHandler('getById');
@@ -968,13 +976,15 @@ describe('ElementHandle specs', function () {
         await page.$('getById/foo');
         throw new Error('Custom query handler name not set - throw expected');
       } catch (error) {
-        expect(error).not.toStrictEqual(
-          new Error('Custom query handler name not set - throw expected'),
+        assert.instanceOf(error, Error);
+        assert.notStrictEqual(
+          error.message,
+          'Custom query handler name not set - throw expected',
         );
       }
       const handlerNamesAfterUnregistering =
         Puppeteer.customQueryHandlerNames();
-      expect(handlerNamesAfterUnregistering.includes('getById')).toBeFalsy();
+      assert.notOk(handlerNamesAfterUnregistering.includes('getById'));
     });
     it('should throw with invalid query names', async () => {
       try {
@@ -987,8 +997,10 @@ describe('ElementHandle specs', function () {
           'Custom query handler name was invalid - throw expected',
         );
       } catch (error) {
-        expect(error).toStrictEqual(
-          new Error('Custom query handler names may only contain [a-zA-Z]'),
+        assert.instanceOf(error, Error);
+        assert.strictEqual(
+          error.message,
+          'Custom query handler names may only contain [a-zA-Z]',
         );
       }
     });
@@ -1015,7 +1027,7 @@ describe('ElementHandle specs', function () {
         }),
       );
 
-      expect(classNames).toStrictEqual(['foo', 'foo baz']);
+      assert.deepEqual(classNames, ['foo', 'foo baz']);
     });
     it('should eval correctly', async () => {
       const {page} = await getTestState();
@@ -1033,7 +1045,7 @@ describe('ElementHandle specs', function () {
         return divs.length;
       });
 
-      expect(elements).toBe(2);
+      assert.strictEqual(elements, 2);
     });
     it('should wait correctly with waitForSelector', async () => {
       const {page} = await getTestState();
@@ -1056,7 +1068,7 @@ describe('ElementHandle specs', function () {
         throw element;
       }
 
-      expect(element).toBeDefined();
+      assert.isDefined(element);
     });
 
     it('should wait correctly with waitForSelector on an element', async () => {
@@ -1080,7 +1092,7 @@ describe('ElementHandle specs', function () {
       if (element instanceof Error) {
         throw element;
       }
-      expect(element).toBeDefined();
+      assert.isDefined(element);
 
       const innerWaitFor = element
         .waitForSelector('getByClass/bar')
@@ -1096,12 +1108,13 @@ describe('ElementHandle specs', function () {
       if (element2 instanceof Error) {
         throw element2;
       }
-      expect(element2).toBeDefined();
-      expect(
+      assert.isDefined(element2);
+      assert.strictEqual(
         await element2.evaluate(el => {
           return el.innerText;
         }),
-      ).toStrictEqual('bar1');
+        'bar1',
+      );
     });
 
     it('should work when both queryOne and queryAll are registered', async () => {
@@ -1126,10 +1139,10 @@ describe('ElementHandle specs', function () {
       });
 
       using element = (await page.$('getByClass/foo'))!;
-      expect(element).toBeDefined();
+      assert.isDefined(element);
 
       const elements = await page.$$('getByClass/foo');
-      expect(elements).toHaveLength(3);
+      assert.lengthOf(elements, 3);
     });
     it('should eval when both queryOne and queryAll are registered', async () => {
       const {page} = await getTestState();
@@ -1150,7 +1163,7 @@ describe('ElementHandle specs', function () {
       const txtContent = await page.$eval('getByClass/foo', div => {
         return div.textContent;
       });
-      expect(txtContent).toBe('text');
+      assert.strictEqual(txtContent, 'text');
 
       const txtContents = await page.$$eval('getByClass/foo', divs => {
         return divs
@@ -1159,7 +1172,7 @@ describe('ElementHandle specs', function () {
           })
           .join('');
       });
-      expect(txtContents).toBe('textcontent');
+      assert.strictEqual(txtContents, 'textcontent');
     });
 
     it('should work with function shorthands', async () => {
@@ -1178,11 +1191,12 @@ describe('ElementHandle specs', function () {
       using element = (await page.$(
         'getById/foo',
       )) as ElementHandle<HTMLDivElement>;
-      expect(
+      assert.strictEqual(
         await page.evaluate(element => {
           return element.id;
         }, element),
-      ).toBe('foo');
+        'foo',
+      );
     });
   });
 
@@ -1192,7 +1206,7 @@ describe('ElementHandle specs', function () {
       await page.setContent(html`<div class="foo">Foo1</div>`);
       using element = await page.$('.foo');
       using div = await element?.toElement('div');
-      expect(div).toBeDefined();
+      assert.isDefined(div);
     });
   });
 
@@ -1208,10 +1222,10 @@ describe('ElementHandle specs', function () {
       await button.click();
       const spy = sinon.spy(button['isolatedHandle']!, 'dispose');
       await button.dispose();
-      expect(button).toBeInstanceOf(ElementHandle);
-      expect(spy.calledOnce).toBeTruthy();
-      expect(button.disposed).toBeTruthy();
-      expect(button['isolatedHandle']?.disposed).toBeTruthy();
+      assert.isTrue(button instanceof ElementHandle);
+      assert.ok(spy.calledOnce);
+      assert.ok(button.disposed);
+      assert.ok(button['isolatedHandle']?.disposed);
     });
   });
 
@@ -1223,9 +1237,9 @@ describe('ElementHandle specs', function () {
       {
         using _ = handle;
       }
-      expect(handle).toBeInstanceOf(ElementHandle);
-      expect(spy.calledOnce).toBeTruthy();
-      expect(handle.disposed).toBeTruthy();
+      assert.isTrue(handle instanceof ElementHandle);
+      assert.ok(spy.calledOnce);
+      assert.ok(handle.disposed);
     });
   });
 
@@ -1237,9 +1251,9 @@ describe('ElementHandle specs', function () {
       {
         await using _ = handle;
       }
-      expect(handle).toBeInstanceOf(ElementHandle);
-      expect(spy.calledOnce).toBeTruthy();
-      expect(handle.disposed).toBeTruthy();
+      assert.isTrue(handle instanceof ElementHandle);
+      assert.ok(spy.calledOnce);
+      assert.ok(handle.disposed);
     });
   });
 
@@ -1252,9 +1266,9 @@ describe('ElementHandle specs', function () {
         using _ = handle;
         handle.move();
       }
-      expect(handle).toBeInstanceOf(ElementHandle);
-      expect(spy.calledOnce).toBeTruthy();
-      expect(handle.disposed).toBeFalsy();
+      assert.isTrue(handle instanceof ElementHandle);
+      assert.ok(spy.calledOnce);
+      assert.notOk(handle.disposed);
     });
   });
 });

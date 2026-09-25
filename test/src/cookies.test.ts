@@ -3,7 +3,7 @@
  * Copyright 2018 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {
   expectCookieEquals,
@@ -51,8 +51,8 @@ describe('Cookie specs', () => {
       });
       await page.goto(server.EMPTY_PAGE);
       const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
-      expect(cookies[0]!.httpOnly).toBe(true);
+      assert.lengthOf(cookies, 1);
+      assert.isTrue(cookies[0]!.httpOnly);
     });
     it('should properly report "Strict" sameSite cookie', async () => {
       const {page, server} = await getTestState();
@@ -62,8 +62,8 @@ describe('Cookie specs', () => {
       });
       await page.goto(server.EMPTY_PAGE);
       const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
-      expect(cookies[0]!.sameSite).toBe('Strict');
+      assert.lengthOf(cookies, 1);
+      assert.strictEqual(cookies[0]!.sameSite, 'Strict');
     });
     it('should properly report "Lax" sameSite cookie', async () => {
       const {page, server} = await getTestState();
@@ -73,8 +73,8 @@ describe('Cookie specs', () => {
       });
       await page.goto(server.EMPTY_PAGE);
       const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
-      expect(cookies[0]!.sameSite).toBe('Lax');
+      assert.lengthOf(cookies, 1);
+      assert.strictEqual(cookies[0]!.sameSite, 'Lax');
     });
     it('should properly report "Default" sameSite cookie', async () => {
       const {page, server} = await getTestState();
@@ -85,10 +85,10 @@ describe('Cookie specs', () => {
         sameSite: 'Default',
       });
       const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
-      expect(cookies[0]!.name).toBe('a');
+      assert.lengthOf(cookies, 1);
+      assert.strictEqual(cookies[0]!.name, 'a');
       // Different browsers have different sameSite values for the "Default" sameSite.
-      expect(['Default', 'Lax', undefined]).toContain(cookies[0]!.sameSite);
+      assert.include(['Default', 'Lax', undefined], cookies[0]!.sameSite);
     });
     it('should be able to delete "Default" sameSite cookie', async () => {
       const {page, server} = await getTestState();
@@ -99,13 +99,13 @@ describe('Cookie specs', () => {
         sameSite: 'Default',
       });
       const cookies = await page.cookies();
-      expect(
+      assert.isDefined(
         cookies.find(c => {
           return c.name === 'a';
         }),
-      ).toBeDefined();
+      );
       await page.deleteCookie(...cookies);
-      expect(await page.cookies()).toHaveLength(0);
+      assert.lengthOf(await page.cookies(), 0);
     });
     it('should report "Default" sameSite cookie when not specified', async () => {
       const {page, server, defaultBrowserOptions, isFirefox} =
@@ -116,9 +116,9 @@ describe('Cookie specs', () => {
       });
       await page.goto(server.EMPTY_PAGE);
       const cookies = await page.cookies();
-      expect(cookies).toHaveLength(1);
+      assert.lengthOf(cookies, 1);
       if (defaultBrowserOptions.protocol === 'webDriverBiDi' && isFirefox) {
-        expect(cookies[0]!.sameSite).toBe('Default');
+        assert.strictEqual(cookies[0]!.sameSite, 'Default');
       }
     });
     it('should get multiple cookies', async () => {
@@ -216,7 +216,7 @@ describe('Cookie specs', () => {
         value: 'woofs',
       });
       const cookies = await page.cookies('https://sub_domain.base_domain.com');
-      expect(cookies).toHaveLength(1);
+      assert.lengthOf(cookies, 1);
     });
     it('should not get cookies from subdomain if the cookie is for top-level domain', async () => {
       const {page} = await getTestState();
@@ -227,7 +227,7 @@ describe('Cookie specs', () => {
         value: 'woofs',
       });
       const cookies = await page.cookies('https://sub_domain.base_domain.com');
-      expect(cookies).toHaveLength(0);
+      assert.lengthOf(cookies, 0);
     });
     it('should get cookies from nested path', async () => {
       const {page} = await getTestState();
@@ -240,7 +240,7 @@ describe('Cookie specs', () => {
       const cookies = await page.cookies(
         'https://foo.com/some_path/nested_path',
       );
-      expect(cookies).toHaveLength(1);
+      assert.lengthOf(cookies, 1);
     });
     it('should not get cookies from not nested path', async () => {
       const {page} = await getTestState();
@@ -253,7 +253,7 @@ describe('Cookie specs', () => {
       const cookies = await page.cookies(
         'https://foo.com/some_path_looks_like_nested',
       );
-      expect(cookies).toHaveLength(0);
+      assert.lengthOf(cookies, 0);
     });
   });
   describe('Page.setCookie', function () {
@@ -265,11 +265,12 @@ describe('Cookie specs', () => {
         name: 'password',
         value: '123456',
       });
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return document.cookie;
         }),
-      ).toEqual('password=123456');
+        'password=123456',
+      );
     });
     it('should isolate cookies in browser contexts', async () => {
       const {page, server, browser} = await getTestState();
@@ -286,12 +287,12 @@ describe('Cookie specs', () => {
 
         const cookies1 = await page.cookies();
         const cookies2 = await anotherPage.cookies();
-        expect(cookies1).toHaveLength(1);
-        expect(cookies2).toHaveLength(1);
-        expect(cookies1[0]!.name).toBe('page1cookie');
-        expect(cookies1[0]!.value).toBe('page1value');
-        expect(cookies2[0]!.name).toBe('page2cookie');
-        expect(cookies2[0]!.value).toBe('page2value');
+        assert.lengthOf(cookies1, 1);
+        assert.lengthOf(cookies2, 1);
+        assert.strictEqual(cookies1[0]!.name, 'page1cookie');
+        assert.strictEqual(cookies1[0]!.value, 'page1value');
+        assert.strictEqual(cookies2[0]!.name, 'page2cookie');
+        assert.strictEqual(cookies2[0]!.value, 'page2value');
       } finally {
         await anotherContext.close();
       }
@@ -319,7 +320,7 @@ describe('Cookie specs', () => {
           .sort();
       });
 
-      expect(cookieStrings).toEqual(['foo=bar', 'password=123456']);
+      assert.deepEqual(cookieStrings, ['foo=bar', 'password=123456']);
     });
     it('should have |expires| set to |-1| for session cookies', async () => {
       const {page, server} = await getTestState();
@@ -330,8 +331,8 @@ describe('Cookie specs', () => {
         value: '123456',
       });
       const cookies = await page.cookies();
-      expect(cookies[0]!.session).toBe(true);
-      expect(cookies[0]!.expires).toBe(-1);
+      assert.isTrue(cookies[0]!.session);
+      assert.strictEqual(cookies[0]!.expires, -1);
     });
     it('should set cookie with reasonable defaults', async () => {
       const {page, server} = await getTestState();
@@ -420,12 +421,18 @@ describe('Cookie specs', () => {
           sourceScheme: 'NonSecure',
         },
       ]);
-      expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+      assert.strictEqual(
+        await page.evaluate('document.cookie'),
+        'gridcookie=GRID',
+      );
       await page.goto(server.EMPTY_PAGE);
       await expectCookieEquals(await page.cookies(), []);
-      expect(await page.evaluate('document.cookie')).toBe('');
+      assert.strictEqual(await page.evaluate('document.cookie'), '');
       await page.goto(server.PREFIX + '/grid.html');
-      expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+      assert.strictEqual(
+        await page.evaluate('document.cookie'),
+        'gridcookie=GRID',
+      );
     });
     it('should set a cookie with a partitionKey', async () => {
       const {page, server, isChrome} = await getTestState();
@@ -467,7 +474,8 @@ describe('Cookie specs', () => {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toContain(
+      assert.include(
+        error.message,
         'At least one of the url and domain needs to be specified',
       );
     });
@@ -484,7 +492,8 @@ describe('Cookie specs', () => {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toEqual(
+      assert.deepEqual(
+        error.message,
         `Blank page can not have cookie "example-cookie-blank"`,
       );
     });
@@ -498,7 +507,8 @@ describe('Cookie specs', () => {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toContain(
+      assert.include(
+        error.message,
         'At least one of the url and domain needs to be specified',
       );
     });
@@ -513,7 +523,7 @@ describe('Cookie specs', () => {
         value: 'bar',
       });
       const [cookie] = await page.cookies(SECURE_URL);
-      expect(cookie!.secure).toBe(true);
+      assert.isTrue(cookie!.secure);
     });
     it('should be able to set insecure cookie for HTTP website', async () => {
       const {page, server} = await getTestState();
@@ -526,7 +536,7 @@ describe('Cookie specs', () => {
         value: 'bar',
       });
       const [cookie] = await page.cookies(HTTP_URL);
-      expect(cookie!.secure).toBe(false);
+      assert.isFalse(cookie!.secure);
     });
     it('should set a cookie on a different domain', async () => {
       const {page, server} = await getTestState();
@@ -537,7 +547,7 @@ describe('Cookie specs', () => {
         name: 'example-cookie',
         value: 'best',
       });
-      expect(await page.evaluate('document.cookie')).toBe('');
+      assert.strictEqual(await page.evaluate('document.cookie'), '');
       await expectCookieEquals(await page.cookies(), []);
       await expectCookieEquals(await page.cookies('https://www.example.com'), [
         {
@@ -574,7 +584,8 @@ describe('Cookie specs', () => {
         value: 'worst',
         url: server.CROSS_PROCESS_PREFIX,
       });
-      expect(await page.evaluate('document.cookie')).toBe(
+      assert.strictEqual(
+        await page.evaluate('document.cookie'),
         'localhost-cookie=best',
       );
 
@@ -637,7 +648,8 @@ describe('Cookie specs', () => {
           sameSite: 'None',
         });
 
-        expect(await page.frames()[1]!.evaluate('document.cookie')).toBe(
+        assert.strictEqual(
+          await page.frames()[1]!.evaluate('document.cookie'),
           '127-same-site-cookie=best',
         );
         await expectCookieEquals(
@@ -683,11 +695,13 @@ describe('Cookie specs', () => {
           value: '3',
         },
       );
-      expect(await page.evaluate('document.cookie')).toBe(
+      assert.strictEqual(
+        await page.evaluate('document.cookie'),
         'cookie1=1; cookie2=2; cookie3=3',
       );
       await page.deleteCookie({name: 'cookie2'});
-      expect(await page.evaluate('document.cookie')).toBe(
+      assert.strictEqual(
+        await page.evaluate('document.cookie'),
         'cookie1=1; cookie3=3',
       );
     });
@@ -702,7 +716,7 @@ describe('Cookie specs', () => {
         name: COOKIE_NAME,
         value: 'local page cookie value',
       });
-      expect(await page.cookies()).toHaveLength(1);
+      assert.lengthOf(await page.cookies(), 1);
 
       // Set a cookie for different domain.
       await page.setCookie({
@@ -710,12 +724,12 @@ describe('Cookie specs', () => {
         name: COOKIE_NAME,
         value: 'COOKIE_DESTINATION_URL cookie value',
       });
-      expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(1);
+      assert.lengthOf(await page.cookies(COOKIE_DESTINATION_URL), 1);
 
       await page.deleteCookie({name: COOKIE_NAME});
 
       // Verify the cookie is deleted for the current page.
-      expect(await page.cookies()).toHaveLength(0);
+      assert.lengthOf(await page.cookies(), 0);
 
       // Verify the cookie is not deleted for different domain.
       await expectCookieEquals(await page.cookies(COOKIE_DESTINATION_URL), [
@@ -743,7 +757,7 @@ describe('Cookie specs', () => {
         name: COOKIE_NAME,
         value: 'some_cookie_value',
       });
-      expect(await page.cookies()).toHaveLength(1);
+      assert.lengthOf(await page.cookies(), 1);
 
       // Set a cookie for specified URL.
       await page.setCookie({
@@ -751,7 +765,7 @@ describe('Cookie specs', () => {
         name: COOKIE_NAME,
         value: 'another_cookie_value',
       });
-      expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(1);
+      assert.lengthOf(await page.cookies(COOKIE_DESTINATION_URL), 1);
 
       // Delete the cookie for specified URL.
       await page.deleteCookie({
@@ -760,7 +774,7 @@ describe('Cookie specs', () => {
       });
 
       // Verify the cookie is deleted for specified URL.
-      expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(0);
+      assert.lengthOf(await page.cookies(COOKIE_DESTINATION_URL), 0);
 
       // Verify the cookie is not deleted for the current page.
       await expectCookieEquals(await page.cookies(), [
@@ -797,7 +811,7 @@ describe('Cookie specs', () => {
         name: COOKIE_NAME,
         value: 'Cookie from URL_1',
       });
-      expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(1);
+      assert.lengthOf(await page.cookies(COOKIE_DESTINATION_URL), 1);
 
       await page.goto(URL_2);
       // Set a cookie for the COOKIE_DESTINATION from URL_2.
@@ -806,7 +820,7 @@ describe('Cookie specs', () => {
         name: COOKIE_NAME,
         value: 'Cookie from URL_2',
       });
-      expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(1);
+      assert.lengthOf(await page.cookies(COOKIE_DESTINATION_URL), 1);
 
       // Delete the cookie for the COOKIE_DESTINATION from URL_2.
       await page.deleteCookie({
@@ -815,12 +829,12 @@ describe('Cookie specs', () => {
       });
 
       // Expect the cookie for the COOKIE_DESTINATION from URL_2 is deleted.
-      expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(0);
+      assert.lengthOf(await page.cookies(COOKIE_DESTINATION_URL), 0);
 
       // Navigate back to the URL_1.
       await page.goto(server.EMPTY_PAGE);
       // Expect the cookie for the COOKIE_DESTINATION from URL_1 is deleted.
-      expect(await page.cookies(COOKIE_DESTINATION_URL)).toHaveLength(0);
+      assert.lengthOf(await page.cookies(COOKIE_DESTINATION_URL), 0);
     });
     it('should only delete cookie from the default partition if partitionkey is not specified', async () => {
       const {page, server} = await getTestState();
@@ -833,12 +847,12 @@ describe('Cookie specs', () => {
         secure: true,
         partitionKey: url.origin,
       });
-      expect(await page.cookies()).toHaveLength(1);
+      assert.lengthOf(await page.cookies(), 1);
       await page.deleteCookie({
         url: url.toString(),
         name: 'partitionCookie',
       });
-      expect(await page.cookies()).toHaveLength(0);
+      assert.lengthOf(await page.cookies(), 0);
     });
     it('should delete cookie with partition key if partition key is specified', async () => {
       const {page, server, isChrome} = await getTestState();
@@ -854,13 +868,13 @@ describe('Cookie specs', () => {
         secure: true,
         partitionKey: origin,
       });
-      expect(await page.cookies()).toHaveLength(1);
+      assert.lengthOf(await page.cookies(), 1);
       await page.deleteCookie({
         url: url.toString(),
         name: 'partitionCookie',
         partitionKey: origin,
       });
-      expect(await page.cookies()).toHaveLength(0);
+      assert.lengthOf(await page.cookies(), 0);
     });
   });
 });

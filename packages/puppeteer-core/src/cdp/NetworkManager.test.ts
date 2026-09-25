@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
@@ -576,7 +576,7 @@ describe('NetworkManager', () => {
       networkId: '11ACE9783588040D644B905E8B55285B',
     });
 
-    expect(requests).toHaveLength(2);
+    assert.lengthOf(requests, 2);
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();
@@ -688,7 +688,7 @@ describe('NetworkManager', () => {
       encodedDataLength: 85928,
     });
 
-    expect(requests).toHaveLength(1);
+    assert.lengthOf(requests, 1);
   });
 
   it(`should resolve the response once the late responseReceivedExtraInfo event arrives`, async () => {
@@ -811,9 +811,9 @@ describe('NetworkManager', () => {
       encodedDataLength: 197,
     });
 
-    expect(pendingRequests).toHaveLength(1);
-    expect(finishedRequests).toHaveLength(0);
-    expect(pendingRequests[0]!.response()).toEqual(null);
+    assert.lengthOf(pendingRequests, 1);
+    assert.lengthOf(finishedRequests, 0);
+    assert.isNull(pendingRequests[0]!.response());
 
     // The extra info might arrive late.
     mockCDPSession.emit('Network.responseReceivedExtraInfo', {
@@ -833,9 +833,9 @@ describe('NetworkManager', () => {
         'HTTP/1.1 200 OK\\r\\nCache-Control: no-cache, no-store\\r\\nContent-Type: text/html; charset=utf-8\\r\\nDate: Wed, 10 Aug 2022 09:04:39 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nContent-Length: 0\\r\\n\\r\\n',
     });
 
-    expect(pendingRequests).toHaveLength(1);
-    expect(finishedRequests).toHaveLength(1);
-    expect(pendingRequests[0]!.response()).not.toEqual(null);
+    assert.lengthOf(pendingRequests, 1);
+    assert.lengthOf(finishedRequests, 1);
+    assert.isNotNull(pendingRequests[0]!.response());
   });
 
   it(`should send responses for iframe that don't receive loadingFinished event`, async () => {
@@ -992,9 +992,9 @@ describe('NetworkManager', () => {
       frameId: '07D18B8630A8161C72B6079B74123D60',
     });
 
-    expect(requests).toHaveLength(1);
-    expect(responses).toHaveLength(1);
-    expect(requests[0]!.response()).not.toEqual(null);
+    assert.lengthOf(requests, 1);
+    assert.lengthOf(responses, 1);
+    assert.isNotNull(requests[0]!.response());
   });
 
   it(`should send responses for iframe that don't receive loadingFinished event`, async () => {
@@ -1133,9 +1133,9 @@ describe('NetworkManager', () => {
         'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Wed, 10 Aug 2022 11:21:22 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
     });
 
-    expect(requests).toHaveLength(1);
-    expect(responses).toHaveLength(1);
-    expect(requests[0]!.response()).not.toEqual(null);
+    assert.lengthOf(requests, 1);
+    assert.lengthOf(responses, 1);
+    assert.isNotNull(requests[0]!.response());
   });
 
   it(`should handle cached redirects`, async () => {
@@ -1541,11 +1541,12 @@ describe('NetworkManager', () => {
       timestamp: 31949.989412,
       encodedDataLength: 0,
     });
-    expect(
+    assert.deepEqual(
       responses.map(r => {
         return r.status();
       }),
-    ).toEqual([200, 302, 200]);
+      [200, 302, 200],
+    );
   });
 
   it('should not override the user agent when nothing is emulated', async () => {
@@ -1557,10 +1558,10 @@ describe('NetworkManager', () => {
     const manager = createNetworkManager();
 
     await manager.addClient(mockCDPSession);
-    expect(commands).not.toContain('Network.setUserAgentOverride');
+    assert.notInclude(commands, 'Network.setUserAgentOverride');
 
     await manager.setUserAgent('custom-user-agent');
-    expect(commands).toContain('Network.setUserAgentOverride');
+    assert.include(commands, 'Network.setUserAgentOverride');
   });
 
   it('should reset the override when the emulated accept-language is cleared', async () => {
@@ -1572,23 +1573,25 @@ describe('NetworkManager', () => {
     const manager = createNetworkManager();
 
     await manager.addClient(mockCDPSession);
-    expect(commands).not.toContain('Network.setUserAgentOverride');
+    assert.notInclude(commands, 'Network.setUserAgentOverride');
 
     await manager.setAcceptLanguage('fr-FR');
-    expect(
+    assert.lengthOf(
       commands.filter(command => {
         return command === 'Network.setUserAgentOverride';
       }),
-    ).toHaveLength(1);
+      1,
+    );
 
     // Clearing the emulated accept-language must still send an override so the
     // browser is reset back to its defaults instead of keeping the stale value.
     await manager.setAcceptLanguage(undefined);
-    expect(
+    assert.lengthOf(
       commands.filter(command => {
         return command === 'Network.setUserAgentOverride';
       }),
-    ).toHaveLength(2);
+      2,
+    );
   });
 
   describe('error handling', () => {
@@ -1640,21 +1643,56 @@ describe('NetworkManager', () => {
     it('should throw on non-TargetClose errors', async () => {
       const mockCDPSession = createMockSession(Error);
       const manager = createNetworkManager();
-      expect(async () => {
+      let error: unknown;
+      let rejected = false;
+      try {
         await manager.addClient(mockCDPSession);
-      }).rejects.toThrow();
-      expect(async () => {
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      error = undefined;
+      rejected = false;
+      try {
         await manager.setCacheEnabled(true);
-      }).rejects.toThrow();
-      expect(async () => {
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      error = undefined;
+      rejected = false;
+      try {
         await manager.setExtraHTTPHeaders({});
-      }).rejects.toThrow();
-      expect(async () => {
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      error = undefined;
+      rejected = false;
+      try {
         await manager.setOfflineMode(true);
-      }).rejects.toThrow();
-      expect(async () => {
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      error = undefined;
+      rejected = false;
+      try {
         await manager.setUserAgent('test');
-      }).rejects.toThrow();
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
     });
 
     it('should not throw if page().browser().userAgent() throws', async () => {

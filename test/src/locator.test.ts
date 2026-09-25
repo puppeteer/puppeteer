@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {TimeoutError} from 'puppeteer-core';
 import {
   Locator,
@@ -13,7 +13,7 @@ import {
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {html} from './utils.js';
+import {assertRejects, html} from './utils.js';
 
 describe('Locator', function () {
   setupTestBrowserHooks();
@@ -37,8 +37,8 @@ describe('Locator', function () {
     const text = await button?.evaluate(el => {
       return el.innerText;
     });
-    expect(text).toBe('clicked');
-    expect(willClick).toBe(true);
+    assert.strictEqual(text, 'clicked');
+    assert.isTrue(willClick);
   });
 
   it('should work without preconditions', async () => {
@@ -64,8 +64,8 @@ describe('Locator', function () {
     const text = await button?.evaluate(el => {
       return el.innerText;
     });
-    expect(text).toBe('clicked');
-    expect(willClick).toBe(true);
+    assert.strictEqual(text, 'clicked');
+    assert.isTrue(willClick);
   });
 
   describe('Locator.click', function () {
@@ -87,8 +87,8 @@ describe('Locator', function () {
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
-      expect(text).toBe('clicked');
-      expect(willClick).toBe(true);
+      assert.strictEqual(text, 'clicked');
+      assert.isTrue(willClick);
     });
 
     it('should work for multiple selectors', async () => {
@@ -109,8 +109,8 @@ describe('Locator', function () {
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
-      expect(text).toBe('clicked');
-      expect(clicked).toBe(true);
+      assert.strictEqual(text, 'clicked');
+      assert.isTrue(clicked);
     });
 
     it('should work if the element is out of viewport', async () => {
@@ -130,7 +130,7 @@ describe('Locator', function () {
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
-      expect(text).toBe('clicked');
+      assert.strictEqual(text, 'clicked');
     });
 
     it('should work with element handles', async () => {
@@ -153,7 +153,7 @@ describe('Locator', function () {
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
-      expect(text).toBe('clicked');
+      assert.strictEqual(text, 'clicked');
     });
 
     it('should work if the element becomes visible later', async () => {
@@ -174,11 +174,12 @@ describe('Locator', function () {
         .catch(err => {
           return err;
         });
-      expect(
+      assert.strictEqual(
         await button?.evaluate(el => {
           return el.innerText;
         }),
-      ).toBe('test');
+        'test',
+      );
       await button?.evaluate(el => {
         el.style.display = 'block';
       });
@@ -186,11 +187,12 @@ describe('Locator', function () {
       if (maybeError instanceof Error) {
         throw maybeError;
       }
-      expect(
+      assert.strictEqual(
         await button?.evaluate(el => {
           return el.innerText;
         }),
-      ).toBe('clicked');
+        'clicked',
+      );
     });
 
     it('should work if the element becomes enabled later', async () => {
@@ -206,20 +208,22 @@ describe('Locator', function () {
       `);
       using button = await page.$('button');
       const result = page.locator('button').click();
-      expect(
+      assert.strictEqual(
         await button?.evaluate(el => {
           return el.innerText;
         }),
-      ).toBe('test');
+        'test',
+      );
       await button?.evaluate(el => {
         el.disabled = false;
       });
       await result;
-      expect(
+      assert.strictEqual(
         await button?.evaluate(el => {
           return el.innerText;
         }),
-      ).toBe('clicked');
+        'clicked',
+      );
     });
 
     it('should work if multiple conditions are satisfied later', async () => {
@@ -238,21 +242,23 @@ describe('Locator', function () {
       `);
       using button = await page.$('button');
       const result = page.locator('button').click();
-      expect(
+      assert.strictEqual(
         await button?.evaluate(el => {
           return el.innerText;
         }),
-      ).toBe('test');
+        'test',
+      );
       await button?.evaluate(el => {
         el.disabled = false;
         el.style.display = 'block';
       });
       await result;
-      expect(
+      assert.strictEqual(
         await button?.evaluate(el => {
           return el.innerText;
         }),
-      ).toBe('clicked');
+        'clicked',
+      );
     });
 
     it('should time out', async () => {
@@ -275,9 +281,9 @@ describe('Locator', function () {
         `);
         const result = page.locator('button').click();
         clock.tick(5100);
-        await expect(result).rejects.toEqual(
-          new TimeoutError('Timed out after waiting 5000ms'),
-        );
+        const error = await assertRejects(result);
+        assert.instanceOf(error, TimeoutError);
+        assert.strictEqual(error.message, 'Timed out after waiting 5000ms');
       } finally {
         clock.restore();
       }
@@ -302,9 +308,9 @@ describe('Locator', function () {
         `);
         const result = page.locator('button').click();
         clock.tick(5100);
-        await expect(result).rejects.toEqual(
-          new TimeoutError('Timed out after waiting 5000ms'),
-        );
+        const error = await assertRejects(result);
+        assert.instanceOf(error, TimeoutError);
+        assert.strictEqual(error.message, 'Timed out after waiting 5000ms');
       } finally {
         clock.restore();
       }
@@ -334,7 +340,8 @@ describe('Locator', function () {
         });
         clock.tick(2000);
         abortController.abort();
-        await expect(result).rejects.toThrow(/aborted/);
+        const error = await assertRejects(result);
+        assert.match(error.message, /aborted/);
       } finally {
         clock.restore();
       }
@@ -363,8 +370,8 @@ describe('Locator', function () {
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
-      expect(text).toBe('clicked');
-      expect(willClick).toBe(true);
+      assert.strictEqual(text, 'clicked');
+      assert.isTrue(willClick);
     });
   });
 
@@ -387,8 +394,8 @@ describe('Locator', function () {
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
-      expect(text).toBe('hovered');
-      expect(hovered).toBe(true);
+      assert.strictEqual(text, 'hovered');
+      assert.isTrue(hovered);
     });
   });
 
@@ -416,8 +423,8 @@ describe('Locator', function () {
       const scroll = await scrollable?.evaluate(el => {
         return el.scrollTop + ' ' + el.scrollLeft;
       });
-      expect(scroll).toBe('500 500');
-      expect(scrolled).toBe(true);
+      assert.strictEqual(scroll, '500 500');
+      assert.isTrue(scrolled);
     });
   });
 
@@ -433,12 +440,12 @@ describe('Locator', function () {
           filled = true;
         })
         .fill('test');
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('textarea')?.value === 'test';
         }),
-      ).toBe(true);
-      expect(filled).toBe(true);
+      );
+      assert.isTrue(filled);
     });
 
     it('should work for selects', async () => {
@@ -457,23 +464,23 @@ describe('Locator', function () {
           filled = true;
         })
         .fill('value2');
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('select')?.value === 'value2';
         }),
-      ).toBe(true);
-      expect(filled).toBe(true);
+      );
+      assert.isTrue(filled);
     });
 
     it('should work for inputs', async () => {
       const {page} = await getTestState();
       await page.setContent(html`<input />`);
       await page.locator('input').fill('test');
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === 'test';
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work if the input becomes enabled later', async () => {
@@ -482,64 +489,66 @@ describe('Locator', function () {
       await page.setContent(html` <input disabled /> `);
       using input = await page.$('input');
       const result = page.locator('input').fill('test');
-      expect(
+      assert.strictEqual(
         await input?.evaluate(el => {
           return el.value;
         }),
-      ).toBe('');
+        '',
+      );
       await input?.evaluate(el => {
         el.disabled = false;
       });
       await result;
-      expect(
+      assert.strictEqual(
         await input?.evaluate(el => {
           return el.value;
         }),
-      ).toBe('test');
+        'test',
+      );
     });
 
     it('should work for contenteditable', async () => {
       const {page} = await getTestState();
       await page.setContent(html` <div contenteditable="true"></div> `);
       await page.locator('div').fill('test');
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('div')?.innerText === 'test';
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for pre-filled inputs', async () => {
       const {page} = await getTestState();
       await page.setContent(html` <input value="te" /> `);
       await page.locator('input').fill('test');
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === 'test';
         }),
-      ).toBe(true);
+      );
     });
 
     it('should override pre-filled inputs', async () => {
       const {page} = await getTestState();
       await page.setContent(html` <input value="wrong prefix" /> `);
       await page.locator('input').fill('test');
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === 'test';
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for non-text inputs', async () => {
       const {page} = await getTestState();
       await page.setContent(html` <input type="color" /> `);
       await page.locator('input').fill('#333333');
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('input')?.value === '#333333';
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for large text', async () => {
@@ -547,11 +556,11 @@ describe('Locator', function () {
       await page.setContent(html` <textarea></textarea> `);
       const largeText = 'a'.repeat(1000);
       await page.locator('textarea').fill(largeText);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('textarea')?.value.length === 1000;
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for large text in contenteditable', async () => {
@@ -559,14 +568,14 @@ describe('Locator', function () {
       await page.setContent(html` <div contenteditable="true"></div> `);
       const largeText = 'a'.repeat(1000);
       await page.locator('div').fill(largeText);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (
             (document.querySelector('div') as HTMLElement).innerText.length ===
             1000
           );
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work with a custom typing threshold', async () => {
@@ -575,20 +584,22 @@ describe('Locator', function () {
       const text = 'abc';
       // threshold is 10, so it should type it.
       await page.locator('input').fill(text, {typingThreshold: 10});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (document.querySelector('input') as HTMLInputElement).value;
         }),
-      ).toBe(text);
+        text,
+      );
 
       await page.setContent(html` <input /> `);
       // threshold is 2, so it should fill it directly.
       await page.locator('input').fill(text, {typingThreshold: 2});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (document.querySelector('input') as HTMLInputElement).value;
         }),
-      ).toBe(text);
+        text,
+      );
     });
 
     it('should work for checkboxes', async () => {
@@ -596,18 +607,18 @@ describe('Locator', function () {
       await page.setContent(html`<input type="checkbox" />`);
 
       await page.locator('input').fill(true);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('input')?.checked === true;
         }),
-      ).toBe(true);
+      );
 
       await page.locator('input').fill(false);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return document.querySelector('input')?.checked === true;
         }),
-      ).toBe(false);
+      );
     });
 
     it('should work for radio buttons', async () => {
@@ -615,11 +626,11 @@ describe('Locator', function () {
       await page.setContent(html`<input type="radio" />`);
 
       await page.locator('input').fill(true);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.querySelector('input')?.checked === true;
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for custom ARIA checkboxes', async () => {
@@ -634,7 +645,7 @@ describe('Locator', function () {
       );
 
       await page.locator('[role="checkbox"]').fill(true);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (
             document
@@ -642,10 +653,10 @@ describe('Locator', function () {
               ?.getAttribute('aria-checked') === 'true'
           );
         }),
-      ).toBe(true);
+      );
 
       await page.locator('[role="checkbox"]').fill(false);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (
             document
@@ -653,7 +664,7 @@ describe('Locator', function () {
               ?.getAttribute('aria-checked') === 'false'
           );
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for custom ARIA radio buttons', async () => {
@@ -668,7 +679,7 @@ describe('Locator', function () {
       );
 
       await page.locator('[role="radio"]').fill(true);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (
             document
@@ -676,7 +687,7 @@ describe('Locator', function () {
               ?.getAttribute('aria-checked') === 'true'
           );
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for custom ARIA switches', async () => {
@@ -691,7 +702,7 @@ describe('Locator', function () {
       );
 
       await page.locator('[role="switch"]').fill(true);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           // Verify the ARIA attribute was updated by the fill command
           return (
@@ -700,10 +711,10 @@ describe('Locator', function () {
               ?.getAttribute('aria-checked') === 'true'
           );
         }),
-      ).toBe(true);
+      );
 
       await page.locator('[role="switch"]').fill(false);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (
             document
@@ -711,7 +722,7 @@ describe('Locator', function () {
               ?.getAttribute('aria-checked') === 'false'
           );
         }),
-      ).toBe(true);
+      );
     });
 
     it('should work for custom ARIA mixed checkboxes', async () => {
@@ -726,7 +737,7 @@ describe('Locator', function () {
       );
 
       await page.locator('[role="checkbox"]').fill(true);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (
             document
@@ -734,10 +745,10 @@ describe('Locator', function () {
               ?.getAttribute('aria-checked') === 'true'
           );
         }),
-      ).toBe(true);
+      );
 
       await page.locator('[role="checkbox"]').fill(false);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (
             document
@@ -745,7 +756,7 @@ describe('Locator', function () {
               ?.getAttribute('aria-checked') === 'false'
           );
         }),
-      ).toBe(true);
+      );
     });
   });
 
@@ -769,7 +780,7 @@ describe('Locator', function () {
         // @ts-expect-error different context.
         return globalThis.count;
       });
-      expect(count).toBe(1);
+      assert.strictEqual(count, 1);
     });
 
     it('can be aborted', async () => {
@@ -799,7 +810,8 @@ describe('Locator', function () {
           });
         clock.tick(2000);
         abortController.abort();
-        await expect(result).rejects.toThrow(/aborted/);
+        const error = await assertRejects(result);
+        assert.match(error.message, /aborted/);
       } finally {
         clock.restore();
       }
@@ -820,9 +832,9 @@ describe('Locator', function () {
           .setTimeout(5000)
           .click();
         clock.tick(5100);
-        await expect(result).rejects.toEqual(
-          new TimeoutError('Timed out after waiting 5000ms'),
-        );
+        const error = await assertRejects(result);
+        assert.instanceOf(error, TimeoutError);
+        assert.strictEqual(error.message, 'Timed out after waiting 5000ms');
       } finally {
         clock.restore();
       }
@@ -835,7 +847,7 @@ describe('Locator', function () {
         page.locator('not-found'),
         page.locator('button'),
       ]).click();
-      await expect(result).resolves.toEqual(undefined);
+      assert.isUndefined(await result);
     });
   });
 
@@ -843,25 +855,26 @@ describe('Locator', function () {
     it('should work', async () => {
       const {page} = await getTestState();
       await page.setContent(html`<div>test</div>`);
-      await expect(
-        page
+      assert.isNull(
+        await page
           .locator('::-p-text(test)')
           .map(element => {
             return element.getAttribute('clickable');
           })
           .wait(),
-      ).resolves.toEqual(null);
+      );
       await page.evaluate(() => {
         document.querySelector('div')?.setAttribute('clickable', 'true');
       });
-      await expect(
-        page
+      assert.strictEqual(
+        await page
           .locator('::-p-text(test)')
           .map(element => {
             return element.getAttribute('clickable');
           })
           .wait(),
-      ).resolves.toEqual('true');
+        'true',
+      );
     });
     it('should work with throws', async () => {
       const {page} = await getTestState();
@@ -879,7 +892,7 @@ describe('Locator', function () {
       await page.evaluate(() => {
         document.querySelector('div')?.setAttribute('clickable', 'true');
       });
-      await expect(result).resolves.toEqual('true');
+      assert.strictEqual(await result, 'true');
     });
     it('should work with expect', async () => {
       const {page} = await getTestState();
@@ -896,7 +909,7 @@ describe('Locator', function () {
       await page.evaluate(() => {
         document.querySelector('div')?.setAttribute('clickable', 'true');
       });
-      await expect(result).resolves.toEqual('true');
+      assert.strictEqual(await result, 'true');
     });
   });
 
@@ -924,7 +937,7 @@ describe('Locator', function () {
           document.querySelector('div')?.setAttribute('clickable', 'true');
         });
         clock.restore();
-        await expect(result).resolves.toEqual(undefined);
+        assert.isUndefined(await result);
       } finally {
         clock.restore();
       }
@@ -960,7 +973,7 @@ describe('Locator', function () {
           }, 50);
         </script>
       `);
-      await expect(page.locator('div').waitHandle()).resolves.toBeDefined();
+      assert.isDefined(await page.locator('div').waitHandle());
     });
   });
 
@@ -969,7 +982,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
       const locator = page.locator('div');
       const clone = locator.clone();
-      expect(locator).not.toStrictEqual(clone);
+      assert.notDeepEqual(locator, clone);
     });
     it('should work internally with delegated locators', async () => {
       const {page} = await getTestState();
@@ -984,7 +997,7 @@ describe('Locator', function () {
       ];
       for (let delegatedLocator of delegatedLocators) {
         delegatedLocator = delegatedLocator.setTimeout(500);
-        expect(delegatedLocator.timeout).not.toStrictEqual(locator.timeout);
+        assert.notDeepEqual(delegatedLocator.timeout, locator.timeout);
       }
     });
   });
@@ -1001,7 +1014,7 @@ describe('Locator', function () {
           });
         })
         .wait();
-      await expect(result).resolves.toEqual(true);
+      assert.isTrue(await result);
     });
     it('should work with actions', async () => {
       const {page} = await getTestState();
@@ -1013,11 +1026,11 @@ describe('Locator', function () {
           return document.getElementsByTagName('div')[0]!;
         })
         .click();
-      await expect(
-        page.evaluate(() => {
+      assert.isTrue(
+        await page.evaluate(() => {
           return (window as unknown as {clicked: boolean}).clicked;
         }),
-      ).resolves.toEqual(true);
+      );
     });
   });
 });

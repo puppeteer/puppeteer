@@ -5,7 +5,7 @@
  */
 import type {IncomingMessage} from 'node:http';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 
@@ -36,7 +36,8 @@ describe('Page.setRequestInterception', function () {
     await page.goto(server.PREFIX + '/intervention');
     // Check for feature URL substring rather than https://www.chromestatus.com to
     // make it work with Edgium.
-    expect(serverRequest!.headers['intervention']).toContain(
+    assert.include(
+      serverRequest!.headers['intervention'],
       'feature/5718547946799104',
     );
   });

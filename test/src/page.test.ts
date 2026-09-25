@@ -3,12 +3,11 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import assert from 'node:assert';
 import fs from 'node:fs';
 import type {ServerResponse} from 'node:http';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {Issue} from 'puppeteer';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
@@ -19,11 +18,13 @@ import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
 import {
+  assertAtLeastOneToContain,
   getTestState,
   setupSeparateTestBrowserHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
 import {
+  assertRejects,
   attachFrame,
   detachFrame,
   getUniqueVideoFilePlaceholder,
@@ -44,8 +45,8 @@ describe('Page', function () {
         type: 'window',
       });
 
-      expect(await context.pages()).toContain(page);
-      expect(await browser.pages()).toContain(page);
+      assert.include(await context.pages(), page);
+      assert.include(await browser.pages(), page);
     });
     it('should open pages in a new window at the specified position', async () => {
       const {context, browser} = await getTestState();
@@ -55,15 +56,15 @@ describe('Page', function () {
         windowBounds: {left: 50, top: 50, width: 750, height: 550},
       });
 
-      expect(await context.pages()).toContain(page);
-      expect(await browser.pages()).toContain(page);
+      assert.include(await context.pages(), page);
+      assert.include(await browser.pages(), page);
 
       const outerSize = await page.evaluate(async () => {
         return {width: outerWidth, height: outerHeight};
       });
 
-      expect(outerSize.width).toBe(750);
-      expect(outerSize.height).toBe(550);
+      assert.strictEqual(outerSize.width, 750);
+      assert.strictEqual(outerSize.height, 550);
     });
     it('should open pages in a new window in maximized state', async () => {
       const {context, browser} = await getTestState();
@@ -73,16 +74,16 @@ describe('Page', function () {
         windowBounds: {windowState: 'maximized'},
       });
 
-      expect(await context.pages()).toContain(page);
-      expect(await browser.pages()).toContain(page);
+      assert.include(await context.pages(), page);
+      assert.include(await browser.pages(), page);
 
       const outerSize = await page.evaluate(async () => {
         return {width: outerWidth, height: outerHeight};
       });
 
       // Should match default headless screen size 800x600.
-      expect(outerSize.width).toBe(800);
-      expect(outerSize.height).toBe(600);
+      assert.strictEqual(outerSize.width, 800);
+      assert.strictEqual(outerSize.height, 600);
     });
     it('should create a background page', async () => {
       const {context} = await getTestState();
@@ -91,11 +92,12 @@ describe('Page', function () {
         background: true,
       });
 
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.visibilityState;
         }),
-      ).toBe('hidden');
+        'hidden',
+      );
     });
   });
 
@@ -115,24 +117,24 @@ describe('Page', function () {
           }),
         newPage.close(),
       ]);
-      expect(error.message).toContain('Protocol error');
+      assert.include(error.message, 'Protocol error');
     });
     it('should not be visible in browser.pages', async () => {
       const {browser, context} = await getTestState();
 
       const newPage = await context.newPage();
-      expect(await browser.pages()).toContain(newPage);
+      assert.include(await browser.pages(), newPage);
       await newPage.close();
-      expect(await browser.pages()).not.toContain(newPage);
+      assert.notInclude(await browser.pages(), newPage);
     });
     it('should close child iframes', async () => {
       const {context, server} = await getTestState();
 
       const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/frames/one-frame.html');
-      expect(newPage.frames().length).toBe(2);
+      assert.strictEqual(newPage.frames().length, 2);
       await newPage.close();
-      expect(await context.pages()).not.toContain(newPage);
+      assert.notInclude(await context.pages(), newPage);
     });
     it('should run beforeunload if asked for', async () => {
       const {context, server, isChrome} = await getTestState();
@@ -144,12 +146,12 @@ describe('Page', function () {
       await newPage.click('body');
       const pageClosingPromise = newPage.close({runBeforeUnload: true});
       const dialog = await waitEvent(newPage, 'dialog');
-      expect(dialog.type()).toBe('beforeunload');
-      expect(dialog.defaultValue()).toBe('');
+      assert.strictEqual(dialog.type(), 'beforeunload');
+      assert.strictEqual(dialog.defaultValue(), '');
       if (isChrome) {
-        expect(dialog.message()).toBe('');
+        assert.strictEqual(dialog.message(), '');
       } else {
-        expect(dialog.message()).toBeTruthy();
+        assert.ok(dialog.message());
       }
       await dialog.accept();
       await pageClosingPromise;
@@ -168,9 +170,9 @@ describe('Page', function () {
       const {context} = await getTestState();
 
       const newPage = await context.newPage();
-      expect(newPage.isClosed()).toBe(false);
+      assert.isFalse(newPage.isClosed());
       await newPage.close();
-      expect(newPage.isClosed()).toBe(true);
+      assert.isTrue(newPage.isClosed());
     });
     it('should terminate network waiters', async () => {
       const {context, server} = await getTestState();
@@ -187,12 +189,12 @@ describe('Page', function () {
       ]);
       for (let i = 0; i < 2; i++) {
         const message = results[i].message;
-        expect(message).atLeastOneToContain([
+        assertAtLeastOneToContain(message, [
           'Target closed',
           'Page closed!',
           'Frame detached',
         ]);
-        expect(message).not.toContain('Timeout');
+        assert.notInclude(message, 'Timeout');
       }
     });
   });
@@ -218,15 +220,15 @@ describe('Page', function () {
       };
       page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
-      expect(handler.callCount).toBe(1);
+      assert.strictEqual(handler.callCount, 1);
       page.off('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
-      expect(handler.callCount).toBe(1);
+      assert.strictEqual(handler.callCount, 1);
       page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
-      expect(handler.callCount).toBe(2);
+      assert.strictEqual(handler.callCount, 2);
     });
 
     it('should correctly added and removed request events', async () => {
@@ -243,18 +245,18 @@ describe('Page', function () {
       page.on('request', onResponse);
       page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
-      expect(handler.callCount).toBe(2);
+      assert.strictEqual(handler.callCount, 2);
       page.off('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
-      expect(handler.callCount).toBe(3);
+      assert.strictEqual(handler.callCount, 3);
       page.off('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
-      expect(handler.callCount).toBe(3);
+      assert.strictEqual(handler.callCount, 3);
       page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
-      expect(handler.callCount).toBe(4);
+      assert.strictEqual(handler.callCount, 4);
     });
   });
 
@@ -272,7 +274,7 @@ describe('Page', function () {
         waitEvent<Error>(page, 'error'),
         navigate,
       ]);
-      expect(error.message).toBe('Page crashed!');
+      assert.strictEqual(error.message, 'Page crashed!');
     });
   });
 
@@ -286,16 +288,16 @@ describe('Page', function () {
           return window.open('about:blank');
         }),
       ]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isTrue(
         await popup.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(true);
+      );
     });
     it('should work with noopener', async () => {
       const {page} = await getTestState();
@@ -306,16 +308,16 @@ describe('Page', function () {
           return window.open('about:blank', undefined, 'noopener');
         }),
       ]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isFalse(
         await popup.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
+      );
     });
     it('should work with clicking target=_blank and without rel=opener', async () => {
       const {page, server} = await getTestState();
@@ -332,16 +334,16 @@ describe('Page', function () {
         waitEvent<Page>(page, 'popup'),
         page.click('a'),
       ]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isFalse(
         await popup.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
+      );
     });
     it('should work with clicking target=_blank and with rel=opener', async () => {
       const {page, server} = await getTestState();
@@ -359,16 +361,16 @@ describe('Page', function () {
         waitEvent<Page>(page, 'popup'),
         page.click('a'),
       ]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isTrue(
         await popup.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(true);
+      );
     });
     it('should work with fake-clicking target=_blank and rel=noopener', async () => {
       const {page, server} = await getTestState();
@@ -388,16 +390,16 @@ describe('Page', function () {
           return a.click();
         }),
       ]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isFalse(
         await popup.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
+      );
     });
     it('should work with clicking target=_blank and rel=noopener', async () => {
       const {page, server} = await getTestState();
@@ -415,16 +417,16 @@ describe('Page', function () {
         waitEvent<Page>(page, 'popup'),
         page.click('a'),
       ]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isFalse(
         await popup.evaluate(() => {
           return !!window.opener;
         }),
-      ).toBe(false);
+      );
     });
   });
 
@@ -445,7 +447,7 @@ describe('Page', function () {
           });
         });
       });
-      expect(geolocation).toEqual({
+      assert.deepEqual(geolocation, {
         latitude: 10,
         longitude: 10,
       });
@@ -459,7 +461,7 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toContain('Invalid longitude "200"');
+      assert.include(error.message, 'Invalid longitude "200"');
     });
   });
 
@@ -472,31 +474,31 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeTruthy();
+      assert.ok(error);
       await page.setOfflineMode(false);
       const response = (await page.reload())!;
-      expect(response.status()).toBe(200);
+      assert.strictEqual(response.status(), 200);
     });
     it('should emulate navigator.onLine', async () => {
       const {page} = await getTestState();
 
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return window.navigator.onLine;
         }),
-      ).toBe(true);
+      );
       await page.setOfflineMode(true);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return window.navigator.onLine;
         }),
-      ).toBe(false);
+      );
       await page.setOfflineMode(false);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return window.navigator.onLine;
         }),
-      ).toBe(true);
+      );
     });
   });
 
@@ -529,7 +531,7 @@ describe('Page', function () {
         return console.timeStamp('test42');
       });
       const metrics = await metricsPromise;
-      expect(metrics.title).toBe('test42');
+      assert.strictEqual(metrics.title, 'test42');
       checkMetrics(metrics.metrics);
     });
     function checkMetrics(metrics: Metrics) {
@@ -549,11 +551,13 @@ describe('Page', function () {
         'JSHeapTotalSize',
       ]);
       for (const name in metrics) {
-        expect(metricsToCheck.has(name)).toBeTruthy();
-        expect(metrics[name as keyof Metrics]).toBeGreaterThanOrEqual(0);
+        assert.ok(metricsToCheck.has(name));
+        const value = metrics[name as keyof Metrics];
+        assert.isDefined(value);
+        assert.isAtLeast(value, 0);
         metricsToCheck.delete(name);
       }
-      expect(metricsToCheck.size).toBe(0);
+      assert.strictEqual(metricsToCheck.size, 0);
     }
   });
 
@@ -570,7 +574,7 @@ describe('Page', function () {
           void fetch('/digits/3.png');
         }),
       ]);
-      expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(request.url(), server.PREFIX + '/digits/2.png');
     });
     it('should work with predicate', async () => {
       const {page, server} = await getTestState();
@@ -586,7 +590,7 @@ describe('Page', function () {
           void fetch('/digits/3.png');
         }),
       ]);
-      expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(request.url(), server.PREFIX + '/digits/2.png');
     });
     it('should work with async predicate', async () => {
       const {page, server} = await getTestState();
@@ -602,7 +606,7 @@ describe('Page', function () {
           void fetch('/digits/3.png');
         }),
       ]);
-      expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(request.url(), server.PREFIX + '/digits/2.png');
     });
     it('should respect timeout', async () => {
       const {page} = await getTestState();
@@ -618,7 +622,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should respect default timeout', async () => {
       const {page} = await getTestState();
@@ -632,7 +636,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should work with no timeout', async () => {
       const {page, server} = await getTestState();
@@ -648,7 +652,7 @@ describe('Page', function () {
           }, 50);
         }),
       ]);
-      expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(request.url(), server.PREFIX + '/digits/2.png');
     });
 
     it('should be cancellable', async () => {
@@ -662,7 +666,8 @@ describe('Page', function () {
       });
 
       abortController.abort();
-      await expect(task).rejects.toThrow(/aborted/);
+      const error = await assertRejects(task);
+      assert.match(error.message, /aborted/);
     });
   });
 
@@ -679,7 +684,7 @@ describe('Page', function () {
           void fetch('/digits/3.png');
         }),
       ]);
-      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(response.url(), server.PREFIX + '/digits/2.png');
     });
     it('should respect timeout', async () => {
       const {page} = await getTestState();
@@ -695,7 +700,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should respect default timeout', async () => {
       const {page} = await getTestState();
@@ -709,7 +714,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should work with predicate', async () => {
       const {page, server} = await getTestState();
@@ -725,7 +730,7 @@ describe('Page', function () {
           void fetch('/digits/3.png');
         }),
       ]);
-      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(response.url(), server.PREFIX + '/digits/2.png');
     });
     it('should work with async predicate', async () => {
       const {page, server} = await getTestState();
@@ -740,7 +745,7 @@ describe('Page', function () {
           void fetch('/digits/3.png');
         }),
       ]);
-      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(response.url(), server.PREFIX + '/digits/2.png');
     });
     it('should work with no timeout', async () => {
       const {page, server} = await getTestState();
@@ -756,7 +761,7 @@ describe('Page', function () {
           }, 50);
         }),
       ]);
-      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+      assert.strictEqual(response.url(), server.PREFIX + '/digits/2.png');
     });
     it('should be cancellable', async () => {
       const {page, server} = await getTestState();
@@ -767,7 +772,8 @@ describe('Page', function () {
       });
 
       abortController.abort();
-      await expect(task).rejects.toThrow(/aborted/);
+      const error = await assertRejects(task);
+      assert.match(error.message, /aborted/);
     });
   });
 
@@ -797,9 +803,9 @@ describe('Page', function () {
             return Date.now();
           }),
       ]);
-      expect(res).toBe(undefined);
-      expect(t1).toBeGreaterThan(t2);
-      expect(t1 - t2).toBeGreaterThanOrEqual(400);
+      assert.isUndefined(res);
+      assert.isAbove(t1, t2);
+      assert.isAtLeast(t1 - t2, 400);
     });
     it('should respect timeout', async () => {
       const {page} = await getTestState();
@@ -807,7 +813,7 @@ describe('Page', function () {
       await page.waitForNetworkIdle({timeout: 1}).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should respect idleTime', async () => {
       const {page, server} = await getTestState();
@@ -832,7 +838,7 @@ describe('Page', function () {
             return Date.now();
           }),
       ]);
-      expect(t2).toBeGreaterThan(t1);
+      assert.isAbove(t2, t1);
     });
     it('should work with no timeout', async () => {
       const {page, server} = await getTestState();
@@ -847,7 +853,7 @@ describe('Page', function () {
           }, 50);
         }),
       ]);
-      expect(result).toBe(undefined);
+      assert.isUndefined(result);
     });
     it('should work with aborted requests', async () => {
       const {page, server} = await getTestState();
@@ -862,7 +868,7 @@ describe('Page', function () {
         return (error = true);
       });
 
-      expect(error).toBe(false);
+      assert.isFalse(error);
     });
     it('should work with delayed response', async () => {
       const {page, server} = await getTestState();
@@ -886,11 +892,11 @@ describe('Page', function () {
           await fetch('/fetch-request-b.js');
         }),
       ]);
-      expect(t1).toBeGreaterThan(t2);
+      assert.isAbove(t1, t2);
       // request finished + idle time.
-      expect(t1 - t0).toBeGreaterThanOrEqual(400);
+      assert.isAtLeast(t1 - t0, 400);
       // request finished + idle time - request finished.
-      expect(t1 - t2).toBeGreaterThanOrEqual(100);
+      assert.isAtLeast(t1 - t2, 100);
     });
 
     it('should be cancelable', async () => {
@@ -908,7 +914,8 @@ describe('Page', function () {
       });
 
       abortController.abort();
-      await expect(task).rejects.toThrow(/aborted/);
+      const error = await assertRejects(task);
+      assert.match(error.message, /aborted/);
       await promise;
     });
   });
@@ -926,7 +933,7 @@ describe('Page', function () {
         attachFrame(page, 'frame2', server.PREFIX + '/title.html'),
       ]);
 
-      expect(waitedFrame.parentFrame()).toBe(page.mainFrame());
+      assert.strictEqual(waitedFrame.parentFrame(), page.mainFrame());
     });
 
     it('should work with a URL predicate', async () => {
@@ -939,7 +946,7 @@ describe('Page', function () {
         attachFrame(page, 'frame2', server.PREFIX + '/title.html'),
       ]);
 
-      expect(waitedFrame.parentFrame()).toBe(page.mainFrame());
+      assert.strictEqual(waitedFrame.parentFrame(), page.mainFrame());
     });
 
     it('should be cancellable', async () => {
@@ -958,7 +965,8 @@ describe('Page', function () {
       );
 
       abortController.abort();
-      await expect(task).rejects.toThrow(/aborted/);
+      const error = await assertRejects(task);
+      assert.match(error.message, /aborted/);
     });
   });
 
@@ -972,7 +980,7 @@ describe('Page', function () {
       const result = await page.evaluate(async function () {
         return (globalThis as any).compute(9, 4);
       });
-      expect(result).toBe(36);
+      assert.strictEqual(result, 36);
     });
     it('should throw exception in page context', async () => {
       const {page} = await getTestState();
@@ -992,8 +1000,8 @@ describe('Page', function () {
           };
         }
       });
-      expect(message).toBe('WOOF WOOF');
-      expect(stack).toContain('page.test.ts');
+      assert.strictEqual(message, 'WOOF WOOF');
+      assert.include(stack, 'page.test.ts');
     });
     it('should support throwing "null"', async () => {
       const {page} = await getTestState();
@@ -1009,7 +1017,7 @@ describe('Page', function () {
           return error;
         }
       });
-      expect(thrown).toBe(null);
+      assert.isNull(thrown);
     });
     it('should be callable from-inside evaluateOnNewDocument', async () => {
       const {page} = await getTestState();
@@ -1035,7 +1043,7 @@ describe('Page', function () {
       const result = await page.evaluate(async function () {
         return (globalThis as any).compute(9, 4);
       });
-      expect(result).toBe(36);
+      assert.strictEqual(result, 36);
     });
     it('should await returned promise', async () => {
       const {page} = await getTestState();
@@ -1047,7 +1055,7 @@ describe('Page', function () {
       const result = await page.evaluate(async function () {
         return (globalThis as any).compute(3, 5);
       });
-      expect(result).toBe(15);
+      assert.strictEqual(result, 15);
     });
     it('should await returned if called from function', async () => {
       const {page} = await getTestState();
@@ -1060,7 +1068,7 @@ describe('Page', function () {
         const result = await (globalThis as any).compute(3, 5);
         return result;
       });
-      expect(result).toBe(15);
+      assert.strictEqual(result, 15);
     });
     it('should work on frames', async () => {
       const {page, server} = await getTestState();
@@ -1074,7 +1082,7 @@ describe('Page', function () {
       const result = await frame.evaluate(async function () {
         return (globalThis as any).compute(3, 5);
       });
-      expect(result).toBe(15);
+      assert.strictEqual(result, 15);
     });
     it('should work with loading frames', async () => {
       // Tries to reproduce the scenario from
@@ -1113,12 +1121,12 @@ describe('Page', function () {
       );
       await Promise.all([req.continue(), exposePromise]);
       await navPromise;
-      expect(error).toBeUndefined();
+      assert.isUndefined(error);
       const frame = page.frames()[1]!;
       const result = await frame.evaluate(async function () {
         return (globalThis as any).compute(3, 5);
       });
-      expect(result).toBe(15);
+      assert.strictEqual(result, 15);
     });
     it('should work on frames before navigation', async () => {
       const {page, server} = await getTestState();
@@ -1132,7 +1140,7 @@ describe('Page', function () {
       const result = await frame.evaluate(async function () {
         return (globalThis as any).compute(3, 5);
       });
-      expect(result).toBe(15);
+      assert.strictEqual(result, 15);
     });
     it('should not throw when frames detach', async () => {
       const {page, server} = await getTestState();
@@ -1144,11 +1152,12 @@ describe('Page', function () {
       });
       await detachFrame(page, 'frame1');
 
-      await expect(
-        page.evaluate(async function () {
+      assert.deepEqual(
+        await page.evaluate(async function () {
           return (globalThis as any).compute(3, 5);
         }),
-      ).resolves.toEqual(15);
+        15,
+      );
     });
     it('should work with complex objects', async () => {
       const {page} = await getTestState();
@@ -1162,7 +1171,7 @@ describe('Page', function () {
       const result = await page.evaluate(async () => {
         return (globalThis as any).complexObject({x: 5}, {x: 2});
       });
-      expect(result.x).toBe(7);
+      assert.strictEqual(result.x, 7);
     });
     it('should fallback to default export when passed a module object', async () => {
       const {page, server} = await getTestState();
@@ -1176,7 +1185,7 @@ describe('Page', function () {
       const result = await page.evaluate(async function () {
         return (globalThis as any).compute(9, 4);
       });
-      expect(result).toBe(36);
+      assert.strictEqual(result, 36);
     });
 
     it('should be called once', async () => {
@@ -1192,7 +1201,7 @@ describe('Page', function () {
       await frame.evaluate(async function () {
         return (globalThis as any).call();
       });
-      expect(calls).toBe(1);
+      assert.strictEqual(calls, 1);
     });
   });
 
@@ -1206,7 +1215,7 @@ describe('Page', function () {
       const result = await page.evaluate(async function () {
         return (globalThis as any).compute(9, 4);
       });
-      expect(result).toBe(36);
+      assert.strictEqual(result, 36);
       await page.removeExposedFunction('compute');
 
       const error = await page
@@ -1219,7 +1228,7 @@ describe('Page', function () {
         .catch(error => {
           return error;
         });
-      expect(error).toBeTruthy();
+      assert.ok(error);
     });
   });
 
@@ -1233,8 +1242,8 @@ describe('Page', function () {
         }),
         page.goto(server.PREFIX + '/error.html'),
       ]);
-      expect(error.message).toContain('Fancy');
-      expect(error.stack?.split('\n').at(-1)).toContain('error.html:3:1');
+      assert.include(error.message, 'Fancy');
+      assert.include(error.stack?.split('\n').at(-1), 'error.html:3:1');
     });
     it('should fire for all value types', async () => {
       const {page, server} = await getTestState();
@@ -1243,7 +1252,7 @@ describe('Page', function () {
         waitEvent<unknown>(page, 'pageerror'),
         page.goto(server.PREFIX + '/error-primitive.html'),
       ]);
-      expect(error).toBe(undefined);
+      assert.isUndefined(error);
     });
   });
 
@@ -1251,58 +1260,62 @@ describe('Page', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
 
-      expect(
+      assert.include(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
-      ).toContain('Mozilla');
+        'Mozilla',
+      );
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(request.headers['user-agent']).toBe('foobar');
+      assert.strictEqual(request.headers['user-agent'], 'foobar');
     });
     it('should work with options parameter', async () => {
       const {page, server} = await getTestState();
 
-      expect(
+      assert.include(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
-      ).toContain('Mozilla');
+        'Mozilla',
+      );
       await page.setUserAgent({userAgent: 'foobar'});
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(request.headers['user-agent']).toBe('foobar');
+      assert.strictEqual(request.headers['user-agent'], 'foobar');
     });
     it('should work with platform option', async () => {
       const {page, server} = await getTestState();
 
-      expect(
+      assert.notStrictEqual(
         await page.evaluate(() => {
           return navigator.platform;
         }),
-      ).not.toBe('MockPlatform');
+        'MockPlatform',
+      );
 
       await page.setUserAgent({
         userAgent: 'foobar',
         platform: 'MockPlatform',
       });
 
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return navigator.platform;
         }),
-      ).toBe('MockPlatform');
+        'MockPlatform',
+      );
 
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(request.headers['user-agent']).toBe('foobar');
+      assert.strictEqual(request.headers['user-agent'], 'foobar');
     });
     it('should work with platform option without userAgent', async () => {
       const {page, server} = await getTestState();
@@ -1311,65 +1324,71 @@ describe('Page', function () {
         return navigator.userAgent;
       });
 
-      expect(
+      assert.notStrictEqual(
         await page.evaluate(() => {
           return navigator.platform;
         }),
-      ).not.toBe('MockPlatform');
+        'MockPlatform',
+      );
 
       await page.setUserAgent({
         platform: 'MockPlatform',
       });
 
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return navigator.platform;
         }),
-      ).toBe('MockPlatform');
+        'MockPlatform',
+      );
 
       // User agent should remain the same
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
-      ).toBe(originalUserAgent);
+        originalUserAgent,
+      );
 
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(request.headers['user-agent']).toBe(originalUserAgent);
+      assert.strictEqual(request.headers['user-agent'], originalUserAgent);
     });
     it('should work for subframes', async () => {
       const {page, server} = await getTestState();
 
-      expect(
+      assert.include(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
-      ).toContain('Mozilla');
+        'Mozilla',
+      );
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         attachFrame(page, 'frame1', server.EMPTY_PAGE),
       ]);
-      expect(request.headers['user-agent']).toBe('foobar');
+      assert.strictEqual(request.headers['user-agent'], 'foobar');
     });
     it('should emulate device user-agent', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
-      expect(
+      assert.notInclude(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
-      ).not.toContain('iPhone');
+        'iPhone',
+      );
       await page.setUserAgent(KnownDevices['iPhone 6'].userAgent);
-      expect(
+      assert.include(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
-      ).toContain('iPhone');
+        'iPhone',
+      );
     });
     it('should work with additional userAgentMetdata', async () => {
       const {page, server} = await getTestState();
@@ -1385,12 +1404,12 @@ describe('Page', function () {
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           // @ts-expect-error: userAgentData not yet in TypeScript DOM API
           return navigator.userAgentData.mobile;
         }),
-      ).toBe(false);
+      );
 
       const uaData = await page.evaluate(() => {
         // @ts-expect-error: userAgentData not yet in TypeScript DOM API
@@ -1401,11 +1420,11 @@ describe('Page', function () {
           'platformVersion',
         ]);
       });
-      expect(uaData['architecture']).toBe('Mock1');
-      expect(uaData['model']).toBe('Mockbook');
-      expect(uaData['platform']).toBe('MockOS');
-      expect(uaData['platformVersion']).toBe('3.1');
-      expect(request.headers['user-agent']).toBe('MockBrowser');
+      assert.strictEqual(uaData['architecture'], 'Mock1');
+      assert.strictEqual(uaData['model'], 'Mockbook');
+      assert.strictEqual(uaData['platform'], 'MockOS');
+      assert.strictEqual(uaData['platformVersion'], '3.1');
+      assert.strictEqual(request.headers['user-agent'], 'MockBrowser');
     });
     it('should restore original', async () => {
       const {page, server} = await getTestState();
@@ -1419,18 +1438,18 @@ describe('Page', function () {
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(requestWithOverride.headers['user-agent']).toBe('foobar');
+      assert.strictEqual(requestWithOverride.headers['user-agent'], 'foobar');
 
       await page.setUserAgent('');
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(request.headers['user-agent']).toBe(userAgent);
+      assert.strictEqual(request.headers['user-agent'], userAgent);
       const userAgentRestored = await page.evaluate(() => {
         return navigator.userAgent;
       });
-      expect(userAgentRestored).toBe(userAgent);
+      assert.strictEqual(userAgentRestored, userAgent);
     });
   });
 
@@ -1442,7 +1461,7 @@ describe('Page', function () {
 
       await page.setContent(htmlRaw`<div>hello</div>`);
       const result = await page.content();
-      expect(result).toBe(expectedOutput);
+      assert.strictEqual(result, expectedOutput);
     });
     it('should work with doctype', async () => {
       const {page} = await getTestState();
@@ -1450,7 +1469,7 @@ describe('Page', function () {
       const doctype = '<!DOCTYPE html>';
       await page.setContent(htmlRaw`${doctype}<div>hello</div>`);
       const result = await page.content();
-      expect(result).toBe(`${doctype}${expectedOutput}`);
+      assert.strictEqual(result, `${doctype}${expectedOutput}`);
     });
     it('should work with HTML 4 doctype', async () => {
       const {page} = await getTestState();
@@ -1460,7 +1479,7 @@ describe('Page', function () {
         '"http://www.w3.org/TR/html4/strict.dtd">';
       await page.setContent(htmlRaw`${doctype}<div>hello</div>`);
       const result = await page.content();
-      expect(result).toBe(`${doctype}${expectedOutput}`);
+      assert.strictEqual(result, `${doctype}${expectedOutput}`);
     });
     it('should respect timeout', async () => {
       const {page, server} = await getTestState();
@@ -1476,7 +1495,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should respect default navigation timeout', async () => {
       const {page, server} = await getTestState();
@@ -1491,7 +1510,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should await resources to load', async () => {
       const {page, server} = await getTestState();
@@ -1508,7 +1527,7 @@ describe('Page', function () {
           return (loaded = true);
         });
       await server.waitForRequest(imgPath);
-      expect(loaded).toBe(false);
+      assert.isFalse(loaded);
       imgResponse.end();
       await contentPromise;
     });
@@ -1523,41 +1542,45 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       await page.setContent(html`${'<div>hello world</div>' + '\x7F'}`);
-      expect(
+      assert.strictEqual(
         await page.$eval('div', div => {
           return div.textContent;
         }),
-      ).toBe('hello world');
+        'hello world',
+      );
     });
     it('should work with accents', async () => {
       const {page} = await getTestState();
 
       await page.setContent(html`<div>aberración</div>`);
-      expect(
+      assert.strictEqual(
         await page.$eval('div', div => {
           return div.textContent;
         }),
-      ).toBe('aberración');
+        'aberración',
+      );
     });
     it('should work with emojis', async () => {
       const {page} = await getTestState();
 
       await page.setContent(html`<div>🐥</div>`);
-      expect(
+      assert.strictEqual(
         await page.$eval('div', div => {
           return div.textContent;
         }),
-      ).toBe('🐥');
+        '🐥',
+      );
     });
     it('should work with newline', async () => {
       const {page} = await getTestState();
 
       await page.setContent(htmlRaw`<div>\n</div>`);
-      expect(
+      assert.strictEqual(
         await page.$eval('div', div => {
           return div.textContent;
         }),
-      ).toBe('\n');
+        '\n',
+      );
     });
     it('should work with comments outside HTML tag', async () => {
       const {page} = await getTestState();
@@ -1565,7 +1588,7 @@ describe('Page', function () {
       const comment = '<!-- Comment -->';
       await page.setContent(htmlRaw`${comment}<div>hello</div>`);
       const result = await page.content();
-      expect(result).toBe(`${comment}${expectedOutput}`);
+      assert.strictEqual(result, `${comment}${expectedOutput}`);
     });
     it('should not run a cross-origin script through document.write', async () => {
       const {page, server} = await getTestState();
@@ -1583,16 +1606,18 @@ describe('Page', function () {
         {waitUntil: 'load'},
       );
 
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(42);
-      expect(
+        42,
+      );
+      assert.lengthOf(
         warnings.filter(warning => {
           return warning.includes('document.write');
         }),
-      ).toHaveLength(0);
+        0,
+      );
     });
   });
 
@@ -1607,21 +1632,22 @@ describe('Page', function () {
         .catch(error => {
           return void error;
         });
-      expect(
+      assert.isUndefined(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(undefined);
+      );
 
       // By-pass CSP and try one more time.
       await page.setBypassCSP(true);
       await page.reload();
       await page.addScriptTag({content: 'window.__injected = 42;'});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
 
     it('should bypass CSP header', async () => {
@@ -1635,21 +1661,22 @@ describe('Page', function () {
         .catch(error => {
           return void error;
         });
-      expect(
+      assert.isUndefined(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(undefined);
+      );
 
       // By-pass CSP and try one more time.
       await page.setBypassCSP(true);
       await page.reload();
       await page.addScriptTag({content: 'window.__injected = 42;'});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
 
     it('should bypass after cross-process navigation', async () => {
@@ -1658,19 +1685,21 @@ describe('Page', function () {
       await page.setBypassCSP(true);
       await page.goto(server.PREFIX + '/csp.html');
       await page.addScriptTag({content: 'window.__injected = 42;'});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(42);
+        42,
+      );
 
       await page.goto(server.CROSS_PROCESS_PREFIX + '/csp.html');
       await page.addScriptTag({content: 'window.__injected = 42;'});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
     it('should bypass CSP in iframes as well', async () => {
       const {page, server} = await getTestState();
@@ -1688,11 +1717,11 @@ describe('Page', function () {
           .catch(error => {
             return void error;
           });
-        expect(
+        assert.isUndefined(
           await frame.evaluate(() => {
             return (globalThis as any).__injected;
           }),
-        ).toBe(undefined);
+        );
       }
 
       // By-pass CSP and try one more time.
@@ -1710,11 +1739,12 @@ describe('Page', function () {
           .catch(error => {
             return void error;
           });
-        expect(
+        assert.strictEqual(
           await frame.evaluate(() => {
             return (globalThis as any).__injected;
           }),
-        ).toBe(42);
+          42,
+        );
       }
     });
   });
@@ -1730,7 +1760,8 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toBe(
+      assert.strictEqual(
+        error.message,
         'Exactly one of `url`, `path`, or `content` must be specified.',
       );
     });
@@ -1740,12 +1771,13 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       using scriptHandle = await page.addScriptTag({url: '/injectedfile.js'});
-      expect(scriptHandle.asElement()).not.toBeNull();
-      expect(
+      assert.isNotNull(scriptHandle.asElement());
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
 
     it('should work with a url and type=module', async () => {
@@ -1753,11 +1785,12 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({url: '/es6/es6import.js', type: 'module'});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (window as unknown as {__es6injected: number}).__es6injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
 
     it('should work with a path and type=module', async () => {
@@ -1771,11 +1804,12 @@ describe('Page', function () {
       await page.waitForFunction(() => {
         return (window as unknown as {__es6injected: number}).__es6injected;
       });
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (window as unknown as {__es6injected: number}).__es6injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
 
     it('should work with a content and type=module', async () => {
@@ -1789,11 +1823,12 @@ describe('Page', function () {
       await page.waitForFunction(() => {
         return (window as unknown as {__es6injected: number}).__es6injected;
       });
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (window as unknown as {__es6injected: number}).__es6injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
 
     it('should throw an error if loading from url fail', async () => {
@@ -1807,9 +1842,9 @@ describe('Page', function () {
         error = error_ as Error;
       }
       if (isFirefox) {
-        expect(error.message).toBeTruthy();
+        assert.ok(error.message);
       } else {
-        expect(error.message).toContain('Could not load script');
+        assert.include(error.message, 'Could not load script');
       }
     });
 
@@ -1820,12 +1855,13 @@ describe('Page', function () {
       using scriptHandle = await page.addScriptTag({
         path: path.join(import.meta.dirname, '../assets/injectedfile.js'),
       });
-      expect(scriptHandle.asElement()).not.toBeNull();
-      expect(
+      assert.isNotNull(scriptHandle.asElement());
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(42);
+        42,
+      );
     });
 
     it('should include sourcemap when path is provided', async () => {
@@ -1838,7 +1874,7 @@ describe('Page', function () {
       const result = await page.evaluate(() => {
         return (globalThis as any).__injectedError.stack;
       });
-      expect(result).toContain(path.join('assets', 'injectedfile.js'));
+      assert.include(result, path.join('assets', 'injectedfile.js'));
     });
 
     it('should work with content', async () => {
@@ -1848,12 +1884,13 @@ describe('Page', function () {
       using scriptHandle = await page.addScriptTag({
         content: 'window.__injected = 35;',
       });
-      expect(scriptHandle.asElement()).not.toBeNull();
-      expect(
+      assert.isNotNull(scriptHandle.asElement());
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).__injected;
         }),
-      ).toBe(35);
+        35,
+      );
     });
 
     it('should add id when provided', async () => {
@@ -1861,8 +1898,8 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({content: 'window.__injected = 1;', id: 'one'});
       await page.addScriptTag({url: '/injectedfile.js', id: 'two'});
-      expect(await page.$('#one')).not.toBeNull();
-      expect(await page.$('#two')).not.toBeNull();
+      assert.isNotNull(await page.$('#one'));
+      assert.isNotNull(await page.$('#two'));
     });
 
     // @see https://github.com/puppeteer/puppeteer/issues/4840
@@ -1876,7 +1913,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
+      assert.ok(error);
     });
 
     it('should throw when added with URL to the CSP page', async () => {
@@ -1889,7 +1926,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
+      assert.ok(error);
     });
   });
 
@@ -1904,7 +1941,8 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toBe(
+      assert.strictEqual(
+        error.message,
         'Exactly one of `url`, `path`, or `content` must be specified.',
       );
     });
@@ -1914,12 +1952,13 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       using styleHandle = await page.addStyleTag({url: '/injectedstyle.css'});
-      expect(styleHandle.asElement()).not.toBeNull();
-      expect(
+      assert.isNotNull(styleHandle.asElement());
+      assert.strictEqual(
         await page.evaluate(
           `window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`,
         ),
-      ).toBe('rgb(255, 0, 0)');
+        'rgb(255, 0, 0)',
+      );
     });
 
     it('should throw an error if loading from url fail', async () => {
@@ -1933,9 +1972,9 @@ describe('Page', function () {
         error = error_ as Error;
       }
       if (isFirefox) {
-        expect(error.message).toBeTruthy();
+        assert.ok(error.message);
       } else {
-        expect(error.message).toContain('Could not load style');
+        assert.include(error.message, 'Could not load style');
       }
     });
 
@@ -1946,12 +1985,13 @@ describe('Page', function () {
       using styleHandle = await page.addStyleTag({
         path: path.join(import.meta.dirname, '../assets/injectedstyle.css'),
       });
-      expect(styleHandle.asElement()).not.toBeNull();
-      expect(
+      assert.isNotNull(styleHandle.asElement());
+      assert.strictEqual(
         await page.evaluate(
           `window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`,
         ),
-      ).toBe('rgb(255, 0, 0)');
+        'rgb(255, 0, 0)',
+      );
     });
 
     it('should include sourcemap when path is provided', async () => {
@@ -1965,7 +2005,7 @@ describe('Page', function () {
       const styleContent = await page.evaluate(style => {
         return style.innerHTML;
       }, styleHandle);
-      expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
+      assert.include(styleContent, path.join('assets', 'injectedstyle.css'));
     });
 
     it('should work with content', async () => {
@@ -1975,12 +2015,13 @@ describe('Page', function () {
       using styleHandle = await page.addStyleTag({
         content: 'body { background-color: green; }',
       });
-      expect(styleHandle.asElement()).not.toBeNull();
-      expect(
+      assert.isNotNull(styleHandle.asElement());
+      assert.strictEqual(
         await page.evaluate(
           `window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`,
         ),
-      ).toBe('rgb(0, 128, 0)');
+        'rgb(0, 128, 0)',
+      );
     });
 
     it('should throw when added with content to the CSP page', async () => {
@@ -1993,7 +2034,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
+      assert.ok(error);
     });
 
     it('should throw when added with URL to the CSP page', async () => {
@@ -2008,7 +2049,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
+      assert.ok(error);
     });
   });
 
@@ -2016,9 +2057,9 @@ describe('Page', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
 
-      expect(page.url()).toBe('about:blank');
+      assert.strictEqual(page.url(), 'about:blank');
       await page.goto(server.EMPTY_PAGE);
-      expect(page.url()).toBe(server.EMPTY_PAGE);
+      assert.strictEqual(page.url(), server.EMPTY_PAGE);
     });
   });
 
@@ -2027,7 +2068,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       await page.setJavaScriptEnabled(false);
-      expect(page.isJavaScriptEnabled()).toBe(false);
+      assert.isFalse(page.isJavaScriptEnabled());
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>',
       );
@@ -2035,14 +2076,14 @@ describe('Page', function () {
       await page.evaluate('something').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toContain('something is not defined');
+      assert.include(error.message, 'something is not defined');
 
       await page.setJavaScriptEnabled(true);
-      expect(page.isJavaScriptEnabled()).toBe(true);
+      assert.isTrue(page.isJavaScriptEnabled());
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>',
       );
-      expect(await page.evaluate('something')).toBe('forbidden');
+      assert.strictEqual(await page.evaluate('something'), 'forbidden');
     });
     it('setInterval should pause', async () => {
       const {page} = await getTestState();
@@ -2072,11 +2113,12 @@ describe('Page', function () {
 
       // Verify that the counter has not changed, confirming that setInterval was paused
       // when JavaScript was disabled.
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).intervalCounter;
         }),
-      ).toBe(intervalCounter);
+        intervalCounter,
+      );
       // Re-enable JavaScript execution.
       await page.setJavaScriptEnabled(true);
 
@@ -2090,11 +2132,12 @@ describe('Page', function () {
 
       // Verify that the counter increased. This confirms that timers resumed when
       // JavaScript is re-enabled.
-      expect(
+      assert.isAbove(
         await page.evaluate(() => {
           return (globalThis as any).intervalCounter;
         }),
-      ).toBeGreaterThan(intervalCounter);
+        intervalCounter,
+      );
     });
     it('setTimeout should stop', async () => {
       const {page} = await getTestState();
@@ -2125,11 +2168,12 @@ describe('Page', function () {
       });
 
       // Verify the counter has not changed, confirming that setTimeout was paused.
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).timeoutCounter;
         }),
-      ).toBe(timeoutCounter);
+        timeoutCounter,
+      );
 
       // Re-enable JavaScript.
       await page.setJavaScriptEnabled(true);
@@ -2144,11 +2188,12 @@ describe('Page', function () {
 
       // Verify the counter still has not changed, confirming that `setTimeout` do not
       // resume upon re-enabling JavaScript.
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).timeoutCounter;
         }),
-      ).toBe(timeoutCounter);
+        timeoutCounter,
+      );
     });
     it('then should not pause', async () => {
       const {page} = await getTestState();
@@ -2157,13 +2202,14 @@ describe('Page', function () {
       await page.setJavaScriptEnabled(false);
 
       // Assert the microtasks continue to work even when page scripts are disabled.
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return Promise.resolve().then(() => {
             return 42;
           });
         }),
-      ).toBe(42);
+        42,
+      );
     });
   });
 
@@ -2177,7 +2223,7 @@ describe('Page', function () {
         page.reload(),
       ]);
       // Rely on "if-modified-since" caching in our test server.
-      expect(cachedRequest.headers['if-modified-since']).not.toBe(undefined);
+      assert.isDefined(cachedRequest.headers['if-modified-since']);
 
       const [nonCachedRequest] = await Promise.all([
         server.waitForRequest('/cached/one-style.html'),
@@ -2185,7 +2231,7 @@ describe('Page', function () {
           ignoreCache: true,
         }),
       ]);
-      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
+      assert.isUndefined(nonCachedRequest.headers['if-modified-since']);
     });
   });
 
@@ -2199,14 +2245,14 @@ describe('Page', function () {
         page.reload(),
       ]);
       // Rely on "if-modified-since" caching in our test server.
-      expect(cachedRequest.headers['if-modified-since']).not.toBe(undefined);
+      assert.isDefined(cachedRequest.headers['if-modified-since']);
 
       await page.setCacheEnabled(false);
       const [nonCachedRequest] = await Promise.all([
         server.waitForRequest('/cached/one-style.html'),
         page.reload(),
       ]);
-      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
+      assert.isUndefined(nonCachedRequest.headers['if-modified-since']);
     });
     it('should stay disabled when toggling request interception on/off', async () => {
       const {page, server} = await getTestState();
@@ -2220,7 +2266,7 @@ describe('Page', function () {
         server.waitForRequest('/cached/one-style.html'),
         page.reload(),
       ]);
-      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
+      assert.isUndefined(nonCachedRequest.headers['if-modified-since']);
     });
   });
 
@@ -2232,7 +2278,7 @@ describe('Page', function () {
       await page.goto(server.PREFIX + '/pdf.html');
       await page.pdf({path: outputFile});
       try {
-        expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
+        assert.isAbove(fs.readFileSync(outputFile).byteLength, 0);
       } finally {
         fs.unlinkSync(outputFile);
       }
@@ -2252,7 +2298,7 @@ describe('Page', function () {
         size += value.length;
       }
 
-      expect(size).toBeGreaterThan(0);
+      assert.isAbove(size, 0);
     });
 
     it('should respect timeout', async () => {
@@ -2263,7 +2309,7 @@ describe('Page', function () {
       const error = await page.pdf({timeout: 1}).catch(err => {
         return err;
       });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
   });
 
@@ -2272,7 +2318,7 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/title.html');
-      expect(await page.title()).toBe('Woof-Woof');
+      assert.strictEqual(await page.title(), 'Woof-Woof');
     });
   });
 
@@ -2282,32 +2328,36 @@ describe('Page', function () {
 
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onInput;
         }),
-      ).toEqual(['blue']);
-      expect(
+        ['blue'],
+      );
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onChange;
         }),
-      ).toEqual(['blue']);
+        ['blue'],
+      );
     });
     it('should select only first option', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue', 'green', 'red');
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onInput;
         }),
-      ).toEqual(['blue']);
-      expect(
+        ['blue'],
+      );
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onChange;
         }),
-      ).toEqual(['blue']);
+        ['blue'],
+      );
     });
     it('should not throw when select causes navigation', async () => {
       const {page, server} = await getTestState();
@@ -2322,7 +2372,7 @@ describe('Page', function () {
         page.select('select', 'blue'),
         page.waitForNavigation(),
       ]);
-      expect(page.url()).toContain('empty.html');
+      assert.include(page.url(), 'empty.html');
     });
     it('should select multiple options', async () => {
       const {page, server} = await getTestState();
@@ -2332,32 +2382,36 @@ describe('Page', function () {
         return (globalThis as any).makeMultiple();
       });
       await page.select('select', 'blue', 'green', 'red');
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onInput;
         }),
-      ).toEqual(['blue', 'green', 'red']);
-      expect(
+        ['blue', 'green', 'red'],
+      );
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onChange;
         }),
-      ).toEqual(['blue', 'green', 'red']);
+        ['blue', 'green', 'red'],
+      );
     });
     it('should respect event bubbling', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onBubblingInput;
         }),
-      ).toEqual(['blue']);
-      expect(
+        ['blue'],
+      );
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onBubblingChange;
         }),
-      ).toEqual(['blue']);
+        ['blue'],
+      );
     });
     it('should throw when element is not a <select>', async () => {
       const {page, server} = await getTestState();
@@ -2367,14 +2421,14 @@ describe('Page', function () {
       await page.select('body', '').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toContain('Element is not a <select> element.');
+      assert.include(error.message, 'Element is not a <select> element.');
     });
     it('should return [] on no matched values', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
       const result = await page.select('select', '42', 'abc');
-      expect(result).toEqual([]);
+      assert.deepEqual(result, []);
     });
     it('should return an array of matched values', async () => {
       const {page, server} = await getTestState();
@@ -2384,11 +2438,12 @@ describe('Page', function () {
         return (globalThis as any).makeMultiple();
       });
       const result = await page.select('select', 'blue', 'black', 'magenta');
-      expect(
+      assert.deepEqual(
         result.reduce((accumulator, current) => {
           return ['blue', 'black', 'magenta'].includes(current) && accumulator;
         }, true),
-      ).toEqual(true);
+        true,
+      );
     });
     it('should return an array of one element when multiple is not set', async () => {
       const {page, server} = await getTestState();
@@ -2401,14 +2456,14 @@ describe('Page', function () {
         'black',
         'magenta',
       );
-      expect(result).toHaveLength(1);
+      assert.lengthOf(result, 1);
     });
     it('should return [] on no values', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
       const result = await page.select('select');
-      expect(result).toEqual([]);
+      assert.deepEqual(result, []);
     });
     it('should deselect all options when passed no values for a multiple select', async () => {
       const {page, server} = await getTestState();
@@ -2419,13 +2474,14 @@ describe('Page', function () {
       });
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
-      expect(
+      assert.deepEqual(
         await page.$eval('select', select => {
           return Array.from(select.options).every(option => {
             return !option.selected;
           });
         }),
-      ).toEqual(true);
+        true,
+      );
     });
     it('should deselect all options when passed no values for a select without multiple', async () => {
       const {page, server} = await getTestState();
@@ -2433,13 +2489,14 @@ describe('Page', function () {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
-      expect(
+      assert.deepEqual(
         await page.$eval('select', select => {
           return Array.from(select.options).filter(option => {
             return option.selected;
           })[0]!.value;
         }),
-      ).toEqual('');
+        '',
+      );
     });
     it('should throw if passed in non-strings', async () => {
       const {page} = await getTestState();
@@ -2456,7 +2513,7 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toContain('Values must be strings');
+      assert.include(error.message, 'Values must be strings');
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3327
     it('should work when re-defining top-level Event class', async () => {
@@ -2468,16 +2525,18 @@ describe('Page', function () {
         return (window.Event = undefined);
       });
       await page.select('select', 'blue');
-      expect(
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onInput;
         }),
-      ).toEqual(['blue']);
-      expect(
+        ['blue'],
+      );
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any).result.onChange;
         }),
-      ).toEqual(['blue']);
+        ['blue'],
+      );
     });
   });
 
@@ -2490,12 +2549,12 @@ describe('Page', function () {
           return fulfill(target.page());
         });
       });
-      assert(page);
+      assert.ok(page);
       await page.evaluate(() => {
         return ((window as any)['newPage'] = window.open('about:blank'));
       });
       const newPage = await newPagePromise;
-      assert(newPage);
+      assert.ok(newPage);
       const closedPromise = waitEvent(newPage, 'close');
       await page.evaluate(() => {
         return (window as any)['newPage'].close();
@@ -2528,7 +2587,7 @@ describe('Page', function () {
 
         await page.goto(server.PREFIX + '/csp.html');
 
-        expect(issueEmitted).toBe(false);
+        assert.isFalse(issueEmitted);
       });
     });
     it('should emit issue event when CSP violation occurs', async () => {
@@ -2541,8 +2600,8 @@ describe('Page', function () {
       await page.addScriptTag({content: 'console.log("CSP test")'});
 
       const issue = await issuePromise;
-      expect(issue).toBeTruthy();
-      expect(issue.code).toBe('ContentSecurityPolicyIssue');
+      assert.ok(issue);
+      assert.strictEqual(issue.code, 'ContentSecurityPolicyIssue');
     });
 
     it('should emit issue event from cross-origin iframe', async () => {
@@ -2556,15 +2615,15 @@ describe('Page', function () {
       await page.setContent(html`<iframe src="${crossOriginUrl}"></iframe>`);
 
       const frame = await page.waitForFrame(crossOriginUrl);
-      expect(frame).toBeTruthy();
+      assert.ok(frame);
 
       await frame.addScriptTag({
         content: 'console.log("CSP test in iframe")',
       });
 
       const issue = await issuePromise;
-      expect(issue).toBeTruthy();
-      expect(issue.code).toBe('ContentSecurityPolicyIssue');
+      assert.ok(issue);
+      assert.strictEqual(issue.code, 'ContentSecurityPolicyIssue');
     });
   });
 
@@ -2572,7 +2631,7 @@ describe('Page', function () {
     it('should return the correct browser instance', async () => {
       const {page, browser} = await getTestState();
 
-      expect(page.browser()).toBe(browser);
+      assert.strictEqual(page.browser(), browser);
     });
   });
 
@@ -2580,14 +2639,14 @@ describe('Page', function () {
     it('should return the correct browser context instance', async () => {
       const {page, context} = await getTestState();
 
-      expect(page.browserContext()).toBe(context);
+      assert.strictEqual(page.browserContext(), context);
     });
   });
 
   describe('Page.client', function () {
     it('should return the client instance', async () => {
       const {page} = await getTestState();
-      expect((page as CdpPage)._client()).toBeInstanceOf(CDPSession);
+      assert.isTrue((page as CdpPage)._client() instanceof CDPSession);
     });
   });
 
@@ -2598,28 +2657,32 @@ describe('Page', function () {
       const page2 = await context.newPage();
 
       await page1.bringToFront();
-      expect(
+      assert.strictEqual(
         await page1.evaluate(() => {
           return document.visibilityState;
         }),
-      ).toBe('visible');
-      expect(
+        'visible',
+      );
+      assert.strictEqual(
         await page2.evaluate(() => {
           return document.visibilityState;
         }),
-      ).toBe('hidden');
+        'hidden',
+      );
 
       await page2.bringToFront();
-      expect(
+      assert.strictEqual(
         await page1.evaluate(() => {
           return document.visibilityState;
         }),
-      ).toBe('hidden');
-      expect(
+        'hidden',
+      );
+      assert.strictEqual(
         await page2.evaluate(() => {
           return document.visibilityState;
         }),
-      ).toBe('visible');
+        'visible',
+      );
 
       await page1.close();
       await page2.close();
@@ -2652,8 +2715,8 @@ describe('Page', function () {
       const innerSize = await page.evaluate(() => {
         return {width: window.innerWidth, height: window.innerHeight};
       });
-      expect(innerSize.width).toBe(contentWidth);
-      expect(innerSize.height).toBe(contentHeight);
+      assert.strictEqual(innerSize.width, contentWidth);
+      assert.strictEqual(innerSize.height, contentHeight);
     });
 
     it('should resize the browser window to fit page content when fullscreen', async () => {
@@ -2688,8 +2751,8 @@ describe('Page', function () {
         };
       });
 
-      expect(innerSize.width).toBe(contentWidth);
-      expect(innerSize.height).toBe(contentHeight);
+      assert.strictEqual(innerSize.width, contentWidth);
+      assert.strictEqual(innerSize.height, contentHeight);
     });
   });
 
@@ -2709,7 +2772,7 @@ describe('Page', function () {
 
       await recording.stop();
 
-      expect(fs.statSync(file.filename).size).toBeGreaterThan(0);
+      assert.isAbove(fs.statSync(file.filename).size, 0);
     });
   });
 });

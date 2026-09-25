@@ -6,11 +6,11 @@
 
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {TimeoutError} from 'puppeteer';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {html} from './utils.js';
+import {assertRejects, html} from './utils.js';
 
 const FILE_TO_UPLOAD = path.join(
   import.meta.dirname,
@@ -39,21 +39,24 @@ describe('input tests', function () {
       const file = path.relative(process.cwd(), FILE_TO_UPLOAD);
       await input.uploadFile(file);
 
-      expect(
+      assert.strictEqual(
         await input.evaluate(e => {
           return e.files?.[0]?.name;
         }),
-      ).toBe('file-to-upload.txt');
-      expect(
+        'file-to-upload.txt',
+      );
+      assert.strictEqual(
         await input.evaluate(e => {
           return e.files?.[0]?.type;
         }),
-      ).toBe('text/plain');
-      expect(
+        'text/plain',
+      );
+      assert.deepEqual(
         await page.evaluate(() => {
           return (globalThis as any)._inputEvents;
         }),
-      ).toEqual(['input', 'change']);
+        ['input', 'change'],
+      );
     });
 
     it('should read the file', async () => {
@@ -74,7 +77,7 @@ describe('input tests', function () {
       const file = path.relative(process.cwd(), FILE_TO_UPLOAD);
       await input.uploadFile(file);
 
-      expect(
+      assert.strictEqual(
         await input.evaluate(e => {
           const file = e.files?.[0];
           if (!file) {
@@ -91,7 +94,8 @@ describe('input tests', function () {
             return reader.result;
           });
         }),
-      ).toBe('contents of the file');
+        'contents of the file',
+      );
     });
   });
 
@@ -104,7 +108,7 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      expect(chooser).toBeTruthy();
+      assert.ok(chooser);
     });
     it('should work when file input is not attached to DOM', async () => {
       const {page} = await getTestState();
@@ -117,7 +121,7 @@ describe('input tests', function () {
           el.click();
         }),
       ]);
-      expect(chooser).toBeTruthy();
+      assert.ok(chooser);
     });
     it('should respect timeout', async () => {
       const {page} = await getTestState();
@@ -126,7 +130,7 @@ describe('input tests', function () {
       await page.waitForFileChooser({timeout: 1}).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should respect default timeout when there is no custom timeout', async () => {
       const {page} = await getTestState();
@@ -136,7 +140,7 @@ describe('input tests', function () {
       await page.waitForFileChooser().catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should prioritize exact timeout over default timeout', async () => {
       const {page} = await getTestState();
@@ -146,7 +150,7 @@ describe('input tests', function () {
       await page.waitForFileChooser({timeout: 1}).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should work with no timeout', async () => {
       const {page} = await getTestState();
@@ -161,7 +165,7 @@ describe('input tests', function () {
           }, 50);
         }),
       ]);
-      expect(chooser).toBeTruthy();
+      assert.ok(chooser);
     });
     it('should return the same file chooser when there are many watchdogs simultaneously', async () => {
       const {page} = await getTestState();
@@ -174,7 +178,7 @@ describe('input tests', function () {
           return input.click();
         }),
       ]);
-      expect(fileChooser1 === fileChooser2).toBe(true);
+      assert.isTrue(fileChooser1 === fileChooser2);
     });
 
     it('should be able to abort', async () => {
@@ -184,7 +188,8 @@ describe('input tests', function () {
       const task = page.waitForFileChooser({signal: abortController.signal});
 
       abortController.abort();
-      await expect(task).rejects.toThrow(/aborted/);
+      const error = await assertRejects(task);
+      assert.match(error.message, /aborted/);
     });
   });
 
@@ -203,16 +208,18 @@ describe('input tests', function () {
         page.click('input'),
       ]);
       await Promise.all([chooser.accept([FILE_TO_UPLOAD])]);
-      expect(
+      assert.strictEqual(
         await page.$eval('input', input => {
           return input.files!.length;
         }),
-      ).toBe(1);
-      expect(
+        1,
+      );
+      assert.strictEqual(
         await page.$eval('input', input => {
           return input.files![0]!.name;
         }),
-      ).toBe('file-to-upload.txt');
+        'file-to-upload.txt',
+      );
     });
     it('should be able to read selected file', async () => {
       const {page} = await getTestState();
@@ -221,7 +228,7 @@ describe('input tests', function () {
       void page.waitForFileChooser().then(chooser => {
         return chooser.accept([FILE_TO_UPLOAD]);
       });
-      expect(
+      assert.strictEqual(
         await page.$eval('input', async pick => {
           pick.click();
           await new Promise(x => {
@@ -236,7 +243,8 @@ describe('input tests', function () {
             return reader.result;
           });
         }),
-      ).toBe('contents of the file');
+        'contents of the file',
+      );
     });
     it('should be able to reset selected files with empty file list', async () => {
       const {page} = await getTestState();
@@ -245,7 +253,7 @@ describe('input tests', function () {
       void page.waitForFileChooser().then(chooser => {
         return chooser.accept([FILE_TO_UPLOAD]);
       });
-      expect(
+      assert.strictEqual(
         await page.$eval('input', async pick => {
           pick.click();
           await new Promise(x => {
@@ -253,11 +261,12 @@ describe('input tests', function () {
           });
           return pick.files!.length;
         }),
-      ).toBe(1);
+        1,
+      );
       void page.waitForFileChooser().then(chooser => {
         return chooser.accept([]);
       });
-      expect(
+      assert.strictEqual(
         await page.$eval('input', async pick => {
           pick.click();
           await new Promise(x => {
@@ -265,7 +274,8 @@ describe('input tests', function () {
           });
           return pick.files!.length;
         }),
-      ).toBe(0);
+        0,
+      );
     });
     it('should not accept multiple files for single-file input', async () => {
       const {page} = await getTestState();
@@ -290,7 +300,7 @@ describe('input tests', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).not.toBe(null);
+      assert.isNotNull(error);
     });
     it('should succeed even for non-existent files', async () => {
       const {page} = await getTestState();
@@ -304,7 +314,7 @@ describe('input tests', function () {
       await chooser.accept(['file-does-not-exist.txt']).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeUndefined();
+      assert.isUndefined(error);
     });
     it('should error on read of non-existent files', async () => {
       const {page} = await getTestState();
@@ -313,7 +323,7 @@ describe('input tests', function () {
       void page.waitForFileChooser().then(chooser => {
         return chooser.accept(['file-does-not-exist.txt']);
       });
-      expect(
+      assert.notOk(
         await page.$eval('input', async pick => {
           pick.click();
           await new Promise(x => {
@@ -328,7 +338,7 @@ describe('input tests', function () {
             return false;
           });
         }),
-      ).toBeFalsy();
+      );
     });
     it('should fail when accepting file chooser twice', async () => {
       const {page} = await getTestState();
@@ -345,7 +355,8 @@ describe('input tests', function () {
       await fileChooser.accept([]).catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toBe(
+      assert.strictEqual(
+        error.message,
         'Cannot accept FileChooser which is already handled!',
       );
     });
@@ -393,7 +404,8 @@ describe('input tests', function () {
         error = error_ as Error;
       }
 
-      expect(error.message).toBe(
+      assert.strictEqual(
+        error.message,
         'Cannot cancel FileChooser which is already handled!',
       );
     });
@@ -408,7 +420,7 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      expect(chooser.isMultiple()).toBe(false);
+      assert.isFalse(chooser.isMultiple());
     });
     it('should work for "multiple"', async () => {
       const {page} = await getTestState();
@@ -423,7 +435,7 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      expect(chooser.isMultiple()).toBe(true);
+      assert.isTrue(chooser.isMultiple());
     });
     it('should work for "webkitdirectory"', async () => {
       const {page} = await getTestState();
@@ -439,7 +451,7 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      expect(chooser.isMultiple()).toBe(true);
+      assert.isTrue(chooser.isMultiple());
     });
   });
 });

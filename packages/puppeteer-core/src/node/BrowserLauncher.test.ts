@@ -9,7 +9,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {registerProcessExitCleanup} from './BrowserLauncher.js';
 
@@ -51,7 +51,7 @@ describe('registerProcessExitCleanup', () => {
     registerProcessExitCleanup(userDataDir, logger, processEmitter);
     processEmitter.emit('exit');
 
-    expect(existsSync(userDataDir)).toBe(false);
+    assert.isFalse(existsSync(userDataDir));
   });
 
   it('can unregister cleanup after the browser process exits', () => {
@@ -68,7 +68,7 @@ describe('registerProcessExitCleanup', () => {
     unregister();
     processEmitter.emit('exit');
 
-    expect(existsSync(userDataDir)).toBe(true);
+    assert.isTrue(existsSync(userDataDir));
     rmSync(userDataDir, {recursive: true, force: true});
   });
 
@@ -83,11 +83,11 @@ describe('registerProcessExitCleanup', () => {
 
     registerProcessExitCleanup(firstDir, logger, processEmitter);
     registerProcessExitCleanup(secondDir, logger, processEmitter);
-    expect(processEmitter.listenerCount).toBe(1);
+    assert.strictEqual(processEmitter.listenerCount, 1);
 
     processEmitter.emit('exit');
 
-    expect(existsSync(firstDir)).toBe(false);
-    expect(existsSync(secondDir)).toBe(false);
+    assert.isFalse(existsSync(firstDir));
+    assert.isFalse(existsSync(secondDir));
   });
 });

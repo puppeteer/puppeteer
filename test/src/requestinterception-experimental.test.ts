@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {
   type ActionResult,
   type HTTPRequest,
@@ -16,7 +16,7 @@ import {
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {html, isFavicon, waitEvent} from './utils.js';
+import {assertGolden, html, isFavicon, waitEvent} from './utils.js';
 
 describe('cooperative request interception', function () {
   setupTestBrowserHooks();
@@ -83,9 +83,9 @@ describe('cooperative request interception', function () {
           }
         })())!;
 
-        expect(actionResults).toHaveLength(1);
-        expect(actionResults[0]).toBe(expectedAction);
-        expect(response!.ok()).toBe(true);
+        assert.lengthOf(actionResults, 1);
+        assert.strictEqual(actionResults[0], expectedAction);
+        assert.isTrue(response!.ok());
       });
     }
 
@@ -100,13 +100,13 @@ describe('cooperative request interception', function () {
           return;
         }
         try {
-          expect(request).toBeTruthy();
-          expect(request.url()).toContain('empty.html');
-          expect(request.headers()['user-agent']).toBeTruthy();
-          expect(request.method()).toBe('GET');
-          expect(request.isNavigationRequest()).toBe(true);
-          expect(request.frame() === page.mainFrame()).toBe(true);
-          expect(request.frame()!.url()).toBe('about:blank');
+          assert.ok(request);
+          assert.include(request.url(), 'empty.html');
+          assert.ok(request.headers()['user-agent']);
+          assert.strictEqual(request.method(), 'GET');
+          assert.isTrue(request.isNavigationRequest());
+          assert.isTrue(request.frame() === page.mainFrame());
+          assert.strictEqual(request.frame()!.url(), 'about:blank');
         } catch (error) {
           requestError = error;
         } finally {
@@ -119,7 +119,7 @@ describe('cooperative request interception', function () {
         throw requestError;
       }
 
-      expect(response.ok()).toBe(true);
+      assert.isTrue(response.ok());
     });
     // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {
@@ -164,7 +164,7 @@ describe('cooperative request interception', function () {
         });
         void request.continue({headers}, 0);
         try {
-          expect(request.continueRequestOverrides()).toEqual({headers});
+          assert.deepEqual(request.continueRequestOverrides(), {headers});
         } catch (error) {
           requestError = error;
         }
@@ -194,7 +194,7 @@ describe('cooperative request interception', function () {
         page.goto(server.PREFIX + '/empty.html'),
       ]);
 
-      expect(serverRequest.headers.accept).toBe(undefined);
+      assert.isUndefined(serverRequest.headers.accept);
     });
     it('should contain referer header', async () => {
       const {page, server} = await getTestState();
@@ -208,8 +208,8 @@ describe('cooperative request interception', function () {
         }
       });
       await page.goto(server.PREFIX + '/one-style.html');
-      expect(requests[1]!.url()).toContain('/one-style.css');
-      expect(requests[1]!.headers()['referer']).toContain('/one-style.html');
+      assert.include(requests[1]!.url(), '/one-style.css');
+      assert.include(requests[1]!.headers()['referer'], '/one-style.html');
     });
     it('should properly return navigation response when URL has cookies', async () => {
       const {page, server} = await getTestState();
@@ -224,7 +224,7 @@ describe('cooperative request interception', function () {
         return request.continue({}, 0);
       });
       const response = await page.reload();
-      expect(response!.status()).toBe(200);
+      assert.strictEqual(response!.status(), 200);
     });
     it('should stop intercepting', async () => {
       const {page, server} = await getTestState();
@@ -247,7 +247,7 @@ describe('cooperative request interception', function () {
       let requestError;
       page.on('request', request => {
         try {
-          expect(request.headers()['foo']).toBe('bar');
+          assert.strictEqual(request.headers()['foo'], 'bar');
         } catch (error) {
           requestError = error;
         } finally {
@@ -258,7 +258,7 @@ describe('cooperative request interception', function () {
       if (requestError) {
         throw requestError;
       }
-      expect(response!.ok()).toBe(true);
+      assert.isTrue(response!.ok());
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4337
     it('should work with redirect inside sync XHR', async () => {
@@ -276,7 +276,7 @@ describe('cooperative request interception', function () {
         request.send(null);
         return request.status;
       });
-      expect(status).toBe(200);
+      assert.strictEqual(status, 200);
     });
     it('should work with custom referer headers', async () => {
       const {page, server} = await getTestState();
@@ -286,7 +286,7 @@ describe('cooperative request interception', function () {
       let requestError;
       page.on('request', request => {
         try {
-          expect(request.headers()['referer']).toBe(server.EMPTY_PAGE);
+          assert.strictEqual(request.headers()['referer'], server.EMPTY_PAGE);
         } catch (error) {
           requestError = error;
         } finally {
@@ -297,7 +297,7 @@ describe('cooperative request interception', function () {
       if (requestError) {
         throw requestError;
       }
-      expect(response!.ok()).toBe(true);
+      assert.isTrue(response!.ok());
     });
     it('should be abortable', async () => {
       const {page, server} = await getTestState();
@@ -315,9 +315,9 @@ describe('cooperative request interception', function () {
         return ++failedRequests;
       });
       const response = await page.goto(server.PREFIX + '/one-style.html');
-      expect(response!.ok()).toBe(true);
-      expect(response!.request().failure()).toBe(null);
-      expect(failedRequests).toBe(1);
+      assert.isTrue(response!.ok());
+      assert.isNull(response!.request().failure());
+      assert.strictEqual(failedRequests, 1);
     });
     it('should be able to access the error reason', async () => {
       const {page, server} = await getTestState();
@@ -332,7 +332,7 @@ describe('cooperative request interception', function () {
         void request.continue({}, 0);
       });
       await page.goto(server.EMPTY_PAGE).catch(() => {});
-      expect(abortReason).toBe('Failed');
+      assert.strictEqual(abortReason, 'Failed');
     });
     it('should be abortable with custom error codes', async () => {
       const {page, server} = await getTestState();
@@ -346,8 +346,9 @@ describe('cooperative request interception', function () {
         waitEvent<HTTPRequest>(page, 'requestfailed'),
         page.goto(server.EMPTY_PAGE).catch(() => {}),
       ]);
-      expect(failedRequest).toBeTruthy();
-      expect(failedRequest.failure()!.errorText).toBe(
+      assert.ok(failedRequest);
+      assert.strictEqual(
+        failedRequest.failure()!.errorText,
         'net::ERR_INTERNET_DISCONNECTED',
       );
     });
@@ -365,7 +366,7 @@ describe('cooperative request interception', function () {
         server.waitForRequest('/grid.html'),
         page.goto(server.PREFIX + '/grid.html'),
       ]);
-      expect(request.headers['referer']).toBe('http://google.com/');
+      assert.strictEqual(request.headers['referer'], 'http://google.com/');
     });
     it('should fail navigation when aborting main resource', async () => {
       const {page, server, isChrome} = await getTestState();
@@ -378,11 +379,11 @@ describe('cooperative request interception', function () {
       await page.goto(server.EMPTY_PAGE).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeTruthy();
+      assert.ok(error);
       if (isChrome) {
-        expect(error.message).toContain('net::ERR_FAILED');
+        assert.include(error.message, 'net::ERR_FAILED');
       } else {
-        expect(error.message).toContain('NS_ERROR_ABORT');
+        assert.include(error.message, 'NS_ERROR_ABORT');
       }
     });
     it('should work with redirects', async () => {
@@ -412,18 +413,18 @@ describe('cooperative request interception', function () {
       const response = await page.goto(
         server.PREFIX + '/non-existing-page.html',
       );
-      expect(response!.status()).toBe(200);
-      expect(response!.url()).toContain('empty.html');
-      expect(requests).toHaveLength(5);
+      assert.strictEqual(response!.status(), 200);
+      assert.include(response!.url(), 'empty.html');
+      assert.lengthOf(requests, 5);
       // Check redirect chain
       const redirectChain = response!.request().redirectChain();
-      expect(redirectChain).toHaveLength(4);
-      expect(redirectChain[0]!.url()).toContain('/non-existing-page.html');
-      expect(redirectChain[2]!.url()).toContain('/non-existing-page-3.html');
+      assert.lengthOf(redirectChain, 4);
+      assert.include(redirectChain[0]!.url(), '/non-existing-page.html');
+      assert.include(redirectChain[2]!.url(), '/non-existing-page-3.html');
       for (let i = 0; i < redirectChain.length; ++i) {
         const request = redirectChain[i]!;
-        expect(request.isNavigationRequest()).toBe(true);
-        expect(request.redirectChain().indexOf(request)).toBe(i);
+        assert.isTrue(request.isNavigationRequest());
+        assert.strictEqual(request.redirectChain().indexOf(request), i);
       }
     });
     it('should work with redirects for subresources', async () => {
@@ -445,14 +446,14 @@ describe('cooperative request interception', function () {
       });
 
       const response = await page.goto(server.PREFIX + '/one-style.html');
-      expect(response!.status()).toBe(200);
-      expect(response!.url()).toContain('one-style.html');
-      expect(requests).toHaveLength(5);
+      assert.strictEqual(response!.status(), 200);
+      assert.include(response!.url(), 'one-style.html');
+      assert.lengthOf(requests, 5);
       // Check redirect chain
       const redirectChain = requests[1]!.redirectChain();
-      expect(redirectChain).toHaveLength(3);
-      expect(redirectChain[0]!.url()).toContain('/one-style.css');
-      expect(redirectChain[2]!.url()).toContain('/three-style.css');
+      assert.lengthOf(redirectChain, 3);
+      assert.include(redirectChain[0]!.url(), '/one-style.css');
+      assert.include(redirectChain[2]!.url(), '/three-style.css');
     });
     it('should be able to abort redirects', async () => {
       const {page, server, isChrome} = await getTestState();
@@ -476,9 +477,9 @@ describe('cooperative request interception', function () {
         }
       });
       if (isChrome) {
-        expect(result).toContain('Failed to fetch');
+        assert.include(result, 'Failed to fetch');
       } else {
-        expect(result).toContain('NetworkError');
+        assert.include(result, 'NetworkError');
       }
     });
     it('should work with equal requests', async () => {
@@ -526,7 +527,7 @@ describe('cooperative request interception', function () {
             }),
         ]);
       });
-      expect(results).toEqual(['11', 'FAILED', '22']);
+      assert.deepEqual(results, ['11', 'FAILED', '22']);
     });
     it('should navigate to dataURL and fire dataURL requests', async () => {
       const {page} = await getTestState();
@@ -541,9 +542,9 @@ describe('cooperative request interception', function () {
       });
       const dataURL = 'data:text/html,<div>yo</div>';
       const response = await page.goto(dataURL);
-      expect(response!.status()).toBe(200);
-      expect(requests).toHaveLength(1);
-      expect(requests[0]!.url()).toBe(dataURL);
+      assert.strictEqual(response!.status(), 200);
+      assert.lengthOf(requests, 1);
+      assert.strictEqual(requests[0]!.url(), dataURL);
     });
     it('should be able to fetch dataURL and fire dataURL requests', async () => {
       const {page, server} = await getTestState();
@@ -563,9 +564,9 @@ describe('cooperative request interception', function () {
           return r.text();
         });
       }, dataURL);
-      expect(text).toBe('<div>yo</div>');
-      expect(requests).toHaveLength(1);
-      expect(requests[0]!.url()).toBe(dataURL);
+      assert.strictEqual(text, '<div>yo</div>');
+      assert.lengthOf(requests, 1);
+      assert.strictEqual(requests[0]!.url(), dataURL);
     });
     it('should navigate to URL with hash and fire requests without hash', async () => {
       const {page, server} = await getTestState();
@@ -579,10 +580,10 @@ describe('cooperative request interception', function () {
         void request.continue({}, 0);
       });
       const response = await page.goto(server.EMPTY_PAGE + '#hash');
-      expect(response!.status()).toBe(200);
-      expect(response!.url()).toBe(server.EMPTY_PAGE + '#hash');
-      expect(requests).toHaveLength(1);
-      expect(requests[0]!.url()).toBe(server.EMPTY_PAGE + '#hash');
+      assert.strictEqual(response!.status(), 200);
+      assert.strictEqual(response!.url(), server.EMPTY_PAGE + '#hash');
+      assert.lengthOf(requests, 1);
+      assert.strictEqual(requests[0]!.url(), server.EMPTY_PAGE + '#hash');
     });
     it('should work with encoded server', async () => {
       const {page, server} = await getTestState();
@@ -596,7 +597,7 @@ describe('cooperative request interception', function () {
       const response = await page.goto(
         server.PREFIX + '/some nonexisting page',
       );
-      expect(response!.status()).toBe(404);
+      assert.strictEqual(response!.status(), 404);
     });
     it('should work with badly encoded server', async () => {
       const {page, server} = await getTestState();
@@ -609,7 +610,7 @@ describe('cooperative request interception', function () {
         return request.continue({}, 0);
       });
       const response = await page.goto(server.PREFIX + '/malformed?rnd=%911');
-      expect(response!.status()).toBe(200);
+      assert.strictEqual(response!.status(), 200);
     });
     it('should work with missing stylesheets', async () => {
       const {page, server} = await getTestState();
@@ -625,9 +626,9 @@ describe('cooperative request interception', function () {
         }
       });
       const response = (await page.goto(server.PREFIX + '/style-404.html'))!;
-      expect(response.status()).toBe(200);
-      expect(requests).toHaveLength(2);
-      expect(requests[1]!.response()!.status()).toBe(404);
+      assert.strictEqual(response.status(), 200);
+      assert.lengthOf(requests, 2);
+      assert.strictEqual(requests[1]!.response()!.status(), 404);
     });
     it('should not throw "Invalid Interception Id" if the request was cancelled', async () => {
       const {page, server} = await getTestState();
@@ -655,7 +656,7 @@ describe('cooperative request interception', function () {
       await request.continue({}, 0).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeUndefined();
+      assert.isUndefined(error);
     });
     it('should throw if interception is not enabled', async () => {
       const {page, server} = await getTestState();
@@ -669,7 +670,7 @@ describe('cooperative request interception', function () {
         }
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(error.message).toContain('Request Interception is not enabled');
+      assert.include(error.message, 'Request Interception is not enabled');
     });
     it('should work with file URLs', async () => {
       const {page} = await getTestState();
@@ -685,9 +686,9 @@ describe('cooperative request interception', function () {
           path.join(import.meta.dirname, '../assets', 'one-style.html'),
         ),
       );
-      expect(urls.size).toBe(2);
-      expect(urls.has('one-style.html')).toBe(true);
-      expect(urls.has('one-style.css')).toBe(true);
+      assert.strictEqual(urls.size, 2);
+      assert.isTrue(urls.has('one-style.html'));
+      assert.isTrue(urls.has('one-style.css'));
     });
     for (const {resourceType, url} of [
       {url: '/cached/one-style.html', resourceType: 'stylesheet'},
@@ -711,7 +712,7 @@ describe('cooperative request interception', function () {
         });
 
         await page.reload();
-        expect(cached).toHaveLength(0);
+        assert.lengthOf(cached, 0);
       });
       it(`should cache ${resourceType} if cache enabled`, async () => {
         const {page, server} = await getTestState();
@@ -731,7 +732,7 @@ describe('cooperative request interception', function () {
         });
 
         await page.reload();
-        expect(cached).toHaveLength(1);
+        assert.lengthOf(cached, 1);
       });
     }
     it('should load fonts if cache enabled', async () => {
@@ -777,7 +778,7 @@ describe('cooperative request interception', function () {
           return fetch('/sleep.zzz');
         }),
       ]);
-      expect(request.headers['foo']).toBe('bar');
+      assert.strictEqual(request.headers['foo'], 'bar');
     });
     it('should redirect in a way non-observable to page', async () => {
       const {page, server} = await getTestState();
@@ -794,8 +795,8 @@ describe('cooperative request interception', function () {
         waitEvent<ConsoleMessage>(page, 'console'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(page.url()).toBe(server.EMPTY_PAGE);
-      expect(consoleMessage.text()).toBe('yellow');
+      assert.strictEqual(page.url(), server.EMPTY_PAGE);
+      assert.strictEqual(consoleMessage.text(), 'yellow');
     });
     it('should amend method', async () => {
       const {page, server} = await getTestState();
@@ -812,7 +813,7 @@ describe('cooperative request interception', function () {
           return fetch('/sleep.zzz');
         }),
       ]);
-      expect(request.method).toBe('POST');
+      assert.strictEqual(request.method, 'POST');
     });
     it('should amend post data', async () => {
       const {page, server} = await getTestState();
@@ -829,7 +830,7 @@ describe('cooperative request interception', function () {
           return fetch('/sleep.zzz', {method: 'POST', body: 'birdy'});
         }),
       ]);
-      expect(await serverRequest.postBody).toBe('doggo');
+      assert.strictEqual(await serverRequest.postBody, 'doggo');
     });
     it('should amend both post data and method on navigation', async () => {
       const {page, server} = await getTestState();
@@ -842,8 +843,8 @@ describe('cooperative request interception', function () {
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(serverRequest.method).toBe('POST');
-      expect(await serverRequest.postBody).toBe('doggo');
+      assert.strictEqual(serverRequest.method, 'POST');
+      assert.strictEqual(await serverRequest.postBody, 'doggo');
     });
   });
 
@@ -865,13 +866,14 @@ describe('cooperative request interception', function () {
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response!.status()).toBe(201);
-      expect(response!.headers()['foo']).toBe('bar');
-      expect(
+      assert.strictEqual(response!.status(), 201);
+      assert.strictEqual(response!.headers()['foo'], 'bar');
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.body.textContent;
         }),
-      ).toBe('Yo, page!');
+        'Yo, page!',
+      );
     });
     it('should be able to access the response', async () => {
       const {page, server} = await getTestState();
@@ -892,7 +894,7 @@ describe('cooperative request interception', function () {
         void request.continue({}, 0);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(response).toEqual({status: 200, body: 'Yo, page!'});
+      assert.deepEqual(response, {status: 200, body: 'Yo, page!'});
     });
     it('should work with status code 422', async () => {
       const {page, server} = await getTestState();
@@ -908,13 +910,14 @@ describe('cooperative request interception', function () {
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response!.status()).toBe(422);
-      expect(response!.statusText()).toBe('Unprocessable Entity');
-      expect(
+      assert.strictEqual(response!.status(), 422);
+      assert.strictEqual(response!.statusText(), 'Unprocessable Entity');
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.body.textContent;
         }),
-      ).toBe('Yo, page!');
+        'Yo, page!',
+      );
     });
     it('should redirect', async () => {
       const {page, server} = await getTestState();
@@ -936,11 +939,12 @@ describe('cooperative request interception', function () {
         );
       });
       const response = await page.goto(server.PREFIX + '/rrredirect');
-      expect(response!.request().redirectChain()).toHaveLength(1);
-      expect(response!.request().redirectChain()[0]!.url()).toBe(
+      assert.lengthOf(response!.request().redirectChain(), 1);
+      assert.strictEqual(
+        response!.request().redirectChain()[0]!.url(),
         server.PREFIX + '/rrredirect',
       );
-      expect(response!.url()).toBe(server.EMPTY_PAGE);
+      assert.strictEqual(response!.url(), server.EMPTY_PAGE);
     });
     it('should allow mocking binary responses', async () => {
       const {page, server} = await getTestState();
@@ -967,7 +971,7 @@ describe('cooperative request interception', function () {
         });
       }, server.PREFIX);
       using img = (await page.$('img'))!;
-      expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
+      assertGolden(await img.screenshot(), 'mock-binary-response.png');
     });
     it('should stringify intercepted request response headers', async () => {
       const {page, server} = await getTestState();
@@ -986,14 +990,15 @@ describe('cooperative request interception', function () {
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response!.status()).toBe(200);
+      assert.strictEqual(response!.status(), 200);
       const headers = response!.headers();
-      expect(headers['foo']).toBe('true');
-      expect(
+      assert.strictEqual(headers['foo'], 'true');
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.body.textContent;
         }),
-      ).toBe('Yo, page!');
+        'Yo, page!',
+      );
     });
     it('should indicate already-handled if an intercept has been handled', async () => {
       const {page, server} = await getTestState();
@@ -1005,7 +1010,7 @@ describe('cooperative request interception', function () {
       let requestError;
       page.on('request', request => {
         try {
-          expect(request.isInterceptResolutionHandled()).toBeTruthy();
+          assert.ok(request.isInterceptResolutionHandled());
         } catch (error) {
           requestError = error;
         }
@@ -1013,7 +1018,7 @@ describe('cooperative request interception', function () {
       page.on('request', request => {
         const {action} = request.interceptResolutionState();
         try {
-          expect(action).toBe(InterceptResolutionAction.AlreadyHandled);
+          assert.strictEqual(action, InterceptResolutionAction.AlreadyHandled);
         } catch (error) {
           requestError = error;
         }
@@ -1035,7 +1040,7 @@ describe('cooperative request interception', function () {
       });
       const response = await page.goto(server.EMPTY_PAGE);
       const request = response!.request();
-      expect(request.resourceType()).toBe('document');
+      assert.strictEqual(request.resourceType(), 'document');
     });
 
     it('should work for stylesheets', async () => {
@@ -1050,10 +1055,10 @@ describe('cooperative request interception', function () {
         void request.continue({}, 0);
       });
       await page.goto(server.PREFIX + '/one-style.html');
-      expect(cssRequests).toHaveLength(1);
+      assert.lengthOf(cssRequests, 1);
       const request = cssRequests[0]!;
-      expect(request.url()).toContain('one-style.css');
-      expect(request.resourceType()).toBe('stylesheet');
+      assert.include(request.url(), 'one-style.css');
+      assert.strictEqual(request.resourceType(), 'stylesheet');
     });
   });
 });

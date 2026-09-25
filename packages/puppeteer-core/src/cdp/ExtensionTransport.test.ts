@@ -6,7 +6,7 @@
 
 import {afterEach, describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {ExtensionTransport} from './ExtensionTransport.js';
@@ -79,16 +79,16 @@ describe('ExtensionTransport', function () {
     it('should attach using tabId', async () => {
       const {fakeAttach, onEvent} = mockChrome();
       const transport = await ExtensionTransport.connectTab(1);
-      expect(transport).toBeInstanceOf(ExtensionTransport);
-      expect(fakeAttach.calledOnceWith({tabId: 1}, '1.3')).toBeTruthy();
-      expect(onEvent).toHaveLength(1);
+      assert.instanceOf(transport, ExtensionTransport);
+      assert.ok(fakeAttach.calledOnceWith({tabId: 1}, '1.3'));
+      assert.lengthOf(onEvent, 1);
     });
 
     it('should detach', async () => {
       const {onEvent} = mockChrome();
       const transport = await ExtensionTransport.connectTab(1);
       transport.close();
-      expect(onEvent).toHaveLength(0);
+      assert.lengthOf(onEvent, 0);
     });
   });
 
@@ -103,70 +103,75 @@ describe('ExtensionTransport', function () {
       await new Promise(resolve => {
         return setTimeout(resolve, 0);
       });
-      expect(fakeSendCommand.notCalled).toBeTruthy();
+      assert.ok(fakeSendCommand.notCalled);
       return onmessageFake.getCalls().map(call => {
         return call.args[0];
       });
     }
 
     it('provides a dummy response to Browser.getVersion', async () => {
-      expect(
+      assert.deepEqual(
         await testTranportResponse({
           id: 1,
           method: 'Browser.getVersion',
         }),
-      ).toStrictEqual([
-        '{"id":1,"method":"Browser.getVersion","result":{"protocolVersion":"1.3","product":"chrome","revision":"unknown","userAgent":"chrome","jsVersion":"unknown"}}',
-      ]);
+        [
+          '{"id":1,"method":"Browser.getVersion","result":{"protocolVersion":"1.3","product":"chrome","revision":"unknown","userAgent":"chrome","jsVersion":"unknown"}}',
+        ],
+      );
     });
 
     it('provides a dummy response to Target.getBrowserContexts', async () => {
-      expect(
+      assert.deepEqual(
         await testTranportResponse({
           id: 1,
           method: 'Target.getBrowserContexts',
         }),
-      ).toStrictEqual([
-        '{"id":1,"method":"Target.getBrowserContexts","result":{"browserContextIds":[]}}',
-      ]);
+        [
+          '{"id":1,"method":"Target.getBrowserContexts","result":{"browserContextIds":[]}}',
+        ],
+      );
     });
 
     it('provides a dummy response and events to Target.setDiscoverTargets', async () => {
-      expect(
+      assert.deepEqual(
         await testTranportResponse({
           id: 1,
           method: 'Target.setDiscoverTargets',
         }),
-      ).toStrictEqual([
-        '{"method":"Target.targetCreated","params":{"targetInfo":{"targetId":"tabTargetId","type":"tab","title":"tab","url":"about:blank","attached":false,"canAccessOpener":false}}}',
-        '{"method":"Target.targetCreated","params":{"targetInfo":{"targetId":"pageTargetId","type":"page","title":"page","url":"about:blank","attached":false,"canAccessOpener":false}}}',
-        '{"id":1,"method":"Target.setDiscoverTargets","result":{}}',
-      ]);
+        [
+          '{"method":"Target.targetCreated","params":{"targetInfo":{"targetId":"tabTargetId","type":"tab","title":"tab","url":"about:blank","attached":false,"canAccessOpener":false}}}',
+          '{"method":"Target.targetCreated","params":{"targetInfo":{"targetId":"pageTargetId","type":"page","title":"page","url":"about:blank","attached":false,"canAccessOpener":false}}}',
+          '{"id":1,"method":"Target.setDiscoverTargets","result":{}}',
+        ],
+      );
     });
 
     it('attaches to a dummy tab target on Target.setAutoAttach', async () => {
-      expect(
+      assert.deepEqual(
         await testTranportResponse({
           id: 1,
           method: 'Target.setAutoAttach',
         }),
-      ).toStrictEqual([
-        '{"method":"Target.attachedToTarget","params":{"targetInfo":{"targetId":"tabTargetId","type":"tab","title":"tab","url":"about:blank","attached":false,"canAccessOpener":false},"sessionId":"tabTargetSessionId"}}',
-        '{"id":1,"method":"Target.setAutoAttach","result":{}}',
-      ]);
+        [
+          '{"method":"Target.attachedToTarget","params":{"targetInfo":{"targetId":"tabTargetId","type":"tab","title":"tab","url":"about:blank","attached":false,"canAccessOpener":false},"sessionId":"tabTargetSessionId"}}',
+          '{"id":1,"method":"Target.setAutoAttach","result":{}}',
+        ],
+      );
     });
 
     it('attaches to a dummy page target on Target.setAutoAttach', async () => {
-      expect(
+      assert.deepEqual(
         await testTranportResponse({
           id: 1,
           method: 'Target.setAutoAttach',
           sessionId: 'tabTargetSessionId',
         }),
-      ).toStrictEqual([
-        '{"method":"Target.attachedToTarget","sessionId":"tabTargetSessionId","params":{"targetInfo":{"targetId":"pageTargetId","type":"page","title":"page","url":"about:blank","attached":false,"canAccessOpener":false},"sessionId":"pageTargetSessionId"}}',
-        '{"id":1,"sessionId":"tabTargetSessionId","method":"Target.setAutoAttach","result":{}}',
-      ]);
+        [
+          '{"method":"Target.attachedToTarget","sessionId":"tabTargetSessionId","params":{"targetInfo":{"targetId":"pageTargetId","type":"page","title":"page","url":"about:blank","attached":false,"canAccessOpener":false},"sessionId":"pageTargetSessionId"}}',
+          '{"id":1,"sessionId":"tabTargetSessionId","method":"Target.setAutoAttach","result":{}}',
+        ],
+      );
     });
 
     it('rewrites session id for pageTargetSessionId commands', async () => {
@@ -180,8 +185,8 @@ describe('ExtensionTransport', function () {
           sessionId: 'pageTargetSessionId',
         }),
       );
-      expect(fakeSendCommand.calledOnce).toBeTruthy();
-      expect(fakeSendCommand.lastCall.args).toStrictEqual([
+      assert.ok(fakeSendCommand.calledOnce);
+      assert.deepEqual<unknown>(fakeSendCommand.lastCall.args, [
         {
           tabId: 1,
           sessionId: undefined,
@@ -220,7 +225,7 @@ describe('ExtensionTransport', function () {
       await new Promise(resolve => {
         return setTimeout(resolve, 0);
       });
-      expect(onmessageFake.args).toStrictEqual([
+      assert.deepEqual(onmessageFake.args, [
         [
           '{"id":1,"sessionId":"testSessionId","method":"Runtime.evaluate","error":{"code":-999,"message":"test error"}}',
         ],

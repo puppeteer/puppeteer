@@ -6,7 +6,7 @@
 
 import {readFile, unlink} from 'node:fs/promises';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 
@@ -27,7 +27,7 @@ describe('Page.pdf', () => {
         readFile(outputFile),
         readFile(outputFileAccessible),
       ]);
-      expect(tagged.byteLength).toBeGreaterThan(base.byteLength);
+      assert.isAbove(tagged.byteLength, base.byteLength);
     } finally {
       await Promise.all([unlink(outputFile), unlink(outputFileAccessible)]);
     }
@@ -48,7 +48,7 @@ describe('Page.pdf', () => {
         readFile(outputFileOutlined),
       ]);
 
-      expect(outlined.byteLength).toBeGreaterThan(base.byteLength);
+      assert.isAbove(outlined.byteLength, base.byteLength);
     } finally {
       await Promise.all([unlink(outputFile), unlink(outputFileOutlined)]);
     }

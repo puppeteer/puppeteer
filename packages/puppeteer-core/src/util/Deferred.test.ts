@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {Deferred} from './Deferred.js';
@@ -34,10 +34,10 @@ describe('DeferredPromise', function () {
     try {
       await expectedToFail.valueOrThrow();
     } catch (err) {
-      expect((err as Error).message).toEqual('test');
+      assert.strictEqual((err as Error).message, 'test');
       caught = true;
     }
-    expect(caught).toBeTruthy();
+    assert.ok(caught);
   });
 
   it('Deferred.race should cancel timeout', async function () {
@@ -59,8 +59,8 @@ describe('DeferredPromise', function () {
 
       clock.tick(150);
 
-      expect(deferredTimeout.value()).toBeInstanceOf(Error);
-      expect(deferredTimeout.value()?.message).toContain('Timeout cleared');
+      assert.instanceOf(deferredTimeout.value(), Error);
+      assert.include(deferredTimeout.value()?.message, 'Timeout cleared');
     } finally {
       clock.restore();
     }

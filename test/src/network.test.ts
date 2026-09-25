@@ -8,12 +8,12 @@ import fs from 'node:fs';
 import type {ServerResponse} from 'node:http';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, isFavicon, waitEvent} from './utils.js';
+import {assertRejects, attachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('network', function () {
   setupTestBrowserHooks();
@@ -27,7 +27,7 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests).toHaveLength(1);
+      assert.lengthOf(requests, 1);
     });
     it('should fire for iframes', async () => {
       const {page, server} = await getTestState();
@@ -38,7 +38,7 @@ describe('network', function () {
       });
       await page.goto(server.EMPTY_PAGE);
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(requests).toHaveLength(2);
+      assert.lengthOf(requests, 2);
     });
     it('should fire for fetches', async () => {
       const {page, server} = await getTestState();
@@ -51,7 +51,7 @@ describe('network', function () {
       await page.evaluate(() => {
         return fetch('/empty.html');
       });
-      expect(requests).toHaveLength(2);
+      assert.lengthOf(requests, 2);
     });
   });
   describe('Request.frame', function () {
@@ -63,8 +63,8 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests).toHaveLength(1);
-      expect(requests[0]!.frame()).toBe(page.mainFrame());
+      assert.lengthOf(requests, 1);
+      assert.strictEqual(requests[0]!.frame(), page.mainFrame());
     });
     it('should work for subframe navigation request', async () => {
       const {page, server} = await getTestState();
@@ -75,8 +75,8 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(requests).toHaveLength(1);
-      expect(requests[0]!.frame()).toBe(page.frames()[1]);
+      assert.lengthOf(requests, 1);
+      assert.strictEqual(requests[0]!.frame(), page.frames()[1]);
     });
     it('should work for fetch requests', async () => {
       const {page, server} = await getTestState();
@@ -92,8 +92,8 @@ describe('network', function () {
       requests = requests.filter(request => {
         return !request.url().includes('favicon');
       });
-      expect(requests).toHaveLength(1);
-      expect(requests[0]!.frame()).toBe(page.mainFrame());
+      assert.lengthOf(requests, 1);
+      assert.strictEqual(requests[0]!.frame(), page.mainFrame());
     });
   });
 
@@ -104,9 +104,9 @@ describe('network', function () {
       const userAgent = response.request().headers()['user-agent'];
 
       if (isChrome) {
-        expect(userAgent).toContain('Chrome');
+        assert.include(userAgent, 'Chrome');
       } else {
-        expect(userAgent).toContain('Firefox');
+        assert.include(userAgent, 'Firefox');
       }
     });
 
@@ -123,7 +123,7 @@ describe('network', function () {
 
         const cookie = response.request().headers()['cookie'];
 
-        expect(cookie).toContain('username=John Doe');
+        assert.include(cookie, 'username=John Doe');
       });
 
       it('should show Cookie header for redirect', async () => {
@@ -138,10 +138,10 @@ describe('network', function () {
         const cookie1 = response.request().redirectChain()[0]!.headers()[
           'cookie'
         ];
-        expect(cookie1).toContain('username=John Doe');
+        assert.include(cookie1, 'username=John Doe');
 
         const cookie2 = response.request().headers()['cookie'];
-        expect(cookie2).toContain('username=John Doe');
+        assert.include(cookie2, 'username=John Doe');
       });
 
       it('should show Cookie header for fetch request', async () => {
@@ -161,7 +161,7 @@ describe('network', function () {
         ]);
 
         const cookie = response.request().headers()['cookie'];
-        expect(cookie).toContain('username=John Doe');
+        assert.include(cookie, 'username=John Doe');
       });
     });
   });
@@ -175,7 +175,7 @@ describe('network', function () {
         res.end();
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.headers()['foo']).toBe('bar');
+      assert.strictEqual(response.headers()['foo'], 'bar');
     });
   });
 
@@ -192,33 +192,40 @@ describe('network', function () {
       });
       await page.goto(server.PREFIX + '/initiator.html');
 
-      expect(initiators.get('initiator.html').type).toBe('other');
-      expect(initiators.get('initiator.js').type).toBe('parser');
-      expect(initiators.get('initiator.js').url).toBe(
+      assert.strictEqual(initiators.get('initiator.html').type, 'other');
+      assert.strictEqual(initiators.get('initiator.js').type, 'parser');
+      assert.strictEqual(
+        initiators.get('initiator.js').url,
         server.PREFIX + '/initiator.html',
       );
-      expect(initiators.get('frame.html').type).toBe('parser');
-      expect(initiators.get('frame.html').url).toBe(
+      assert.strictEqual(initiators.get('frame.html').type, 'parser');
+      assert.strictEqual(
+        initiators.get('frame.html').url,
         server.PREFIX + '/initiator.html',
       );
-      expect(initiators.get('script.js').type).toBe('parser');
-      expect(initiators.get('script.js').url).toBe(
+      assert.strictEqual(initiators.get('script.js').type, 'parser');
+      assert.strictEqual(
+        initiators.get('script.js').url,
         server.PREFIX + '/frames/frame.html',
       );
-      expect(initiators.get('style.css').type).toBe('parser');
-      expect(initiators.get('style.css').url).toBe(
+      assert.strictEqual(initiators.get('style.css').type, 'parser');
+      assert.strictEqual(
+        initiators.get('style.css').url,
         server.PREFIX + '/frames/frame.html',
       );
-      expect(initiators.get('initiator.js').type).toBe('parser');
-      expect(initiators.get('injectedfile.js').type).toBe('script');
-      expect(initiators.get('injectedfile.js').stack.callFrames[0]!.url).toBe(
+      assert.strictEqual(initiators.get('initiator.js').type, 'parser');
+      assert.strictEqual(initiators.get('injectedfile.js').type, 'script');
+      assert.strictEqual(
+        initiators.get('injectedfile.js').stack.callFrames[0]!.url,
         server.PREFIX + '/initiator.js',
       );
-      expect(initiators.get('injectedstyle.css').type).toBe('script');
-      expect(initiators.get('injectedstyle.css').stack.callFrames[0]!.url).toBe(
+      assert.strictEqual(initiators.get('injectedstyle.css').type, 'script');
+      assert.strictEqual(
+        initiators.get('injectedstyle.css').stack.callFrames[0]!.url,
         server.PREFIX + '/initiator.js',
       );
-      expect(initiators.get('initiator.js').url).toBe(
+      assert.strictEqual(
+        initiators.get('initiator.js').url,
         server.PREFIX + '/initiator.html',
       );
     });
@@ -229,7 +236,7 @@ describe('network', function () {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.fromCache()).toBe(false);
+      assert.isFalse(response.fromCache());
     });
 
     // Run this cache test both with a stylesheet and a script.
@@ -254,11 +261,11 @@ describe('network', function () {
         await page.goto(server.PREFIX + '/cached/' + html);
         await page.reload();
 
-        expect(responses.size).toBe(2);
-        expect(responses.get(resource).status()).toBe(200);
-        expect(responses.get(resource).fromCache()).toBe(true);
-        expect(responses.get(html).status()).toBe(304);
-        expect(responses.get(html).fromCache()).toBe(false);
+        assert.strictEqual(responses.size, 2);
+        assert.strictEqual(responses.get(resource).status(), 200);
+        assert.isTrue(responses.get(resource).fromCache());
+        assert.strictEqual(responses.get(html).status(), 304);
+        assert.isFalse(responses.get(html).fromCache());
       });
     }
   });
@@ -268,7 +275,7 @@ describe('network', function () {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.fromServiceWorker()).toBe(false);
+      assert.isFalse(response.fromServiceWorker());
     });
 
     it('Response.fromServiceWorker', async () => {
@@ -288,11 +295,11 @@ describe('network', function () {
       });
       await page.reload();
 
-      expect(responses.size).toBe(2);
-      expect(responses.get('sw.html').status()).toBe(200);
-      expect(responses.get('sw.html').fromServiceWorker()).toBe(true);
-      expect(responses.get('style.css').status()).toBe(200);
-      expect(responses.get('style.css').fromServiceWorker()).toBe(true);
+      assert.strictEqual(responses.size, 2);
+      assert.strictEqual(responses.get('sw.html').status(), 200);
+      assert.isTrue(responses.get('sw.html').fromServiceWorker());
+      assert.strictEqual(responses.get('style.css').status(), 200);
+      assert.isTrue(responses.get('style.css').fromServiceWorker());
     });
   });
 
@@ -317,18 +324,18 @@ describe('network', function () {
         }),
       ]);
 
-      expect(request).toBeTruthy();
-      expect(request.hasPostData()).toBeTruthy();
-      expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
+      assert.ok(request);
+      assert.ok(request.hasPostData());
+      assert.strictEqual(await request.fetchPostData(), '{"foo":"bar"}');
     });
 
     it('should be |undefined| when there is no post data', async () => {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.request().hasPostData()).toBeFalsy();
+      assert.notOk(response.request().hasPostData());
 
-      expect(await response.request().fetchPostData()).toBe(undefined);
+      assert.isUndefined(await response.request().fetchPostData());
     });
 
     it('should work with blobs', async () => {
@@ -353,9 +360,9 @@ describe('network', function () {
         }),
       ]);
 
-      expect(request).toBeTruthy();
-      expect(request.hasPostData()).toBe(true);
-      expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
+      assert.ok(request);
+      assert.isTrue(request.hasPostData());
+      assert.strictEqual(await request.fetchPostData(), '{"foo":"bar"}');
     });
   });
 
@@ -365,16 +372,16 @@ describe('network', function () {
 
       const response = (await page.goto(server.PREFIX + '/simple.json'))!;
       const responseText = (await response.text()).trimEnd();
-      expect(responseText).toBe('{"foo": "bar"}');
+      assert.strictEqual(responseText, '{"foo": "bar"}');
     });
     it('should return uncompressed text', async () => {
       const {page, server} = await getTestState();
 
       server.enableGzip('/simple.json');
       const response = (await page.goto(server.PREFIX + '/simple.json'))!;
-      expect(response.headers()['content-encoding']).toBe('gzip');
+      assert.strictEqual(response.headers()['content-encoding'], 'gzip');
       const responseText = (await response.text()).trimEnd();
-      expect(responseText).toBe('{"foo": "bar"}');
+      assert.strictEqual(responseText, '{"foo": "bar"}');
     });
     it('should throw when requesting body of redirected response', async () => {
       const {page, server} = await getTestState();
@@ -382,14 +389,15 @@ describe('network', function () {
       server.setRedirect('/foo.html', '/empty.html');
       const response = (await page.goto(server.PREFIX + '/foo.html'))!;
       const redirectChain = response.request().redirectChain();
-      expect(redirectChain).toHaveLength(1);
+      assert.lengthOf(redirectChain, 1);
       const redirected = redirectChain[0]!.response()!;
-      expect(redirected.status()).toBe(302);
+      assert.strictEqual(redirected.status(), 302);
       let error!: Error;
       await redirected.text().catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toContain(
+      assert.include(
+        error.message,
         'Response body is unavailable for redirect responses',
       );
     });
@@ -422,10 +430,10 @@ describe('network', function () {
         server.waitForRequest('/get'),
       ]);
 
-      expect(serverResponse).toBeTruthy();
-      expect(pageResponse).toBeTruthy();
-      expect(pageResponse.status()).toBe(200);
-      expect(requestFinished).toBe(false);
+      assert.ok(serverResponse);
+      assert.ok(pageResponse);
+      assert.strictEqual(pageResponse.status(), 200);
+      assert.isFalse(requestFinished);
 
       const responseText = pageResponse.text();
       // Write part of the response and wait for it to be flushed.
@@ -438,7 +446,7 @@ describe('network', function () {
           return x();
         });
       });
-      expect(await responseText).toBe('hello world!');
+      assert.strictEqual(await responseText, 'hello world!');
     });
   });
 
@@ -447,7 +455,7 @@ describe('network', function () {
       const {page, server} = await getTestState();
 
       const response = (await page.goto(server.PREFIX + '/simple.json'))!;
-      expect(await response.json()).toEqual({foo: 'bar'});
+      assert.deepEqual(await response.json(), {foo: 'bar'});
     });
   });
 
@@ -461,7 +469,7 @@ describe('network', function () {
       );
       const responseBuffer = await response.buffer();
 
-      expect(Buffer.from(responseBuffer).equals(imageBuffer)).toBe(true);
+      assert.isTrue(Buffer.from(responseBuffer).equals(imageBuffer));
     });
     it('should work with compression', async () => {
       const {page, server} = await getTestState();
@@ -472,7 +480,7 @@ describe('network', function () {
         path.join(import.meta.dirname, '../assets', 'pptr.png'),
       );
       const responseBuffer = await response.buffer();
-      expect(Buffer.from(responseBuffer).equals(imageBuffer)).toBe(true);
+      assert.isTrue(Buffer.from(responseBuffer).equals(imageBuffer));
     });
     it('should throw if the response does not have a body', async () => {
       const {page, server} = await getTestState();
@@ -506,7 +514,9 @@ describe('network', function () {
       }, url);
 
       const response = await responsePromise;
-      await expect(response.buffer()).rejects.toThrow(
+      const error = await assertRejects(response.buffer());
+      assert.include(
+        error.message,
         'Could not load response body for this request. This might happen if the request is a preflight request.',
       );
     });
@@ -521,7 +531,7 @@ describe('network', function () {
         res.end();
       });
       const response = (await page.goto(server.PREFIX + '/cool'))!;
-      expect(response.statusText()).toBe('cool!');
+      assert.strictEqual(response.statusText(), 'cool!');
     });
 
     it('handles missing status text', async () => {
@@ -532,7 +542,7 @@ describe('network', function () {
         res.end();
       });
       const response = (await page.goto(server.PREFIX + '/nostatus'))!;
-      expect(response.statusText()).toBe('');
+      assert.strictEqual(response.statusText(), '');
     });
   });
 
@@ -547,8 +557,8 @@ describe('network', function () {
         return responses.push(response);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(responses).toHaveLength(1);
-      expect(responses[0]!.timing()!.receiveHeadersEnd).toBeGreaterThan(0);
+      assert.lengthOf(responses, 1);
+      assert.isAbove(responses[0]!.timing()!.receiveHeadersEnd, 0);
     });
   });
 
@@ -561,13 +571,13 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests).toHaveLength(1);
+      assert.lengthOf(requests, 1);
       const request = requests[0]!;
-      expect(request.url()).toBe(server.EMPTY_PAGE);
-      expect(request.method()).toBe('GET');
-      expect(request.response()).toBeTruthy();
-      expect(request.frame() === page.mainFrame()).toBe(true);
-      expect(request.frame()!.url()).toBe(server.EMPTY_PAGE);
+      assert.strictEqual(request.url(), server.EMPTY_PAGE);
+      assert.strictEqual(request.method(), 'GET');
+      assert.ok(request.response());
+      assert.isTrue(request.frame() === page.mainFrame());
+      assert.strictEqual(request.frame()!.url(), server.EMPTY_PAGE);
     });
 
     // Run this cache test both with a stylesheet and a script.
@@ -586,12 +596,12 @@ describe('network', function () {
         });
 
         await page.goto(server.PREFIX + '/cached/' + html);
-        expect(cached).toEqual([]);
+        assert.deepEqual(cached, []);
         await new Promise(res => {
           setTimeout(res, 1000);
         });
         await page.reload();
-        expect(cached).toEqual([resource]);
+        assert.deepEqual(cached, [resource]);
       });
     }
     it('Page.Events.Response', async () => {
@@ -602,12 +612,12 @@ describe('network', function () {
         return !isFavicon(response) && responses.push(response);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(responses).toHaveLength(1);
+      assert.lengthOf(responses, 1);
       const response = responses[0]!;
-      expect(response.url()).toBe(server.EMPTY_PAGE);
-      expect(response.status()).toBe(200);
-      expect(response.ok()).toBe(true);
-      expect(response.request()).toBeTruthy();
+      assert.strictEqual(response.url(), server.EMPTY_PAGE);
+      assert.strictEqual(response.status(), 200);
+      assert.isTrue(response.ok());
+      assert.ok(response.request());
     });
 
     it('Page.Events.RequestFailed', async () => {
@@ -626,15 +636,21 @@ describe('network', function () {
         return failedRequests.push(request);
       });
       await page.goto(server.PREFIX + '/one-style.html');
-      expect(failedRequests).toHaveLength(1);
+      assert.lengthOf(failedRequests, 1);
       const failedRequest = failedRequests[0]!;
-      expect(failedRequest.url()).toContain('one-style.css');
-      expect(failedRequest.response()).toBe(null);
-      expect(failedRequest.frame()).toBeTruthy();
+      assert.include(failedRequest.url(), 'one-style.css');
+      assert.isNull(failedRequest.response());
+      assert.ok(failedRequest.frame());
       if (isChrome) {
-        expect(failedRequest.failure()!.errorText).toBe('net::ERR_FAILED');
+        assert.strictEqual(
+          failedRequest.failure()!.errorText,
+          'net::ERR_FAILED',
+        );
       } else {
-        expect(failedRequest.failure()!.errorText).toBe('NS_ERROR_ABORT');
+        assert.strictEqual(
+          failedRequest.failure()!.errorText,
+          'NS_ERROR_ABORT',
+        );
       }
     });
     it('Page.Events.RequestFinished', async () => {
@@ -645,12 +661,12 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests).toHaveLength(1);
+      assert.lengthOf(requests, 1);
       const request = requests[0]!;
-      expect(request.url()).toBe(server.EMPTY_PAGE);
-      expect(request.response()).toBeTruthy();
-      expect(request.frame() === page.mainFrame()).toBe(true);
-      expect(request.frame()!.url()).toBe(server.EMPTY_PAGE);
+      assert.strictEqual(request.url(), server.EMPTY_PAGE);
+      assert.ok(request.response());
+      assert.isTrue(request.frame() === page.mainFrame());
+      assert.strictEqual(request.frame()!.url(), server.EMPTY_PAGE);
     });
     it('should fire events in proper order', async () => {
       const {page, server} = await getTestState();
@@ -667,7 +683,7 @@ describe('network', function () {
       });
       await page.goto(server.EMPTY_PAGE);
       // Events can sneak in after the page has navigate
-      expect(events.slice(0, 3)).toEqual([
+      assert.deepEqual(events.slice(0, 3), [
         'request',
         'response',
         'requestfinished',
@@ -700,7 +716,7 @@ describe('network', function () {
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
       const response = (await page.goto(FOO_URL))!;
-      expect(events).toEqual([
+      assert.deepEqual(events, [
         `GET ${FOO_URL}`,
         `302 ${FOO_URL}`,
         `DONE ${FOO_URL}`,
@@ -711,8 +727,8 @@ describe('network', function () {
 
       // Check redirect chain
       const redirectChain = response.request().redirectChain();
-      expect(redirectChain).toHaveLength(1);
-      expect(redirectChain[0]!.url()).toContain('/foo.html');
+      assert.lengthOf(redirectChain, 1);
+      assert.include(redirectChain[0]!.url(), '/foo.html');
     });
   });
 
@@ -726,11 +742,11 @@ describe('network', function () {
       });
       server.setRedirect('/rrredirect', '/frames/one-frame.html');
       await page.goto(server.PREFIX + '/rrredirect');
-      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
-      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
-      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
-      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
-      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
+      assert.isTrue(requests.get('rrredirect').isNavigationRequest());
+      assert.isTrue(requests.get('one-frame.html').isNavigationRequest());
+      assert.isTrue(requests.get('frame.html').isNavigationRequest());
+      assert.isFalse(requests.get('script.js').isNavigationRequest());
+      assert.isFalse(requests.get('style.css').isNavigationRequest());
     });
     it('should work with request interception', async () => {
       const {page, server} = await getTestState();
@@ -743,11 +759,11 @@ describe('network', function () {
       await page.setRequestInterception(true);
       server.setRedirect('/rrredirect', '/frames/one-frame.html');
       await page.goto(server.PREFIX + '/rrredirect');
-      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
-      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
-      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
-      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
-      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
+      assert.isTrue(requests.get('rrredirect').isNavigationRequest());
+      assert.isTrue(requests.get('one-frame.html').isNavigationRequest());
+      assert.isTrue(requests.get('frame.html').isNavigationRequest());
+      assert.isFalse(requests.get('script.js').isNavigationRequest());
+      assert.isFalse(requests.get('style.css').isNavigationRequest());
     });
     it('should work when navigating to image', async () => {
       const {page, server} = await getTestState();
@@ -756,7 +772,7 @@ describe('network', function () {
         waitEvent<HTTPRequest>(page, 'request'),
         page.goto(server.PREFIX + '/pptr.png'),
       ]);
-      expect(request.isNavigationRequest()).toBe(true);
+      assert.isTrue(request.isNavigationRequest());
     });
   });
 
@@ -771,7 +787,7 @@ describe('network', function () {
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      expect(request.headers['foo']).toBe('bar');
+      assert.strictEqual(request.headers['foo'], 'bar');
     });
     it('should throw for non-string header values', async () => {
       const {page} = await getTestState();
@@ -783,7 +799,8 @@ describe('network', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toBe(
+      assert.strictEqual(
+        error.message,
         'Expected value of header "foo" to be String, but "number" is found.',
       );
     });
@@ -798,7 +815,7 @@ describe('network', function () {
         password: 'pass',
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.status()).toBe(200);
+      assert.strictEqual(response.status(), 200);
     });
 
     it('should work with interception', async () => {
@@ -813,7 +830,7 @@ describe('network', function () {
         password: 'pass',
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.status()).toBe(200);
+      assert.strictEqual(response.status(), 200);
     });
 
     it('should error if authentication is required but not enabled', async () => {
@@ -823,7 +840,7 @@ describe('network', function () {
       let response;
       try {
         response = (await page.goto(server.EMPTY_PAGE))!;
-        expect(response.status()).toBe(401);
+        assert.strictEqual(response.status(), 401);
       } catch (error) {
         // In headful, an error is thrown instead of 401.
         if (
@@ -839,7 +856,7 @@ describe('network', function () {
         password: 'pass',
       });
       response = (await page.reload())!;
-      expect(response.status()).toBe(200);
+      assert.strictEqual(response.status(), 200);
     });
     it('should fail if wrong credentials', async () => {
       const {page, server} = await getTestState();
@@ -851,7 +868,7 @@ describe('network', function () {
         password: 'bar',
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.status()).toBe(401);
+      assert.strictEqual(response.status(), 401);
     });
     it('should allow disable authentication', async () => {
       const {page, server} = await getTestState();
@@ -863,14 +880,14 @@ describe('network', function () {
         password: 'pass3',
       });
       let response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.status()).toBe(200);
+      assert.strictEqual(response.status(), 200);
       await page.authenticate(null);
       // Navigate to a different origin to bust Chrome's credential caching.
       try {
         response = (await page.goto(
           server.CROSS_PROCESS_PREFIX + '/empty.html',
         ))!;
-        expect(response.status()).toBe(401);
+        assert.strictEqual(response.status(), 401);
       } catch (error) {
         // In headful, an error is thrown instead of 401.
         if (
@@ -912,10 +929,10 @@ describe('network', function () {
         await page.goto(server.PREFIX + '/cached/' + html);
         await page.reload();
 
-        expect(responses.get(resource).status()).toBe(200);
-        expect(responses.get(resource).fromCache()).toBe(true);
-        expect(responses.get(html).status()).toBe(304);
-        expect(responses.get(html).fromCache()).toBe(false);
+        assert.strictEqual(responses.get(resource).status(), 200);
+        assert.isTrue(responses.get(resource).fromCache());
+        assert.strictEqual(responses.get(html).status(), 304);
+        assert.isFalse(responses.get(html).fromCache());
       });
     }
   });
@@ -930,7 +947,7 @@ describe('network', function () {
         res.end('hello world');
       });
       const response = (await page.goto(server.EMPTY_PAGE))!;
-      expect(response.headers()['set-cookie']).toBe(setCookieString);
+      assert.strictEqual(response.headers()['set-cookie'], setCookieString);
     });
 
     it('Same-origin set-cookie subresource', async () => {
@@ -953,7 +970,7 @@ describe('network', function () {
           xhr.send();
         }),
       ]);
-      expect(response.headers()['set-cookie']).toBe(setCookieString);
+      assert.strictEqual(response.headers()['set-cookie'], setCookieString);
     });
 
     it('Cross-origin set-cookie', async () => {
@@ -986,7 +1003,7 @@ describe('network', function () {
             xhr.send();
           }, url),
         ]);
-        expect(response.headers()['set-cookie']).toBe(setCookieString);
+        assert.strictEqual(response.headers()['set-cookie'], setCookieString);
       } finally {
         await close();
       }
@@ -1013,23 +1030,23 @@ describe('network', function () {
         waitUntil: 'networkidle2',
       });
 
-      expect(page.isServiceWorkerBypassed()).toBe(false);
-      expect(responses.size).toBe(2);
-      expect(responses.get('sw.html').status()).toBe(200);
-      expect(responses.get('sw.html').fromServiceWorker()).toBe(true);
-      expect(responses.get('style.css').status()).toBe(200);
-      expect(responses.get('style.css').fromServiceWorker()).toBe(true);
+      assert.isFalse(page.isServiceWorkerBypassed());
+      assert.strictEqual(responses.size, 2);
+      assert.strictEqual(responses.get('sw.html').status(), 200);
+      assert.isTrue(responses.get('sw.html').fromServiceWorker());
+      assert.strictEqual(responses.get('style.css').status(), 200);
+      assert.isTrue(responses.get('style.css').fromServiceWorker());
 
       await page.setBypassServiceWorker(true);
       await page.reload({
         waitUntil: 'networkidle2',
       });
 
-      expect(page.isServiceWorkerBypassed()).toBe(true);
-      expect(responses.get('sw.html').status()).toBe(200);
-      expect(responses.get('sw.html').fromServiceWorker()).toBe(false);
-      expect(responses.get('style.css').status()).toBe(200);
-      expect(responses.get('style.css').fromServiceWorker()).toBe(false);
+      assert.isTrue(page.isServiceWorkerBypassed());
+      assert.strictEqual(responses.get('sw.html').status(), 200);
+      assert.isFalse(responses.get('sw.html').fromServiceWorker());
+      assert.strictEqual(responses.get('style.css').status(), 200);
+      assert.isFalse(responses.get('style.css').fromServiceWorker());
     });
   });
 
@@ -1039,7 +1056,7 @@ describe('network', function () {
 
       const response = await page.goto(server.EMPTY_PAGE);
       const request = response!.request();
-      expect(request.resourceType()).toBe('document');
+      assert.strictEqual(request.resourceType(), 'document');
     });
 
     it('should work for stylesheets', async () => {
@@ -1056,10 +1073,10 @@ describe('network', function () {
       });
       await page.goto(server.PREFIX + '/one-style.html');
       await promise;
-      expect(cssRequests).toHaveLength(1);
+      assert.lengthOf(cssRequests, 1);
       const request = cssRequests[0]!;
-      expect(request.url()).toContain('one-style.css');
-      expect(request.resourceType()).toBe('stylesheet');
+      assert.include(request.url(), 'one-style.css');
+      assert.strictEqual(request.resourceType(), 'stylesheet');
     });
   });
 
@@ -1070,10 +1087,10 @@ describe('network', function () {
       const response = (await page.goto(server.EMPTY_PAGE))!;
       const remoteAddress = response.remoteAddress();
       // Either IPv6 or IPv4, depending on environment.
-      expect(
+      assert.isTrue(
         remoteAddress.ip!.includes('::1') || remoteAddress.ip === '127.0.0.1',
-      ).toBe(true);
-      expect(remoteAddress.port).toBe(server.PORT);
+      );
+      assert.strictEqual(remoteAddress.port, server.PORT);
     });
 
     it('should support redirects', async () => {
@@ -1085,9 +1102,10 @@ describe('network', function () {
 
       // Check redirect chain
       const redirectChain = response.request().redirectChain();
-      expect(redirectChain).toHaveLength(1);
-      expect(redirectChain[0]!.url()).toContain('/foo.html');
-      expect(redirectChain[0]!.response()!.remoteAddress().port).toBe(
+      assert.lengthOf(redirectChain, 1);
+      assert.include(redirectChain[0]!.url(), '/foo.html');
+      assert.strictEqual(
+        redirectChain[0]!.response()!.remoteAddress().port,
         server.PORT,
       );
     });

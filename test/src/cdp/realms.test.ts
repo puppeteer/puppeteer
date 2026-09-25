@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 
@@ -36,7 +35,7 @@ describe('extension realms', function () {
     await page.goto(server.EMPTY_PAGE);
 
     const realms = page.extensionRealms();
-    expect(realms.length).toBeGreaterThanOrEqual(1);
+    assert.isAtLeast(realms.length, 1);
 
     let realm;
     for (realm of realms) {
@@ -48,7 +47,7 @@ describe('extension realms', function () {
       }
     }
 
-    expect(realm).toBeDefined();
+    assert.isDefined(realm);
   });
 
   it('realm should return extension that created it', async () => {
@@ -76,7 +75,7 @@ describe('extension realms', function () {
 
     const extension = await realm.extension();
     assert(extension, 'realm should be defined');
-    expect(extension.id).toEqual(extId);
+    assert.strictEqual(extension.id, extId);
   });
 
   it('should evaluate in content script realms', async () => {
@@ -105,12 +104,12 @@ describe('extension realms', function () {
     const isContentScript = await contentScriptRealm!.evaluate(() => {
       return (globalThis as any).thisIsTheContentScript;
     });
-    expect(isContentScript).toBe(true);
+    assert.isTrue(isContentScript);
 
     const isContentScriptInMain = await page.evaluate(() => {
       return (globalThis as any).thisIsTheContentScript;
     });
 
-    expect(isContentScriptInMain).toBeUndefined();
+    assert.isUndefined(isContentScriptInMain);
   });
 });

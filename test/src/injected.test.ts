@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {LazyArg} from 'puppeteer-core/internal/common/LazyArg.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -24,7 +24,7 @@ describe('PuppeteerUtil tests', function () {
         return context.puppeteerUtil;
       }),
     );
-    expect(value).toBeTruthy();
+    assert.ok(value);
   });
 
   describe('createFunction tests', function () {
@@ -43,7 +43,7 @@ describe('PuppeteerUtil tests', function () {
           return 4;
         }).toString(),
       );
-      expect(value).toBe(4);
+      assert.strictEqual(value, 4);
     });
   });
 });

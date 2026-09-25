@@ -6,7 +6,7 @@
 import {Readable, Writable} from 'node:stream';
 import {describe, it, beforeEach, afterEach} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {PipeTransport} from './PipeTransport.js';
 
@@ -76,7 +76,7 @@ describe('PipeTransport', () => {
     myReadable.push('m1\0');
     myReadable.push('m2\0');
     await result;
-    expect(log).toEqual([
+    assert.deepEqual(log, [
       'message received m1',
       'microtask1 m1',
       'microtask2 m1',
@@ -91,10 +91,10 @@ describe('PipeTransport', () => {
       let message = waitForNextMessage();
       myReadable.push('m1\0');
 
-      expect(await message).toBe('m1');
+      assert.strictEqual(await message, 'm1');
       message = waitForNextMessage();
       myReadable.push('m2\0');
-      expect(await message).toBe('m2');
+      assert.strictEqual(await message, 'm2');
     });
 
     it('should work for messages ending in multiple lines', async () => {
@@ -102,7 +102,7 @@ describe('PipeTransport', () => {
       myReadable.push('Hello wor');
       myReadable.push('ld!\0');
 
-      expect(await message).toBe('Hello world!');
+      assert.strictEqual(await message, 'Hello world!');
     });
 
     it('should work with messages continuing from previous one', async () => {
@@ -110,21 +110,21 @@ describe('PipeTransport', () => {
       myReadable.push('Hello wor');
       myReadable.push('ld!\0I started in ');
 
-      expect(await message).toBe('Hello world!');
+      assert.strictEqual(await message, 'Hello world!');
       message = waitForNextMessage();
       myReadable.push('the previous message\0');
-      expect(await message).toBe('I started in the previous message');
+      assert.strictEqual(await message, 'I started in the previous message');
     });
     it('should work with multiple messages in a single line', async () => {
       const messagesPromise = waitForNumberOfMessages(3);
       myReadable.push('First\0Second\0Third\0');
 
       const messages = await messagesPromise;
-      expect(messages).toHaveLength(3);
+      assert.lengthOf(messages, 3);
 
-      expect(messages[0]).toBe('First');
-      expect(messages[1]).toBe('Second');
-      expect(messages[2]).toBe('Third');
+      assert.strictEqual(messages[0], 'First');
+      assert.strictEqual(messages[1], 'Second');
+      assert.strictEqual(messages[2], 'Third');
     });
   });
 });

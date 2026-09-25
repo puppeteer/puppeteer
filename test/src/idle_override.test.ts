@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
@@ -22,7 +22,7 @@ describe('Emulate idle state', () => {
 
   async function verifyState(page: Page, expectedState: string) {
     const actualState = await getIdleState(page);
-    expect(actualState).toEqual(expectedState);
+    assert.strictEqual(actualState, expectedState);
   }
 
   it('changing idle state emulation causes change of the IdleDetector state', async () => {

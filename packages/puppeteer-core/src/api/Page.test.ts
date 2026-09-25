@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {HTTPRequest} from './HTTPRequest.js';
 import {Page, PageEvent} from './Page.js';
@@ -52,8 +52,8 @@ describe('Page', function () {
       });
 
       const timeDelta = Math.ceil(performance.now() - start);
-      expect(timeDelta).toBeGreaterThanOrEqual(50);
-      expect(timeDelta).toBeLessThan(60);
+      assert.isAtLeast(timeDelta, 50);
+      assert.isBelow(timeDelta, 60);
     });
 
     it('should not reset timeout while staying under concurrency', async () => {
@@ -71,8 +71,8 @@ describe('Page', function () {
 
       await waitPromise;
       const timeDelta = Math.ceil(performance.now() - start);
-      expect(timeDelta).toBeGreaterThanOrEqual(50);
-      expect(timeDelta).toBeLessThan(60);
+      assert.isAtLeast(timeDelta, 50);
+      assert.isBelow(timeDelta, 60);
     });
 
     it('should reset timeout going over concurrency', async () => {
@@ -101,8 +101,8 @@ describe('Page', function () {
 
       await waitPromise;
       const timeDelta = Math.ceil(performance.now() - start);
-      expect(timeDelta).toBeGreaterThanOrEqual(80);
-      expect(timeDelta).toBeLessThan(100);
+      assert.isAtLeast(timeDelta, 80);
+      assert.isBelow(timeDelta, 100);
     });
   });
 });

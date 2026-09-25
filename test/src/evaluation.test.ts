@@ -4,10 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, html} from './utils.js';
+import {
+  assertAtLeastOneToContain,
+  getTestState,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
+import {assertMatchObject, attachFrame, html} from './utils.js';
 
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();
@@ -19,7 +23,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return 7 * 3;
       });
-      expect(result).toBe(21);
+      assert.strictEqual(result, 21);
     });
     it('should transfer BigInt', async () => {
       const {page} = await getTestState();
@@ -27,7 +31,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate((a: bigint) => {
         return a;
       }, BigInt(42));
-      expect(result).toBe(BigInt(42));
+      assert.strictEqual(result, BigInt(42));
     });
     it('should transfer NaN', async () => {
       const {page} = await getTestState();
@@ -35,7 +39,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(a => {
         return a;
       }, NaN);
-      expect(Object.is(result, NaN)).toBe(true);
+      assert.isTrue(Object.is(result, NaN));
     });
     it('should transfer -0', async () => {
       const {page} = await getTestState();
@@ -43,7 +47,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(a => {
         return a;
       }, -0);
-      expect(Object.is(result, -0)).toBe(true);
+      assert.isTrue(Object.is(result, -0));
     });
     it('should transfer Infinity', async () => {
       const {page} = await getTestState();
@@ -51,7 +55,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(a => {
         return a;
       }, Infinity);
-      expect(Object.is(result, Infinity)).toBe(true);
+      assert.isTrue(Object.is(result, Infinity));
     });
     it('should transfer -Infinity', async () => {
       const {page} = await getTestState();
@@ -59,7 +63,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(a => {
         return a;
       }, -Infinity);
-      expect(Object.is(result, -Infinity)).toBe(true);
+      assert.isTrue(Object.is(result, -Infinity));
     });
     it('should transfer arrays', async () => {
       const {page} = await getTestState();
@@ -70,7 +74,7 @@ describe('Evaluation specs', function () {
         },
         [1, 2, 3],
       );
-      expect(result).toEqual([1, 2, 3]);
+      assert.deepEqual(result, [1, 2, 3]);
     });
     it('should transfer arrays as arrays, not objects', async () => {
       const {page} = await getTestState();
@@ -81,7 +85,7 @@ describe('Evaluation specs', function () {
         },
         [1, 2, 3],
       );
-      expect(result).toBe(true);
+      assert.isTrue(result);
     });
     it('should transfer RegEx', async () => {
       const {page} = await getTestState();
@@ -89,7 +93,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(a => {
         return `Hello World!`.match(a)![1];
       }, /Hello (.*)/);
-      expect(result).toBe(`World!`);
+      assert.strictEqual(result, `World!`);
     });
     it('should modify global environment', async () => {
       const {page} = await getTestState();
@@ -97,22 +101,23 @@ describe('Evaluation specs', function () {
       await page.evaluate(() => {
         return ((globalThis as any).globalVar = 123);
       });
-      expect(await page.evaluate('globalVar')).toBe(123);
+      assert.strictEqual(await page.evaluate('globalVar'), 123);
     });
     it('should evaluate in the page context', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/global-var.html');
-      expect(await page.evaluate('globalVar')).toBe(123);
+      assert.strictEqual(await page.evaluate('globalVar'), 123);
     });
     it('should replace symbols with undefined', async () => {
       const {page} = await getTestState();
 
-      expect(
+      assert.deepEqual<unknown[]>(
         await page.evaluate(() => {
           return [Symbol('foo4'), 'foo'];
         }),
-      ).toEqual([undefined, 'foo']);
+        [undefined, 'foo'],
+      );
     });
     it('should work with function shorthands', async () => {
       const {page} = await getTestState();
@@ -126,8 +131,8 @@ describe('Evaluation specs', function () {
           return a * b;
         },
       };
-      expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
-      expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
+      assert.strictEqual(await page.evaluate(a.sum, 1, 2), 3);
+      assert.strictEqual(await page.evaluate(a.mult, 2, 4), 8);
     });
     it('should work with function shorthands and nested arrow functions', async () => {
       const {page} = await getTestState();
@@ -138,7 +143,7 @@ describe('Evaluation specs', function () {
           return a + b;
         },
       };
-      expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
+      assert.strictEqual(await page.evaluate(a.sum, 1, 2), 3);
     });
     it('should work with unicode chars', async () => {
       const {page} = await getTestState();
@@ -151,7 +156,7 @@ describe('Evaluation specs', function () {
           中文字符: 42,
         },
       );
-      expect(result).toBe(42);
+      assert.strictEqual(result, 42);
     });
     it('should throw when evaluation triggers reload', async () => {
       const {page} = await getTestState();
@@ -165,7 +170,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Execution context was destroyed', // Chrome
         'no such frame', // Firefox
       ]);
@@ -176,7 +181,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return Promise.resolve(8 * 7);
       });
-      expect(result).toBe(56);
+      assert.strictEqual(result, 56);
     });
     it('should work right after framenavigated', async () => {
       const {page, server} = await getTestState();
@@ -188,7 +193,7 @@ describe('Evaluation specs', function () {
         });
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(await frameEvaluation).toBe(42);
+      assert.strictEqual(await frameEvaluation, 42);
     });
     it('should work from-inside an exposed function', async () => {
       const {page} = await getTestState();
@@ -209,7 +214,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(async function () {
         return (globalThis as any).callController(9, 3);
       });
-      expect(result).toBe(27);
+      assert.strictEqual(result, 27);
     });
     it('should reject promise with exception', async () => {
       const {page} = await getTestState();
@@ -223,8 +228,8 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
-      expect(error.message).toContain('notExistingObject');
+      assert.ok(error);
+      assert.include(error.message, 'notExistingObject');
     });
     it('should support thrown strings as error messages', async () => {
       const {page} = await getTestState();
@@ -237,7 +242,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toEqual('qwerty');
+      assert.strictEqual<unknown>(error, 'qwerty');
     });
     it('should support thrown numbers as error messages', async () => {
       const {page} = await getTestState();
@@ -250,7 +255,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toEqual(100500);
+      assert.strictEqual<unknown>(error, 100500);
     });
     it('should support thrown platform objects as error messages', async () => {
       const {page} = await getTestState();
@@ -263,7 +268,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toContain('some DOMException message');
+      assert.include(error.message, 'some DOMException message');
     });
     it('should return complex objects', async () => {
       const {page} = await getTestState();
@@ -272,8 +277,8 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(a => {
         return a;
       }, object);
-      expect(result).not.toBe(object);
-      expect(result).toEqual(object);
+      assert.notStrictEqual(result, object);
+      assert.deepEqual(result, object);
     });
     it('should return BigInt', async () => {
       const {page} = await getTestState();
@@ -281,7 +286,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return BigInt(42);
       });
-      expect(result).toBe(BigInt(42));
+      assert.strictEqual(result, BigInt(42));
     });
     it('should return NaN', async () => {
       const {page} = await getTestState();
@@ -289,7 +294,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return NaN;
       });
-      expect(Object.is(result, NaN)).toBe(true);
+      assert.isTrue(Object.is(result, NaN));
     });
     it('should return -0', async () => {
       const {page} = await getTestState();
@@ -297,7 +302,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return -0;
       });
-      expect(Object.is(result, -0)).toBe(true);
+      assert.isTrue(Object.is(result, -0));
     });
     it('should return Infinity', async () => {
       const {page} = await getTestState();
@@ -305,7 +310,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return Infinity;
       });
-      expect(Object.is(result, Infinity)).toBe(true);
+      assert.isTrue(Object.is(result, Infinity));
     });
     it('should return -Infinity', async () => {
       const {page} = await getTestState();
@@ -313,7 +318,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return -Infinity;
       });
-      expect(Object.is(result, -Infinity)).toBe(true);
+      assert.isTrue(Object.is(result, -Infinity));
     });
     it('should return RegEx', async () => {
       const {page} = await getTestState();
@@ -321,7 +326,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => {
         return /(.*)/;
       });
-      expect(result instanceof RegExp).toBe(true);
+      assert.isTrue(result instanceof RegExp);
     });
     it('should accept "null" as one of multiple parameters', async () => {
       const {page} = await getTestState();
@@ -333,25 +338,25 @@ describe('Evaluation specs', function () {
         null,
         'foo',
       );
-      expect(result).toBe(true);
+      assert.isTrue(result);
     });
     it('should properly serialize null fields', async () => {
       const {page} = await getTestState();
 
-      expect(
-        await page.evaluate(() => {
-          return {a: undefined};
-        }),
-      ).toEqual({});
+      const result = await page.evaluate(() => {
+        return {a: undefined};
+      });
+      // expect's toEqual({}) ignored properties with undefined values.
+      assert.isUndefined(result.a);
     });
     it('should return undefined for non-serializable objects', async () => {
       const {page} = await getTestState();
 
-      expect(
+      assert.isUndefined(
         await page.evaluate(() => {
           return window;
         }),
-      ).toBe(undefined);
+      );
     });
     it('should return promise as empty object', async () => {
       const {page} = await getTestState();
@@ -363,7 +368,7 @@ describe('Evaluation specs', function () {
           }),
         };
       });
-      expect(result).toEqual({
+      assert.deepEqual<unknown>(result, {
         promise: {},
       });
     });
@@ -381,7 +386,7 @@ describe('Evaluation specs', function () {
         a['b'] = b;
         return a;
       });
-      expect(result).toMatchObject({
+      assertMatchObject(result, {
         c: 5,
         d: {
           foo: 'bar',
@@ -395,19 +400,19 @@ describe('Evaluation specs', function () {
       const {page} = await getTestState();
 
       const result = await page.evaluate('1 + 2');
-      expect(result).toBe(3);
+      assert.strictEqual(result, 3);
     });
     it('should accept a string with semi colons', async () => {
       const {page} = await getTestState();
 
       const result = await page.evaluate('1 + 5;');
-      expect(result).toBe(6);
+      assert.strictEqual(result, 6);
     });
     it('should accept a string with comments', async () => {
       const {page} = await getTestState();
 
       const result = await page.evaluate('2 + 5;\n// do some math!');
-      expect(result).toBe(7);
+      assert.strictEqual(result, 7);
     });
     it('should accept element handle as an argument', async () => {
       const {page} = await getTestState();
@@ -417,14 +422,14 @@ describe('Evaluation specs', function () {
       const text = await page.evaluate(e => {
         return e.textContent;
       }, element);
-      expect(text).toBe('42');
+      assert.strictEqual(text, '42');
     });
     it('should throw if underlying element was disposed', async () => {
       const {page} = await getTestState();
 
       await page.setContent(html`<section>39</section>`);
       using element = (await page.$('section'))!;
-      expect(element).toBeTruthy();
+      assert.ok(element);
       // We want to dispose early.
       await element.dispose();
       let error!: Error;
@@ -435,7 +440,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toContain('JSHandle is disposed');
+      assert.include(error.message, 'JSHandle is disposed');
     });
     it('should throw if elementHandles are from other frames', async () => {
       const {page, server} = await getTestState();
@@ -450,8 +455,8 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
-      expect(error.message).atLeastOneToContain([
+      assert.ok(error);
+      assertAtLeastOneToContain(error.message, [
         'JSHandles can be evaluated only in the context they were created',
         "Trying to evaluate JSHandle from different frames. Usually this means you're using a handle from a page on a different page.",
       ]);
@@ -464,7 +469,7 @@ describe('Evaluation specs', function () {
         document.execCommand('selectAll');
         return document.execCommand('copy');
       });
-      expect(result).toBe(true);
+      assert.isTrue(result);
     });
     it('should not throw an error when evaluation does a navigation', async () => {
       const {page, server} = await getTestState();
@@ -475,7 +480,7 @@ describe('Evaluation specs', function () {
         (window as any).location = '/empty.html';
         return [42];
       });
-      expect(result).toEqual([42]);
+      assert.deepEqual(result, [42]);
       await onRequest;
     });
     it('should transfer 100Mb of data from page to node.js', async function () {
@@ -485,7 +490,7 @@ describe('Evaluation specs', function () {
       const a = await page.evaluate(() => {
         return Array(100 * 1024 * 1024 + 1).join('a');
       });
-      expect(a.length).toBe(100 * 1024 * 1024);
+      assert.strictEqual(a.length, 100 * 1024 * 1024);
     });
     it('should throw error with detailed information on exception inside promise', async () => {
       const {page} = await getTestState();
@@ -500,7 +505,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toContain('Error in promise');
+      assert.include(error.message, 'Error in promise');
     });
 
     it('should return properly serialize objects with unknown type fields', async () => {
@@ -521,10 +526,8 @@ describe('Evaluation specs', function () {
         };
       });
 
-      expect(result).toEqual({
-        a: 'foo',
-        b: undefined,
-      });
+      assert.strictEqual(result.a, 'foo');
+      assert.isUndefined(result.b);
     });
   });
 
@@ -536,11 +539,12 @@ describe('Evaluation specs', function () {
         (globalThis as any).injected = 123;
       });
       await page.goto(server.PREFIX + '/tamperable.html');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).result;
         }),
-      ).toBe(123);
+        123,
+      );
     });
     it('should work with CSP', async () => {
       const {page, server} = await getTestState();
@@ -550,21 +554,22 @@ describe('Evaluation specs', function () {
         (globalThis as any).injected = 123;
       });
       await page.goto(server.PREFIX + '/empty.html');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).injected;
         }),
-      ).toBe(123);
+        123,
+      );
 
       // Make sure CSP works.
       await page.addScriptTag({content: 'window.e = 10;'}).catch(error => {
         return void error;
       });
-      expect(
+      assert.isUndefined(
         await page.evaluate(() => {
           return (window as any).e;
         }),
-      ).toBe(undefined);
+      );
     });
   });
 
@@ -576,19 +581,20 @@ describe('Evaluation specs', function () {
         (globalThis as any).injected = 123;
       });
       await page.goto(server.PREFIX + '/tamperable.html');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).result;
         }),
-      ).toBe(123);
+        123,
+      );
 
       await page.removeScriptToEvaluateOnNewDocument(identifier);
       await page.reload();
-      expect(
+      assert.isNull(
         await page.evaluate(() => {
           return (globalThis as any).result || null;
         }),
-      ).toBe(null);
+      );
     });
   });
 
@@ -598,56 +604,62 @@ describe('Evaluation specs', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(page.frames()).toHaveLength(2);
+      assert.lengthOf(page.frames(), 2);
       await page.frames()[0]!.evaluate(() => {
         return ((globalThis as any).FOO = 'foo');
       });
       await page.frames()[1]!.evaluate(() => {
         return ((globalThis as any).FOO = 'bar');
       });
-      expect(
+      assert.strictEqual(
         await page.frames()[0]!.evaluate(() => {
           return (globalThis as any).FOO;
         }),
-      ).toBe('foo');
-      expect(
+        'foo',
+      );
+      assert.strictEqual(
         await page.frames()[1]!.evaluate(() => {
           return (globalThis as any).FOO;
         }),
-      ).toBe('bar');
+        'bar',
+      );
     });
     it('should have correct execution contexts', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/frames/one-frame.html');
-      expect(page.frames()).toHaveLength(2);
-      expect(
+      assert.lengthOf(page.frames(), 2);
+      assert.strictEqual(
         await page.frames()[0]!.evaluate(() => {
           return document.body.textContent!.trim();
         }),
-      ).toBe('');
-      expect(
+        '',
+      );
+      assert.strictEqual(
         await page.frames()[1]!.evaluate(() => {
           return document.body.textContent!.trim();
         }),
-      ).toBe(`Hi, I'm frame`);
+        `Hi, I'm frame`,
+      );
     });
     it('should execute after cross-site navigation', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const mainFrame = page.mainFrame();
-      expect(
+      assert.include(
         await mainFrame.evaluate(() => {
           return window.location.href;
         }),
-      ).toContain('localhost');
+        'localhost',
+      );
       await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
-      expect(
+      assert.include(
         await mainFrame.evaluate(() => {
           return window.location.href;
         }),
-      ).toContain('127');
+        '127',
+      );
     });
   });
 });

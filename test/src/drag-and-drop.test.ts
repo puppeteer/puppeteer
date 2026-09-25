@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
-
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {html} from './utils.js';
+import {assertRejects, html} from './utils.js';
 
 async function getDragState() {
   const {page} = await getTestState({skipLaunch: true});
@@ -28,38 +26,38 @@ describe("Legacy Drag n' Drop", function () {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
-    expect(page.isDragInterceptionEnabled()).toBe(false);
+    assert.isFalse(page.isDragInterceptionEnabled());
     await page.setDragInterception(true);
-    expect(page.isDragInterceptionEnabled()).toBe(true);
+    assert.isTrue(page.isDragInterceptionEnabled());
     using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
 
     assert(data instanceof Object);
-    expect(data.items).toHaveLength(1);
-    expect(await getDragState()).toBe(1);
+    assert.lengthOf(data.items, 1);
+    assert.strictEqual(await getDragState(), 1);
   });
   it('should emit a dragEnter', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
-    expect(page.isDragInterceptionEnabled()).toBe(false);
+    assert.isFalse(page.isDragInterceptionEnabled());
     await page.setDragInterception(true);
-    expect(page.isDragInterceptionEnabled()).toBe(true);
+    assert.isTrue(page.isDragInterceptionEnabled());
     using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
     assert(data instanceof Object);
     using dropzone = (await page.$('#drop'))!;
     await dropzone.dragEnter(data);
 
-    expect(await getDragState()).toBe(12);
+    assert.strictEqual(await getDragState(), 12);
   });
   it('should emit a dragOver event', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
-    expect(page.isDragInterceptionEnabled()).toBe(false);
+    assert.isFalse(page.isDragInterceptionEnabled());
     await page.setDragInterception(true);
-    expect(page.isDragInterceptionEnabled()).toBe(true);
+    assert.isTrue(page.isDragInterceptionEnabled());
     using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
     assert(data instanceof Object);
@@ -67,15 +65,15 @@ describe("Legacy Drag n' Drop", function () {
     await dropzone.dragEnter(data);
     await dropzone.dragOver(data);
 
-    expect(await getDragState()).toBe(123);
+    assert.strictEqual(await getDragState(), 123);
   });
   it('can be dropped', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
-    expect(page.isDragInterceptionEnabled()).toBe(false);
+    assert.isFalse(page.isDragInterceptionEnabled());
     await page.setDragInterception(true);
-    expect(page.isDragInterceptionEnabled()).toBe(true);
+    assert.isTrue(page.isDragInterceptionEnabled());
     using draggable = (await page.$('#drag'))!;
     using dropzone = (await page.$('#drop'))!;
     const data = await draggable.drag({x: 1, y: 1});
@@ -84,20 +82,20 @@ describe("Legacy Drag n' Drop", function () {
     await dropzone.dragOver(data);
     await dropzone.drop(data);
 
-    expect(await getDragState()).toBe(12334);
+    assert.strictEqual(await getDragState(), 12334);
   });
   it('can be dragged and dropped with a single function', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
-    expect(page.isDragInterceptionEnabled()).toBe(false);
+    assert.isFalse(page.isDragInterceptionEnabled());
     await page.setDragInterception(true);
-    expect(page.isDragInterceptionEnabled()).toBe(true);
+    assert.isTrue(page.isDragInterceptionEnabled());
     using draggable = (await page.$('#drag'))!;
     using dropzone = (await page.$('#drop'))!;
     await draggable.dragAndDrop(dropzone);
 
-    expect(await getDragState()).toBe(12334);
+    assert.strictEqual(await getDragState(), 12334);
   });
 });
 
@@ -116,7 +114,7 @@ describe("Drag n' Drop", () => {
 
     await dropzone.drop(draggable);
 
-    expect(await getDragState()).toBe(1234);
+    assert.strictEqual(await getDragState(), 1234);
   });
   it('should drop using mouse', async () => {
     const {page, server} = await getTestState();
@@ -132,10 +130,10 @@ describe("Drag n' Drop", () => {
     await page.mouse.down();
     await dropzone.hover();
 
-    expect(await getDragState()).toBe(123);
+    assert.strictEqual(await getDragState(), 123);
 
     await page.mouse.up();
-    expect(await getDragState()).toBe(1234);
+    assert.strictEqual(await getDragState(), 1234);
   });
   it('should drag and drop', async () => {
     const {page, server} = await getTestState();
@@ -150,7 +148,7 @@ describe("Drag n' Drop", () => {
     await draggable.drag(dropzone);
     await dropzone.drop(draggable);
 
-    expect(await getDragState()).toBe(1234);
+    assert.strictEqual(await getDragState(), 1234);
   });
   it('should release the mouse button when the drop fails', async () => {
     const {page} = await getTestState();
@@ -179,7 +177,7 @@ describe("Drag n' Drop", () => {
     assert(dropzone);
 
     await draggable.drag(dropzone);
-    await expect(dropzone.drop(draggable)).rejects.toThrow();
+    await assertRejects(dropzone.drop(draggable));
 
     // The drag pressed the mouse button down. If the failed drop leaves it
     // pressed, every later mouse event still carries it, and the next click
@@ -196,10 +194,11 @@ describe("Drag n' Drop", () => {
     });
     await page.mouse.move(20, 20);
 
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return (globalThis as unknown as {buttons?: number}).buttons;
       }),
-    ).toBe(0);
+      0,
+    );
   });
 });

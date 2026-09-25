@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import type {CdpHTTPRequest} from './HTTPRequest.js';
 import {CdpHTTPResponse} from './HTTPResponse.js';
@@ -25,7 +25,7 @@ describe('CdpHTTPResponse', () => {
     const extraInfo = null;
 
     const response = new CdpHTTPResponse(request, responsePayload, extraInfo);
-    expect(response.headers()['set-cookie']).toBe('a=b\n c=d');
+    assert.strictEqual(response.headers()['set-cookie'], 'a=b\n c=d');
   });
 
   it('should normalize other headers using ,', () => {
@@ -43,7 +43,10 @@ describe('CdpHTTPResponse', () => {
     const extraInfo = null;
 
     const response = new CdpHTTPResponse(request, responsePayload, extraInfo);
-    expect(response.headers()['content-type']).toBe('text/html, charset=utf-8');
-    expect(response.headers()['accept-language']).toBe('en-US, en');
+    assert.strictEqual(
+      response.headers()['content-type'],
+      'text/html, charset=utf-8',
+    );
+    assert.strictEqual(response.headers()['accept-language'], 'en-US, en');
   });
 });

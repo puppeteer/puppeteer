@@ -6,7 +6,7 @@
 
 import {describe, it, mock, afterEach} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {_connectToBrowser} from './BrowserConnector.js';
 
@@ -43,56 +43,86 @@ describe('BrowserConnector', () => {
         },
       }).catch(() => {});
 
-      expect(capturedRequests).toHaveLength(1);
-      expect(capturedRequests[0]!.url).toContain('/json/version');
-      expect(
+      assert.lengthOf(capturedRequests, 1);
+      assert.include(capturedRequests[0]!.url, '/json/version');
+      assert.strictEqual(
         (capturedRequests[0]!.init?.headers as Record<string, string>)?.[
           'Authorization'
         ],
-      ).toBe('Bearer test-token');
+        'Bearer test-token',
+      );
     });
   });
 
   describe('_connectToBrowser', () => {
     it('should throw an error when both blocklist and allowlist are specified', async () => {
-      await expect(
-        _connectToBrowser({
+      let error: unknown;
+      let rejected = false;
+      try {
+        await _connectToBrowser({
           browserWSEndpoint: 'ws://localhost:1234',
           blocklist: ['test'],
           allowlist: ['test'],
           logger: () => {
             return undefined;
           },
-        }),
-      ).rejects.toThrow('Cannot specify both blocklist and allowlist');
+        });
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.include(
+        error.message,
+        'Cannot specify both blocklist and allowlist',
+      );
     });
 
     it('should reject blocklist for WebDriver BiDi connections', async () => {
-      await expect(
-        _connectToBrowser({
+      let error: unknown;
+      let rejected = false;
+      try {
+        await _connectToBrowser({
           browserWSEndpoint: 'ws://localhost:1234',
           protocol: 'webDriverBiDi',
           blocklist: ['https://example.com/*'],
           logger: () => {
             return undefined;
           },
-        }),
-      ).rejects.toThrow(
+        });
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.include(
+        error.message,
         'blocklist and allowlist are only supported with the CDP protocol',
       );
     });
 
     it('should reject allowlist for WebDriver BiDi connections', async () => {
-      await expect(
-        _connectToBrowser({
+      let error: unknown;
+      let rejected = false;
+      try {
+        await _connectToBrowser({
           browserWSEndpoint: 'ws://localhost:1234',
           protocol: 'webDriverBiDi',
           allowlist: ['https://example.com/*'],
           logger: () => {
             return undefined;
           },
-        }),
-      ).rejects.toThrow(
+        });
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.include(
+        error.message,
         'blocklist and allowlist are only supported with the CDP protocol',
       );
     });

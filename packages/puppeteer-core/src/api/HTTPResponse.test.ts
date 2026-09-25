@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {HTTPResponse} from './HTTPResponse.js';
 
@@ -30,14 +30,23 @@ describe('HTTPResponse', () => {
       testResponse.contentToReturn = new TextEncoder().encode('hello');
 
       const text = await testResponse.text();
-      expect(text).toBe('hello');
+      assert.strictEqual(text, 'hello');
     });
 
     it('should throw if content is not valid UTF-8', async () => {
       const testResponse = new TestResponse();
       testResponse.contentToReturn = new Uint8Array([0xff]);
 
-      await expect(testResponse.text()).rejects.toThrow();
+      let error: unknown;
+      let rejected = false;
+      try {
+        await testResponse.text();
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
     });
   });
 });

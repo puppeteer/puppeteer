@@ -4,10 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {KnownDevices, PredefinedNetworkConditions} from 'puppeteer';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  assertAtLeastOneToContain,
+  getTestState,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
+import {assertGolden} from './utils.js';
 
 const iPhone = KnownDevices['iPhone 6'];
 const iPhoneLandscape = KnownDevices['iPhone 6 landscape'];
@@ -19,54 +24,57 @@ describe('Emulation', () => {
     it('should get the proper viewport size', async () => {
       const {page} = await getTestState();
 
-      expect(page.viewport()).toEqual({width: 800, height: 600});
+      assert.deepEqual(page.viewport(), {width: 800, height: 600});
       await page.setViewport({width: 123, height: 456});
-      expect(page.viewport()).toEqual({width: 123, height: 456});
+      assert.deepEqual(page.viewport(), {width: 123, height: 456});
     });
     it('should support mobile emulation', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return window.innerWidth;
         }),
-      ).toBe(800);
+        800,
+      );
       await page.setViewport(iPhone.viewport);
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return window.innerWidth;
         }),
-      ).toBe(375);
+        375,
+      );
       await page.setViewport({width: 400, height: 300});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return window.innerWidth;
         }),
-      ).toBe(400);
+        400,
+      );
     });
     it('should support touch emulation', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return 'ontouchstart' in window;
         }),
-      ).toBe(false);
+      );
       await page.setViewport(iPhone.viewport);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return 'ontouchstart' in window;
         }),
-      ).toBe(true);
-      expect(await page.evaluate(dispatchTouch)).toBe('Received touch');
+      );
+      assert.strictEqual(await page.evaluate(dispatchTouch), 'Received touch');
       await page.setViewport({width: 100, height: 100});
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return 'ontouchstart' in window;
         }),
-      ).toBe(false);
+      );
 
       function dispatchTouch() {
         let fulfill!: (value: string) => void;
@@ -87,51 +95,56 @@ describe('Emulation', () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/detect-touch.html');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.body.textContent!.trim();
         }),
-      ).toBe('NO');
+        'NO',
+      );
       await page.setViewport(iPhone.viewport);
       await page.goto(server.PREFIX + '/detect-touch.html');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return document.body.textContent!.trim();
         }),
-      ).toBe('YES');
+        'YES',
+      );
     });
     it('should detect touch when applying viewport with touches', async () => {
       const {page, server} = await getTestState();
 
       await page.setViewport({width: 800, height: 600, hasTouch: true});
       await page.addScriptTag({url: server.PREFIX + '/modernizr.js'});
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return (globalThis as any).Modernizr.touchevents;
         }),
-      ).toBe(true);
+      );
     });
     it('should support landscape emulation', async () => {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return screen.orientation.type;
         }),
-      ).toBe('portrait-primary');
+        'portrait-primary',
+      );
       await page.setViewport(iPhoneLandscape.viewport);
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return screen.orientation.type;
         }),
-      ).toBe('landscape-primary');
+        'landscape-primary',
+      );
       await page.setViewport({width: 100, height: 100});
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return screen.orientation.type;
         }),
-      ).toBe('portrait-primary');
+        'portrait-primary',
+      );
     });
     it('should update media queries when resolution changes', async () => {
       const {page, server} = await getTestState();
@@ -154,12 +167,12 @@ describe('Emulation', () => {
 
         await page.goto(server.PREFIX + '/resolution.html');
 
-        await expect(getFontSize()).resolves.toEqual(dpr);
+        assert.strictEqual(await getFontSize(), dpr);
 
         const screenshot = await page.screenshot({
           fullPage: false,
         });
-        expect(screenshot).toBeGolden(`device-pixel-ratio${dpr}.png`);
+        assertGolden(screenshot, `device-pixel-ratio${dpr}.png`);
       }
     });
     it('should load correct pictures when emulation dpr', async () => {
@@ -180,9 +193,7 @@ describe('Emulation', () => {
 
         await page.goto(server.PREFIX + '/picture.html');
 
-        await expect(getCurrentSrc()).resolves.toMatch(
-          new RegExp(`logo-${dpr}x.png`),
-        );
+        assert.match(await getCurrentSrc(), new RegExp(`logo-${dpr}x.png`));
       }
     });
   });
@@ -193,16 +204,18 @@ describe('Emulation', () => {
 
       await page.goto(server.PREFIX + '/mobile.html');
       await page.emulate(iPhone);
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return window.innerWidth;
         }),
-      ).toBe(375);
-      expect(
+        375,
+      );
+      assert.include(
         await page.evaluate(() => {
           return navigator.userAgent;
         }),
-      ).toContain('iPhone');
+        'iPhone',
+      );
     });
 
     it('should work twice on about:blank', async () => {
@@ -223,11 +236,12 @@ describe('Emulation', () => {
         return (button.style.marginTop = '200px');
       }, button);
       await button.click();
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).result;
         }),
-      ).toBe('Clicked');
+        'Clicked',
+      );
     });
   });
 
@@ -235,38 +249,38 @@ describe('Emulation', () => {
     it('should work', async () => {
       const {page} = await getTestState();
 
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('screen').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('print').matches;
         }),
-      ).toBe(false);
+      );
       await page.emulateMediaType('print');
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('screen').matches;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('print').matches;
         }),
-      ).toBe(true);
+      );
       await page.emulateMediaType();
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('screen').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('print').matches;
         }),
-      ).toBe(false);
+      );
     });
     it('should throw in case of bad argument', async () => {
       const {page} = await getTestState();
@@ -275,7 +289,7 @@ describe('Emulation', () => {
       await page.emulateMediaType('bad').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toBe('Unsupported media type: bad');
+      assert.strictEqual(error.message, 'Unsupported media type: bad');
     });
   });
 
@@ -286,116 +300,116 @@ describe('Emulation', () => {
       await page.emulateMediaFeatures([
         {name: 'prefers-reduced-motion', value: 'reduce'},
       ]);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: reduce)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: no-preference)').matches;
         }),
-      ).toBe(false);
+      );
       await page.emulateMediaFeatures([
         {name: 'prefers-color-scheme', value: 'light'},
       ]);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: light)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: dark)').matches;
         }),
-      ).toBe(false);
+      );
       await page.emulateMediaFeatures([
         {name: 'prefers-color-scheme', value: 'dark'},
       ]);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: dark)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: light)').matches;
         }),
-      ).toBe(false);
+      );
       await page.emulateMediaFeatures([
         {name: 'prefers-reduced-motion', value: 'reduce'},
         {name: 'prefers-color-scheme', value: 'light'},
       ]);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: reduce)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(prefers-reduced-motion: no-preference)').matches;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: light)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(prefers-color-scheme: dark)').matches;
         }),
-      ).toBe(false);
+      );
       await page.emulateMediaFeatures([{name: 'color-gamut', value: 'srgb'}]);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: p3)').matches;
         }),
-      ).toBe(false);
-      expect(
+      );
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: srgb)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: rec2020)').matches;
         }),
-      ).toBe(false);
+      );
       await page.emulateMediaFeatures([{name: 'color-gamut', value: 'p3'}]);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: p3)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: srgb)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isFalse(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: rec2020)').matches;
         }),
-      ).toBe(false);
+      );
       await page.emulateMediaFeatures([
         {name: 'color-gamut', value: 'rec2020'},
       ]);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: p3)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: srgb)').matches;
         }),
-      ).toBe(true);
-      expect(
+      );
+      assert.isTrue(
         await page.evaluate(() => {
           return matchMedia('(color-gamut: rec2020)').matches;
         }),
-      ).toBe(true);
+      );
     });
     it('should throw in case of bad argument', async () => {
       const {page} = await getTestState();
@@ -406,7 +420,7 @@ describe('Emulation', () => {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toBe('Unsupported media feature: bad');
+      assert.strictEqual(error.message, 'Unsupported media feature: bad');
     });
   });
 
@@ -418,34 +432,34 @@ describe('Emulation', () => {
         (globalThis as any).date = new Date(1479579154987);
       });
       await page.emulateTimezone('America/Jamaica');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
         }),
-      ).toBe('Sat Nov 19 2016 13:12:34 GMT-0500 (Eastern Standard Time)');
+        'Sat Nov 19 2016 13:12:34 GMT-0500 (Eastern Standard Time)',
+      );
 
       await page.emulateTimezone('Pacific/Honolulu');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
         }),
-      ).toBe(
         'Sat Nov 19 2016 08:12:34 GMT-1000 (Hawaii-Aleutian Standard Time)',
       );
 
       await page.emulateTimezone('America/Buenos_Aires');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
         }),
-      ).toBe('Sat Nov 19 2016 15:12:34 GMT-0300 (Argentina Standard Time)');
+        'Sat Nov 19 2016 15:12:34 GMT-0300 (Argentina Standard Time)',
+      );
 
       await page.emulateTimezone('Europe/Berlin');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
         }),
-      ).toBe(
         'Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)',
       );
     });
@@ -457,18 +471,20 @@ describe('Emulation', () => {
         (globalThis as any).date = new Date(1479579154987);
       });
       await page.emulateTimezone('GMT+10:00');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
         }),
-      ).toBe('Sun Nov 20 2016 04:12:34 GMT+1000 (GMT+10:00)');
+        'Sun Nov 20 2016 04:12:34 GMT+1000 (GMT+10:00)',
+      );
 
       await page.emulateTimezone('GMT-12:34');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return (globalThis as any).date.toString();
         }),
-      ).toBe('Sat Nov 19 2016 05:38:34 GMT-1234 (GMT-12:34)');
+        'Sat Nov 19 2016 05:38:34 GMT-1234 (GMT-12:34)',
+      );
     });
 
     it('should throw for invalid timezone IDs', async () => {
@@ -478,21 +494,21 @@ describe('Emulation', () => {
       await page.emulateTimezone('Foo/Bar').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Invalid timezone ID: Foo/Bar', // CDP
         'invalid argument', // BiDi.
       ]);
       // Assert the error message is informative.
-      expect(error.message).toContain('Foo/Bar');
+      assert.include(error.message, 'Foo/Bar');
       await page.emulateTimezone('Baz/Qux').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).atLeastOneToContain([
+      assertAtLeastOneToContain(error.message, [
         'Invalid timezone ID: Baz/Qux', // CDP
         'invalid argument', // BiDi.
       ]);
       // Assert the error message is informative.
-      expect(error.message).toContain('Baz/Qux');
+      assert.include(error.message, 'Baz/Qux');
     });
   });
 
@@ -507,45 +523,52 @@ describe('Emulation', () => {
       });
 
       await page.emulateLocale('de-DE');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return Intl.NumberFormat().resolvedOptions().locale;
         }),
-      ).toBe('de-DE');
-      expect(
+        'de-DE',
+      );
+      assert.strictEqual(
         await page.evaluate(() => {
           return new Intl.NumberFormat().format(123456.78);
         }),
-      ).toBe('123.456,78');
-      expect(
+        '123.456,78',
+      );
+      assert.strictEqual(
         await page.evaluate(() => {
           return navigator.language;
         }),
-      ).toBe('de-DE');
-      expect(
+        'de-DE',
+      );
+      assert.strictEqual(
         await page.evaluate(() => {
           return navigator.languages[0];
         }),
-      ).toBe('de-DE');
+        'de-DE',
+      );
 
       await page.emulateLocale('fr-FR');
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return Intl.DateTimeFormat().resolvedOptions().locale;
         }),
-      ).toBe('fr-FR');
+        'fr-FR',
+      );
 
       await page.emulateLocale();
-      expect(
+      assert.strictEqual(
         await page.evaluate(() => {
           return Intl.NumberFormat().resolvedOptions().locale;
         }),
-      ).toBe(defaultLocale);
-      expect(
+        defaultLocale,
+      );
+      assert.strictEqual(
         await page.evaluate(() => {
           return navigator.language;
         }),
-      ).toBe(defaultLanguage);
+        defaultLanguage,
+      );
     });
   });
 
@@ -559,49 +582,49 @@ describe('Emulation', () => {
       {
         await page.emulateVisionDeficiency('none');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('screenshot-sanity.png');
+        assertGolden(screenshot, 'screenshot-sanity.png');
       }
 
       {
         await page.emulateVisionDeficiency('achromatopsia');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('vision-deficiency-achromatopsia.png');
+        assertGolden(screenshot, 'vision-deficiency-achromatopsia.png');
       }
 
       {
         await page.emulateVisionDeficiency('blurredVision');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('vision-deficiency-blurredVision.png');
+        assertGolden(screenshot, 'vision-deficiency-blurredVision.png');
       }
 
       {
         await page.emulateVisionDeficiency('deuteranopia');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('vision-deficiency-deuteranopia.png');
+        assertGolden(screenshot, 'vision-deficiency-deuteranopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('protanopia');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('vision-deficiency-protanopia.png');
+        assertGolden(screenshot, 'vision-deficiency-protanopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('tritanopia');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('vision-deficiency-tritanopia.png');
+        assertGolden(screenshot, 'vision-deficiency-tritanopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('none');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('screenshot-sanity.png');
+        assertGolden(screenshot, 'screenshot-sanity.png');
       }
 
       {
         await page.emulateVisionDeficiency('reducedContrast');
         const screenshot = await page.screenshot();
-        expect(screenshot).toBeGolden('vision-deficiency-reducedContrast.png');
+        assertGolden(screenshot, 'vision-deficiency-reducedContrast.png');
       }
     });
 
@@ -615,7 +638,10 @@ describe('Emulation', () => {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toBe('Unsupported vision deficiency: invalid');
+      assert.strictEqual(
+        error.message,
+        'Unsupported vision deficiency: invalid',
+      );
     });
   });
 
@@ -640,7 +666,7 @@ describe('Emulation', () => {
         } else {
           expectedError = /ERR_INTERNET_DISCONNECTED/;
         }
-        expect((err as Error).message).toMatch(expectedError);
+        assert.match((err as Error).message, expectedError);
       }
     });
 
@@ -650,17 +676,20 @@ describe('Emulation', () => {
       const slow3G = PredefinedNetworkConditions['Slow 3G']!;
       const fast3G = PredefinedNetworkConditions['Fast 3G']!;
 
-      expect(
+      assert.strictEqual(
         await page.evaluate('window.navigator.connection.effectiveType'),
-      ).toBe('4g');
+        '4g',
+      );
       await page.emulateNetworkConditions(fast3G);
-      expect(
+      assert.strictEqual(
         await page.evaluate('window.navigator.connection.effectiveType'),
-      ).toBe('3g');
+        '3g',
+      );
       await page.emulateNetworkConditions(slow3G);
-      expect(
+      assert.strictEqual(
         await page.evaluate('window.navigator.connection.effectiveType'),
-      ).toBe('2g');
+        '2g',
+      );
       await page.emulateNetworkConditions(null);
     });
   });
@@ -679,21 +708,21 @@ describe('Emulation', () => {
       const {page, context} = await getTestState();
 
       await page.emulateFocusedPage(true);
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.hasFocus();
         }),
-      ).toBe(true);
+      );
 
       const page2 = await context.newPage();
       // Move page into background by focusing page2.
       await page2.bringToFront();
 
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.hasFocus();
         }),
-      ).toBe(true);
+      );
     });
 
     it('should reset focus', async () => {
@@ -705,18 +734,18 @@ describe('Emulation', () => {
       // Move page into background by focusing page2.
       await page2.bringToFront();
 
-      expect(
+      assert.isTrue(
         await page.evaluate(() => {
           return document.hasFocus();
         }),
-      ).toBe(true);
+      );
 
       await page.emulateFocusedPage(false);
-      expect(
+      assert.isFalse(
         await page.evaluate(() => {
           return document.hasFocus();
         }),
-      ).toBe(false);
+      );
     });
   });
 });

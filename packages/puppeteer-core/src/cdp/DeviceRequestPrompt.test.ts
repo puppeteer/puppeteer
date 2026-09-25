@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
 import {TimeoutError} from '../common/Errors.js';
@@ -55,7 +55,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(prompt).toBeTruthy();
+      assert.ok(prompt);
     });
 
     it('should respect timeout', async () => {
@@ -66,9 +66,16 @@ describe('DeviceRequestPrompt', function () {
         timeoutSettings,
       );
 
-      await expect(
-        manager.waitForDevicePrompt({timeout: 1}),
-      ).rejects.toBeInstanceOf(TimeoutError);
+      let error: unknown;
+      let rejected = false;
+      try {
+        await manager.waitForDevicePrompt({timeout: 1});
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, TimeoutError);
     });
 
     it('should respect default timeout when there is no custom timeout', async () => {
@@ -80,9 +87,16 @@ describe('DeviceRequestPrompt', function () {
       );
 
       timeoutSettings.setDefaultTimeout(1);
-      await expect(manager.waitForDevicePrompt()).rejects.toBeInstanceOf(
-        TimeoutError,
-      );
+      let error: unknown;
+      let rejected = false;
+      try {
+        await manager.waitForDevicePrompt();
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, TimeoutError);
     });
 
     it('should prioritize exact timeout over default timeout', async () => {
@@ -94,9 +108,16 @@ describe('DeviceRequestPrompt', function () {
       );
 
       timeoutSettings.setDefaultTimeout(0);
-      await expect(
-        manager.waitForDevicePrompt({timeout: 1}),
-      ).rejects.toBeInstanceOf(TimeoutError);
+      let error: unknown;
+      let rejected = false;
+      try {
+        await manager.waitForDevicePrompt({timeout: 1});
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, TimeoutError);
     });
 
     it('should work with no timeout', async () => {
@@ -119,7 +140,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(prompt).toBeTruthy();
+      assert.ok(prompt);
     });
 
     it('should return the same prompt when there are many watchdogs simultaneously', async () => {
@@ -140,7 +161,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(prompt1 === prompt2).toBeTruthy();
+      assert.ok(prompt1 === prompt2);
     });
 
     it('should listen and shortcut when there are no watchdogs', async () => {
@@ -156,7 +177,7 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      expect(manager).toBeTruthy();
+      assert.ok(manager);
     });
   });
 
@@ -169,17 +190,17 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      expect(prompt.devices).toHaveLength(0);
+      assert.lengthOf(prompt.devices, 0);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
         devices: [DEVICE_0],
       });
-      expect(prompt.devices).toHaveLength(1);
+      assert.lengthOf(prompt.devices, 1);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '00000000000000000000000000000000',
         devices: [DEVICE_0, DEVICE_1],
       });
-      expect(prompt.devices).toEqual([DEVICE_0, DEVICE_1]);
+      assert.deepEqual(prompt.devices, [DEVICE_0, DEVICE_1]);
     });
 
     it('does not list devices from events of another prompt', function () {
@@ -190,12 +211,12 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      expect(prompt.devices).toHaveLength(0);
+      assert.lengthOf(prompt.devices, 0);
       client.emit('DeviceAccess.deviceRequestPrompted', {
         id: '88888888888888888888888888888888',
         devices: [DEVICE_0, DEVICE_1],
       });
-      expect(prompt.devices).toHaveLength(0);
+      assert.lengthOf(prompt.devices, 0);
     });
   });
 
@@ -223,7 +244,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(device).toEqual(DEVICE_1);
+      assert.deepEqual(device, DEVICE_1);
     });
 
     it('should return first matching device from already known devices', async () => {
@@ -237,7 +258,7 @@ describe('DeviceRequestPrompt', function () {
       const device = await prompt.waitForDevice(({name}) => {
         return name.includes('1');
       });
-      expect(device).toEqual(DEVICE_1);
+      assert.deepEqual(device, DEVICE_1);
     });
 
     it('should return device in the devices list', async () => {
@@ -259,7 +280,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(prompt.devices).toContain(device);
+      assert.include(prompt.devices, device);
     });
 
     it('should respect timeout', async () => {
@@ -270,14 +291,21 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      await expect(
-        prompt.waitForDevice(
+      let error: unknown;
+      let rejected = false;
+      try {
+        await prompt.waitForDevice(
           ({name}) => {
             return name.includes('Device');
           },
           {timeout: 1},
-        ),
-      ).rejects.toBeInstanceOf(TimeoutError);
+        );
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, TimeoutError);
     });
 
     it('should respect default timeout when there is no custom timeout', async () => {
@@ -289,14 +317,21 @@ describe('DeviceRequestPrompt', function () {
       });
 
       timeoutSettings.setDefaultTimeout(1);
-      await expect(
-        prompt.waitForDevice(
+      let error: unknown;
+      let rejected = false;
+      try {
+        await prompt.waitForDevice(
           ({name}) => {
             return name.includes('Device');
           },
           {timeout: 1},
-        ),
-      ).rejects.toBeInstanceOf(TimeoutError);
+        );
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, TimeoutError);
     });
 
     it('should prioritize exact timeout over default timeout', async () => {
@@ -308,14 +343,21 @@ describe('DeviceRequestPrompt', function () {
       });
 
       timeoutSettings.setDefaultTimeout(0);
-      await expect(
-        prompt.waitForDevice(
+      let error: unknown;
+      let rejected = false;
+      try {
+        await prompt.waitForDevice(
           ({name}) => {
             return name.includes('Device');
           },
           {timeout: 1},
-        ),
-      ).rejects.toBeInstanceOf(TimeoutError);
+        );
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, TimeoutError);
     });
 
     it('should work with no timeout', async () => {
@@ -344,7 +386,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(device).toEqual(DEVICE_1);
+      assert.deepEqual(device, DEVICE_1);
     });
 
     it('should be able to abort', async () => {
@@ -363,7 +405,17 @@ describe('DeviceRequestPrompt', function () {
         {signal: abortController.signal},
       );
       abortController.abort();
-      await expect(task).rejects.toThrow(/aborted/);
+      let error: unknown;
+      let rejected = false;
+      try {
+        await task;
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.match(error.message, /aborted/);
     });
 
     it('should return same device from multiple watchdogs', async () => {
@@ -392,7 +444,7 @@ describe('DeviceRequestPrompt', function () {
           });
         })(),
       ]);
-      expect(device1 === device2).toBeTruthy();
+      assert.ok(device1 === device2);
     });
   });
 
@@ -427,9 +479,17 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      await expect(prompt.select(DEVICE_1)).rejects.toThrow(
-        'Cannot select unknown device!',
-      );
+      let error: unknown;
+      let rejected = false;
+      try {
+        await prompt.select(DEVICE_1);
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.include(error.message, 'Cannot select unknown device!');
     });
 
     it('should fail when selecting prompt twice', async () => {
@@ -452,7 +512,18 @@ describe('DeviceRequestPrompt', function () {
         })(),
       ]);
       await prompt.select(device);
-      await expect(prompt.select(device)).rejects.toThrow(
+      let error: unknown;
+      let rejected = false;
+      try {
+        await prompt.select(device);
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.include(
+        error.message,
         'Cannot select DeviceRequestPrompt which is already handled!',
       );
     });
@@ -477,7 +548,18 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
       await prompt.cancel();
-      await expect(prompt.cancel()).rejects.toThrow(
+      let error: unknown;
+      let rejected = false;
+      try {
+        await prompt.cancel();
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.include(
+        error.message,
         'Cannot cancel DeviceRequestPrompt which is already handled!',
       );
     });

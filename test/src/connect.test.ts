@@ -3,7 +3,7 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, launch} from './mocha-utils.js';
 
@@ -17,22 +17,24 @@ describe('Puppeteer.connect', function () {
 
       using browser1 = await puppeteer.connect({browserURL});
       const page1 = await browser1.newPage();
-      expect(
+      assert.strictEqual(
         await page1.evaluate(() => {
           return 7 * 8;
         }),
-      ).toBe(56);
+        56,
+      );
       await browser1.disconnect();
 
       using browser2 = await puppeteer.connect({
         browserURL: browserURL + '/',
       });
       const page2 = await browser2.newPage();
-      expect(
+      assert.strictEqual(
         await page2.evaluate(() => {
           return 8 * 7;
         }),
-      ).toBe(56);
+        56,
+      );
     } finally {
       await close();
     }
@@ -50,7 +52,8 @@ describe('Puppeteer.connect', function () {
       .catch(error_ => {
         return (error = error_);
       });
-    expect(error.message).toContain(
+    assert.include(
+      error.message,
       'Exactly one of browserWSEndpoint, browserURL, transport or channel must be passed to puppeteer.connect',
     );
   });
@@ -63,8 +66,6 @@ describe('Puppeteer.connect', function () {
     await puppeteer.connect({browserURL}).catch(error_ => {
       return (error = error_);
     });
-    expect(error.message).toContain(
-      'Failed to fetch browser webSocket URL from',
-    );
+    assert.include(error.message, 'Failed to fetch browser webSocket URL from');
   });
 });

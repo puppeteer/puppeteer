@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
@@ -42,7 +42,7 @@ describe('WebDriver BiDi Connection', () => {
     const responsePromise = connection.send('session.new', {
       capabilities: {},
     });
-    expect(transport.sent).toEqual([
+    assert.deepEqual(transport.sent, [
       `{"id":1,"method":"session.new","params":{"capabilities":{}}}`,
     ]);
     const id = JSON.parse(transport.sent[0]!).id;
@@ -53,8 +53,8 @@ describe('WebDriver BiDi Connection', () => {
     };
     (transport as ConnectionTransport).onmessage?.(JSON.stringify(rawResponse));
     const response = await responsePromise;
-    expect(response).toEqual(rawResponse);
+    assert.deepEqual<unknown>(response, rawResponse);
     connection.dispose();
-    expect(transport.closed).toBeTruthy();
+    assert.ok(transport.closed);
   });
 });

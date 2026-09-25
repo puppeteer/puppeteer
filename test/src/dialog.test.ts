@@ -3,7 +3,7 @@
  * Copyright 2018 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -23,11 +23,11 @@ describe('Page.Events.Dialog', function () {
       return alert('yo');
     });
 
-    expect(onDialog.callCount).toEqual(1);
+    assert.strictEqual(onDialog.callCount, 1);
     const dialog = onDialog.firstCall.args[0]!;
-    expect(dialog.type()).toBe('alert');
-    expect(dialog.defaultValue()).toBe('');
-    expect(dialog.message()).toBe('yo');
+    assert.strictEqual(dialog.type(), 'alert');
+    assert.strictEqual(dialog.defaultValue(), '');
+    assert.strictEqual(dialog.message(), 'yo');
   });
 
   it('should allow accepting prompts', async () => {
@@ -42,13 +42,13 @@ describe('Page.Events.Dialog', function () {
       return prompt('question?', 'yes.');
     });
 
-    expect(onDialog.callCount).toEqual(1);
+    assert.strictEqual(onDialog.callCount, 1);
     const dialog = onDialog.firstCall.args[0]!;
-    expect(dialog.type()).toBe('prompt');
-    expect(dialog.defaultValue()).toBe('yes.');
-    expect(dialog.message()).toBe('question?');
+    assert.strictEqual(dialog.type(), 'prompt');
+    assert.strictEqual(dialog.defaultValue(), 'yes.');
+    assert.strictEqual(dialog.message(), 'question?');
 
-    expect(result).toBe('answer!');
+    assert.strictEqual(result, 'answer!');
   });
   it('should dismiss the prompt', async () => {
     const {page} = await getTestState();
@@ -59,7 +59,7 @@ describe('Page.Events.Dialog', function () {
     const result = await page.evaluate(() => {
       return prompt('question?');
     });
-    expect(result).toBe(null);
+    assert.isNull(result);
   });
   it('should see dialogs handled by other connections', async () => {
     const {page, server, browser, puppeteer, defaultBrowserOptions} =
@@ -97,14 +97,14 @@ describe('Page.Events.Dialog', function () {
     await dialog2.accept('answer!');
 
     const result = await evaluatePromise;
-    expect(result).toBe('answer!');
+    assert.strictEqual(result, 'answer!');
 
     // Wait for the event to be processed by the first connection.
     await page.evaluate(() => {
       return 1;
     });
 
-    expect(dialog1.handled).toBe(true);
-    expect(dialog2.handled).toBe(true);
+    assert.isTrue(dialog1.handled);
+    assert.isTrue(dialog2.handled);
   });
 });

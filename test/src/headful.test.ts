@@ -8,7 +8,7 @@ import {mkdtemp} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
@@ -92,7 +92,7 @@ describe('headful tests', function () {
       try {
         rmSync(userDataDir);
       } catch {}
-      expect(cookie).toBe('foo=true');
+      assert.strictEqual(cookie, 'foo=true');
     });
   });
 });

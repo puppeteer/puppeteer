@@ -6,7 +6,7 @@
 
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 
@@ -40,7 +40,11 @@ describe('webExtension', function () {
     const {browser, close} = await launch(options);
     try {
       const id = await browser.installExtension(extensionPath);
-      expect(id).toMatch(expectedId);
+      if (typeof expectedId === 'string') {
+        assert.include(id, expectedId);
+      } else {
+        assert.match(id, expectedId);
+      }
 
       // Check we can uninstall the extension.
       await browser.uninstallExtension(id);

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
 
 import {
@@ -13,7 +13,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
 } from '../mocha-utils.js';
-import {attachFrame, html} from '../utils.js';
+import {assertRejects, attachFrame, html} from '../utils.js';
 
 describe('Network Restrictions', function () {
   setupTestBrowserHooks();
@@ -39,10 +39,8 @@ describe('Network Restrictions', function () {
         return (error = e);
       });
 
-      expect(error).toBeDefined();
-      expect(error?.message).toContain(
-        'is blocked by blocklist/allowlist rules',
-      );
+      assert.isDefined(error);
+      assert.include(error?.message, 'is blocked by blocklist/allowlist rules');
     });
 
     it('should block window.location.href navigation to URLs in the blocklist', async () => {
@@ -60,7 +58,7 @@ describe('Network Restrictions', function () {
 
       await navPromise;
       const finalUrl = page.url();
-      expect(finalUrl).not.toBe(blockedUrl);
+      assert.notStrictEqual(finalUrl, blockedUrl);
     });
 
     it('should fail fetch requests to URLs in the blocklist', async () => {
@@ -78,7 +76,7 @@ describe('Network Restrictions', function () {
         }
       }, blockedUrl);
 
-      expect(fetchError).toContain('Failed to fetch');
+      assert.include(fetchError, 'Failed to fetch');
     });
 
     it('should fail service worker registration for blocklisted script URLs', async () => {
@@ -96,8 +94,8 @@ describe('Network Restrictions', function () {
         }
       }, blockedUrl);
 
-      expect(swError).toBeTruthy();
-      expect(swError).toContain('Failed to register a ServiceWorker');
+      assert.ok(swError);
+      assert.include(swError, 'Failed to register a ServiceWorker');
     });
 
     it('should fail fetch requests from within a service worker to URLs in the blocklist', async () => {
@@ -124,8 +122,8 @@ describe('Network Restrictions', function () {
         }
       }, blockedUrl);
 
-      expect(fetchError).toBeTruthy();
-      expect(fetchError).toContain('Failed to fetch');
+      assert.ok(fetchError);
+      assert.include(fetchError, 'Failed to fetch');
     });
 
     it('should prevent loading of blocklisted subresources (e.g., images)', async () => {
@@ -155,11 +153,12 @@ describe('Network Restrictions', function () {
       `);
       await idle;
 
-      expect(failedRequests.has(blockedUrl)).toBe(true);
-      expect(failedRequests.get(blockedUrl)).toContain(
+      assert.isTrue(failedRequests.has(blockedUrl));
+      assert.include(
+        failedRequests.get(blockedUrl),
         'net::ERR_INTERNET_DISCONNECTED',
       );
-      expect(finishedRequests.has(allowedUrl)).toBe(true);
+      assert.isTrue(finishedRequests.has(allowedUrl));
     });
 
     it('should block frame.goto when the destination is in the blocklist', async () => {
@@ -175,10 +174,8 @@ describe('Network Restrictions', function () {
         return (error = e);
       });
 
-      expect(error).toBeDefined();
-      expect(error?.message).toContain(
-        'is blocked by blocklist/allowlist rules',
-      );
+      assert.isDefined(error);
+      assert.include(error?.message, 'is blocked by blocklist/allowlist rules');
     });
 
     it('should block OOPIF frame.goto when the destination is in the blocklist', async () => {
@@ -196,24 +193,25 @@ describe('Network Restrictions', function () {
         return (error = e);
       });
 
-      expect(error).toBeDefined();
-      expect(error?.message).toContain(
-        'is blocked by blocklist/allowlist rules',
-      );
+      assert.isDefined(error);
+      assert.include(error?.message, 'is blocked by blocklist/allowlist rules');
     });
 
     it('should block CDP standard emulation reset when blocklist is active', async () => {
       const {page} = state;
       const session = await page.createCDPSession();
 
-      await expect(
-        session.send('Network.emulateNetworkConditions', {
-          offline: false,
-          latency: 0,
-          downloadThroughput: 0,
-          uploadThroughput: 0,
-        }),
-      ).rejects.toThrow(
+      assert.include(
+        (
+          await assertRejects(
+            session.send('Network.emulateNetworkConditions', {
+              offline: false,
+              latency: 0,
+              downloadThroughput: 0,
+              uploadThroughput: 0,
+            }),
+          )
+        ).message,
         'Cannot reset network conditions: rule-based emulation is enabled.',
       );
     });
@@ -221,14 +219,17 @@ describe('Network Restrictions', function () {
     it('should block page.emulateNetworkConditions reset when blocklist is active', async () => {
       const {page} = state;
 
-      await expect(
-        page.emulateNetworkConditions({
-          offline: false,
-          latency: 0,
-          download: 0,
-          upload: 0,
-        }),
-      ).rejects.toThrow(
+      assert.include(
+        (
+          await assertRejects(
+            page.emulateNetworkConditions({
+              offline: false,
+              latency: 0,
+              download: 0,
+              upload: 0,
+            }),
+          )
+        ).message,
         'Cannot reset network conditions: rule-based emulation is enabled.',
       );
     });
@@ -249,8 +250,8 @@ describe('Network Restrictions', function () {
         }
       }, server.PREFIX + '/empty.html');
 
-      expect(fetchError).toBeTruthy();
-      expect(fetchError).toContain('Failed to fetch');
+      assert.ok(fetchError);
+      assert.include(fetchError, 'Failed to fetch');
     });
 
     it('should block fetch requests from within OOPIFs to URLs in the blocklist', async () => {
@@ -271,8 +272,8 @@ describe('Network Restrictions', function () {
         }
       }, server.PREFIX + '/empty.html');
 
-      expect(fetchError).toBeTruthy();
-      expect(fetchError).toContain('Failed to fetch');
+      assert.ok(fetchError);
+      assert.include(fetchError, 'Failed to fetch');
     });
 
     it('should block iframe content from loading if the iframe URL is in the blocklist', async () => {
@@ -286,7 +287,7 @@ describe('Network Restrictions', function () {
       })!;
 
       const content = await frame.content();
-      expect(content).not.toContain("Hi, I'm frame");
+      assert.notInclude(content, "Hi, I'm frame");
     });
 
     it('should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist', async () => {
@@ -297,7 +298,7 @@ describe('Network Restrictions', function () {
         'frame1',
         server.CROSS_PROCESS_PREFIX + '/empty.html',
       );
-      expect(frame.url()).toBe('chrome-error://chromewebdata/');
+      assert.strictEqual(frame.url(), 'chrome-error://chromewebdata/');
     });
   });
 
@@ -316,11 +317,9 @@ describe('Network Restrictions', function () {
       await page.goto(blockedUrl).catch(e => {
         return (error = e);
       });
-      expect(page.url()).not.toBe(blockedUrl);
-      expect(error).toBeDefined();
-      expect(error?.message).toContain(
-        'is blocked by blocklist/allowlist rules',
-      );
+      assert.notStrictEqual(page.url(), blockedUrl);
+      assert.isDefined(error);
+      assert.include(error?.message, 'is blocked by blocklist/allowlist rules');
     });
 
     it('should block window.location.href navigation to URLs not in the allowlist', async () => {
@@ -339,8 +338,8 @@ describe('Network Restrictions', function () {
       await navPromise;
       const finalUrl = page.url();
       const content = await page.content();
-      expect(finalUrl).not.toBe(blockedUrl);
-      expect(content).not.toContain('Woof-Woof');
+      assert.notStrictEqual(finalUrl, blockedUrl);
+      assert.notInclude(content, 'Woof-Woof');
     });
 
     it('should fail fetch requests to URLs not in the allowlist', async () => {
@@ -358,7 +357,7 @@ describe('Network Restrictions', function () {
         }
       }, blockedUrl);
 
-      expect(fetchError).toContain('Failed to fetch');
+      assert.include(fetchError, 'Failed to fetch');
     });
 
     it('should fail service worker registration for script URLs not in the allowlist', async () => {
@@ -376,8 +375,8 @@ describe('Network Restrictions', function () {
         }
       }, blockedUrl);
 
-      expect(swError).toBeTruthy();
-      expect(swError).toContain('Failed to register a ServiceWorker');
+      assert.ok(swError);
+      assert.include(swError, 'Failed to register a ServiceWorker');
     });
 
     it('should prevent loading of subresources not in the allowlist (e.g., images)', async () => {
@@ -407,11 +406,12 @@ describe('Network Restrictions', function () {
       `);
       await idle;
 
-      expect(failedRequests.has(blockedUrl)).toBe(true);
-      expect(failedRequests.get(blockedUrl)).toContain(
+      assert.isTrue(failedRequests.has(blockedUrl));
+      assert.include(
+        failedRequests.get(blockedUrl),
         'net::ERR_INTERNET_DISCONNECTED',
       );
-      expect(finishedRequests.has(allowedUrl)).toBe(true);
+      assert.isTrue(finishedRequests.has(allowedUrl));
     });
 
     it('should block OOPIF frame.goto when the destination is not in the allowlist', async () => {
@@ -429,10 +429,8 @@ describe('Network Restrictions', function () {
         return (error = e);
       });
 
-      expect(error).toBeDefined();
-      expect(error?.message).toContain(
-        'is blocked by blocklist/allowlist rules',
-      );
+      assert.isDefined(error);
+      assert.include(error?.message, 'is blocked by blocklist/allowlist rules');
     });
 
     it('should block fetch requests from within OOPIFs to URLs not in the allowlist', async () => {
@@ -453,8 +451,8 @@ describe('Network Restrictions', function () {
         }
       }, server.PREFIX + '/title.html');
 
-      expect(fetchError).toBeTruthy();
-      expect(fetchError).toContain('Failed to fetch');
+      assert.ok(fetchError);
+      assert.include(fetchError, 'Failed to fetch');
     });
 
     it('should block iframe content from loading if the iframe URL is not in the allowlist', async () => {
@@ -468,7 +466,7 @@ describe('Network Restrictions', function () {
       })!;
 
       const content = await frame.content();
-      expect(content).not.toContain("Hi, I'm frame");
+      assert.notInclude(content, "Hi, I'm frame");
     });
 
     it('should block out-of-process iframe (OOPIF) content from loading if the iframe URL is not in the allowlist', async () => {
@@ -479,21 +477,24 @@ describe('Network Restrictions', function () {
         'frame1',
         server.CROSS_PROCESS_PREFIX + '/title.html',
       );
-      expect(frame.url()).toBe('chrome-error://chromewebdata/');
+      assert.strictEqual(frame.url(), 'chrome-error://chromewebdata/');
     });
 
     it('should block CDP standard emulation reset when allowlist is active', async () => {
       const {page} = state;
       const session = await page.createCDPSession();
 
-      await expect(
-        session.send('Network.emulateNetworkConditions', {
-          offline: false,
-          latency: 0,
-          downloadThroughput: 0,
-          uploadThroughput: 0,
-        }),
-      ).rejects.toThrow(
+      assert.include(
+        (
+          await assertRejects(
+            session.send('Network.emulateNetworkConditions', {
+              offline: false,
+              latency: 0,
+              downloadThroughput: 0,
+              uploadThroughput: 0,
+            }),
+          )
+        ).message,
         'Cannot reset network conditions: rule-based emulation is enabled.',
       );
     });
@@ -501,14 +502,17 @@ describe('Network Restrictions', function () {
     it('should block page.emulateNetworkConditions reset when allowlist is active', async () => {
       const {page} = state;
 
-      await expect(
-        page.emulateNetworkConditions({
-          offline: false,
-          latency: 0,
-          download: 0,
-          upload: 0,
-        }),
-      ).rejects.toThrow(
+      assert.include(
+        (
+          await assertRejects(
+            page.emulateNetworkConditions({
+              offline: false,
+              latency: 0,
+              download: 0,
+              upload: 0,
+            }),
+          )
+        ).message,
         'Cannot reset network conditions: rule-based emulation is enabled.',
       );
     });
@@ -525,24 +529,30 @@ describe('Network Restrictions', function () {
         const {browser, server} = state;
         const manifestId = `${server.PREFIX}/pwa/`;
 
-        await expect(
-          browser.installPWA({
-            manifestId,
-            installUrlOrBundleUrl: `${server.PREFIX}/pwa/index.html`,
-          }),
-        ).rejects.toThrow(
+        assert.include(
+          (
+            await assertRejects(
+              browser.installPWA({
+                manifestId,
+                installUrlOrBundleUrl: `${server.PREFIX}/pwa/index.html`,
+              }),
+            )
+          ).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
 
-        await expect(browser.launchPWA({manifestId})).rejects.toThrow(
+        assert.include(
+          (await assertRejects(browser.launchPWA({manifestId}))).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
 
-        await expect(browser.uninstallPWA({manifestId})).rejects.toThrow(
+        assert.include(
+          (await assertRejects(browser.uninstallPWA({manifestId}))).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
 
-        await expect(browser.getPWAState({manifestId})).rejects.toThrow(
+        assert.include(
+          (await assertRejects(browser.getPWAState({manifestId}))).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
       });
@@ -558,24 +568,30 @@ describe('Network Restrictions', function () {
         const {browser, server} = state;
         const manifestId = `${server.PREFIX}/pwa/`;
 
-        await expect(
-          browser.installPWA({
-            manifestId,
-            installUrlOrBundleUrl: `${server.PREFIX}/pwa/index.html`,
-          }),
-        ).rejects.toThrow(
+        assert.include(
+          (
+            await assertRejects(
+              browser.installPWA({
+                manifestId,
+                installUrlOrBundleUrl: `${server.PREFIX}/pwa/index.html`,
+              }),
+            )
+          ).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
 
-        await expect(browser.launchPWA({manifestId})).rejects.toThrow(
+        assert.include(
+          (await assertRejects(browser.launchPWA({manifestId}))).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
 
-        await expect(browser.uninstallPWA({manifestId})).rejects.toThrow(
+        assert.include(
+          (await assertRejects(browser.uninstallPWA({manifestId}))).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
 
-        await expect(browser.getPWAState({manifestId})).rejects.toThrow(
+        assert.include(
+          (await assertRejects(browser.getPWAState({manifestId}))).message,
           'PWA APIs are not supported when network restrictions are configured.',
         );
       });
@@ -607,7 +623,7 @@ describe('Network Restrictions', function () {
         return t.url() === blockedUrl;
       });
 
-      expect(blockedTarget).toBeUndefined();
+      assert.isUndefined(blockedTarget);
     } finally {
       if (connectedBrowser) {
         await connectedBrowser.disconnect();
@@ -643,7 +659,7 @@ describe('Network Restrictions', function () {
         return t.url() === blockedUrl;
       });
 
-      expect(blockedTarget).toBeUndefined();
+      assert.isUndefined(blockedTarget);
     } finally {
       if (connectedBrowser) {
         await connectedBrowser.disconnect();
@@ -666,8 +682,9 @@ describe('Network Restrictions', function () {
       return (error = e);
     });
 
-    expect(error).toBeDefined();
-    expect(error?.message).toContain(
+    assert.isDefined(error);
+    assert.include(
+      error?.message,
       'Cannot specify both blocklist and allowlist',
     );
 
@@ -685,21 +702,27 @@ describe('Network Restrictions', function () {
         return (connectError = e);
       });
 
-    expect(connectError).toBeDefined();
-    expect(connectError?.message).toContain(
+    assert.isDefined(connectError);
+    assert.include(
+      connectError?.message,
       'Cannot specify both blocklist and allowlist',
     );
   });
 
   it('should throw an error for an invalid pattern', async () => {
-    await expect(
-      launch(
-        {
-          blocklist: ['(invalid pattern'],
-        },
-        {createContext: true},
-      ),
-    ).rejects.toThrow('URLPattern');
+    assert.include(
+      (
+        await assertRejects(
+          launch(
+            {
+              blocklist: ['(invalid pattern'],
+            },
+            {createContext: true},
+          ),
+        )
+      ).message,
+      'URLPattern',
+    );
   });
 
   it('should block chrome://version/ when it matches blocklist', async () => {
@@ -712,7 +735,8 @@ describe('Network Restrictions', function () {
     );
 
     try {
-      await expect(page.goto(blockedUrl)).rejects.toThrow(
+      assert.include(
+        (await assertRejects(page.goto(blockedUrl))).message,
         'is blocked by blocklist/allowlist rules',
       );
     } finally {

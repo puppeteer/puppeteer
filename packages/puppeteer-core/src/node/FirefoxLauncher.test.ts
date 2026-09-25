@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {FirefoxLauncher} from './FirefoxLauncher.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
@@ -17,9 +17,9 @@ describe('FirefoxLauncher', function () {
       const prefs: Record<string, unknown> = FirefoxLauncher.getPreferences({
         test: 1,
       });
-      expect(prefs['test']).toBe(1);
-      expect(prefs['fission.bfcacheInParent']).toBe(undefined);
-      expect(prefs['fission.webContentIsolationStrategy']).toBe(0);
+      assert.strictEqual(prefs['test'], 1);
+      assert.isUndefined(prefs['fission.bfcacheInParent']);
+      assert.strictEqual(prefs['fission.webContentIsolationStrategy'], 0);
     });
   });
 
@@ -29,11 +29,20 @@ describe('FirefoxLauncher', function () {
         return undefined;
       });
 
-      await expect(
-        launcher.launch({
+      let error: unknown;
+      let rejected = false;
+      try {
+        await launcher.launch({
           blocklist: ['https://example.com/*'],
-        }),
-      ).rejects.toThrow(
+        });
+      } catch (e) {
+        rejected = true;
+        error = e;
+      }
+      assert.isTrue(rejected, 'Expected promise to reject');
+      assert.instanceOf(error, Error);
+      assert.include(
+        error.message,
         'blocklist and allowlist are only supported with the CDP protocol',
       );
     });

@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {
   MULTI_LIBRARY_OPTIONS,
@@ -27,13 +27,13 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies, scripts} = getPackageJson(tree);
       const {builder, configurations} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain('/e2e/tsconfig.json');
-      expect(tree.files).toContain('/e2e/tests/app.e2e.ts');
-      expect(tree.files).toContain('/e2e/tests/utils.ts');
-      expect(devDependencies).toContain('puppeteer');
-      expect(scripts['e2e']).toBe('ng e2e');
-      expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
-      expect(configurations).toEqual({
+      assert.include(tree.files, '/e2e/tsconfig.json');
+      assert.include(tree.files, '/e2e/tests/app.e2e.ts');
+      assert.include(tree.files, '/e2e/tests/utils.ts');
+      assert.include(devDependencies, 'puppeteer');
+      assert.strictEqual(scripts['e2e'], 'ng e2e');
+      assert.strictEqual(builder, '@puppeteer/ng-schematics:puppeteer');
+      assert.deepEqual(configurations, {
         production: {
           devServerTarget: 'sandbox:serve:production',
         },
@@ -46,13 +46,13 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {scripts} = getPackageJson(tree);
       const {builder} = getAngularJsonScripts(tree, false);
 
-      expect(scripts['puppeteer']).toBe('ng run sandbox:puppeteer');
-      expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
+      assert.strictEqual(scripts['puppeteer'], 'ng run sandbox:puppeteer');
+      assert.strictEqual(builder, '@puppeteer/ng-schematics:puppeteer');
     });
     void it('should not create Puppeteer config', async () => {
       const {files} = await buildTestingTree('ng-add', 'single');
 
-      expect(files).not.toContain('/.puppeteerrc.cjs');
+      assert.notInclude(files, '/.puppeteerrc.cjs');
     });
     void it('should create Jasmine files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
@@ -61,10 +61,10 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain('/e2e/jasmine.json');
-      expect(devDependencies).toContain('jasmine');
-      expect(devDependencies).toContain('@types/jasmine');
-      expect(options['testRunner']).toBe('jasmine');
+      assert.include(tree.files, '/e2e/jasmine.json');
+      assert.include(devDependencies, 'jasmine');
+      assert.include(devDependencies, '@types/jasmine');
+      assert.strictEqual(options['testRunner'], 'jasmine');
     });
     void it('should create Jest files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
@@ -73,10 +73,10 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain('/e2e/jest.config.js');
-      expect(devDependencies).toContain('jest');
-      expect(devDependencies).toContain('@types/jest');
-      expect(options['testRunner']).toBe('jest');
+      assert.include(tree.files, '/e2e/jest.config.js');
+      assert.include(devDependencies, 'jest');
+      assert.include(devDependencies, '@types/jest');
+      assert.strictEqual(options['testRunner'], 'jest');
     });
     void it('should create Mocha files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
@@ -85,10 +85,10 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain('/e2e/.mocharc.cjs');
-      expect(devDependencies).toContain('mocha');
-      expect(devDependencies).toContain('@types/mocha');
-      expect(options['testRunner']).toBe('mocha');
+      assert.include(tree.files, '/e2e/.mocharc.cjs');
+      assert.include(devDependencies, 'mocha');
+      assert.include(devDependencies, '@types/mocha');
+      assert.strictEqual(options['testRunner'], 'mocha');
     });
     void it('should create Node files', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
@@ -96,18 +96,18 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       });
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain('/e2e/.gitignore');
-      expect(tree.files).not.toContain('/e2e/tests/app.e2e.ts');
-      expect(tree.files).toContain('/e2e/tests/app.test.ts');
-      expect(options['testRunner']).toBe('node');
+      assert.include(tree.files, '/e2e/.gitignore');
+      assert.notInclude(tree.files, '/e2e/tests/app.e2e.ts');
+      assert.include(tree.files, '/e2e/tests/app.test.ts');
+      assert.strictEqual(options['testRunner'], 'node');
     });
     void it('should create TypeScript files', async () => {
       const tree = await buildTestingTree('ng-add', 'single');
       const tsConfigPath = '/e2e/tsconfig.json';
       const tsConfig = tree.readJson(tsConfigPath);
 
-      expect(tree.files).toContain(tsConfigPath);
-      expect(tsConfig).toMatchObject({
+      assert.include(tree.files, tsConfigPath);
+      assert.containSubset(tsConfig, {
         extends: '../tsconfig.json',
         compilerOptions: {
           module: 'NodeNext',
@@ -119,7 +119,7 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const tree = await buildTestingTree('ng-add');
 
       const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBeUndefined();
+      assert.isUndefined(options['port']);
     });
   });
 
@@ -129,19 +129,16 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies, scripts} = getPackageJson(tree);
       const {builder, configurations} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tsconfig.json'),
-      );
-      expect(tree.files).toContain(
+      assert.include(tree.files, getMultiApplicationFile('e2e/tsconfig.json'));
+      assert.include(
+        tree.files,
         getMultiApplicationFile('e2e/tests/app.e2e.ts'),
       );
-      expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/tests/utils.ts'),
-      );
-      expect(devDependencies).toContain('puppeteer');
-      expect(scripts['e2e']).toBe('ng e2e');
-      expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
-      expect(configurations).toEqual({
+      assert.include(tree.files, getMultiApplicationFile('e2e/tests/utils.ts'));
+      assert.include(devDependencies, 'puppeteer');
+      assert.strictEqual(scripts['e2e'], 'ng e2e');
+      assert.strictEqual(builder, '@puppeteer/ng-schematics:puppeteer');
+      assert.deepEqual(configurations, {
         production: {
           devServerTarget: 'sandbox:serve:production',
         },
@@ -154,14 +151,14 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {scripts} = getPackageJson(tree);
       const {builder} = getAngularJsonScripts(tree, false);
 
-      expect(scripts['puppeteer']).toBe('ng run sandbox:puppeteer');
-      expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
+      assert.strictEqual(scripts['puppeteer'], 'ng run sandbox:puppeteer');
+      assert.strictEqual(builder, '@puppeteer/ng-schematics:puppeteer');
     });
     void it('should not create Puppeteer config', async () => {
       const {files} = await buildTestingTree('ng-add', 'multi');
 
-      expect(files).not.toContain(getMultiApplicationFile('.puppeteerrc.cjs'));
-      expect(files).not.toContain('/.puppeteerrc.cjs');
+      assert.notInclude(files, getMultiApplicationFile('.puppeteerrc.cjs'));
+      assert.notInclude(files, '/.puppeteerrc.cjs');
     });
     void it('should create Jasmine files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
@@ -170,10 +167,10 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiApplicationFile('e2e/jasmine.json'));
-      expect(devDependencies).toContain('jasmine');
-      expect(devDependencies).toContain('@types/jasmine');
-      expect(options['testRunner']).toBe('jasmine');
+      assert.include(tree.files, getMultiApplicationFile('e2e/jasmine.json'));
+      assert.include(devDependencies, 'jasmine');
+      assert.include(devDependencies, '@types/jasmine');
+      assert.strictEqual(options['testRunner'], 'jasmine');
     });
     void it('should create Jest files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
@@ -182,12 +179,10 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(
-        getMultiApplicationFile('e2e/jest.config.js'),
-      );
-      expect(devDependencies).toContain('jest');
-      expect(devDependencies).toContain('@types/jest');
-      expect(options['testRunner']).toBe('jest');
+      assert.include(tree.files, getMultiApplicationFile('e2e/jest.config.js'));
+      assert.include(devDependencies, 'jest');
+      assert.include(devDependencies, '@types/jest');
+      assert.strictEqual(options['testRunner'], 'jest');
     });
     void it('should create Mocha files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
@@ -196,10 +191,10 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiApplicationFile('e2e/.mocharc.cjs'));
-      expect(devDependencies).toContain('mocha');
-      expect(devDependencies).toContain('@types/mocha');
-      expect(options['testRunner']).toBe('mocha');
+      assert.include(tree.files, getMultiApplicationFile('e2e/.mocharc.cjs'));
+      assert.include(devDependencies, 'mocha');
+      assert.include(devDependencies, '@types/mocha');
+      assert.strictEqual(options['testRunner'], 'mocha');
     });
     void it('should create Node files', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
@@ -207,22 +202,24 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       });
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiApplicationFile('e2e/.gitignore'));
-      expect(tree.files).not.toContain(
+      assert.include(tree.files, getMultiApplicationFile('e2e/.gitignore'));
+      assert.notInclude(
+        tree.files,
         getMultiApplicationFile('e2e/tests/app.e2e.ts'),
       );
-      expect(tree.files).toContain(
+      assert.include(
+        tree.files,
         getMultiApplicationFile('e2e/tests/app.test.ts'),
       );
-      expect(options['testRunner']).toBe('node');
+      assert.strictEqual(options['testRunner'], 'node');
     });
     void it('should create TypeScript files', async () => {
       const tree = await buildTestingTree('ng-add', 'multi');
       const tsConfigPath = getMultiApplicationFile('e2e/tsconfig.json');
       const tsConfig = tree.readJson(tsConfigPath);
 
-      expect(tree.files).toContain(tsConfigPath);
-      expect(tsConfig).toMatchObject({
+      assert.include(tree.files, tsConfigPath);
+      assert.containSubset(tsConfig, {
         extends: '../../../tsconfig.json',
         compilerOptions: {
           module: 'NodeNext',
@@ -234,7 +231,7 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
       const tree = await buildTestingTree('ng-add');
 
       const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBeUndefined();
+      assert.isUndefined(options['port']);
     });
   });
 
@@ -247,23 +244,20 @@ void describe('@puppeteer/ng-schematics: ng-add', () => {
         MULTI_LIBRARY_OPTIONS.name,
       );
 
-      expect(tree.files).not.toContain(
-        getMultiLibraryFile('e2e/tsconfig.json'),
-      );
-      expect(tree.files).not.toContain(
+      assert.notInclude(tree.files, getMultiLibraryFile('e2e/tsconfig.json'));
+      assert.notInclude(
+        tree.files,
         getMultiLibraryFile('e2e/tests/app.e2e.ts'),
       );
-      expect(tree.files).not.toContain(
-        getMultiLibraryFile('e2e/tests/utils.ts'),
-      );
-      expect(config).toBeUndefined();
+      assert.notInclude(tree.files, getMultiLibraryFile('e2e/tests/utils.ts'));
+      assert.isUndefined(config);
     });
 
     void it('should not create Puppeteer config', async () => {
       const {files} = await buildTestingTree('ng-add', 'multi');
 
-      expect(files).not.toContain(getMultiLibraryFile('.puppeteerrc.cjs'));
-      expect(files).not.toContain('/.puppeteerrc.cjs');
+      assert.notInclude(files, getMultiLibraryFile('.puppeteerrc.cjs'));
+      assert.notInclude(files, '/.puppeteerrc.cjs');
     });
   });
 });

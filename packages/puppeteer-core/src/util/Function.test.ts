@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {interpolateFunction, stringifyFunction} from './Function.js';
 
@@ -20,7 +20,7 @@ describe('Function', function () {
         },
         {test: `() => 5`},
       );
-      expect(test()).toBe(5);
+      assert.strictEqual(test(), 5);
     });
     it('should work inlined', async () => {
       const test = interpolateFunction(
@@ -30,7 +30,7 @@ describe('Function', function () {
         },
         {test: `() => 5`},
       );
-      expect(test()).toBe(5);
+      assert.strictEqual(test(), 5);
     });
   });
 

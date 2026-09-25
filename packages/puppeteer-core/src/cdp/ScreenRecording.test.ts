@@ -7,7 +7,7 @@
 import {PassThrough, Writable} from 'node:stream';
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {Page} from '../api/Page.js';
@@ -103,7 +103,7 @@ describe('ScreenRecording', () => {
       frameRate: 60,
     });
 
-    expect(client.commands[0]).toEqual({
+    assert.deepEqual(client.commands[0], {
       method: 'Page.startScreenRecording',
       params: {
         audio: true,
@@ -124,12 +124,12 @@ describe('ScreenRecording', () => {
     recording.pipe(dest);
     await recording.stop();
 
-    expect(Buffer.concat(chunks).toString()).toBe('chunk1chunk2');
-    expect(client.commands).toContainEqual({
+    assert.strictEqual(Buffer.concat(chunks).toString(), 'chunk1chunk2');
+    assert.deepInclude(client.commands, {
       method: 'Page.stopScreenRecording',
       params: undefined,
     });
-    expect(client.commands).toContainEqual({
+    assert.deepInclude(client.commands, {
       method: 'IO.close',
       params: {handle: 'stream-1'},
     });
@@ -142,7 +142,7 @@ describe('ScreenRecording', () => {
       fps: 24,
     });
 
-    expect(client.commands[0]).toEqual({
+    assert.deepEqual(client.commands[0], {
       method: 'Page.startScreenRecording',
       params: {
         audio: undefined,
@@ -159,30 +159,94 @@ describe('ScreenRecording', () => {
     const client = new MockCDPSession();
     const page = new MockPage(client);
 
-    await expect(page.record({maxWidth: 0})).rejects.toThrow(
-      '`maxWidth` must be greater than 0.',
-    );
-    await expect(page.record({maxWidth: -10})).rejects.toThrow(
-      '`maxWidth` must be greater than 0.',
-    );
-    await expect(page.record({maxHeight: 0})).rejects.toThrow(
-      '`maxHeight` must be greater than 0.',
-    );
-    await expect(page.record({maxHeight: -10})).rejects.toThrow(
-      '`maxHeight` must be greater than 0.',
-    );
-    await expect(page.record({frameRate: 0})).rejects.toThrow(
-      '`frameRate` must be greater than 0.',
-    );
-    await expect(page.record({frameRate: -5})).rejects.toThrow(
-      '`frameRate` must be greater than 0.',
-    );
-    await expect(page.record({fps: 0})).rejects.toThrow(
-      '`fps` must be greater than 0.',
-    );
-    await expect(page.record({fps: -5})).rejects.toThrow(
-      '`fps` must be greater than 0.',
-    );
+    let error: unknown;
+    let rejected = false;
+    try {
+      await page.record({maxWidth: 0});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`maxWidth` must be greater than 0.');
+    error = undefined;
+    rejected = false;
+    try {
+      await page.record({maxWidth: -10});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`maxWidth` must be greater than 0.');
+    error = undefined;
+    rejected = false;
+    try {
+      await page.record({maxHeight: 0});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`maxHeight` must be greater than 0.');
+    error = undefined;
+    rejected = false;
+    try {
+      await page.record({maxHeight: -10});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`maxHeight` must be greater than 0.');
+    error = undefined;
+    rejected = false;
+    try {
+      await page.record({frameRate: 0});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`frameRate` must be greater than 0.');
+    error = undefined;
+    rejected = false;
+    try {
+      await page.record({frameRate: -5});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`frameRate` must be greater than 0.');
+    error = undefined;
+    rejected = false;
+    try {
+      await page.record({fps: 0});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`fps` must be greater than 0.');
+    error = undefined;
+    rejected = false;
+    try {
+      await page.record({fps: -5});
+    } catch (e) {
+      rejected = true;
+      error = e;
+    }
+    assert.isTrue(rejected, 'Expected promise to reject');
+    assert.instanceOf(error, Error);
+    assert.include(error.message, '`fps` must be greater than 0.');
   });
 
   it('should support stream handle returned from startScreenRecording', async () => {
@@ -209,8 +273,8 @@ describe('ScreenRecording', () => {
     recording.pipe(dest);
     await recording.stop();
 
-    expect(Buffer.concat(chunks).toString()).toBe('hello');
-    expect(client.commands).toContainEqual({
+    assert.strictEqual(Buffer.concat(chunks).toString(), 'hello');
+    assert.deepInclude(client.commands, {
       method: 'IO.close',
       params: {handle: 'stream-start'},
     });
@@ -243,7 +307,7 @@ describe('ScreenRecording', () => {
     }
     await stopPromise;
 
-    expect(Buffer.concat(received).toString()).toBe('chunkAchunkB');
+    assert.strictEqual(Buffer.concat(received).toString(), 'chunkAchunkB');
   });
 
   it('should support pipeTo with WritableStream', async () => {
@@ -271,7 +335,7 @@ describe('ScreenRecording', () => {
     await recording.stop();
     await pipePromise;
 
-    expect(Buffer.concat(chunks).toString()).toBe('web-stream-data');
+    assert.strictEqual(Buffer.concat(chunks).toString(), 'web-stream-data');
   });
 
   it('should stop on client disconnection', async () => {
@@ -283,11 +347,12 @@ describe('ScreenRecording', () => {
     // Calling stop again should be a no-op
     await recording.stop();
 
-    expect(
+    assert.strictEqual(
       client.commands.filter(c => {
         return c.method === 'Page.stopScreenRecording';
       }).length,
-    ).toBe(1);
+      1,
+    );
   });
 
   it('should support asyncDisposeSymbol', async () => {
@@ -297,10 +362,11 @@ describe('ScreenRecording', () => {
 
     await recording[asyncDisposeSymbol]();
 
-    expect(
+    assert.strictEqual(
       client.commands.filter(c => {
         return c.method === 'Page.stopScreenRecording';
       }).length,
-    ).toBe(1);
+      1,
+    );
   });
 });

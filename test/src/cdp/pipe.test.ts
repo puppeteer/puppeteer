@@ -3,7 +3,7 @@
  * Copyright 2019 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
 import {getTestState, launch} from '../mocha-utils.js';
@@ -13,10 +13,10 @@ describe('Puppeteer.launch', function () {
   it('should support the pipe option', async () => {
     const {browser, close} = await launch({pipe: true});
     try {
-      expect(await browser.pages()).toHaveLength(1);
-      expect(browser.wsEndpoint()).toBe('');
+      assert.lengthOf(await browser.pages(), 1);
+      assert.strictEqual(browser.wsEndpoint(), '');
       const page = await browser.newPage();
-      expect(await page.evaluate('11 * 11')).toBe(121);
+      assert.strictEqual(await page.evaluate('11 * 11'), 121);
       await page.close();
     } finally {
       await close();
@@ -28,9 +28,9 @@ describe('Puppeteer.launch', function () {
     options.args = ['--remote-debugging-pipe'].concat(options.args || []);
     const {browser, close} = await launch(options);
     try {
-      expect(browser.wsEndpoint()).toBe('');
+      assert.strictEqual(browser.wsEndpoint(), '');
       const page = await browser.newPage();
-      expect(await page.evaluate('11 * 11')).toBe(121);
+      assert.strictEqual(await page.evaluate('11 * 11'), 121);
       await page.close();
     } finally {
       await close();

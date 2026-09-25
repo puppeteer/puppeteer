@@ -3,7 +3,7 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 
@@ -29,19 +29,20 @@ describe('page.queryObjects', function () {
       return CustomClass.prototype;
     }, classHandle);
     using objectsHandle = await page.queryObjects(prototypeHandle);
-    await expect(
-      page.evaluate(objects => {
+    assert.strictEqual(
+      await page.evaluate(objects => {
         return objects.length;
       }, objectsHandle),
-    ).resolves.toBe(1);
+      1,
+    );
 
     // Check that instances.
-    await expect(
-      page.evaluate(objects => {
+    assert.ok(
+      await page.evaluate(objects => {
         // @ts-expect-error: Different context.
         return objects[0] === self.customClass;
       }, objectsHandle),
-    ).resolves.toBeTruthy();
+    );
   });
   it('should work for non-trivial page', async () => {
     const {page, server} = await getTestState();
@@ -63,19 +64,20 @@ describe('page.queryObjects', function () {
       return CustomClass.prototype;
     }, classHandle);
     using objectsHandle = await page.queryObjects(prototypeHandle);
-    await expect(
-      page.evaluate(objects => {
+    assert.strictEqual(
+      await page.evaluate(objects => {
         return objects.length;
       }, objectsHandle),
-    ).resolves.toBe(1);
+      1,
+    );
 
     // Check that instances.
-    await expect(
-      page.evaluate(objects => {
+    assert.ok(
+      await page.evaluate(objects => {
         // @ts-expect-error: Different context.
         return objects[0] === self.customClass;
       }, objectsHandle),
-    ).resolves.toBeTruthy();
+    );
   });
   it('should fail for disposed handles', async () => {
     const {page} = await getTestState();
@@ -89,7 +91,7 @@ describe('page.queryObjects', function () {
     await page.queryObjects(prototypeHandle).catch(error_ => {
       return (error = error_);
     });
-    expect(error.message).toBe('Prototype JSHandle is disposed!');
+    assert.strictEqual(error.message, 'Prototype JSHandle is disposed!');
   });
   it('should fail primitive values as prototypes', async () => {
     const {page} = await getTestState();
@@ -101,7 +103,8 @@ describe('page.queryObjects', function () {
     await page.queryObjects(prototypeHandle).catch(error_ => {
       return (error = error_);
     });
-    expect(error.message).toBe(
+    assert.strictEqual(
+      error.message,
       'Prototype JSHandle must not be referencing primitive value',
     );
   });

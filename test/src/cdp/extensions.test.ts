@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
@@ -43,7 +42,7 @@ describe('extensions', function () {
     const serviceWorkerTarget = await browser.waitForTarget(target => {
       return target.type() === 'service_worker';
     });
-    expect(serviceWorkerTarget).toBeTruthy();
+    assert.ok(serviceWorkerTarget);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);
@@ -60,7 +59,7 @@ describe('extensions', function () {
       // @ts-expect-error different context.
       return globalThis.MAGIC;
     });
-    expect(result).toBe(42);
+    assert.strictEqual(result, 42);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);
@@ -76,18 +75,18 @@ describe('extensions', function () {
         target.url().includes(extensionId) && target.type() === 'service_worker'
       );
     });
-    expect(target).toBeTruthy();
+    assert.ok(target);
 
     const extensions = await browser.extensions();
 
     const extension = extensions.get(extensionId);
 
-    expect(extension).toBeDefined();
-    expect(extension?.name).toBe('Simple extension');
-    expect(extension?.version).toBe('0.1');
-    expect(extension?.path).toBe(extensionPath);
-    expect(extension?.enabled).toBe(true);
-    expect(extension?.id).toBe(extensionId);
+    assert.isDefined(extension);
+    assert.strictEqual(extension?.name, 'Simple extension');
+    assert.strictEqual(extension?.version, '0.1');
+    assert.strictEqual(extension?.path, extensionPath);
+    assert.isTrue(extension?.enabled);
+    assert.strictEqual(extension?.id, extensionId);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);
@@ -109,7 +108,7 @@ describe('extensions', function () {
     });
 
     const workers = await extension!.workers();
-    expect(workers.length).toBeGreaterThan(0);
+    assert.isAbove(workers.length, 0);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);
@@ -129,7 +128,7 @@ describe('extensions', function () {
         target.url().includes(extensionId) && target.type() === 'service_worker'
       );
     });
-    expect(target).toBeTruthy();
+    assert.ok(target);
 
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
@@ -151,7 +150,7 @@ describe('extensions', function () {
         target.url().includes(extensionId) && target.type() === 'service_worker'
       );
     });
-    expect(target).toBeTruthy();
+    assert.ok(target);
     await browser.waitForTarget(target => {
       return (
         target.url().includes('popup.html') &&
@@ -160,12 +159,12 @@ describe('extensions', function () {
     });
 
     const pages = await extension!.pages();
-    expect(pages.length).toBeGreaterThanOrEqual(1);
-    expect(
+    assert.isAtLeast(pages.length, 1);
+    assert.isTrue(
       pages.some(p => {
         return p.url().includes('popup.html');
       }),
-    ).toBe(true);
+    );
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);
@@ -187,7 +186,7 @@ describe('extensions', function () {
         target.url().includes(extensionId) && target.type() === 'service_worker'
       );
     });
-    expect(target).toBeTruthy();
+    assert.ok(target);
     const optionsPageTarget = await browser.waitForTarget(target => {
       return (
         target.url().includes('popup.html') &&
@@ -208,7 +207,7 @@ describe('extensions', function () {
       }),
     ]);
 
-    expect(message).toBe('hello from extension page');
+    assert.strictEqual(message, 'hello from extension page');
 
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
@@ -248,7 +247,7 @@ describe('extensions', function () {
       }, messageToLog),
     ]);
 
-    expect(message).toBe(messageToLog);
+    assert.strictEqual(message, messageToLog);
     await browser.uninstallExtension(extensionId);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);
@@ -261,17 +260,17 @@ describe('extensions', function () {
     const target = await browser.waitForTarget(target => {
       return target.url().includes(id) && target.type() === 'service_worker';
     });
-    expect(target).toBeTruthy();
+    assert.ok(target);
 
     let extensions = await browser.extensions();
-    expect(extensions.has(id)).toBe(true);
+    assert.isTrue(extensions.has(id));
 
     await browser.uninstallExtension(id);
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, id);
 
     extensions = await browser.extensions();
-    expect(extensions.has(id)).toBe(false);
+    assert.isFalse(extensions.has(id));
   });
 
   it('should be available in Incognito profiles if enabledInIncognito is true', async () => {
@@ -289,7 +288,7 @@ describe('extensions', function () {
         target.url().includes(extensionId) && target.type() === 'service_worker'
       );
     });
-    expect(target).toBeTruthy();
+    assert.ok(target);
 
     const realms = page.extensionRealms();
 
@@ -306,7 +305,7 @@ describe('extensions', function () {
     const isContentScript = await contentScriptRealm.evaluate(() => {
       return (globalThis as any).thisIsTheContentScript;
     });
-    expect(isContentScript).toBe(true);
+    assert.isTrue(isContentScript);
 
     await browser.uninstallExtension(extensionId);
     await context.close();

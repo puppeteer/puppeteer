@@ -6,7 +6,7 @@
 
 import {describe, it, beforeEach} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {
@@ -30,7 +30,7 @@ describe('DisposableStack', () => {
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
     stack.dispose();
-    expect(dispose2.calledBefore(dispose1)).toBeTruthy();
+    assert.ok(dispose2.calledBefore(dispose1));
   });
 
   it('should not dispose resources if already disposed', () => {
@@ -38,7 +38,7 @@ describe('DisposableStack', () => {
     stack.adopt({}, dispose);
     stack.dispose();
     stack.dispose();
-    expect(dispose.calledOnce).toBeTruthy();
+    assert.ok(dispose.calledOnce);
   });
 
   it('should use disposable resources', () => {
@@ -47,31 +47,31 @@ describe('DisposableStack', () => {
     };
     stack.use(resource);
     stack.dispose();
-    expect(resource[disposeSymbol].calledOnce).toBeTruthy();
+    assert.ok(resource[disposeSymbol].calledOnce);
   });
 
   it('should defer disposal callbacks', () => {
     const onDispose = sinon.spy();
     stack.defer(onDispose);
     stack.dispose();
-    expect(onDispose.calledOnce).toBeTruthy();
+    assert.ok(onDispose.calledOnce);
   });
 
   it('should move resources to a new stack', () => {
     const dispose = sinon.spy();
     stack.adopt({}, dispose);
     const newStack = stack.move();
-    expect(stack.disposed).toBeTruthy();
-    expect(newStack.disposed).toBeFalsy();
+    assert.ok(stack.disposed);
+    assert.notOk(newStack.disposed);
     newStack.dispose();
-    expect(dispose.calledOnce).toBeTruthy();
+    assert.ok(dispose.calledOnce);
   });
 
   it('should throw error if moving a disposed stack', () => {
     stack.dispose();
-    expect(() => {
+    assert.throws(() => {
       return stack.move();
-    }).toThrow(ReferenceError);
+    }, ReferenceError);
   });
 
   it('should collect errors from disposals', async () => {
@@ -91,12 +91,15 @@ describe('DisposableStack', () => {
       error = e as SuppressedError;
     }
 
-    expect(error instanceof SuppressedError).toBeTruthy();
-    expect(error.name).toEqual('SuppressedError');
-    expect(error.message).toEqual('An error was suppressed during disposal');
-    expect(error.error).toEqual(error1);
-    expect(error.suppressed.error).toEqual(error2);
-    expect(error.suppressed.suppressed).toEqual(error3);
+    assert.ok(error instanceof SuppressedError);
+    assert.strictEqual(error.name, 'SuppressedError');
+    assert.strictEqual(
+      error.message,
+      'An error was suppressed during disposal',
+    );
+    assert.deepEqual(error.error, error1);
+    assert.deepEqual((error.suppressed as SuppressedError).error, error2);
+    assert.deepEqual((error.suppressed as SuppressedError).suppressed, error3);
   });
 });
 
@@ -113,7 +116,7 @@ describe('AsyncDisposableStack', () => {
     stack.adopt({}, dispose1);
     stack.adopt({}, dispose2);
     await stack.disposeAsync();
-    expect(dispose2.calledBefore(dispose1)).toBeTruthy();
+    assert.ok(dispose2.calledBefore(dispose1));
   });
 
   it('should not dispose resources if already disposed', async () => {
@@ -121,7 +124,7 @@ describe('AsyncDisposableStack', () => {
     stack.adopt({}, dispose);
     await stack.disposeAsync();
     await stack.disposeAsync();
-    expect(dispose.calledOnce).toBeTruthy();
+    assert.ok(dispose.calledOnce);
   });
 
   it('should use async disposable resources', async () => {
@@ -130,31 +133,31 @@ describe('AsyncDisposableStack', () => {
     };
     stack.use(resource);
     await stack.disposeAsync();
-    expect(resource[asyncDisposeSymbol].calledOnce).toBeTruthy();
+    assert.ok(resource[asyncDisposeSymbol].calledOnce);
   });
 
   it('should defer async disposal callbacks', async () => {
     const onDispose = sinon.stub().resolves();
     stack.defer(onDispose);
     await stack.disposeAsync();
-    expect(onDispose.calledOnce).toBeTruthy();
+    assert.ok(onDispose.calledOnce);
   });
 
   it('should move resources to a new stack', async () => {
     const dispose = sinon.stub().resolves();
     stack.adopt({}, dispose);
     const newStack = stack.move();
-    expect(stack.disposed).toBeTruthy();
-    expect(newStack.disposed).toBeFalsy();
+    assert.ok(stack.disposed);
+    assert.notOk(newStack.disposed);
     await newStack.disposeAsync();
-    expect(dispose.calledOnce).toBeTruthy();
+    assert.ok(dispose.calledOnce);
   });
 
   it('should throw error if moving a disposed stack', () => {
     stack.disposeAsync();
-    expect(() => {
+    assert.throws(() => {
       return stack.move();
-    }).toThrow(ReferenceError);
+    }, ReferenceError);
   });
 
   it('should collect errors from async disposals', async () => {
@@ -174,11 +177,14 @@ describe('AsyncDisposableStack', () => {
       error = e as SuppressedError;
     }
 
-    expect(error instanceof SuppressedError).toBeTruthy();
-    expect(error.name).toEqual('SuppressedError');
-    expect(error.message).toEqual('An error was suppressed during disposal');
-    expect(error.error).toEqual(error1);
-    expect(error.suppressed.error).toEqual(error2);
-    expect(error.suppressed.suppressed).toEqual(error3);
+    assert.ok(error instanceof SuppressedError);
+    assert.strictEqual(error.name, 'SuppressedError');
+    assert.strictEqual(
+      error.message,
+      'An error was suppressed during disposal',
+    );
+    assert.deepEqual(error.error, error1);
+    assert.deepEqual((error.suppressed as SuppressedError).error, error2);
+    assert.deepEqual((error.suppressed as SuppressedError).suppressed, error3);
   });
 });

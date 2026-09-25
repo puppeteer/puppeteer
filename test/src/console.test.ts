@@ -4,10 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  assertAtLeastOneToContain,
+  getTestState,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 import {html, waitEvent} from './utils.js';
 
 describe('console', function () {
@@ -21,16 +25,16 @@ describe('console', function () {
         return console.log('hello', 5, {foo: 'bar'});
       }),
     ]);
-    expect(message.text()).atLeastOneToContain([
+    assertAtLeastOneToContain(message.text(), [
       'hello 5 [object Object]',
       'hello 5 JSHandle@object', // WebDriver BiDi
     ]);
-    expect(message.type()).toEqual('log');
-    expect(message.args()).toHaveLength(3);
+    assert.deepEqual(message.type(), 'log');
+    assert.lengthOf(message.args(), 3);
 
-    expect(await message.args()[0]!.jsonValue()).toEqual('hello');
-    expect(await message.args()[1]!.jsonValue()).toEqual(5);
-    expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
+    assert.deepEqual(await message.args()[0]!.jsonValue(), 'hello');
+    assert.deepEqual(await message.args()[1]!.jsonValue(), 5);
+    assert.deepEqual(await message.args()[2]!.jsonValue(), {foo: 'bar'});
   });
   it('should work for Error instances', async () => {
     const {page} = await getTestState();
@@ -41,9 +45,9 @@ describe('console', function () {
         return console.log(new Error('test error'));
       }),
     ]);
-    expect(message.text()).toEqual('Error: test error');
-    expect(message.type()).toEqual('log');
-    expect(message.args()).toHaveLength(1);
+    assert.deepEqual(message.text(), 'Error: test error');
+    assert.deepEqual(message.type(), 'log');
+    assert.lengthOf(message.args(), 1);
   });
   it('should return the first line of the error message in text()', async () => {
     const {page} = await getTestState();
@@ -54,9 +58,9 @@ describe('console', function () {
         return console.log(new Error('test error\nsecond line'));
       }),
     ]);
-    expect(message.text()).toEqual('Error: test error');
-    expect(message.type()).toEqual('log');
-    expect(message.args()).toHaveLength(1);
+    assert.deepEqual(message.text(), 'Error: test error');
+    assert.deepEqual(message.type(), 'log');
+    assert.lengthOf(message.args(), 1);
   });
   it('should work on script call right after navigation', async () => {
     const {page} = await getTestState();
@@ -69,7 +73,7 @@ describe('console', function () {
       ),
     ]);
 
-    expect(message.text()).toEqual('SOME_LOG_MESSAGE');
+    assert.deepEqual(message.text(), 'SOME_LOG_MESSAGE');
   });
   it('should work for console.trace', async () => {
     const {page} = await getTestState();
@@ -80,8 +84,8 @@ describe('console', function () {
         console.trace('calling console.trace');
       }),
     ]);
-    expect(message.type()).toBe('trace');
-    expect(message.text()).toBe('calling console.trace');
+    assert.strictEqual(message.type(), 'trace');
+    assert.strictEqual(message.text(), 'calling console.trace');
   });
 
   it('should work for console.dir', async () => {
@@ -93,8 +97,8 @@ describe('console', function () {
         console.dir('calling console.dir');
       }),
     ]);
-    expect(message.type()).toBe('dir');
-    expect(message.text()).toBe('calling console.dir');
+    assert.strictEqual(message.type(), 'dir');
+    assert.strictEqual(message.text(), 'calling console.dir');
   });
 
   it('should work for console.warn', async () => {
@@ -106,8 +110,8 @@ describe('console', function () {
         console.warn('calling console.warn');
       }),
     ]);
-    expect(message.type()).toBe('warn');
-    expect(message.text()).toBe('calling console.warn');
+    assert.strictEqual(message.type(), 'warn');
+    assert.strictEqual(message.text(), 'calling console.warn');
   });
 
   it('should work for console.error', async () => {
@@ -119,8 +123,8 @@ describe('console', function () {
         console.error('calling console.error');
       }),
     ]);
-    expect(message.type()).toBe('error');
-    expect(message.text()).toBe('calling console.error');
+    assert.strictEqual(message.type(), 'error');
+    assert.strictEqual(message.text(), 'calling console.error');
   });
 
   it('should work for console.log with promise', async () => {
@@ -132,8 +136,8 @@ describe('console', function () {
         console.log(Promise.resolve('should not wait until resolved!'));
       }),
     ]);
-    expect(message.type()).toBe('log');
-    expect(message.text()).atLeastOneToContain([
+    assert.strictEqual(message.type(), 'log');
+    assertAtLeastOneToContain(message.text(), [
       '[promise Promise]',
       'JSHandle@promise', // WebDriver BiDi expectation.
     ]);
@@ -151,12 +155,13 @@ describe('console', function () {
       console.time('calling console.time');
       console.timeEnd('calling console.time');
     });
-    expect(
+    assert.deepEqual(
       messages.map(msg => {
         return msg.type();
       }),
-    ).toEqual(['timeEnd']);
-    expect(messages[0]!.text()).toContain('calling console.time');
+      ['timeEnd'],
+    );
+    assert.include(messages[0]!.text(), 'calling console.time');
   });
   it('should work for different console API calls with group functions', async () => {
     const {page} = await getTestState();
@@ -170,14 +175,15 @@ describe('console', function () {
       console.group('calling console.group');
       console.groupEnd();
     });
-    expect(
+    assert.deepEqual(
       messages.map(msg => {
         return msg.type();
       }),
-    ).toEqual(['startGroup', 'endGroup']);
+      ['startGroup', 'endGroup'],
+    );
 
     // We should be able to check both messages, but Chrome report text
-    expect(messages[0]!.text()).toContain('calling console.group');
+    assert.include(messages[0]!.text(), 'calling console.group');
   });
   it('should not fail for window object', async () => {
     const {page} = await getTestState();
@@ -188,7 +194,7 @@ describe('console', function () {
         return console.error(window);
       }),
     ]);
-    expect(message.text()).atLeastOneToContain([
+    assertAtLeastOneToContain(message.text(), [
       '[object Window]',
       'JSHandle@window', // WebDriver BiDi
     ]);
@@ -203,13 +209,13 @@ describe('console', function () {
     });
     const log = await logPromise;
 
-    expect(log.text()).atLeastOneToContain([
+    assertAtLeastOneToContain(log.text(), [
       '1 2 3 [object Window]',
       '1 2 3 JSHandle@window', // WebDriver BiDi
     ]);
-    expect(log.args()).toHaveLength(4);
+    assert.lengthOf(log.args(), 4);
     using property = await log.args()[3]!.getProperty('test');
-    expect(await property.jsonValue()).toBe(1);
+    assert.strictEqual(await property.jsonValue(), 1);
   });
   it('should not dispose handles when page has listeners', async () => {
     const {page} = await getTestState();
@@ -221,10 +227,10 @@ describe('console', function () {
       }),
     ]);
     using handle = message.args()[0]!;
-    expect(handle.disposed).toBe(false);
-    expect(await handle.jsonValue()).toEqual({foo: 'bar'});
+    assert.isFalse(handle.disposed);
+    assert.deepEqual(await handle.jsonValue(), {foo: 'bar'});
     await handle.dispose();
-    expect(handle.disposed).toBe(true);
+    assert.isTrue(handle.disposed);
   });
   it('should trigger correct Log', async () => {
     const {page, server, isChrome} = await getTestState();
@@ -236,11 +242,11 @@ describe('console', function () {
         return await fetch(url).catch(() => {});
       }, `http://domain2.test:${server.PORT}/empty.html`),
     ]);
-    expect(message.text()).toContain('Access-Control-Allow-Origin');
+    assert.include(message.text(), 'Access-Control-Allow-Origin');
     if (isChrome) {
-      expect(message.type()).toEqual('error');
+      assert.deepEqual(message.type(), 'error');
     } else {
-      expect(message.type()).toEqual('warn');
+      assert.deepEqual(message.type(), 'warn');
     }
   });
   it('should have location when fetch fails', async () => {
@@ -257,12 +263,12 @@ describe('console', function () {
         </script>`,
       ),
     ]);
-    expect(message.text()).toContain(`ERR_NAME_NOT_RESOLVED`);
-    expect(message.type()).toEqual('error');
-    expect(message.location()).toEqual({
-      url: 'http://wat/',
-      lineNumber: undefined,
-    });
+    assert.include(message.text(), `ERR_NAME_NOT_RESOLVED`);
+    assert.strictEqual(message.type(), 'error');
+    const location = message.location();
+    assert.strictEqual(location.url, 'http://wat/');
+    assert.isUndefined(location.lineNumber);
+    assert.isUndefined(location.columnNumber);
   });
   it('should have location and stack trace for console API calls', async () => {
     const {page, server} = await getTestState();
@@ -272,14 +278,14 @@ describe('console', function () {
       waitEvent(page, 'console'),
       page.goto(server.PREFIX + '/consoletrace.html'),
     ]);
-    expect(message.text()).toBe('yellow');
-    expect(message.type()).toBe('trace');
-    expect(message.location()).toEqual({
+    assert.strictEqual(message.text(), 'yellow');
+    assert.strictEqual(message.type(), 'trace');
+    assert.deepEqual(message.location(), {
       url: server.PREFIX + '/consoletrace.html',
       lineNumber: 8,
       columnNumber: 16,
     });
-    expect(message.stackTrace()).toEqual([
+    assert.deepEqual(message.stackTrace(), [
       {
         url: server.PREFIX + '/consoletrace.html',
         lineNumber: 8,
@@ -324,6 +330,6 @@ describe('console', function () {
     // 4. The target will always be the last one.
     const popupTarget = page.browserContext().targets().at(-1)!;
     // 5. Connect to the popup and make sure it doesn't throw and is not the same page.
-    expect(await popupTarget.page()).not.toBe(page);
+    assert.notStrictEqual(await popupTarget.page(), page);
   });
 });

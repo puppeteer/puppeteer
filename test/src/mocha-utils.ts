@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {TestServer} from '@pptr/testserver';
-import expect from 'expect';
+import {assert} from 'chai';
 import type * as MochaBase from 'mocha';
 import puppeteer, {TimeoutError} from 'puppeteer/internal/puppeteer.js';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
@@ -23,7 +23,7 @@ import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import sinon from 'sinon';
 
-import {extendExpectWithToBeGolden} from './utils.js';
+import {assertMatchObject, setGoldenDirs} from './utils.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -336,7 +336,7 @@ const setupGoldenAssertions = (): void => {
   if (fs.existsSync(OUTPUT_DIR)) {
     rmSync(OUTPUT_DIR);
   }
-  extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
+  setGoldenDirs(GOLDEN_DIR, OUTPUT_DIR);
 };
 
 setupGoldenAssertions();
@@ -457,36 +457,17 @@ export const mochaHooks: Mocha.RootHookObject = {
   },
 };
 
-declare module 'expect' {
-  interface Matchers<R> {
-    atLeastOneToContain(expected: string[]): R;
-  }
-}
-
-expect.extend({
-  atLeastOneToContain: (actual: string, expected: string[]) => {
-    for (const test of expected) {
-      try {
-        expect(actual).toContain(test);
-        return {
-          pass: true,
-          message: () => {
-            return '';
-          },
-        };
-      } catch {}
-    }
-
-    return {
-      pass: false,
-      message: () => {
-        return `"${actual}" didn't contain any of the strings ${JSON.stringify(
-          expected,
-        )}`;
-      },
-    };
-  },
-});
+export const assertAtLeastOneToContain = (
+  actual: string | undefined,
+  expected: string[],
+): void => {
+  assert.isTrue(
+    expected.some(test => {
+      return actual?.includes(test);
+    }),
+    `"${actual}" didn't contain any of the strings ${JSON.stringify(expected)}`,
+  );
+};
 
 export const expectCookieEquals = async (
   cookies: Cookie[],
@@ -513,9 +494,9 @@ export const expectCookieEquals = async (
     });
   }
 
-  expect(cookies).toHaveLength(expectedCookies.length);
+  assert.lengthOf(cookies, expectedCookies.length);
   for (let i = 0; i < cookies.length; i++) {
-    expect(cookies[i]).toMatchObject(expectedCookies[i]!);
+    assertMatchObject(cookies[i], expectedCookies[i]!);
   }
 };
 

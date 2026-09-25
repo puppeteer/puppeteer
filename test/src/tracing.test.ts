@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
 import sinon from 'sinon';
 
@@ -32,7 +32,7 @@ describe('Tracing', function () {
     await page.tracing.start({screenshots: true, path: outputFile});
     await page.goto(server.PREFIX + '/grid.html');
     await page.tracing.stop();
-    expect(fs.existsSync(outputFile)).toBe(true);
+    assert.isTrue(fs.existsSync(outputFile));
   });
 
   it('should run with custom categories if provided', async () => {
@@ -46,11 +46,11 @@ describe('Tracing', function () {
     const traceJson = JSON.parse(
       fs.readFileSync(outputFile, {encoding: 'utf8'}),
     );
-    expect(traceJson.traceEvents).not.toContainEqual(
-      expect.objectContaining({
+    assert.doesNotContainSubset(traceJson.traceEvents, [
+      {
         cat: 'toplevel',
-      }),
-    );
+      },
+    ]);
   });
 
   it('should run with default categories', async () => {
@@ -63,11 +63,11 @@ describe('Tracing', function () {
     const traceJson = JSON.parse(
       fs.readFileSync(outputFile, {encoding: 'utf8'}),
     );
-    expect(traceJson.traceEvents).toContainEqual(
-      expect.objectContaining({
+    assert.containSubset(traceJson.traceEvents, [
+      {
         cat: 'toplevel',
-      }),
-    );
+      },
+    ]);
   });
   it('should throw if tracing on two pages', async () => {
     const {page, browser} = state;
@@ -78,7 +78,7 @@ describe('Tracing', function () {
       return (error = error_);
     });
     await newPage.close();
-    expect(error).toBeTruthy();
+    assert.ok(error);
     await page.tracing.stop();
   });
   it('should return a typedArray', async () => {
@@ -88,8 +88,8 @@ describe('Tracing', function () {
     await page.goto(server.PREFIX + '/grid.html');
     const trace = (await page.tracing.stop())!;
     const buf = fs.readFileSync(outputFile);
-    expect(trace).toBeInstanceOf(Uint8Array);
-    expect(Buffer.from(trace).toString()).toEqual(buf.toString());
+    assert.instanceOf(trace, Uint8Array);
+    assert.strictEqual(Buffer.from(trace).toString(), buf.toString());
   });
   it('should work without options', async () => {
     const {page, server} = state;
@@ -97,7 +97,7 @@ describe('Tracing', function () {
     await page.tracing.start();
     await page.goto(server.PREFIX + '/grid.html');
     const trace = await page.tracing.stop();
-    expect(trace).toBeTruthy();
+    assert.ok(trace);
   });
 
   it('should support bufferSize option', async () => {
@@ -115,14 +115,12 @@ describe('Tracing', function () {
     const tracingStartCall = sendSpy.getCalls().find(call => {
       return call.args[0] === 'Tracing.start';
     });
-    expect(tracingStartCall).toBeDefined();
-    expect(tracingStartCall?.args[1]).toEqual(
-      expect.objectContaining({
-        traceConfig: expect.objectContaining({
-          traceBufferSizeInKb: 10,
-        }),
-      }),
-    );
+    assert.isDefined(tracingStartCall);
+    assert.containSubset(tracingStartCall?.args[1], {
+      traceConfig: {
+        traceBufferSizeInKb: 10,
+      },
+    });
   });
 
   it('should support a typedArray without a path', async () => {
@@ -131,7 +129,7 @@ describe('Tracing', function () {
     await page.tracing.start();
     await page.goto(server.PREFIX + '/grid.html');
     const trace = (await page.tracing.stop())!;
-    expect(Buffer.from(trace).toString().length).toBeGreaterThan(10);
+    assert.isAbove(Buffer.from(trace).toString().length, 10);
   });
 
   it('should properly fail if readProtocolStream errors out', async () => {
@@ -144,6 +142,6 @@ describe('Tracing', function () {
     } catch (error_) {
       error = error_ as Error;
     }
-    expect(error).toBeDefined();
+    assert.isDefined(error);
   });
 });

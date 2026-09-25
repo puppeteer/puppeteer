@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import {WebWorkerEvent} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  assertAtLeastOneToContain,
+  getTestState,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Workers', function () {
@@ -23,15 +27,15 @@ describe('Workers', function () {
       page.goto(server.PREFIX + '/worker/worker.html'),
     ]);
     const worker = page.workers()[0]!;
-    expect(worker.url()).toContain('worker.js');
+    assert.include(worker.url(), 'worker.js');
 
     const result = await worker.evaluate(() => {
       return (globalThis as any).workerFunction();
     });
-    expect(result).toBe('worker function result');
+    assert.strictEqual(result, 'worker function result');
 
     await page.goto(server.EMPTY_PAGE);
-    expect(page.workers()).toHaveLength(0);
+    assert.lengthOf(page.workers(), 0);
   });
 
   it('should emit created and destroyed events', async () => {
@@ -53,11 +57,11 @@ describe('Workers', function () {
       }, workerObj),
     ]);
 
-    expect(workerDestroyed).toBe(worker);
+    assert.strictEqual(workerDestroyed, worker);
     const error = await workerThisObj.getProperty('self').catch(error => {
       return error;
     });
-    expect(error.message).atLeastOneToContain([
+    assertAtLeastOneToContain(error.message, [
       'Realm already destroyed.',
       'Execution context is not available in detached frame',
     ]);
@@ -71,8 +75,8 @@ describe('Workers', function () {
         return new Worker(`data:text/javascript,console.log(1)`);
       }),
     ]);
-    expect(message.text()).toBe('1');
-    expect(message.location()).toEqual({
+    assert.strictEqual(message.text(), '1');
+    assert.deepEqual(message.location(), {
       url: '',
       lineNumber: 0,
       columnNumber: 8,
@@ -86,11 +90,11 @@ describe('Workers', function () {
       return new Worker(`data:text/javascript,console.log(1,2,3,this)`);
     });
     const log = await logPromise;
-    expect(log.text()).atLeastOneToContain([
+    assertAtLeastOneToContain(log.text(), [
       '1 2 3 JSHandle@object',
       '1 2 3 [object DedicatedWorkerGlobalScope]',
     ]);
-    expect(log.args()).toHaveLength(4);
+    assert.lengthOf(log.args(), 4);
   });
   it('should have an execution context', async () => {
     const {page} = await getTestState();
@@ -100,7 +104,7 @@ describe('Workers', function () {
       return new Worker(`data:text/javascript,console.log(1)`);
     });
     const worker = await workerCreatedPromise;
-    expect(await worker.evaluate('1+1')).toBe(2);
+    assert.strictEqual(await worker.evaluate('1+1'), 2);
   });
   it('should report errors', async () => {
     const {page} = await getTestState();
@@ -112,7 +116,7 @@ describe('Workers', function () {
       );
     });
     const errorLog = await errorPromise;
-    expect(errorLog.message).toContain('this is my error');
+    assert.include(errorLog.message, 'this is my error');
   });
 
   it('can be closed', async () => {
@@ -123,7 +127,7 @@ describe('Workers', function () {
       page.goto(server.PREFIX + '/worker/worker.html'),
     ]);
     const worker = page.workers()[0]!;
-    expect(worker?.url()).toContain('worker.js');
+    assert.include(worker?.url(), 'worker.js');
 
     await Promise.all([waitEvent(page, 'workerdestroyed'), worker?.close()]);
   });
@@ -164,9 +168,7 @@ describe('Workers', function () {
       }),
     ]);
 
-    await expect(testResponse!.text()).resolves.toContain(
-      'hello from the worker',
-    );
+    assert.include(await testResponse!.text(), 'hello from the worker');
   });
 
   describe('console', function () {
@@ -190,16 +192,16 @@ describe('Workers', function () {
           return console.log('hello', 5, {foo: 'bar'});
         }),
       ]);
-      expect(message.text()).atLeastOneToContain([
+      assertAtLeastOneToContain(message.text(), [
         'hello 5 [object Object]',
         'hello 5 JSHandle@object', // WebDriver BiDi
       ]);
-      expect(message.type()).toEqual('log');
-      expect(message.args()).toHaveLength(3);
+      assert.deepEqual(message.type(), 'log');
+      assert.lengthOf(message.args(), 3);
 
-      expect(await message.args()[0]!.jsonValue()).toEqual('hello');
-      expect(await message.args()[1]!.jsonValue()).toEqual(5);
-      expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
+      assert.deepEqual(await message.args()[0]!.jsonValue(), 'hello');
+      assert.deepEqual(await message.args()[1]!.jsonValue(), 5);
+      assert.deepEqual(await message.args()[2]!.jsonValue(), {foo: 'bar'});
     });
 
     it('should work for Error instances', async () => {
@@ -213,12 +215,12 @@ describe('Workers', function () {
         }),
       ]);
 
-      expect(message.text()).atLeastOneToContain([
+      assertAtLeastOneToContain(message.text(), [
         'Error: test error', // CDP expectation
         'JSHandle@error', // BiDi current behavior
       ]);
-      expect(message.type()).toEqual('log');
-      expect(message.args()).toHaveLength(1);
+      assert.deepEqual(message.type(), 'log');
+      assert.lengthOf(message.args(), 1);
     });
     it('should return the first line of the error message in text()', async () => {
       const {page} = await getTestState();
@@ -230,12 +232,12 @@ describe('Workers', function () {
           return console.log(new Error('test error\nsecond line'));
         }),
       ]);
-      expect(message.text()).atLeastOneToContain([
+      assertAtLeastOneToContain(message.text(), [
         'Error: test error', // CDP expectation
         'JSHandle@error', // BiDi current behavior
       ]);
-      expect(message.type()).toEqual('log');
-      expect(message.args()).toHaveLength(1);
+      assert.deepEqual(message.type(), 'log');
+      assert.lengthOf(message.args(), 1);
     });
     it('should work for console.trace', async () => {
       const {page} = await getTestState();
@@ -247,8 +249,8 @@ describe('Workers', function () {
           console.trace('calling console.trace');
         }),
       ]);
-      expect(message.type()).toBe('trace');
-      expect(message.text()).toBe('calling console.trace');
+      assert.strictEqual(message.type(), 'trace');
+      assert.strictEqual(message.text(), 'calling console.trace');
     });
 
     it('should work for console.dir', async () => {
@@ -261,8 +263,8 @@ describe('Workers', function () {
           console.dir('calling console.dir');
         }),
       ]);
-      expect(message.type()).toBe('dir');
-      expect(message.text()).toBe('calling console.dir');
+      assert.strictEqual(message.type(), 'dir');
+      assert.strictEqual(message.text(), 'calling console.dir');
     });
 
     it('should work for console.warn', async () => {
@@ -275,8 +277,8 @@ describe('Workers', function () {
           console.warn('calling console.warn');
         }),
       ]);
-      expect(message.type()).toBe('warn');
-      expect(message.text()).toBe('calling console.warn');
+      assert.strictEqual(message.type(), 'warn');
+      assert.strictEqual(message.text(), 'calling console.warn');
     });
 
     it('should work for console.error', async () => {
@@ -289,8 +291,8 @@ describe('Workers', function () {
           console.error('calling console.error');
         }),
       ]);
-      expect(message.type()).toBe('error');
-      expect(message.text()).toBe('calling console.error');
+      assert.strictEqual(message.type(), 'error');
+      assert.strictEqual(message.text(), 'calling console.error');
     });
 
     it('should work for console.log with promise', async () => {
@@ -303,8 +305,8 @@ describe('Workers', function () {
           console.log(Promise.resolve('should not wait until resolved!'));
         }),
       ]);
-      expect(message.type()).toBe('log');
-      expect(message.text()).atLeastOneToContain([
+      assert.strictEqual(message.type(), 'log');
+      assertAtLeastOneToContain(message.text(), [
         '[promise Promise]',
         'JSHandle@promise', // WebDriver BiDi expectation.
       ]);
@@ -323,12 +325,13 @@ describe('Workers', function () {
         console.time('calling console.time');
         console.timeEnd('calling console.time');
       });
-      expect(
+      assert.deepEqual(
         messages.map(msg => {
           return msg.type();
         }),
-      ).toEqual(['timeEnd']);
-      expect(messages[0]!.text()).toContain('calling console.time');
+        ['timeEnd'],
+      );
+      assert.include(messages[0]!.text(), 'calling console.time');
     });
     it('should work for different console API calls with group functions', async () => {
       const {page} = await getTestState();
@@ -343,14 +346,15 @@ describe('Workers', function () {
         console.group('calling console.group');
         console.groupEnd();
       });
-      expect(
+      assert.deepEqual(
         messages.map(msg => {
           return msg.type();
         }),
-      ).toEqual(['startGroup', 'endGroup']);
+        ['startGroup', 'endGroup'],
+      );
 
       // We should be able to check both messages, but Chrome report text
-      expect(messages[0]!.text()).toContain('calling console.group');
+      assert.include(messages[0]!.text(), 'calling console.group');
     });
     it('should return remote objects', async () => {
       const {page} = await getTestState();
@@ -366,13 +370,13 @@ describe('Workers', function () {
       });
       const log = await logPromise;
 
-      expect(log.text()).atLeastOneToContain([
+      assertAtLeastOneToContain(log.text(), [
         '1 2 3 [object DedicatedWorkerGlobalScope]',
         '1 2 3 JSHandle@object', // WebDriver BiDi
       ]);
-      expect(log.args()).toHaveLength(4);
+      assert.lengthOf(log.args(), 4);
       using property = await log.args()[3]!.getProperty('test');
-      expect(await property.jsonValue()).toBe(1);
+      assert.strictEqual(await property.jsonValue(), 1);
     });
     it('should have location and stack trace for console API calls', async () => {
       const {page} = await getTestState();
@@ -387,10 +391,10 @@ describe('Workers', function () {
           consoleTrace();
         }),
       ]);
-      expect(message.text()).toBe('yellow');
-      expect(message.type()).toBe('trace');
-      expect(message.location().url).toBeDefined();
-      expect(message.stackTrace().length).toBeGreaterThan(0);
+      assert.strictEqual(message.text(), 'yellow');
+      assert.strictEqual(message.type(), 'trace');
+      assert.isDefined(message.location().url);
+      assert.isAbove(message.stackTrace().length, 0);
     });
 
     it('should not dispose handles when worker has listeners', async () => {
@@ -404,10 +408,10 @@ describe('Workers', function () {
         }),
       ]);
       using handle = message.args()[0]!;
-      expect(handle.disposed).toBe(false);
-      expect(await handle.jsonValue()).toEqual({foo: 'bar'});
+      assert.isFalse(handle.disposed);
+      assert.deepEqual(await handle.jsonValue(), {foo: 'bar'});
       await handle.dispose();
-      expect(handle.disposed).toBe(true);
+      assert.isTrue(handle.disposed);
     });
   });
 
@@ -452,7 +456,7 @@ describe('Workers', function () {
       } catch (e) {
         error = e as Error;
       }
-      expect(error?.message).toContain('Waiting failed');
+      assert.include(error?.message, 'Waiting failed');
     });
 
     it('should return a JSHandle to a string and parse it', async () => {
@@ -472,7 +476,7 @@ describe('Workers', function () {
       });
 
       const result = await handle.jsonValue();
-      expect(result).toBe('Operation Success');
+      assert.strictEqual(result, 'Operation Success');
     });
 
     it('should work with JSHandle as an argument', async () => {

@@ -6,7 +6,7 @@
 
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {countFrames} from './ScreenRecorder.js';
 
@@ -36,31 +36,31 @@ describe('ScreenRecorder', () => {
       for (const captureFps of [24, 30, 31, 48, 53, 60, 90, 120]) {
         const total = totalFrames(captureFps, 1);
         // Always ~30 frames for 1s at 30fps, within one frame of rounding.
-        expect(total).toBeGreaterThanOrEqual(FPS - 1);
-        expect(total).toBeLessThanOrEqual(FPS + 1);
+        assert.isAtLeast(total, FPS - 1);
+        assert.isAtMost(total, FPS + 1);
       }
     });
 
     it('does not inflate the count when captured faster than fps', () => {
       // The old per-interval rounding wrote ~1 frame per captured frame, i.e.
       // ~60 frames for 1s captured at 60fps (a 2x timeline stretch).
-      expect(totalFrames(60, 1)).toBeLessThanOrEqual(FPS + 1);
+      assert.isAtMost(totalFrames(60, 1), FPS + 1);
     });
 
     it('does not drop all frames when captured much faster than fps', () => {
       // The old per-interval rounding computed round(30/120) = 0 per interval,
       // dropping every frame. The corrected accounting keeps ~30.
-      expect(totalFrames(120, 1)).toBeGreaterThanOrEqual(FPS - 1);
+      assert.isAtLeast(totalFrames(120, 1), FPS - 1);
     });
 
     it('scales with the requested fps', () => {
-      expect(totalFrames(60, 1, 60)).toBeGreaterThanOrEqual(59);
-      expect(totalFrames(60, 1, 60)).toBeLessThanOrEqual(61);
+      assert.isAtLeast(totalFrames(60, 1, 60), 59);
+      assert.isAtMost(totalFrames(60, 1, 60), 61);
     });
 
     it('returns zero for non-increasing timestamps', () => {
-      expect(countFrames(0, 1, 1, FPS)).toBe(0);
-      expect(countFrames(0, 1, 0.5, FPS)).toBe(0);
+      assert.strictEqual(countFrames(0, 1, 1, FPS), 0);
+      assert.strictEqual(countFrames(0, 1, 0.5, FPS), 0);
     });
   });
 });

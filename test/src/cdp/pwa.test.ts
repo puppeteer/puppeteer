@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+import {assertRejects} from '../utils.js';
 
 describe('PWA', function () {
   // The `PWA` CDP domain is only available over a pipe connection.
@@ -31,7 +32,7 @@ describe('PWA', function () {
       installUrlOrBundleUrl: startUrl,
       displayMode,
     });
-    expect(returnedId).toBe(manifestId);
+    assert.strictEqual(returnedId, manifestId);
     return {manifestId, startUrl};
   }
 
@@ -41,13 +42,13 @@ describe('PWA', function () {
 
     // getPWAState resolves for an installed app.
     const installedState = await browser.getPWAState({manifestId});
-    expect(installedState.badgeCount).toBe(0);
-    expect(Array.isArray(installedState.fileHandlers)).toBe(true);
+    assert.strictEqual(installedState.badgeCount, 0);
+    assert.isTrue(Array.isArray(installedState.fileHandlers));
 
     await browser.uninstallPWA({manifestId});
 
     // After uninstall, querying the app state should reject.
-    await expect(browser.getPWAState({manifestId})).rejects.toThrow();
+    await assertRejects(browser.getPWAState({manifestId}));
   });
 
   it('launches an installed PWA and returns its Page', async () => {
@@ -56,11 +57,11 @@ describe('PWA', function () {
 
     const page = await browser.launchPWA({manifestId});
     try {
-      expect(page.url()).toBe(startUrl);
+      assert.strictEqual(page.url(), startUrl);
       const isStandalone = await page.evaluate(() => {
         return matchMedia('(display-mode: standalone)').matches;
       });
-      expect(isStandalone).toBe(true);
+      assert.isTrue(isStandalone);
     } finally {
       await page.close().catch(() => {});
       await browser.uninstallPWA({manifestId}).catch(() => {});
@@ -73,7 +74,7 @@ describe('PWA', function () {
 
     const page = await browser.launchPWA({manifestId, url: startUrl});
     try {
-      expect(page.url()).toBe(startUrl);
+      assert.strictEqual(page.url(), startUrl);
     } finally {
       await page.close().catch(() => {});
       await browser.uninstallPWA({manifestId}).catch(() => {});
@@ -96,7 +97,7 @@ describe('PWA', function () {
       const isStandalone = await page.evaluate(() => {
         return matchMedia('(display-mode: standalone)').matches;
       });
-      expect(isStandalone).toBe(true);
+      assert.isTrue(isStandalone);
     } finally {
       await page.close().catch(() => {});
       await browser.uninstallPWA({manifestId}).catch(() => {});

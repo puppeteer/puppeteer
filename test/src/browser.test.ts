@@ -4,9 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 
-import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  assertAtLeastOneToContain,
+  getTestState,
+  launch,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
+import {assertMatchObject} from './utils.js';
 
 describe('Browser specs', function () {
   setupTestBrowserHooks();
@@ -16,8 +22,8 @@ describe('Browser specs', function () {
       const {browser} = await getTestState();
 
       const version = await browser.version();
-      expect(version.length).toBeGreaterThan(0);
-      expect(version.toLowerCase()).atLeastOneToContain(['firefox', 'chrome']);
+      assert.isAbove(version.length, 0);
+      assertAtLeastOneToContain(version.toLowerCase(), ['firefox', 'chrome']);
     });
   });
 
@@ -26,22 +32,22 @@ describe('Browser specs', function () {
       const {browser, isChrome} = await getTestState();
 
       const userAgent = await browser.userAgent();
-      expect(userAgent.length).toBeGreaterThan(0);
+      assert.isAbove(userAgent.length, 0);
       if (isChrome) {
-        expect(userAgent).toContain('WebKit');
+        assert.include(userAgent, 'WebKit');
       } else {
-        expect(userAgent).toContain('Gecko');
+        assert.include(userAgent, 'Gecko');
       }
     });
     it('should include Browser name', async () => {
       const {browser, isChrome} = await getTestState();
 
       const userAgent = await browser.userAgent();
-      expect(userAgent.length).toBeGreaterThan(0);
+      assert.isAbove(userAgent.length, 0);
       if (isChrome) {
-        expect(userAgent).toContain('Chrome');
+        assert.include(userAgent, 'Chrome');
       } else {
-        expect(userAgent).toContain('Firefox');
+        assert.include(userAgent, 'Firefox');
       }
     });
   });
@@ -51,7 +57,7 @@ describe('Browser specs', function () {
       const {browser} = await getTestState();
 
       const target = browser.target();
-      expect(target.type()).toBe('browser');
+      assert.strictEqual(target.type(), 'browser');
     });
   });
 
@@ -60,7 +66,7 @@ describe('Browser specs', function () {
       const {browser} = await getTestState();
 
       const process = await browser.process();
-      expect(process!.pid).toBeGreaterThan(0);
+      assert.isAbove(process!.pid!, 0);
     });
     it('should not return child_process for remote browser', async () => {
       const {browser, puppeteer} = await getTestState({
@@ -72,7 +78,7 @@ describe('Browser specs', function () {
         browserWSEndpoint,
         protocol: browser.protocol,
       });
-      expect(remoteBrowser.process()).toBe(null);
+      assert.isNull(remoteBrowser.process());
     });
     it('should keep connected after the last page is closed', async () => {
       const {browser, close} = await launch({});
@@ -84,7 +90,7 @@ describe('Browser specs', function () {
           }),
         );
         // Verify the browser is still connected.
-        expect(browser.connected).toBe(true);
+        assert.isTrue(browser.connected);
         // Verify the browser can open a new page.
         await browser.newPage();
       } finally {
@@ -104,9 +110,9 @@ describe('Browser specs', function () {
         browserWSEndpoint,
         protocol: browser.protocol,
       });
-      expect(newBrowser.connected).toBe(true);
+      assert.isTrue(newBrowser.connected);
       await newBrowser.disconnect();
-      expect(newBrowser.connected).toBe(false);
+      assert.isFalse(newBrowser.connected);
     });
   });
 
@@ -122,7 +128,8 @@ describe('Browser specs', function () {
       }
 
       const screenInfos = await browser.screens();
-      expect(screenInfos).toMatchObject([
+      assert.lengthOf(screenInfos, 1);
+      assertMatchObject(screenInfos, [
         {
           availHeight: 600,
           availLeft: 0,
@@ -131,7 +138,6 @@ describe('Browser specs', function () {
           colorDepth: 24,
           devicePixelRatio: 1,
           height: 600,
-          id: expect.any(String),
           isExtended: false,
           isInternal: false,
           isPrimary: true,
@@ -142,6 +148,7 @@ describe('Browser specs', function () {
           width: 800,
         },
       ]);
+      assert.isString(screenInfos[0]!.id);
     });
   });
 
@@ -157,7 +164,7 @@ describe('Browser specs', function () {
         workAreaInsets: {bottom: 80},
         label: 'secondary',
       });
-      expect(screenInfo).toMatchObject({
+      assertMatchObject(screenInfo, {
         availHeight: 1120,
         availLeft: 800,
         availTop: 0,
@@ -165,7 +172,6 @@ describe('Browser specs', function () {
         colorDepth: 32,
         devicePixelRatio: 1,
         height: 1200,
-        id: expect.any(String),
         isExtended: true,
         isInternal: false,
         isPrimary: false,
@@ -175,10 +181,11 @@ describe('Browser specs', function () {
         top: 0,
         width: 1600,
       });
-      expect((await browser.screens()).length).toBe(2);
+      assert.isString(screenInfo.id);
+      assert.strictEqual((await browser.screens()).length, 2);
 
       await browser.removeScreen(screenInfo.id);
-      expect((await browser.screens()).length).toBe(1);
+      assert.strictEqual((await browser.screens()).length, 1);
     });
   });
 
@@ -198,9 +205,7 @@ describe('Browser specs', function () {
       });
 
       const windowId = await page.windowId();
-      expect(await browser.getWindowBounds(windowId)).toMatchObject(
-        initialBounds,
-      );
+      assertMatchObject(await browser.getWindowBounds(windowId), initialBounds);
 
       const setBounds = {
         left: 100,
@@ -209,7 +214,7 @@ describe('Browser specs', function () {
         height: 1200,
       };
       await browser.setWindowBounds(windowId, setBounds);
-      expect(await browser.getWindowBounds(windowId)).toMatchObject(setBounds);
+      assertMatchObject(await browser.getWindowBounds(windowId), setBounds);
     });
 
     it('should set and get browser window maximized state', async () => {
@@ -239,7 +244,7 @@ describe('Browser specs', function () {
       await browser.setWindowBounds(windowId, {windowState: 'maximized'});
 
       // Expect the maximized window to be maximized.
-      expect(await browser.getWindowBounds(windowId)).toMatchObject({
+      assertMatchObject(await browser.getWindowBounds(windowId), {
         windowState: 'maximized',
       });
 

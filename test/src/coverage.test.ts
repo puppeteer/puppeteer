@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {assertGolden} from './utils.js';
 
 describe('Coverage specs', function () {
   setupTestBrowserHooks();
@@ -19,9 +20,9 @@ describe('Coverage specs', function () {
         waitUntil: 'load',
       });
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(1);
-      expect(coverage[0]!.url).toContain('/jscoverage/simple.html');
-      expect(coverage[0]!.ranges).toEqual([
+      assert.lengthOf(coverage, 1);
+      assert.include(coverage[0]!.url, '/jscoverage/simple.html');
+      assert.deepEqual(coverage[0]!.ranges, [
         {start: 0, end: 17},
         {start: 35, end: 61},
       ]);
@@ -32,8 +33,8 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/sourceurl.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(1);
-      expect(coverage[0]!.url).toBe('nicename.js');
+      assert.lengthOf(coverage, 1);
+      assert.strictEqual(coverage[0]!.url, 'nicename.js');
     });
     it('should ignore eval() scripts by default', async () => {
       const {page, server} = await getTestState();
@@ -41,7 +42,7 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/eval.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(1);
+      assert.lengthOf(coverage, 1);
     });
     it('should not ignore eval() scripts if reportAnonymousScripts is true', async () => {
       const {page, server} = await getTestState();
@@ -53,7 +54,7 @@ describe('Coverage specs', function () {
       const filtered = coverage.filter(entry => {
         return !entry.url.startsWith('debugger://');
       });
-      expect(filtered).toHaveLength(1);
+      assert.lengthOf(filtered, 1);
     });
     it('should ignore pptr internal scripts if reportAnonymousScripts is true', async () => {
       const {page, server} = await getTestState();
@@ -65,7 +66,7 @@ describe('Coverage specs', function () {
         return console.log('bar');
       });
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(0);
+      assert.lengthOf(coverage, 0);
     });
     it('should report multiple scripts', async () => {
       const {page, server} = await getTestState();
@@ -73,12 +74,12 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/multiple.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(2);
+      assert.lengthOf(coverage, 2);
       coverage.sort((a, b) => {
         return a.url.localeCompare(b.url);
       });
-      expect(coverage[0]!.url).toContain('/jscoverage/script1.js');
-      expect(coverage[1]!.url).toContain('/jscoverage/script2.js');
+      assert.include(coverage[0]!.url, '/jscoverage/script1.js');
+      assert.include(coverage[1]!.url, '/jscoverage/script2.js');
     });
     it('should report right ranges', async () => {
       const {page, server} = await getTestState();
@@ -86,13 +87,14 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/ranges.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(1);
+      assert.lengthOf(coverage, 1);
       const entry = coverage[0]!;
-      expect(entry.ranges).toHaveLength(2);
+      assert.lengthOf(entry.ranges, 2);
       const range1 = entry.ranges[0]!;
-      expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
+      assert.strictEqual(entry.text.substring(range1.start, range1.end), '\n');
       const range2 = entry.ranges[1]!;
-      expect(entry.text.substring(range2.start, range2.end)).toBe(
+      assert.strictEqual(
+        entry.text.substring(range2.start, range2.end),
         `console.log('used!');if(true===false)`,
       );
     });
@@ -106,13 +108,14 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage(coverageOptions);
       await page.goto(server.PREFIX + '/jscoverage/ranges.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(1);
+      assert.lengthOf(coverage, 1);
       const entry = coverage[0]!;
-      expect(entry.ranges).toHaveLength(2);
+      assert.lengthOf(entry.ranges, 2);
       const range1 = entry.ranges[0]!;
-      expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
+      assert.strictEqual(entry.text.substring(range1.start, range1.end), '\n');
       const range2 = entry.ranges[1]!;
-      expect(entry.text.substring(range2.start, range2.end)).toBe(
+      assert.strictEqual(
+        entry.text.substring(range2.start, range2.end),
         `console.log('used!');if(true===false)console.log('unused!');`,
       );
     });
@@ -122,10 +125,10 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/unused.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage).toHaveLength(1);
+      assert.lengthOf(coverage, 1);
       const entry = coverage[0]!;
-      expect(entry.url).toContain('unused.html');
-      expect(entry.ranges).toHaveLength(0);
+      assert.include(entry.url, 'unused.html');
+      assert.lengthOf(entry.ranges, 0);
     });
     it('should work with conditionals', async () => {
       const {page, server} = await getTestState();
@@ -133,9 +136,10 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/involved.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(
+      assertGolden(
         JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/'),
-      ).toBeGolden('jscoverage-involved.txt');
+        'jscoverage-involved.txt',
+      );
     });
     it('should not hang when there is a debugger statement', async () => {
       const {page, server} = await getTestState();
@@ -155,7 +159,7 @@ describe('Coverage specs', function () {
         await page.goto(server.PREFIX + '/jscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage).toHaveLength(0);
+        assert.lengthOf(coverage, 0);
       });
     });
     describe('includeRawScriptCoverage', function () {
@@ -166,8 +170,8 @@ describe('Coverage specs', function () {
           waitUntil: 'load',
         });
         const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage).toHaveLength(1);
-        expect(coverage[0]!.rawScriptCoverage).toBeUndefined();
+        assert.lengthOf(coverage, 1);
+        assert.isUndefined(coverage[0]!.rawScriptCoverage);
       });
       it('should include rawScriptCoverage field when enabled', async () => {
         const {page, server} = await getTestState();
@@ -178,8 +182,8 @@ describe('Coverage specs', function () {
           waitUntil: 'load',
         });
         const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage).toHaveLength(1);
-        expect(coverage[0]!.rawScriptCoverage).toBeTruthy();
+        assert.lengthOf(coverage, 1);
+        assert.ok(coverage[0]!.rawScriptCoverage);
       });
     });
   });
@@ -191,11 +195,12 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/simple.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(1);
-      expect(coverage[0]!.url).toContain('/csscoverage/simple.html');
-      expect(coverage[0]!.ranges).toEqual([{start: 1, end: 22}]);
+      assert.lengthOf(coverage, 1);
+      assert.include(coverage[0]!.url, '/csscoverage/simple.html');
+      assert.deepEqual(coverage[0]!.ranges, [{start: 1, end: 22}]);
       const range = coverage[0]!.ranges[0]!;
-      expect(coverage[0]!.text.substring(range.start, range.end)).toBe(
+      assert.strictEqual(
+        coverage[0]!.text.substring(range.start, range.end),
         'div { color: green; }',
       );
     });
@@ -205,8 +210,8 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/sourceurl.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(1);
-      expect(coverage[0]!.url).toBe('nicename.css');
+      assert.lengthOf(coverage, 1);
+      assert.strictEqual(coverage[0]!.url, 'nicename.css');
     });
     it('should report multiple stylesheets', async () => {
       const {page, server} = await getTestState();
@@ -214,12 +219,12 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/multiple.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(2);
+      assert.lengthOf(coverage, 2);
       coverage.sort((a, b) => {
         return a.url.localeCompare(b.url);
       });
-      expect(coverage[0]!.url).toContain('/csscoverage/stylesheet1.css');
-      expect(coverage[1]!.url).toContain('/csscoverage/stylesheet2.css');
+      assert.include(coverage[0]!.url, '/csscoverage/stylesheet1.css');
+      assert.include(coverage[1]!.url, '/csscoverage/stylesheet2.css');
     });
     it('should report stylesheets that have no coverage', async () => {
       const {page, server} = await getTestState();
@@ -227,9 +232,9 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/unused.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(1);
-      expect(coverage[0]!.url).toBe('unused.css');
-      expect(coverage[0]!.ranges).toHaveLength(0);
+      assert.lengthOf(coverage, 1);
+      assert.strictEqual(coverage[0]!.url, 'unused.css');
+      assert.lengthOf(coverage[0]!.ranges, 0);
     });
     it('should work with media queries', async () => {
       const {page, server} = await getTestState();
@@ -237,9 +242,9 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/media.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(1);
-      expect(coverage[0]!.url).toContain('/csscoverage/media.html');
-      expect(coverage[0]!.ranges).toEqual([
+      assert.lengthOf(coverage, 1);
+      assert.include(coverage[0]!.url, '/csscoverage/media.html');
+      assert.deepEqual(coverage[0]!.ranges, [
         {start: 8, end: 15},
         {start: 17, end: 38},
       ]);
@@ -250,9 +255,10 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/involved.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(
+      assertGolden(
         JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/'),
-      ).toBeGolden('csscoverage-involved.txt');
+        'csscoverage-involved.txt',
+      );
     });
     it('should work with empty stylesheets', async () => {
       const {page, server} = await getTestState();
@@ -260,8 +266,8 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/empty.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(1);
-      expect(coverage[0]!.text).toEqual('');
+      assert.lengthOf(coverage, 1);
+      assert.strictEqual(coverage[0]!.text, '');
     });
     it('should ignore injected stylesheets', async () => {
       const {page} = await getTestState();
@@ -272,9 +278,9 @@ describe('Coverage specs', function () {
       const margin = await page.evaluate(() => {
         return window.getComputedStyle(document.body).margin;
       });
-      expect(margin).toBe('10px');
+      assert.strictEqual(margin, '10px');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(0);
+      assert.lengthOf(coverage, 0);
     });
     it('should work with a recently loaded stylesheet', async () => {
       const {page, server} = await getTestState();
@@ -292,7 +298,7 @@ describe('Coverage specs', function () {
         });
       }, server.PREFIX + '/csscoverage/stylesheet1.css');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage).toHaveLength(1);
+      assert.lengthOf(coverage, 1);
     });
     describe('resetOnNavigation', function () {
       it('should report stylesheets across navigations', async () => {
@@ -302,7 +308,7 @@ describe('Coverage specs', function () {
         await page.goto(server.PREFIX + '/csscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopCSSCoverage();
-        expect(coverage).toHaveLength(2);
+        assert.lengthOf(coverage, 2);
       });
       it('should NOT report scripts across navigations', async () => {
         const {page, server} = await getTestState();
@@ -311,7 +317,7 @@ describe('Coverage specs', function () {
         await page.goto(server.PREFIX + '/csscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopCSSCoverage();
-        expect(coverage).toHaveLength(0);
+        assert.lengthOf(coverage, 0);
       });
     });
   });

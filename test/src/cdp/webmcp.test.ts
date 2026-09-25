@@ -6,7 +6,7 @@
 
 /// <reference types="webmcp-types" />
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {Issue} from 'puppeteer';
 import type {
   WebMCPTool,
@@ -27,7 +27,7 @@ describe('Page.webmcp', function () {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     const toolsAddedPromise = new Promise<void>(resolve => {
       let count = 0;
@@ -69,43 +69,43 @@ describe('Page.webmcp', function () {
     await toolsAddedPromise;
 
     const tools = page.webmcp.tools();
-    expect(tools.length).toBe(2);
+    assert.strictEqual(tools.length, 2);
 
-    expect(tools[0]!.name).toBe('test-tool-1');
-    expect(tools[0]!.description).toBe('A test tool 1');
-    expect(tools[0]!.inputSchema).toStrictEqual({
+    assert.strictEqual(tools[0]!.name, 'test-tool-1');
+    assert.strictEqual(tools[0]!.description, 'A test tool 1');
+    assert.deepEqual(tools[0]!.inputSchema, {
       type: 'object',
       properties: {
         text: {type: 'string', description: 'Some text'},
       },
       required: ['text'],
     });
-    expect(tools[0]!.annotations).toBeDefined();
-    expect(tools[0]!.annotations!.readOnly).toBe(true);
-    expect(tools[0]!.annotations!.untrustedContent).toBe(true);
-    expect(tools[0]!.frame).toBe(page.mainFrame());
-    expect(await tools[0]!.formElement).toBeUndefined();
-    expect(tools[0]!.location).toBeDefined();
+    assert.isDefined(tools[0]!.annotations);
+    assert.isTrue(tools[0]!.annotations!.readOnly);
+    assert.isTrue(tools[0]!.annotations!.untrustedContent);
+    assert.strictEqual(tools[0]!.frame, page.mainFrame());
+    assert.isUndefined(await tools[0]!.formElement);
+    assert.isDefined(tools[0]!.location);
 
-    expect(tools[1]!.name).toBe('declarative tool name');
-    expect(tools[1]!.description).toBe('tool description');
-    expect(tools[1]!.inputSchema).toStrictEqual({
+    assert.strictEqual(tools[1]!.name, 'declarative tool name');
+    assert.strictEqual(tools[1]!.description, 'tool description');
+    assert.deepEqual(tools[1]!.inputSchema, {
       type: 'object',
       properties: {},
       required: [],
     });
-    expect(tools[1]!.annotations).toBeDefined();
-    expect(tools[1]!.annotations!.autosubmit).toBe(true);
-    expect(tools[1]!.frame).toBe(page.mainFrame());
-    expect(await tools[1]!.formElement).toBeDefined();
-    expect(tools[1]!.location).toBeUndefined();
+    assert.isDefined(tools[1]!.annotations);
+    assert.isTrue(tools[1]!.annotations!.autosubmit);
+    assert.strictEqual(tools[1]!.frame, page.mainFrame());
+    assert.isDefined(await tools[1]!.formElement);
+    assert.isUndefined(tools[1]!.location);
   });
 
   it('should fire toolsadded events', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     const imperativeToolAdded = new Promise<WebMCPTool[]>(resolve => {
       page.webmcp.once('toolsadded', event => {
@@ -130,20 +130,20 @@ describe('Page.webmcp', function () {
     });
 
     let addedTools = await imperativeToolAdded;
-    expect(addedTools.length).toBe(1);
-    expect(addedTools[0]!.name).toBe('test-tool-1');
-    expect(addedTools[0]!.description).toBe('A test tool 1');
-    expect(addedTools[0]!.inputSchema).toStrictEqual({
+    assert.strictEqual(addedTools.length, 1);
+    assert.strictEqual(addedTools[0]!.name, 'test-tool-1');
+    assert.strictEqual(addedTools[0]!.description, 'A test tool 1');
+    assert.deepEqual(addedTools[0]!.inputSchema, {
       type: 'object',
       properties: {
         text: {type: 'string', description: 'Some text'},
       },
       required: ['text'],
     });
-    expect(addedTools[0]!.annotations).toBeUndefined();
-    expect(addedTools[0]!.frame).toBe(page.mainFrame());
-    expect(await addedTools[0]!.formElement).toBeUndefined();
-    expect(addedTools[0]!.location).toBeDefined();
+    assert.isUndefined(addedTools[0]!.annotations);
+    assert.strictEqual(addedTools[0]!.frame, page.mainFrame());
+    assert.isUndefined(await addedTools[0]!.formElement);
+    assert.isDefined(addedTools[0]!.location);
 
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
@@ -160,25 +160,25 @@ describe('Page.webmcp', function () {
     });
 
     addedTools = await declarativeToolAdded;
-    expect(addedTools.length).toBe(1);
-    expect(addedTools[0]!.name).toBe('declarative tool name');
-    expect(addedTools[0]!.description).toBe('tool description');
-    expect(addedTools[0]!.annotations).toBeUndefined();
-    expect(addedTools[0]!.inputSchema).toStrictEqual({
+    assert.strictEqual(addedTools.length, 1);
+    assert.strictEqual(addedTools[0]!.name, 'declarative tool name');
+    assert.strictEqual(addedTools[0]!.description, 'tool description');
+    assert.isUndefined(addedTools[0]!.annotations);
+    assert.deepEqual(addedTools[0]!.inputSchema, {
       type: 'object',
       properties: {},
       required: [],
     });
-    expect(addedTools[0]!.frame).toBe(page.mainFrame());
-    expect(await addedTools[0]!.formElement).toBeDefined();
-    expect(addedTools[0]!.location).toBeUndefined();
+    assert.strictEqual(addedTools[0]!.frame, page.mainFrame());
+    assert.isDefined(await addedTools[0]!.formElement);
+    assert.isUndefined(addedTools[0]!.location);
   });
 
   it('should fire toolsremoved events', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     // Register an imperative WebMCP tool.
     using controllerHandle = await page.evaluateHandle(async () => {
@@ -213,20 +213,20 @@ describe('Page.webmcp', function () {
     });
 
     let removedTools = await imperativeToolRemoved;
-    expect(removedTools.length).toBe(1);
-    expect(removedTools[0]!.name).toBe('test-tool-1');
-    expect(removedTools[0]!.description).toBe('A test tool 1');
-    expect(removedTools[0]!.inputSchema).toStrictEqual({
+    assert.strictEqual(removedTools.length, 1);
+    assert.strictEqual(removedTools[0]!.name, 'test-tool-1');
+    assert.strictEqual(removedTools[0]!.description, 'A test tool 1');
+    assert.deepEqual(removedTools[0]!.inputSchema, {
       type: 'object',
       properties: {
         text: {type: 'string', description: 'Some text'},
       },
       required: ['text'],
     });
-    expect(removedTools[0]!.annotations).toBeUndefined();
-    expect(removedTools[0]!.frame).toBe(page.mainFrame());
-    expect(await removedTools[0]!.formElement).toBeUndefined();
-    expect(removedTools[0]!.location).toBeDefined();
+    assert.isUndefined(removedTools[0]!.annotations);
+    assert.strictEqual(removedTools[0]!.frame, page.mainFrame());
+    assert.isUndefined(await removedTools[0]!.formElement);
+    assert.isDefined(removedTools[0]!.location);
 
     // Register a declarative WebMCP tool.
     await page.evaluate(() => {
@@ -254,18 +254,18 @@ describe('Page.webmcp', function () {
     });
 
     removedTools = await declarativeToolRemoved;
-    expect(removedTools.length).toBe(1);
-    expect(removedTools[0]!.name).toBe('declarative tool name');
-    expect(removedTools[0]!.description).toBe('tool description');
-    expect(removedTools[0]!.inputSchema).toStrictEqual({
+    assert.strictEqual(removedTools.length, 1);
+    assert.strictEqual(removedTools[0]!.name, 'declarative tool name');
+    assert.strictEqual(removedTools[0]!.description, 'tool description');
+    assert.deepEqual(removedTools[0]!.inputSchema, {
       type: 'object',
       properties: {},
       required: [],
     });
-    expect(removedTools[0]!.annotations).toBeUndefined();
-    expect(removedTools[0]!.frame).toBe(page.mainFrame());
-    expect(await removedTools[0]!.formElement).toBeDefined();
-    expect(removedTools[0]!.location).toBeUndefined();
+    assert.isUndefined(removedTools[0]!.annotations);
+    assert.strictEqual(removedTools[0]!.frame, page.mainFrame());
+    assert.isDefined(await removedTools[0]!.formElement);
+    assert.isUndefined(removedTools[0]!.location);
   });
 
   it('should remove tools on frame navigation', async () => {
@@ -298,9 +298,9 @@ describe('Page.webmcp', function () {
     await page.goto(httpsServer.EMPTY_PAGE);
 
     const removedTools = await toolsRemovedPromise;
-    expect(removedTools.length).toBe(1);
-    expect(removedTools[0]!.name).toBe('declarative tool name');
-    expect(page.webmcp.tools().length).toBe(0);
+    assert.strictEqual(removedTools.length, 1);
+    assert.strictEqual(removedTools[0]!.name, 'declarative tool name');
+    assert.strictEqual(page.webmcp.tools().length, 0);
   });
 
   it('should handle multiple navigations and report tools correctly', async () => {
@@ -320,8 +320,8 @@ describe('Page.webmcp', function () {
       document.body.appendChild(form);
     });
     await toolsAddedPromise;
-    expect(page.webmcp.tools().length).toBe(1);
-    expect(page.webmcp.tools()[0]!.name).toBe('tool-1');
+    assert.strictEqual(page.webmcp.tools().length, 1);
+    assert.strictEqual(page.webmcp.tools()[0]!.name, 'tool-1');
 
     // 2. Navigate to C2
     let toolsRemovedPromise = new Promise<void>(resolve => {
@@ -331,7 +331,7 @@ describe('Page.webmcp', function () {
     });
     await page.goto(httpsServer.EMPTY_PAGE);
     await toolsRemovedPromise;
-    expect(page.webmcp.tools().length).toBe(0);
+    assert.strictEqual(page.webmcp.tools().length, 0);
 
     // 3. Register tool on C2
     toolsAddedPromise = new Promise<void>(resolve => {
@@ -346,8 +346,8 @@ describe('Page.webmcp', function () {
       document.body.appendChild(form);
     });
     await toolsAddedPromise;
-    expect(page.webmcp.tools().length).toBe(1);
-    expect(page.webmcp.tools()[0]!.name).toBe('tool-2');
+    assert.strictEqual(page.webmcp.tools().length, 1);
+    assert.strictEqual(page.webmcp.tools()[0]!.name, 'tool-2');
 
     // 4. Navigate to C3
     toolsRemovedPromise = new Promise<void>(resolve => {
@@ -357,7 +357,7 @@ describe('Page.webmcp', function () {
     });
     await page.goto(httpsServer.EMPTY_PAGE);
     await toolsRemovedPromise;
-    expect(page.webmcp.tools().length).toBe(0);
+    assert.strictEqual(page.webmcp.tools().length, 0);
   });
 
   it('should not reset tools on same-document navigation', async () => {
@@ -376,21 +376,21 @@ describe('Page.webmcp', function () {
       document.body.appendChild(form);
     });
     await toolsAddedPromise;
-    expect(page.webmcp.tools().length).toBe(1);
+    assert.strictEqual(page.webmcp.tools().length, 1);
 
     // Same document/hash navigation should not reset tools.
     await page.goto(httpsServer.EMPTY_PAGE + '#hash');
 
     // Tools should still be present because context was not destroyed.
-    expect(page.webmcp.tools().length).toBe(1);
-    expect(page.webmcp.tools()[0]!.name).toBe('declarative tool name');
+    assert.strictEqual(page.webmcp.tools().length, 1);
+    assert.strictEqual(page.webmcp.tools()[0]!.name, 'declarative tool name');
   });
 
   it('should fire toolinvoked events', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     const toolAdded = new Promise<WebMCPTool[]>(resolve => {
       page.webmcp.once('toolsadded', event => {
@@ -439,21 +439,21 @@ describe('Page.webmcp', function () {
     ]);
 
     async function expectToolCall(call: WebMCPToolCall) {
-      expect(call.id).toBeDefined();
-      expect(call.tool).toBeDefined();
-      expect(call.tool.name).toBe('test-tool-1');
-      expect(call.tool.description).toBe('A test tool 1');
-      expect(call.tool.inputSchema).toStrictEqual({
+      assert.isDefined(call.id);
+      assert.isDefined(call.tool);
+      assert.strictEqual(call.tool.name, 'test-tool-1');
+      assert.strictEqual(call.tool.description, 'A test tool 1');
+      assert.deepEqual(call.tool.inputSchema, {
         type: 'object',
         properties: {
           text: {type: 'string', description: 'Some text'},
         },
         required: ['text'],
       });
-      expect(call.tool.frame).toBe(page.mainFrame());
-      expect(await call.tool.formElement).toBeUndefined();
-      expect(call.tool.location).toBeDefined();
-      expect(call.input).toStrictEqual({text: 'test'});
+      assert.strictEqual(call.tool.frame, page.mainFrame());
+      assert.isUndefined(await call.tool.formElement);
+      assert.isDefined(call.tool.location);
+      assert.deepEqual(call.input, {text: 'test'});
     }
     await expectToolCall(addedToolCall);
     await expectToolCall(toolCall);
@@ -463,7 +463,7 @@ describe('Page.webmcp', function () {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     // Register a WebMCP tool.
     await page.evaluate(async () => {
@@ -503,19 +503,19 @@ describe('Page.webmcp', function () {
     const call = await toolCalled;
     const response = await toolResponded;
 
-    expect(response.id).toBe(call.id);
-    expect(response.call).toBe(call);
-    expect(response.status).toBe('Completed');
-    expect(response.output).toBe('hello world');
-    expect(response.errorText).toBeUndefined();
-    expect(response.exception).toBeUndefined();
+    assert.strictEqual(response.id, call.id);
+    assert.strictEqual(response.call, call);
+    assert.strictEqual(response.status, 'Completed');
+    assert.strictEqual(response.output, 'hello world');
+    assert.isUndefined(response.errorText);
+    assert.isUndefined(response.exception);
   });
 
   it('should fire toolresponded event with exception', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     // Register a WebMCP tool.
     await page.evaluate(async () => {
@@ -545,20 +545,20 @@ describe('Page.webmcp', function () {
     const call = await toolCalled;
     const response = await toolResponded;
 
-    expect(response.id).toBe(call.id);
-    expect(response.call).toBe(call);
-    expect(response.status).toBe('Error');
-    expect(response.output).toBeUndefined();
-    expect(response.errorText).toBe('');
-    expect(response.exception).toBeDefined();
-    expect(response.exception?.description).toContain('sorry');
+    assert.strictEqual(response.id, call.id);
+    assert.strictEqual(response.call, call);
+    assert.strictEqual(response.status, 'Error');
+    assert.isUndefined(response.output);
+    assert.strictEqual(response.errorText, '');
+    assert.isDefined(response.exception);
+    assert.include(response.exception?.description, 'sorry');
   });
 
   it('should fire toolresponded event with errorText', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     // Register a WebMCP tool.
     await page.evaluate(async () => {
@@ -593,19 +593,19 @@ describe('Page.webmcp', function () {
     const call = await toolCalled;
     const response = await toolResponded;
 
-    expect(response.id).toBe(call.id);
-    expect(response.call).toBe(call);
-    expect(response.status).toBe('Error');
-    expect(response.output).toBeUndefined();
-    expect(response.errorText).toBe('Failed to parse input arguments');
-    expect(response.exception).toBeUndefined();
+    assert.strictEqual(response.id, call.id);
+    assert.strictEqual(response.call, call);
+    assert.strictEqual(response.status, 'Error');
+    assert.isUndefined(response.output);
+    assert.strictEqual(response.errorText, 'Failed to parse input arguments');
+    assert.isUndefined(response.exception);
   });
 
   it('should invoke tool', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     const toolAddedPromise = new Promise<any>(resolve => {
       page.webmcp.on('toolsadded', resolve);
@@ -642,19 +642,19 @@ describe('Page.webmcp', function () {
 
     const call = await toolCalled;
 
-    expect(response.id).toBe(call.id);
-    expect(response.call).toBe(call);
-    expect(response.status).toBe('Completed');
-    expect(response.output).toBe('hello world');
-    expect(response.errorText).toBeUndefined();
-    expect(response.exception).toBeUndefined();
+    assert.strictEqual(response.id, call.id);
+    assert.strictEqual(response.call, call);
+    assert.strictEqual(response.status, 'Completed');
+    assert.strictEqual(response.output, 'hello world');
+    assert.isUndefined(response.errorText);
+    assert.isUndefined(response.exception);
   });
 
   it('should cancel tool execution', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     const toolAddedPromise = new Promise<any>(resolve => {
       page.webmcp.on('toolsadded', resolve);
@@ -701,19 +701,19 @@ describe('Page.webmcp', function () {
 
     const response = await executePromise;
 
-    expect(response.id).toBe(call.id);
-    expect(response.call).toBe(call);
-    expect(response.status).toBe('Canceled');
-    expect(response.output).toBeUndefined();
-    expect(response.errorText).toBe('');
-    expect(response.exception).toBeUndefined();
+    assert.strictEqual(response.id, call.id);
+    assert.strictEqual(response.call, call);
+    assert.strictEqual(response.status, 'Canceled');
+    assert.isUndefined(response.output);
+    assert.strictEqual(response.errorText, '');
+    assert.isUndefined(response.exception);
   });
 
   it('should cancel tool execution with already aborted signal', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
 
-    expect(page.webmcp).toBeDefined();
+    assert.isDefined(page.webmcp);
 
     const toolAddedPromise = new Promise<any>(resolve => {
       page.webmcp.on('toolsadded', resolve);
@@ -758,12 +758,12 @@ describe('Page.webmcp', function () {
 
     const call = await toolCalled;
 
-    expect(response.id).toBe(call.id);
-    expect(response.call).toBe(call);
-    expect(response.status).toBe('Canceled');
-    expect(response.output).toBeUndefined();
-    expect(response.errorText).toBe('');
-    expect(response.exception).toBeUndefined();
+    assert.strictEqual(response.id, call.id);
+    assert.strictEqual(response.call, call);
+    assert.strictEqual(response.status, 'Canceled');
+    assert.isUndefined(response.output);
+    assert.strictEqual(response.errorText, '');
+    assert.isUndefined(response.exception);
   });
 
   it('should emit issue event from WebMCP form missing tooldescription', async () => {
@@ -775,10 +775,11 @@ describe('Page.webmcp', function () {
     await page.setContent(html`<form toolname="mytool"></form>`);
 
     const issue = await issuePromise;
-    expect(issue).toBeTruthy();
-    expect(issue.code).toBe('GenericIssue');
-    expect(issue.details.genericIssueDetails).toBeTruthy();
-    expect(issue.details.genericIssueDetails!.errorType).toBe(
+    assert.ok(issue);
+    assert.strictEqual(issue.code, 'GenericIssue');
+    assert.ok(issue.details.genericIssueDetails);
+    assert.strictEqual(
+      issue.details.genericIssueDetails!.errorType,
       'FormModelContextMissingToolDescription',
     );
   });

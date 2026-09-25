@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
-
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
@@ -32,18 +30,17 @@ describe('Stack trace', function () {
         return error;
       })) as Error;
 
-    expect(error.name).toEqual('Error');
-    expect(error.message).toEqual('Test');
+    assert.strictEqual(error.name, 'Error');
+    assert.strictEqual(error.message, 'Test');
     assert(error.stack);
 
-    expect(
+    assert.deepEqual(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 2),
-    ).toMatchObject({
-      ...[
+      [
         'Error: Test',
         'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
-    });
+    );
   });
 
   it('should work with handles', async () => {
@@ -57,17 +54,16 @@ describe('Stack trace', function () {
         return error;
       })) as Error;
 
-    expect(error.name).toEqual('Error');
-    expect(error.message).toEqual('Test');
+    assert.strictEqual(error.name, 'Error');
+    assert.strictEqual(error.message, 'Test');
     assert(error.stack);
-    expect(
+    assert.deepEqual(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 2),
-    ).toMatchObject({
-      ...[
+      [
         'Error: Test',
         'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
-    });
+    );
   });
 
   it('should work with contiguous evaluation', async () => {
@@ -86,18 +82,17 @@ describe('Stack trace', function () {
         return error;
       })) as Error;
 
-    expect(error.name).toEqual('Error');
-    expect(error.message).toEqual('Test');
+    assert.strictEqual(error.name, 'Error');
+    assert.strictEqual(error.message, 'Test');
     assert(error.stack);
-    expect(
+    assert.deepEqual(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 3),
-    ).toMatchObject({
-      ...[
+      [
         'Error: Test',
         'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
         'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
-    });
+    );
   });
 
   it('should work with nested function calls', async () => {
@@ -123,13 +118,12 @@ describe('Stack trace', function () {
         return error;
       })) as Error;
 
-    expect(error.name).toEqual('Error');
-    expect(error.message).toEqual('Test');
+    assert.strictEqual(error.name, 'Error');
+    assert.strictEqual(error.message, 'Test');
     assert(error.stack);
-    expect(
+    assert.deepEqual(
       parseStackTrace(error.stack).split('\n    at ').slice(0, 6),
-    ).toMatchObject({
-      ...[
+      [
         'Error: Test',
         'a (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
         'b (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
@@ -137,7 +131,7 @@ describe('Stack trace', function () {
         'd (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
         'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
-    });
+    );
   });
 
   it('should work for none error objects', async () => {
@@ -151,6 +145,6 @@ describe('Stack trace', function () {
       }),
     ]);
 
-    expect(error).toBeTruthy();
+    assert.ok(error);
   });
 });

@@ -4,14 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import assert from 'node:assert';
-
-import expect from 'expect';
+import {assert} from 'chai';
 import {TimeoutError} from 'puppeteer';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame, html} from './utils.js';
+import {assertRejects, attachFrame, detachFrame, html} from './utils.js';
 
 describe('AriaQueryHandler', () => {
   setupTestBrowserHooks();
@@ -32,7 +30,7 @@ describe('AriaQueryHandler', () => {
         const id = await button.evaluate(button => {
           return button.id;
         });
-        expect(id).toBe('btn');
+        assert.strictEqual(id, 'btn');
       };
       {
         using button = await page.$(
@@ -42,7 +40,7 @@ describe('AriaQueryHandler', () => {
       }
       {
         using button = await page.$('aria/Submit button and some spaces');
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
     });
     it('should handle non-breaking spaces', async () => {
@@ -60,11 +58,11 @@ describe('AriaQueryHandler', () => {
         const id = await button.evaluate(button => {
           return button.id;
         });
-        expect(id).toBe('btn');
+        assert.strictEqual(id, 'btn');
       };
       {
         using button = await page.$('aria/ubmit button and some spaces');
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
       {
         using button = await page.$('aria/Submit button and some spaces');
@@ -87,7 +85,7 @@ describe('AriaQueryHandler', () => {
         const id = await button.evaluate(button => {
           return button.id;
         });
-        expect(id).toBe('btn');
+        assert.strictEqual(id, 'btn');
       };
       {
         using button = await page.$(
@@ -97,7 +95,7 @@ describe('AriaQueryHandler', () => {
       }
       {
         using button = await page.$('aria/Submit button and some spaces');
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
     });
     it('should find button', async () => {
@@ -115,7 +113,7 @@ describe('AriaQueryHandler', () => {
         const id = await button.evaluate(button => {
           return button.id;
         });
-        expect(id).toBe('btn');
+        assert.strictEqual(id, 'btn');
       };
       {
         using button = await page.$(
@@ -133,19 +131,19 @@ describe('AriaQueryHandler', () => {
         using button = await page.$(
           'aria/  Submit button and some spaces[role="button"]',
         );
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
       {
         using button = await page.$(
           'aria/Submit button and some spaces  [role="button"]',
         );
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
       {
         using button = await page.$(
           'aria/Submit  button   and  some  spaces   [  role  =  "button" ] ',
         );
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
       {
         using button = await page.$(
@@ -163,20 +161,22 @@ describe('AriaQueryHandler', () => {
         using button = await page.$(
           'aria/[name="  Submit  button and some  spaces"][role="button"]',
         );
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
       {
         using button = await page.$(
           "aria/[name='  Submit  button and some  spaces'][role='button']",
         );
-        expect(button).toBe(null);
+        assert.isNull(button);
       }
       {
         using button = await page.$(
           'aria/ignored[name="Submit button and some spaces"][role="button"]',
         );
         await expectFound(button);
-        await expect(page.$('aria/smth[smth="true"]')).rejects.toThrow(
+        const error = await assertRejects(page.$('aria/smth[smth="true"]'));
+        assert.include(
+          error.message,
           'Unknown aria attribute "smth" in selector',
         );
       }
@@ -201,7 +201,7 @@ describe('AriaQueryHandler', () => {
       const id = await button!.evaluate(button => {
         return button.id;
       });
-      expect(id).toBe('btn');
+      assert.strictEqual(id, 'btn');
     });
 
     it('should find button by name and role', async () => {
@@ -221,7 +221,7 @@ describe('AriaQueryHandler', () => {
       const id = await button!.evaluate(button => {
         return button.id;
       });
-      expect(id).toBe('btn');
+      assert.strictEqual(id, 'btn');
     });
 
     it('should find first matching element', async () => {
@@ -244,7 +244,7 @@ describe('AriaQueryHandler', () => {
       const id = await div!.evaluate(div => {
         return div.id;
       });
-      expect(id).toBe('mnu1');
+      assert.strictEqual(id, 'mnu1');
     });
 
     it('should find by name', async () => {
@@ -269,7 +269,7 @@ describe('AriaQueryHandler', () => {
       const id = await menu!.evaluate(div => {
         return div.id;
       });
-      expect(id).toBe('mnu1');
+      assert.strictEqual(id, 'mnu1');
     });
 
     it('should find 2nd element by name', async () => {
@@ -294,7 +294,7 @@ describe('AriaQueryHandler', () => {
       const id = await menu!.evaluate(div => {
         return div.id;
       });
-      expect(id).toBe('mnu2');
+      assert.strictEqual(id, 'mnu2');
     });
   });
 
@@ -323,7 +323,7 @@ describe('AriaQueryHandler', () => {
           });
         }),
       );
-      expect(ids.join(', ')).toBe('mnu1, mnu2');
+      assert.strictEqual(ids.join(', '), 'mnu1, mnu2');
     });
   });
   describe('queryAllArray', () => {
@@ -346,7 +346,7 @@ describe('AriaQueryHandler', () => {
           return acc + Number(button.textContent);
         }, 0);
       });
-      expect(sum).toBe(50005000);
+      assert.strictEqual(sum, 50005000);
     });
   });
 
@@ -407,7 +407,7 @@ describe('AriaQueryHandler', () => {
       await page.evaluate(addElement, 'button');
       await page.waitForSelector('aria/[role="button"]');
       const result = await page.evaluate('globalThis.ariaQuerySelector(2,8)');
-      expect(result).toBe(10);
+      assert.strictEqual(result, 10);
     });
 
     it('should work with removed MutationObserver', async () => {
@@ -422,11 +422,12 @@ describe('AriaQueryHandler', () => {
         page.setContent(html`<h1>anything</h1>`),
       ]);
       assert(handle);
-      expect(
+      assert.strictEqual(
         await page.evaluate(x => {
           return x.textContent;
         }, handle),
-      ).toBe('anything');
+        'anything',
+      );
     });
 
     it('should resolve promise when node is added', async () => {
@@ -441,7 +442,7 @@ describe('AriaQueryHandler', () => {
       const tagName = await (
         await elementHandle.getProperty('tagName')
       ).jsonValue();
-      expect(tagName).toBe('H1');
+      assert.strictEqual(tagName, 'H1');
     });
 
     it('should work when node is added through innerHTML', async () => {
@@ -467,7 +468,7 @@ describe('AriaQueryHandler', () => {
       await otherFrame!.evaluate(addElement, 'button');
       await page.evaluate(addElement, 'button');
       using elementHandle = await watchdog;
-      expect(elementHandle!.frame).toBe(page.mainFrame());
+      assert.strictEqual(elementHandle!.frame, page.mainFrame());
     });
 
     it('should run in specified frame', async () => {
@@ -483,7 +484,7 @@ describe('AriaQueryHandler', () => {
       await frame1!.evaluate(addElement, 'button');
       await frame2!.evaluate(addElement, 'button');
       using elementHandle = await waitForSelectorPromise;
-      expect(elementHandle!.frame).toBe(frame2);
+      assert.strictEqual(elementHandle!.frame, frame2);
     });
 
     it('should throw when frame is detached', async () => {
@@ -499,8 +500,9 @@ describe('AriaQueryHandler', () => {
         });
       await detachFrame(page, 'frame1');
       await waitPromise;
-      expect(waitError).toBeTruthy();
-      expect(waitError.message).toBe(
+      assert.ok(waitError);
+      assert.strictEqual(
+        waitError.message,
         'Waiting for selector `does-not-exist` failed',
       );
     });
@@ -515,12 +517,12 @@ describe('AriaQueryHandler', () => {
           return (imgFound = true);
         });
       await page.goto(server.EMPTY_PAGE);
-      expect(imgFound).toBe(false);
+      assert.isFalse(imgFound);
       await page.reload();
-      expect(imgFound).toBe(false);
+      assert.isFalse(imgFound);
       await page.goto(server.CROSS_PROCESS_PREFIX + '/grid.html');
       await waitForSelector;
-      expect(imgFound).toBe(true);
+      assert.isTrue(imgFound);
     });
 
     it('should wait for visible', async () => {
@@ -540,18 +542,18 @@ describe('AriaQueryHandler', () => {
           1
         </div>`,
       );
-      expect(divFound).toBe(false);
+      assert.isFalse(divFound);
       await page.evaluate(() => {
         return document.querySelector('div')!.style.removeProperty('display');
       });
-      expect(divFound).toBe(false);
+      assert.isFalse(divFound);
       await page.evaluate(() => {
         return document
           .querySelector('div')!
           .style.removeProperty('visibility');
       });
-      expect(await waitForSelector).toBe(true);
-      expect(divFound).toBe(true);
+      assert.isTrue(await waitForSelector);
+      assert.isTrue(divFound);
     });
 
     it('should wait for visible recursively', async () => {
@@ -571,18 +573,18 @@ describe('AriaQueryHandler', () => {
           <div aria-label="inner">hi</div>
         </div>`,
       );
-      expect(divVisible).toBe(false);
+      assert.isFalse(divVisible);
       await page.evaluate(() => {
         return document.querySelector('div')!.style.removeProperty('display');
       });
-      expect(divVisible).toBe(false);
+      assert.isFalse(divVisible);
       await page.evaluate(() => {
         return document
           .querySelector('div')!
           .style.removeProperty('visibility');
       });
-      expect(await waitForSelector).toBe(true);
-      expect(divVisible).toBe(true);
+      assert.isTrue(await waitForSelector);
+      assert.isTrue(divVisible);
     });
 
     it('hidden should wait for visibility: hidden', async () => {
@@ -605,14 +607,14 @@ describe('AriaQueryHandler', () => {
           return (divHidden = false);
         });
       await page.waitForSelector('aria/[role="button"]'); // do a round trip
-      expect(divHidden).toBe(false);
+      assert.isFalse(divHidden);
       await page.evaluate(() => {
         return document
           .querySelector('div')!
           .style.setProperty('visibility', 'hidden');
       });
-      expect(await waitForSelector).toBe(true);
-      expect(divHidden).toBe(true);
+      assert.isTrue(await waitForSelector);
+      assert.isTrue(divHidden);
     });
 
     it('hidden should wait for display: none', async () => {
@@ -635,14 +637,14 @@ describe('AriaQueryHandler', () => {
           return (divHidden = false);
         });
       await page.waitForSelector('aria/[role="main"]'); // do a round trip
-      expect(divHidden).toBe(false);
+      assert.isFalse(divHidden);
       await page.evaluate(() => {
         return document
           .querySelector('div')!
           .style.setProperty('display', 'none');
       });
-      expect(await waitForSelector).toBe(true);
-      expect(divHidden).toBe(true);
+      assert.isTrue(await waitForSelector);
+      assert.isTrue(divHidden);
     });
 
     it('hidden should wait for removal', async () => {
@@ -659,12 +661,12 @@ describe('AriaQueryHandler', () => {
           return (divRemoved = false);
         });
       await page.waitForSelector('aria/[role="main"]'); // do a round trip
-      expect(divRemoved).toBe(false);
+      assert.isFalse(divRemoved);
       await page.evaluate(() => {
         return document.querySelector('div')!.remove();
       });
-      expect(await waitForSelector).toBe(true);
-      expect(divRemoved).toBe(true);
+      assert.isTrue(await waitForSelector);
+      assert.isTrue(divRemoved);
     });
 
     it('should return null if waiting to hide non-existing element', async () => {
@@ -673,7 +675,7 @@ describe('AriaQueryHandler', () => {
       using handle = await page.waitForSelector('aria/non-existing', {
         hidden: true,
       });
-      expect(handle).toBe(null);
+      assert.isNull(handle);
     });
 
     it('should respect timeout', async () => {
@@ -686,10 +688,11 @@ describe('AriaQueryHandler', () => {
         .catch(error => {
           return error;
         });
-      expect(error.message).toContain(
+      assert.include(
+        error.message,
         'Waiting for selector `[role="button"]` failed',
       );
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
 
     it('should have an error message specifically for awaiting an element to be hidden', async () => {
@@ -700,9 +703,11 @@ describe('AriaQueryHandler', () => {
         hidden: true,
         timeout: 10,
       });
-      await expect(promise).rejects.toMatchObject({
-        message: 'Waiting for selector `[role="main"]` failed',
-      });
+      const error = await assertRejects(promise);
+      assert.strictEqual(
+        error.message,
+        'Waiting for selector `[role="main"]` failed',
+      );
     });
 
     it('should respond to node attribute mutation', async () => {
@@ -718,13 +723,13 @@ describe('AriaQueryHandler', () => {
           return (divFound = false);
         });
       await page.setContent(html`<div aria-label="notZombo"></div>`);
-      expect(divFound).toBe(false);
+      assert.isFalse(divFound);
       await page.evaluate(() => {
         return document
           .querySelector('div')!
           .setAttribute('aria-label', 'zombo');
       });
-      expect(await waitForSelector).toBe(true);
+      assert.isTrue(await waitForSelector);
     });
 
     it('should return the element handle', async () => {
@@ -734,14 +739,15 @@ describe('AriaQueryHandler', () => {
         return err;
       });
       await page.setContent(html`<div aria-label="zombo">anything</div>`);
-      expect(
+      assert.strictEqual(
         await page.evaluate(
           x => {
             return x?.textContent;
           },
           await waitForSelector,
         ),
-      ).toBe('anything');
+        'anything',
+      );
     });
 
     it('should have correct stack trace for timeout', async () => {
@@ -751,7 +757,7 @@ describe('AriaQueryHandler', () => {
       await page.waitForSelector('aria/zombo', {timeout: 10}).catch(error_ => {
         return (error = error_);
       });
-      expect(error!.stack).toContain('Waiting for selector `zombo` failed');
+      assert.include(error!.stack, 'Waiting for selector `zombo` failed');
     });
   });
 
@@ -820,19 +826,19 @@ describe('AriaQueryHandler', () => {
       const {page} = await setupPage();
       const found = await page.$$('aria/foo');
       const ids = await getIds(found);
-      expect(ids).toEqual(['node3', 'node5', 'node6']);
+      assert.deepEqual(ids, ['node3', 'node5', 'node6']);
     });
     it('should find by name "bar"', async () => {
       const {page} = await setupPage();
       const found = await page.$$('aria/bar');
       const ids = await getIds(found);
-      expect(ids).toEqual(['node1', 'node2', 'node8']);
+      assert.deepEqual(ids, ['node1', 'node2', 'node8']);
     });
     it('should find treeitem by name', async () => {
       const {page} = await setupPage();
       const found = await page.$$('aria/item1 item2 item3');
       const ids = await getIds(found);
-      expect(ids).toEqual(['node30']);
+      assert.deepEqual(ids, ['node30']);
     });
     it('should find by role "button"', async () => {
       const {page} = await setupPage();
@@ -840,19 +846,19 @@ describe('AriaQueryHandler', () => {
         ElementHandle<HTMLButtonElement>
       >;
       const ids = await getIds(found);
-      expect(ids).toEqual(['node5', 'node6', 'node8', 'node10', 'node21']);
+      assert.deepEqual(ids, ['node5', 'node6', 'node8', 'node10', 'node21']);
     });
     it('should find by role "heading"', async () => {
       const {page} = await setupPage();
       const found = await page.$$('aria/[role="heading"]');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'node11', 'node13']);
+      assert.deepEqual(ids, ['shown', 'node11', 'node13']);
     });
     it('should find both ignored and unignored', async () => {
       const {page} = await setupPage();
       const found = await page.$$('aria/title');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown']);
+      assert.deepEqual(ids, ['shown']);
     });
   });
 });

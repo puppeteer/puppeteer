@@ -6,12 +6,12 @@
 
 import type {ServerResponse} from 'node:http';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {assertRejects, waitEvent} from './utils.js';
 
 describe('Target', function () {
   setupTestBrowserHooks();
@@ -26,9 +26,9 @@ describe('Target', function () {
     const page2 = await target.asPage();
     const page3 = await target.asPage();
 
-    expect(page1).toBe(page);
-    expect(page2).toBe(page);
-    expect(page3).toBe(page);
+    assert.strictEqual(page1, page);
+    assert.strictEqual(page2, page);
+    assert.strictEqual(page3, page);
 
     await page.close();
   });
@@ -38,29 +38,29 @@ describe('Target', function () {
 
     // The pages will be the testing page and the original newtab page
     const targets = browser.targets();
-    expect(
+    assert.ok(
       targets.some(target => {
         return target.type() === 'page' && target.url() === 'about:blank';
       }),
-    ).toBeTruthy();
-    expect(
+    );
+    assert.ok(
       targets.some(target => {
         return target.type() === 'browser';
       }),
-    ).toBeTruthy();
+    );
   });
   it('Browser.pages should return all of the pages', async () => {
     const {page, context} = await getTestState();
 
     // The pages will be the testing page
     const allPages = await context.pages();
-    expect(allPages).toHaveLength(1);
-    expect(allPages).toContain(page);
+    assert.lengthOf(allPages, 1);
+    assert.include(allPages, page);
   });
 
   it('page should return tab target id', async () => {
     const {page} = await getTestState();
-    expect(page._tabId.length).toBeGreaterThan(0);
+    assert.isAbove(page._tabId.length, 0);
   });
 
   it('should contain browser target', async () => {
@@ -70,7 +70,7 @@ describe('Target', function () {
     const browserTarget = targets.find(target => {
       return target.type() === 'browser';
     });
-    expect(browserTarget).toBeTruthy();
+    assert.ok(browserTarget);
   });
   it('should be able to use the default page in the browser', async () => {
     const {page, browser} = await getTestState();
@@ -80,12 +80,13 @@ describe('Target', function () {
     const originalPage = allPages.find(p => {
       return p !== page;
     })!;
-    expect(
+    assert.strictEqual(
       await originalPage.evaluate(() => {
         return ['Hello', 'world'].join(' ');
       }),
-    ).toBe('Hello world');
-    expect(await originalPage.$('body')).toBeTruthy();
+      'Hello world',
+    );
+    assert.ok(await originalPage.$('body'));
   });
   it('should be able to use async waitForTarget', async () => {
     const {page, server, context} = await getTestState();
@@ -109,10 +110,11 @@ describe('Target', function () {
         return window.open(url);
       }, server.CROSS_PROCESS_PREFIX + '/empty.html'),
     ]);
-    expect(otherPage!.url()).toEqual(
+    assert.deepEqual(
+      otherPage!.url(),
       server.CROSS_PROCESS_PREFIX + '/empty.html',
     );
-    expect(page).not.toBe(otherPage);
+    assert.notStrictEqual(page, otherPage);
   });
   it('should report when a new page is created and closed', async () => {
     const {page, server, context} = await getTestState();
@@ -132,31 +134,32 @@ describe('Target', function () {
         return window.open(url);
       }, server.CROSS_PROCESS_PREFIX + '/empty.html'),
     ]);
-    expect(otherPage!.url()).toContain(server.CROSS_PROCESS_PREFIX);
-    expect(
+    assert.include(otherPage!.url(), server.CROSS_PROCESS_PREFIX);
+    assert.strictEqual(
       await otherPage!.evaluate(() => {
         return ['Hello', 'world'].join(' ');
       }),
-    ).toBe('Hello world');
-    expect(await otherPage!.$('body')).toBeTruthy();
+      'Hello world',
+    );
+    assert.ok(await otherPage!.$('body'));
 
     let allPages = await context.pages();
-    expect(allPages).toContain(page);
-    expect(allPages).toContain(otherPage);
+    assert.include(allPages, page);
+    assert.include(allPages, otherPage);
 
     const [closedTarget] = await Promise.all([
       waitEvent<Target>(context, 'targetdestroyed'),
       otherPage!.close(),
     ]);
-    expect(await closedTarget.page()).toBe(otherPage);
+    assert.strictEqual<unknown>(await closedTarget.page(), otherPage);
 
     allPages = (await Promise.all(
       context.targets().map(target => {
         return target.page();
       }),
     )) as Page[];
-    expect(allPages).toContain(page);
-    expect(allPages).not.toContain(otherPage);
+    assert.include(allPages, page);
+    assert.notInclude(allPages, otherPage);
   });
   it('should report when a service worker is created and destroyed', async () => {
     const {page, server, context} = await getTestState();
@@ -166,8 +169,9 @@ describe('Target', function () {
 
     await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
-    expect((await createdTarget).type()).toBe('service_worker');
-    expect((await createdTarget).url()).toBe(
+    assert.strictEqual((await createdTarget).type(), 'service_worker');
+    assert.strictEqual(
+      (await createdTarget).url(),
       server.PREFIX + '/serviceworkers/empty/sw.js',
     );
 
@@ -181,7 +185,7 @@ describe('Target', function () {
         return registration.unregister();
       });
     });
-    expect(await destroyedTarget).toBe(await createdTarget);
+    assert.strictEqual(await destroyedTarget, await createdTarget);
   });
   it('should create a worker from a service worker', async () => {
     const {page, server, context} = await getTestState();
@@ -196,11 +200,12 @@ describe('Target', function () {
     );
     const worker = (await target.worker())!;
 
-    expect(
+    assert.strictEqual(
       await worker.evaluate(() => {
         return self.toString();
       }),
-    ).toBe('[object ServiceWorkerGlobalScope]');
+      '[object ServiceWorkerGlobalScope]',
+    );
   });
 
   it('should close a service worker', async () => {
@@ -222,7 +227,7 @@ describe('Target', function () {
       });
     });
     await worker.close();
-    expect(await onceDestroyed).toBe(target);
+    assert.strictEqual(await onceDestroyed, target);
   });
 
   it('should create a worker from a shared worker', async () => {
@@ -239,11 +244,12 @@ describe('Target', function () {
       {timeout: 3000},
     );
     const worker = (await target.worker())!;
-    expect(
+    assert.strictEqual(
       await worker.evaluate(() => {
         return self.toString();
       }),
-    ).toBe('[object SharedWorkerGlobalScope]');
+      '[object SharedWorkerGlobalScope]',
+    );
   });
 
   it('should close a shared worker', async () => {
@@ -267,7 +273,7 @@ describe('Target', function () {
       });
     });
     await worker.close();
-    expect(await onceDestroyed).toBe(target);
+    assert.strictEqual(await onceDestroyed, target);
   });
 
   it('should report when a target url changes', async () => {
@@ -276,11 +282,14 @@ describe('Target', function () {
     await page.goto(server.EMPTY_PAGE);
     let changedTarget = waitEvent(context, 'targetchanged');
     await page.goto(server.CROSS_PROCESS_PREFIX + '/');
-    expect((await changedTarget).url()).toBe(server.CROSS_PROCESS_PREFIX + '/');
+    assert.strictEqual(
+      (await changedTarget).url(),
+      server.CROSS_PROCESS_PREFIX + '/',
+    );
 
     changedTarget = waitEvent(context, 'targetchanged');
     await page.goto(server.EMPTY_PAGE);
-    expect((await changedTarget).url()).toBe(server.EMPTY_PAGE);
+    assert.strictEqual((await changedTarget).url(), server.EMPTY_PAGE);
   });
   it('should not report uninitialized pages', async () => {
     const {context} = await getTestState();
@@ -293,7 +302,7 @@ describe('Target', function () {
     const targetPromise = waitEvent<Target>(context, 'targetcreated');
     const newPagePromise = context.newPage();
     const target = await targetPromise;
-    expect(target.url()).toBe('about:blank');
+    assert.strictEqual(target.url(), 'about:blank');
 
     const newPage = await newPagePromise;
     const targetPromise2 = waitEvent<Target>(context, 'targetcreated');
@@ -301,10 +310,10 @@ describe('Target', function () {
       return window.open('about:blank');
     });
     const target2 = await targetPromise2;
-    expect(target2.url()).toBe('about:blank');
+    assert.strictEqual(target2.url(), 'about:blank');
     await evaluatePromise;
     await newPage.close();
-    expect(targetChanged).toBe(false);
+    assert.isFalse(targetChanged);
     context.off('targetchanged', listener);
   });
 
@@ -347,11 +356,12 @@ describe('Target', function () {
       waitEvent<Target>(context, 'targetcreated'),
       page.goto(server.PREFIX + '/popup/window-open.html'),
     ]);
-    expect((await createdTarget.page())!.url()).toBe(
+    assert.strictEqual(
+      (await createdTarget.page())!.url(),
       server.PREFIX + '/popup/popup.html',
     );
-    expect(createdTarget.opener()).toBe(page.target());
-    expect(page.target().opener()).toBeUndefined();
+    assert.strictEqual<unknown>(createdTarget.opener(), page.target());
+    assert.isUndefined(page.target().opener());
   });
 
   describe('Browser.waitForTarget', () => {
@@ -378,11 +388,11 @@ describe('Target', function () {
           }
         });
       const page = await context.newPage();
-      expect(resolved).toBe(false);
+      assert.isFalse(resolved);
       await page.goto(server.EMPTY_PAGE);
       try {
         const target = await targetPromise;
-        expect(await target.page()).toBe(page);
+        assert.strictEqual(await target.page(), page);
       } catch (error) {
         if (error instanceof TimeoutError) {
           console.error(error);
@@ -408,7 +418,7 @@ describe('Target', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(TimeoutError);
+      assert.instanceOf(error, TimeoutError);
     });
     it('should be able to abort', async () => {
       const {browser} = await getTestState();
@@ -423,7 +433,8 @@ describe('Target', function () {
       );
 
       abortController.abort();
-      await expect(task).rejects.toThrow(/aborted/);
+      const error = await assertRejects(task);
+      assert.match(error.message, /aborted/);
     });
   });
 });

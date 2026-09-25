@@ -6,7 +6,7 @@
 
 import {describe, it, beforeEach} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {EventEmitter} from './EventEmitter.js';
@@ -24,7 +24,7 @@ describe('EventEmitter', () => {
         const listener = sinon.spy();
         emitter[methodName]('foo', listener);
         emitter.emit('foo', undefined);
-        expect(listener.callCount).toEqual(1);
+        assert.strictEqual(listener.callCount, 1);
       });
 
       it(`${methodName} sends the event data to the handler`, () => {
@@ -32,14 +32,14 @@ describe('EventEmitter', () => {
         const data = {};
         emitter[methodName]('foo', listener);
         emitter.emit('foo', data);
-        expect(listener.callCount).toEqual(1);
-        expect(listener.firstCall.args[0]).toBe(data);
+        assert.strictEqual(listener.callCount, 1);
+        assert.strictEqual(listener.firstCall.args[0], data);
       });
 
       it(`${methodName}: supports chaining`, () => {
         const listener = sinon.spy();
         const returnValue = emitter[methodName]('foo', listener);
-        expect(returnValue).toBe(emitter);
+        assert.strictEqual(returnValue, emitter);
       });
     };
     onTests('on');
@@ -51,17 +51,17 @@ describe('EventEmitter', () => {
         const listener = sinon.spy();
         emitter.on('foo', listener);
         emitter.emit('foo', undefined);
-        expect(listener.callCount).toEqual(1);
+        assert.strictEqual(listener.callCount, 1);
         emitter.off('foo', listener);
         emitter.emit('foo', undefined);
-        expect(listener.callCount).toEqual(1);
+        assert.strictEqual(listener.callCount, 1);
       });
 
       it(`${methodName}: supports chaining`, () => {
         const listener = sinon.spy();
         emitter.on('foo', listener);
         const returnValue = emitter.off('foo', listener);
-        expect(returnValue).toBe(emitter);
+        assert.strictEqual(returnValue, emitter);
       });
     };
     offTests('off');
@@ -72,15 +72,15 @@ describe('EventEmitter', () => {
       const listener = sinon.spy();
       emitter.once('foo', listener);
       emitter.emit('foo', undefined);
-      expect(listener.callCount).toEqual(1);
+      assert.strictEqual(listener.callCount, 1);
       emitter.emit('foo', undefined);
-      expect(listener.callCount).toEqual(1);
+      assert.strictEqual(listener.callCount, 1);
     });
 
     it('supports chaining', () => {
       const listener = sinon.spy();
       const returnValue = emitter.once('foo', listener);
-      expect(returnValue).toBe(emitter);
+      assert.strictEqual(returnValue, emitter);
     });
   });
 
@@ -93,9 +93,9 @@ describe('EventEmitter', () => {
 
       emitter.emit('foo', undefined);
 
-      expect(listener1.callCount).toEqual(1);
-      expect(listener2.callCount).toEqual(1);
-      expect(listener3.callCount).toEqual(0);
+      assert.strictEqual(listener1.callCount, 1);
+      assert.strictEqual(listener2.callCount, 1);
+      assert.strictEqual(listener3.callCount, 0);
     });
 
     it('passes data through to the listener', () => {
@@ -104,20 +104,20 @@ describe('EventEmitter', () => {
       const data = {};
 
       emitter.emit('foo', data);
-      expect(listener.callCount).toEqual(1);
-      expect(listener.firstCall.args[0]).toBe(data);
+      assert.strictEqual(listener.callCount, 1);
+      assert.strictEqual(listener.firstCall.args[0], data);
     });
 
     it('returns true if the event has listeners', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
-      expect(emitter.emit('foo', undefined)).toBe(true);
+      assert.isTrue(emitter.emit('foo', undefined));
     });
 
     it('returns false if the event has listeners', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
-      expect(emitter.emit('notFoo', undefined)).toBe(false);
+      assert.isFalse(emitter.emit('notFoo', undefined));
     });
   });
 
@@ -126,9 +126,9 @@ describe('EventEmitter', () => {
       emitter.on('foo', () => {});
       emitter.on('foo', () => {});
       emitter.on('bar', () => {});
-      expect(emitter.listenerCount('foo')).toEqual(2);
-      expect(emitter.listenerCount('bar')).toEqual(1);
-      expect(emitter.listenerCount('noListeners')).toEqual(0);
+      assert.strictEqual(emitter.listenerCount('foo'), 2);
+      assert.strictEqual(emitter.listenerCount('bar'), 1);
+      assert.strictEqual(emitter.listenerCount('noListeners'), 0);
     });
   });
 
@@ -137,12 +137,12 @@ describe('EventEmitter', () => {
       emitter.on('foo', () => {}).on('bar', () => {});
 
       emitter.removeAllListeners();
-      expect(emitter.emit('foo', undefined)).toBe(false);
-      expect(emitter.emit('bar', undefined)).toBe(false);
+      assert.isFalse(emitter.emit('foo', undefined));
+      assert.isFalse(emitter.emit('bar', undefined));
     });
 
     it('returns the emitter for chaining', () => {
-      expect(emitter.removeAllListeners()).toBe(emitter);
+      assert.strictEqual(emitter.removeAllListeners(), emitter);
     });
 
     it('can filter to remove only listeners for a given event name', () => {
@@ -152,8 +152,8 @@ describe('EventEmitter', () => {
         .on('bar', () => {});
 
       emitter.removeAllListeners('bar');
-      expect(emitter.emit('foo', undefined)).toBe(true);
-      expect(emitter.emit('bar', undefined)).toBe(false);
+      assert.isTrue(emitter.emit('foo', undefined));
+      assert.isFalse(emitter.emit('bar', undefined));
     });
   });
 
@@ -170,12 +170,12 @@ describe('EventEmitter', () => {
       });
       higherOrderEmitter.emit('foo', undefined);
 
-      expect(values).toMatch('12');
+      assert.include(values, '12');
 
       higherOrderEmitter.off('foo');
       higherOrderEmitter.emit('foo', undefined);
 
-      expect(values).toMatch('121');
+      assert.include(values, '121');
     });
   });
 });

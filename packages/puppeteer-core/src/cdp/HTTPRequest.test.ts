@@ -5,7 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
-import expect from 'expect';
+import {assert} from 'chai';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
@@ -35,7 +35,7 @@ describe('CdpHTTPRequest', () => {
         return undefined;
       },
     );
-    expect(request.postData()).toBe('part1part2');
+    assert.strictEqual(request.postData(), 'part1part2');
   });
 
   it('should fallback to postData if postDataEntries is missing', () => {
@@ -60,6 +60,6 @@ describe('CdpHTTPRequest', () => {
         return undefined;
       },
     );
-    expect(request.postData()).toBe('originalData');
+    assert.strictEqual(request.postData(), 'originalData');
   });
 });

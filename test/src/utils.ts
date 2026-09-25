@@ -8,7 +8,7 @@ import {access, constants, rm, watch} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {basename, dirname} from 'node:path';
 
-import expect from 'expect';
+import {assert, AssertionError} from 'chai';
 import type {Frame} from 'puppeteer-core/internal/api/Frame.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
@@ -16,47 +16,107 @@ import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
 import {compare} from './golden-utils.js';
 
-declare module 'expect' {
-  interface Matchers<R> {
-    toBeGolden(pathOrBuffer: string | Buffer): R;
-  }
-}
+let goldenDirs: {goldenDir: string; outputDir: string} | undefined;
 
-export const extendExpectWithToBeGolden = (
-  goldenDir: string,
-  outputDir: string,
+export const setGoldenDirs = (goldenDir: string, outputDir: string): void => {
+  goldenDirs = {goldenDir, outputDir};
+};
+
+/**
+ * Asserts that the given screenshot (or string) matches the golden file.
+ */
+export const assertGolden = (
+  testScreenshot: string | Uint8Array,
+  goldenFilePath: string,
 ): void => {
-  expect.extend({
-    toBeGolden: (
-      testScreenshot: string | Uint8Array,
-      goldenFilePath: string,
-    ) => {
-      const result = compare(
-        goldenDir,
-        outputDir,
-        typeof testScreenshot === 'string'
-          ? testScreenshot
-          : Buffer.from(testScreenshot),
-        goldenFilePath,
-      );
+  assert.exists(goldenDirs, 'Golden directories are not configured');
+  const result = compare(
+    goldenDirs!.goldenDir,
+    goldenDirs!.outputDir,
+    typeof testScreenshot === 'string'
+      ? testScreenshot
+      : Buffer.from(testScreenshot),
+    goldenFilePath,
+  );
+  if (!result.pass) {
+    assert.fail(result.message);
+  }
+};
 
-      if (result.pass) {
-        return {
-          pass: true,
-          message: () => {
-            return '';
-          },
-        };
-      } else {
-        return {
-          pass: false,
-          message: () => {
-            return result.message;
-          },
-        };
-      }
-    },
-  });
+/**
+ * Awaits the given promise and asserts that it rejects. Returns the rejection
+ * reason so that callers can make further assertions on it.
+ */
+export const assertRejects = async (
+  promise: Promise<unknown> | (() => Promise<unknown>),
+): Promise<any> => {
+  const resolved = Symbol('resolved');
+  const result = await (typeof promise === 'function' ? promise() : promise)
+    .then(() => {
+      return resolved;
+    })
+    .catch((error: unknown) => {
+      return error;
+    });
+  assert.notStrictEqual(
+    result,
+    resolved,
+    'Expected promise to reject, but it resolved',
+  );
+  return result;
+};
+
+const matchesObject = (actual: unknown, expected: unknown): boolean => {
+  if (Object.is(actual, expected)) {
+    return true;
+  }
+  if (Array.isArray(expected)) {
+    return (
+      Array.isArray(actual) &&
+      actual.length === expected.length &&
+      expected.every((value, index) => {
+        return matchesObject(actual[index], value);
+      })
+    );
+  }
+  if (expected instanceof Date) {
+    return actual instanceof Date && actual.getTime() === expected.getTime();
+  }
+  if (expected instanceof RegExp) {
+    return actual instanceof RegExp && String(actual) === String(expected);
+  }
+  if (typeof expected === 'object' && expected !== null) {
+    if (typeof actual !== 'object' || actual === null) {
+      return false;
+    }
+    return Object.entries(expected).every(([key, value]) => {
+      return (
+        key in actual &&
+        matchesObject((actual as Record<string, unknown>)[key], value)
+      );
+    });
+  }
+  return false;
+};
+
+/**
+ * Asserts that `actual` matches the subset described by `expected`, with the
+ * same semantics as `expect(...).toMatchObject(...)`: objects are matched
+ * recursively as subsets, while arrays must have the same length and match
+ * element by element.
+ */
+export const assertMatchObject = (
+  actual: unknown,
+  expected: object,
+  message?: string,
+): void => {
+  if (!matchesObject(actual, expected)) {
+    throw new AssertionError(
+      message ??
+        `expected ${JSON.stringify(actual)} to match object ${JSON.stringify(expected)}`,
+      {actual, expected, showDiff: true},
+    );
+  }
 };
 
 export const attachFrame = async (

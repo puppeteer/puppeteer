@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {CdpBrowser} from 'puppeteer-core/internal/cdp/Browser.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
@@ -30,20 +30,25 @@ describe('TargetManager', () => {
 
     const initialTargetCount = targetManager.getAvailableTargets().size;
     // There could be an conditional extra prerender target.
-    expect(initialTargetCount === 3 || initialTargetCount === 4).toBeTruthy();
+    assert.ok(initialTargetCount === 3 || initialTargetCount === 4);
 
-    expect(await context.pages()).toHaveLength(0);
-    expect(targetManager.getAvailableTargets().size).toBe(initialTargetCount);
+    assert.lengthOf(await context.pages(), 0);
+    assert.strictEqual(
+      targetManager.getAvailableTargets().size,
+      initialTargetCount,
+    );
 
     const page = await context.newPage();
-    expect(await context.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(
+    assert.lengthOf(await context.pages(), 1);
+    assert.strictEqual(
+      targetManager.getAvailableTargets().size,
       initialTargetCount + 2,
     );
 
     await page.goto(server.EMPTY_PAGE);
-    expect(await context.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(
+    assert.lengthOf(await context.pages(), 1);
+    assert.strictEqual(
+      targetManager.getAvailableTargets().size,
       initialTargetCount + 2,
     );
 
@@ -53,11 +58,12 @@ describe('TargetManager', () => {
     });
     await attachFrame(page, 'frame1', server.EMPTY_PAGE);
     await framePromise;
-    expect(await context.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(
+    assert.lengthOf(await context.pages(), 1);
+    assert.strictEqual(
+      targetManager.getAvailableTargets().size,
       initialTargetCount + 2,
     );
-    expect(page.frames()).toHaveLength(2);
+    assert.lengthOf(page.frames(), 2);
 
     // // attach a remote frame iframe.
     framePromise = page.waitForFrame(frame => {
@@ -69,11 +75,12 @@ describe('TargetManager', () => {
       server.CROSS_PROCESS_PREFIX + '/empty.html',
     );
     await framePromise;
-    expect(await context.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(
+    assert.lengthOf(await context.pages(), 1);
+    assert.strictEqual(
+      targetManager.getAvailableTargets().size,
       initialTargetCount + 3,
     );
-    expect(page.frames()).toHaveLength(3);
+    assert.lengthOf(page.frames(), 3);
 
     framePromise = page.waitForFrame(frame => {
       return frame.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
@@ -84,10 +91,11 @@ describe('TargetManager', () => {
       server.CROSS_PROCESS_PREFIX + '/empty.html',
     );
     await framePromise;
-    expect(await context.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(
+    assert.lengthOf(await context.pages(), 1);
+    assert.strictEqual(
+      targetManager.getAvailableTargets().size,
       initialTargetCount + 4,
     );
-    expect(page.frames()).toHaveLength(4);
+    assert.lengthOf(page.frames(), 4);
   });
 });

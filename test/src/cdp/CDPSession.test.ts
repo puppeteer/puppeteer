@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import {CdpCDPSession} from 'puppeteer-core/internal/cdp/CdpSession.js';
 import {TargetCloseError} from 'puppeteer-core/internal/common/Errors.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
-import {waitEvent} from '../utils.js';
+import {assertRejects, waitEvent} from '../utils.js';
 
 describe('Target.createCDPSession', function () {
   setupTestBrowserHooks();
@@ -28,7 +28,7 @@ describe('Target.createCDPSession', function () {
     const foo = await page.evaluate(() => {
       return (globalThis as any).foo;
     });
-    expect(foo).toBe('bar');
+    assert.strictEqual(foo, 'bar');
   });
 
   it('should not report created targets for custom CDP sessions', async () => {
@@ -59,7 +59,7 @@ describe('Target.createCDPSession', function () {
       waitEvent(client, 'Network.requestWillBeSent'),
       page.goto(server.EMPTY_PAGE),
     ]);
-    expect(events).toHaveLength(1);
+    assert.lengthOf(events, 1);
   });
 
   it('should not send extra events', async () => {
@@ -78,7 +78,7 @@ describe('Target.createCDPSession', function () {
       waitEvent(client, 'Network.requestWillBeSent'),
       page.goto(server.EMPTY_PAGE),
     ]);
-    expect(Array.from(events).sort()).toEqual(['Network']);
+    assert.deepEqual(Array.from(events).sort(), ['Network']);
   });
 
   it('should enable and disable domains independently', async () => {
@@ -96,7 +96,7 @@ describe('Target.createCDPSession', function () {
       page.evaluate('//# sourceURL=foo.js'),
     ]);
     // expect events to be dispatched.
-    expect(event.url).toBe('foo.js');
+    assert.strictEqual(event.url, 'foo.js');
   });
   it('should be able to detach session', async () => {
     const {page} = await getTestState();
@@ -107,7 +107,7 @@ describe('Target.createCDPSession', function () {
       expression: '1 + 2',
       returnByValue: true,
     });
-    expect(evalResponse.result.value).toBe(3);
+    assert.strictEqual(evalResponse.result.value, 3);
     await client.detach();
     let error!: Error;
     try {
@@ -120,7 +120,7 @@ describe('Target.createCDPSession', function () {
         error = error_ as Error;
       }
     }
-    expect(error.message).toContain('Session closed.');
+    assert.include(error.message, 'Session closed.');
   });
   it('should throw nice errors', async () => {
     const {page} = await getTestState();
@@ -129,8 +129,8 @@ describe('Target.createCDPSession', function () {
     const error = await theSourceOfTheProblems().catch(error => {
       return error;
     });
-    expect(error.stack).toContain('theSourceOfTheProblems');
-    expect(error.message).toContain('ThisCommand.DoesNotExist');
+    assert.include(error.stack, 'theSourceOfTheProblems');
+    assert.include(error.message, 'ThisCommand.DoesNotExist');
 
     async function theSourceOfTheProblems() {
       // @ts-expect-error This fails in TS as it knows that command does not
@@ -144,7 +144,7 @@ describe('Target.createCDPSession', function () {
     const {page} = await getTestState();
 
     const client = await page.createCDPSession();
-    await expect(
+    const error = await assertRejects(
       client.send(
         'Runtime.evaluate',
         {
@@ -155,7 +155,9 @@ describe('Target.createCDPSession', function () {
           timeout: 50,
         },
       ),
-    ).rejects.toThrow(
+    );
+    assert.match(
+      error.message,
       /Increase the 'protocolTimeout' setting in launch\/connect calls for a higher timeout if needed./gi,
     );
   });
@@ -164,7 +166,7 @@ describe('Target.createCDPSession', function () {
     const {page} = await getTestState();
 
     const client = await page.createCDPSession();
-    expect(client.connection()).toBeTruthy();
+    assert.ok(client.connection());
   });
 
   it('should keep the underlying connection after being detached', async () => {
@@ -173,16 +175,16 @@ describe('Target.createCDPSession', function () {
     const client = await page.createCDPSession();
     const connection = client.connection();
     await client.detach();
-    expect(client.connection()).toBe(connection);
+    assert.strictEqual(client.connection(), connection);
   });
 
   it('should expose detached state', async () => {
     const {page} = await getTestState();
 
     const client = await page.createCDPSession();
-    expect(client.detached).toBe(false);
+    assert.isFalse(client.detached);
     await client.detach();
-    expect(client.detached).toBe(true);
+    assert.isTrue(client.detached);
   });
 
   it('should handle session callbacks when Chrome sends error without sessionId', async () => {
@@ -208,8 +210,9 @@ describe('Target.createCDPSession', function () {
       .catch(error => {
         return error;
       });
-    expect(error).toBeInstanceOf(TargetCloseError);
-    expect(error.message).toBe(
+    assert.instanceOf(error, TargetCloseError);
+    assert.strictEqual(
+      error.message,
       'Protocol error (Runtime.evaluate): Session with given id not found.',
     );
   });

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import expect from 'expect';
+import {assert} from 'chai';
 import type {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 
 import {getTestState, launch} from '../mocha-utils.js';
@@ -60,12 +60,13 @@ describe('DevTools', function () {
       return target.type() === 'other';
     });
     const page = (await devtoolsPageTarget.page())!;
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return 2 * 3;
       }),
-    ).toBe(6);
-    expect(await browser.pages()).toContain(page);
+      6,
+    );
+    assert.include(await browser.pages(), page);
   });
 
   it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()', async function () {
@@ -86,7 +87,7 @@ describe('DevTools', function () {
       // @ts-expect-error devtools context.
       return Boolean(window.DevToolsAPI);
     });
-    expect(await browser.pages()).toContain(page);
+    assert.include(await browser.pages(), page);
   });
 
   it('browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()', async function () {
@@ -104,7 +105,7 @@ describe('DevTools', function () {
       // @ts-expect-error devtools context.
       return Boolean(window.DevToolsAPI);
     });
-    expect(await browser.pages()).toContain(page);
+    assert.include(await browser.pages(), page);
   });
 
   it('target.page() should return Page when calling asPage on DevTools target', async function () {
@@ -114,15 +115,16 @@ describe('DevTools', function () {
     });
     const page = (await devtoolsPageTarget.asPage())!;
     const page2 = (await devtoolsPageTarget.asPage())!;
-    expect(page).toBe(page2);
+    assert.strictEqual(page, page2);
 
-    expect(
+    assert.strictEqual(
       await page.evaluate(() => {
         return 2 * 3;
       }),
-    ).toBe(6);
+      6,
+    );
     // The page won't be part of browser.pages() if a custom isPageTarget is not provided
-    expect(await browser.pages()).not.toContain(page);
+    assert.notInclude(await browser.pages(), page);
   });
   it('should open devtools when "devtools: true" option is given', async () => {
     const browser = await launchBrowser(
@@ -181,7 +183,7 @@ describe('DevTools', function () {
     await page.goto('about:blank');
     const devtoolsPage = await page.openDevTools();
     const devtoolsPage2 = await page.openDevTools();
-    expect(devtoolsPage).toBe(devtoolsPage2);
+    assert.strictEqual(devtoolsPage, devtoolsPage2);
     await browser.close();
   });
 
@@ -193,9 +195,9 @@ describe('DevTools', function () {
       });
       const page = await browser.newPage();
       await page.goto('about:blank');
-      expect(await page.hasDevTools()).toBe(false);
+      assert.isFalse(await page.hasDevTools());
       await page.openDevTools();
-      expect(await page.hasDevTools()).toBe(true);
+      assert.isTrue(await page.hasDevTools());
       await browser.close();
     });
 
@@ -203,7 +205,7 @@ describe('DevTools', function () {
       const browser = await launchBrowser(launchOptions);
       const page = await browser.newPage();
       await page.goto('about:blank');
-      expect(await page.hasDevTools()).toBe(true);
+      assert.isTrue(await page.hasDevTools());
       await browser.close();
     });
 
@@ -215,7 +217,7 @@ describe('DevTools', function () {
       const page = await browser.newPage();
       await page.goto('about:blank');
       await page.openDevTools();
-      expect(await page.hasDevTools()).toBe(true);
+      assert.isTrue(await page.hasDevTools());
       await browser.close();
     });
   });

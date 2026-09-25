@@ -10,7 +10,7 @@ import type {AddressInfo} from 'node:net';
 import os from 'node:os';
 
 import type {TestServer} from '@pptr/testserver';
-import expect from 'expect';
+import {assert} from 'chai';
 
 import {getTestState, launch} from './mocha-utils.js';
 
@@ -105,8 +105,8 @@ describe('request proxy', () => {
       const page = await browser.newPage();
       const response = (await page.goto(emptyPageUrl))!;
 
-      expect(response.ok()).toBe(true);
-      expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+      assert.isTrue(response.ok());
+      assert.deepEqual(proxiedRequestUrls, [emptyPageUrl]);
     } finally {
       await close();
     }
@@ -128,8 +128,8 @@ describe('request proxy', () => {
       const page = await browser.newPage();
       const response = (await page.goto(emptyPageUrl))!;
 
-      expect(response.ok()).toBe(true);
-      expect(proxiedRequestUrls).toEqual([]);
+      assert.isTrue(response.ok());
+      assert.deepEqual(proxiedRequestUrls, []);
     } finally {
       await close();
     }
@@ -149,8 +149,8 @@ describe('request proxy', () => {
         const page = await context.newPage();
         const response = (await page.goto(emptyPageUrl))!;
 
-        expect(response.ok()).toBe(true);
-        expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+        assert.isTrue(response.ok());
+        assert.deepEqual(proxiedRequestUrls, [emptyPageUrl]);
       } finally {
         await close();
       }
@@ -173,8 +173,8 @@ describe('request proxy', () => {
         const page = await context.newPage();
         const response = (await page.goto(emptyPageUrl))!;
 
-        expect(response.ok()).toBe(true);
-        expect(proxiedRequestUrls).toEqual([]);
+        assert.isTrue(response.ok());
+        assert.deepEqual(proxiedRequestUrls, []);
       } finally {
         await close();
       }
@@ -198,8 +198,8 @@ describe('request proxy', () => {
         const page = await context.newPage();
         const response = (await page.goto(emptyPageUrl))!;
 
-        expect(response.ok()).toBe(true);
-        expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+        assert.isTrue(response.ok());
+        assert.deepEqual(proxiedRequestUrls, [emptyPageUrl]);
       } finally {
         await close();
       }
@@ -221,8 +221,8 @@ describe('request proxy', () => {
         const page = await context.newPage();
         const response = (await page.goto(emptyPageUrl))!;
 
-        expect(response.ok()).toBe(true);
-        expect(proxiedRequestUrls).toEqual([]);
+        assert.isTrue(response.ok());
+        assert.deepEqual(proxiedRequestUrls, []);
       } finally {
         await close();
       }
