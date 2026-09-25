@@ -65,9 +65,10 @@ describe('downloadFile', function () {
     });
     server = http.createServer((_req, res) => {
       res.writeHead(200, {'Content-Length': String(testContent.length + 1)});
-      res.end(testContent);
+      res.write(testContent, () => {
+        res.destroy();
+      });
     });
-    server.keepAliveTimeout = 1;
     await new Promise<void>(resolve => {
       server.listen(0, '127.0.0.1', resolve);
     });
@@ -78,6 +79,7 @@ describe('downloadFile', function () {
     await assert.rejects(() => {
       return downloadFile(serverUrl, destPath);
     }, /Download failed: expected \d+ bytes, received \d+ bytes/);
+    assert.ok(!fs.existsSync(destPath));
   });
 
   it('downloads a file and resolves when the hash matches', async () => {

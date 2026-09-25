@@ -147,7 +147,17 @@ export function downloadFile(
           return;
         }
         const file = createWriteStream(destinationPath);
+        let error: Error | undefined;
+        const failDownload = (downloadError: Error): void => {
+          error ??= downloadError;
+          file.destroy();
+        };
         file.on('close', () => {
+          if (error) {
+            cleanup();
+            reject(error);
+            return;
+          }
           if (totalBytes !== undefined && downloadedBytes !== totalBytes) {
             cleanup();
             reject(downloadError());
@@ -163,9 +173,8 @@ export function downloadFile(
           }
           return resolve();
         });
-        file.on('error', error => {
-          cleanup();
-          return reject(error);
+        file.on('error', (fileError: Error) => {
+          error ??= fileError;
         });
         const contentLength = Number.parseInt(
           response.headers['content-length'] ?? '',
@@ -173,12 +182,15 @@ export function downloadFile(
         );
         totalBytes = Number.isFinite(contentLength) ? contentLength : undefined;
         response.on('aborted', () => {
-          cleanup();
-          reject(downloadError());
+          failDownload(downloadError());
+        });
+        response.on('close', () => {
+          if (!response.complete) {
+            failDownload(downloadError());
+          }
         });
         response.on('error', error => {
-          cleanup();
-          reject(error);
+          failDownload(error);
         });
         response.on('data', (chunk: Buffer) => {
           downloadedBytes += chunk.length;
