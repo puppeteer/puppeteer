@@ -202,4 +202,57 @@ describe("Drag n' Drop", () => {
       }),
     ).toBe(0);
   });
+  it('should reset _isDragging after a successful drop', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+
+    using draggable = await page.$('#drag');
+    assert(draggable);
+    using dropzone = await page.$('#drop');
+    assert(dropzone);
+
+    await draggable.drag(dropzone);
+
+    // _isDragging is set to true by drag()
+    expect((page as unknown as {_isDragging: boolean})._isDragging).toBe(true);
+
+    await dropzone.drop(draggable);
+
+    // drop() must always reset _isDragging, even on the happy path
+    expect((page as unknown as {_isDragging: boolean})._isDragging).toBe(false);
+  });
+  it('should release the mouse button when the drop succeeds', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+
+    using draggable = await page.$('#drag');
+    assert(draggable);
+    using dropzone = await page.$('#drop');
+    assert(dropzone);
+
+    await draggable.drag(dropzone);
+    await dropzone.drop(draggable);
+
+    // After a successful drop the mouse button must be released; subsequent
+    // mouse events should not carry a pressed button.
+    await page.evaluate(() => {
+      (globalThis as unknown as {buttons?: number}).buttons = undefined;
+      document.addEventListener(
+        'mousemove',
+        event => {
+          (globalThis as unknown as {buttons?: number}).buttons = event.buttons;
+        },
+        {once: true},
+      );
+    });
+    await page.mouse.move(20, 20);
+
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as unknown as {buttons?: number}).buttons;
+      }),
+    ).toBe(0);
+  });
 });
