@@ -274,6 +274,38 @@ describe('navigation', function () {
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
     });
+    it('should settle when the page navigates again while loading', async () => {
+      const {page, server} = await getTestState();
+
+      // The document loads, then navigates again from its own load handler.
+      server.setRoute('/navigate-on-load.html', (_, res) => {
+        res.end(
+          `<html><body onload="location.href='/hang.html'">ok</body></html>`,
+        );
+      });
+      // Hang for the request the page navigates to.
+      server.setRoute('/hang.html', () => {});
+
+      // Resolving and timing out are both fine; never settling is not.
+      const outcome = await Promise.race([
+        page
+          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 1000})
+          .then(
+            () => {
+              return 'settled';
+            },
+            () => {
+              return 'settled';
+            },
+          ),
+        new Promise(resolve => {
+          return setTimeout(() => {
+            return resolve('pending');
+          }, 5000);
+        }),
+      ]);
+      expect(outcome).toBe('settled');
+    });
     it('should fail when exceeding default maximum navigation timeout', async () => {
       const {page, server} = await getTestState();
 
