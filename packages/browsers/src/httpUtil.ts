@@ -117,6 +117,18 @@ export function downloadFile(
     let downloadedBytes = 0;
     let totalBytes = 0;
     const verifier = expectedHash ? new HashVerifier() : null;
+    let downloadAborted = false;
+
+    function cleanupAndReject(error: Error): void {
+      if (downloadAborted) {
+        return;
+      }
+      downloadAborted = true;
+      try {
+        unlinkSync(destinationPath);
+      } catch {}
+      reject(error);
+    }
 
     try {
       const request = await httpRequest(url, 'GET', response => {
@@ -126,39 +138,68 @@ export function downloadFile(
           );
           // consume response data to free up memory
           response.resume();
-          reject(error);
+          cleanupAndReject(error);
           return;
         }
         const file = createWriteStream(destinationPath);
         file.on('close', () => {
+          if (downloadAborted) {
+            return;
+          }
           if (verifier && expectedHash) {
             try {
               verifier.verify(url, destinationPath, expectedHash);
             } catch (err) {
-              reject(err);
+              cleanupAndReject(err as Error);
               return;
             }
+          }
+          if (totalBytes > 0 && downloadedBytes !== totalBytes) {
+            cleanupAndReject(
+              new Error(
+                `Download failed: received ${downloadedBytes} bytes, expected ${totalBytes} bytes. URL: ${url}`,
+              ),
+            );
+            return;
           }
           return resolve();
         });
         file.on('error', error => {
-          return reject(error);
+          cleanupAndReject(error);
         });
         totalBytes = parseInt(response.headers['content-length']!, 10);
+        if (isNaN(totalBytes)) {
+          totalBytes = 0;
+        }
         response.on('data', (chunk: Buffer) => {
+          if (downloadAborted) {
+            return;
+          }
           downloadedBytes += chunk.length;
           verifier?.update(chunk);
           if (progressCallback) {
             progressCallback(downloadedBytes, totalBytes);
           }
         });
+        response.on('error', error => {
+          cleanupAndReject(error);
+        });
+        response.on('end', () => {
+          if (!downloadAborted && totalBytes > 0 && downloadedBytes !== totalBytes) {
+            cleanupAndReject(
+              new Error(
+                `Download failed: connection closed prematurely. Received ${downloadedBytes} bytes, expected ${totalBytes} bytes. URL: ${url}`,
+              ),
+            );
+          }
+        });
         response.pipe(file);
       });
       request.on('error', error => {
-        return reject(error);
+        cleanupAndReject(error);
       });
     } catch (error) {
-      reject(error);
+      cleanupAndReject(error as Error);
     }
   });
 }

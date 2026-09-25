@@ -123,8 +123,13 @@ async function extractTar(
 ): Promise<void> {
   const {unpackTar} = await import('modern-tar/fs');
   return await new Promise<void>((fulfill, reject) => {
+    let decompressFailed = false;
     function handleError(utilityName: string) {
       return (error: Error) => {
+        if (decompressFailed) {
+          return;
+        }
+        decompressFailed = true;
         if ('code' in error && error.code === 'ENOENT') {
           error = new Error(
             `\`${utilityName}\` utility is required to unpack this archive`,
@@ -148,11 +153,23 @@ async function extractTar(
         logger?.(DEBUG_PREFIXES.fileUtil)?.(
           `${decompressUtilityName} exited, code=${code}`,
         );
+        if (code !== 0 && !decompressFailed) {
+          decompressFailed = true;
+          reject(
+            new Error(
+              `Failed to decompress archive: ${decompressUtilityName} exited with code ${code}`,
+            ),
+          );
+        }
       });
 
     const tar = unpackTar(folderPath);
     tar.once('error', handleError('tar'));
-    tar.once('finish', fulfill);
+    tar.once('finish', () => {
+      if (!decompressFailed) {
+        fulfill();
+      }
+    });
     createReadStream(tarPath).pipe(createTransformStream(unpack)).pipe(tar);
   });
 }
