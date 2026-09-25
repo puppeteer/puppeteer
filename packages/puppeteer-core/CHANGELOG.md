@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.12.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.12.0...puppeteer-core-v25.12.1) (2026-09-25)
+
+
+### 🛠️ Fixes
+
+* **webdriver:** close the browser process when the BiDi close command fails ([#15469](https://github.com/puppeteer/puppeteer/issues/15469)) ([9e5fefa](https://github.com/puppeteer/puppeteer/commit/9e5fefac4fdd7bb1476441598bca078de608fc71))
+
 ## [25.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.11.0...puppeteer-core-v25.12.0) (2026-09-23)
 
 
