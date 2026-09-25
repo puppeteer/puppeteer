@@ -252,6 +252,58 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
+    for (const scrollTarget of ['page', 'iframe'] as const) {
+      it(`should capture an iframe element when the ${scrollTarget} is scrolled`, async () => {
+        const {page} = await getTestState();
+
+        await page.setViewport({width: 500, height: 500});
+        await page.setContent(html`
+          <style>
+            body {
+              margin: 0;
+              width: 1000px;
+              height: 1000px;
+            }
+            iframe {
+              margin: 100px;
+              width: 300px;
+              height: 300px;
+              border: none;
+            }
+          </style>
+          <iframe></iframe>
+        `);
+        using iframe = (await page.$('iframe'))!;
+        const frame = await iframe.contentFrame();
+        assert(frame);
+        await frame.setContent(html`
+          <style>
+            body {
+              margin: 0;
+              width: 1000px;
+              height: 1000px;
+            }
+            div {
+              position: absolute;
+              top: 100px;
+              left: 100px;
+              border: 2px solid blue;
+              background: green;
+              width: 50px;
+              height: 50px;
+            }
+          </style>
+          <div></div>
+        `);
+        await (scrollTarget === 'page' ? page : frame).evaluate(() => {
+          window.scrollTo(100, 100);
+        });
+
+        using elementHandle = (await frame.$('div'))!;
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+      });
+    }
     it('should capture full element when larger than viewport', async () => {
       const {page} = await getTestState();
 
