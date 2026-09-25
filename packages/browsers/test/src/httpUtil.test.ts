@@ -57,6 +57,31 @@ describe('downloadFile', function () {
     assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
   });
 
+  it('rejects when the response ends before the content length is reached', async () => {
+    await new Promise<void>(resolve => {
+      server.close(() => {
+        return resolve();
+      });
+    });
+    server = http.createServer((_req, res) => {
+      res.writeHead(200, {'Content-Length': String(testContent.length + 1)});
+      res.write(testContent, () => {
+        res.destroy();
+      });
+    });
+    await new Promise<void>(resolve => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    const address = server.address() as {port: number};
+    serverUrl = new URL(`http://127.0.0.1:${address.port}/test`);
+
+    const destPath = path.join(tmpDir, 'download.bin');
+    await assert.rejects(() => {
+      return downloadFile(serverUrl, destPath);
+    }, /Download failed: expected \d+ bytes, received \d+ bytes/);
+    assert.ok(!fs.existsSync(destPath));
+  });
+
   it('downloads a file and resolves when the hash matches', async () => {
     const destPath = path.join(tmpDir, 'download.bin');
     await downloadFile(serverUrl, destPath, undefined, correctHash);
