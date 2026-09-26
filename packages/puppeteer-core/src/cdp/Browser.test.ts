@@ -31,6 +31,12 @@ class MockConnection extends EventEmitter<CDPSessionEvents> {
     this.commandTimeout = options?.timeout;
     return this.command.valueOrThrow();
   }
+
+  dispose(): void {
+    this.disposed = true;
+  }
+
+  disposed = false;
 }
 
 describe('CdpBrowser', function () {
@@ -79,6 +85,35 @@ describe('CdpBrowser', function () {
       expect(connection.commandTimeout).toBeUndefined();
       expect(waitForTarget.calledOnce).toBe(true);
       expect(waitForTarget.firstCall.args[1]).toEqual({timeout: 123});
+    });
+  });
+
+  describe('close', function () {
+    it('should disconnect even when the close callback throws', async () => {
+      const connection = new MockConnection();
+      const browser = new CdpBrowser(
+        connection as unknown as Connection,
+        [],
+        undefined,
+        undefined,
+        async () => {
+          throw new Error('closeBrowser failed');
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        () => {
+          return undefined;
+        },
+      );
+
+      await expect(browser.close()).resolves.toBeUndefined();
+      expect(connection.disposed).toBe(true);
     });
   });
 });
