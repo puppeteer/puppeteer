@@ -126,6 +126,47 @@ export abstract class HTTPResponse {
   }
 
   /**
+   * Converts the response to a Fetch API Response instance.
+   *
+   * @remarks
+   *
+   * Headers are copied to the new Response instance, with multi-line
+   * `set-cookie` headers parsed into individual header entries.
+   * For responses with null body statuses (101, 204, 205, 304), the body is
+   * omitted.
+   *
+   * @returns A promise which resolves to a Fetch API Response object.
+   */
+  async asFetchResponse(): Promise<Response> {
+    const headers = new Headers();
+    for (const [key, value] of Object.entries(this.headers())) {
+      if (key === 'set-cookie') {
+        for (const cookie of value.split('\n')) {
+          const trimmed = cookie.trim();
+          if (trimmed) {
+            headers.append(key, trimmed);
+          }
+        }
+      } else {
+        headers.append(key, value);
+      }
+    }
+
+    const status = this.status();
+    const isNullBodyStatus =
+      status === 101 || status === 204 || status === 205 || status === 304;
+    const body = isNullBodyStatus
+      ? null
+      : ((await this.content()) as unknown as BodyInit);
+
+    return new Response(body, {
+      status,
+      statusText: this.statusText(),
+      headers,
+    });
+  }
+
+  /**
    * A matching {@link HTTPRequest} object.
    */
   abstract request(): HTTPRequest;
