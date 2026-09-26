@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {mkdtempSync, readdirSync, rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {describe, it} from 'node:test';
 
 import expect from 'expect';
@@ -36,6 +39,34 @@ describe('FirefoxLauncher', function () {
       ).rejects.toThrow(
         'blocklist and allowlist are only supported with the CDP protocol',
       );
+    });
+
+    it('should remove the temporary profile when pipe connections are rejected', async () => {
+      const temporaryDirectory = mkdtempSync(
+        join(tmpdir(), 'puppeteer-firefox-pipe-'),
+      );
+      const launcher = new FirefoxLauncher(
+        {
+          configuration: () => {
+            return Promise.resolve({temporaryDirectory});
+          },
+        } as unknown as PuppeteerNode,
+        () => {
+          return undefined;
+        },
+      );
+
+      await expect(
+        launcher.launch({
+          executablePath: process.execPath,
+          args: ['--remote-debugging-pipe'],
+        }),
+      ).rejects.toThrow(
+        'Pipe connections are not supported with Firefox and WebDriver BiDi',
+      );
+
+      expect(readdirSync(temporaryDirectory)).toEqual([]);
+      rmSync(temporaryDirectory, {recursive: true, force: true});
     });
   });
 });
