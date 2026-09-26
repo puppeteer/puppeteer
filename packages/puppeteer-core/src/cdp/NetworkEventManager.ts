@@ -6,6 +6,8 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {CDPSession} from '../api/CDPSession.js';
+
 import {CdpHTTPRequest} from './HTTPRequest.js';
 
 /**
@@ -28,6 +30,7 @@ export type FetchRequestId = string;
 export interface RedirectInfo {
   event: Protocol.Network.RequestWillBeSentEvent;
   fetchRequestId?: FetchRequestId;
+  fetchClient?: CDPSession;
 }
 type RedirectInfoList = RedirectInfo[];
 
@@ -35,6 +38,18 @@ type RedirectInfoList = RedirectInfo[];
  * @internal
  */
 export type NetworkRequestId = string;
+
+/**
+ * An event together with the session it was received on. Requests made by
+ * dedicated workers are paused on the page session but their network events
+ * arrive on the worker session.
+ *
+ * @internal
+ */
+export interface EventWithSession<T> {
+  event: T;
+  client: CDPSession;
+}
 
 /**
  * Helper class to track network events by request ID
@@ -76,11 +91,11 @@ export class NetworkEventManager {
    */
   #requestWillBeSentMap = new Map<
     NetworkRequestId,
-    Protocol.Network.RequestWillBeSentEvent
+    EventWithSession<Protocol.Network.RequestWillBeSentEvent>
   >();
   #requestPausedMap = new Map<
     NetworkRequestId,
-    Protocol.Fetch.RequestPausedEvent
+    EventWithSession<Protocol.Fetch.RequestPausedEvent>
   >();
   #httpRequestsMap = new Map<NetworkRequestId, CdpHTTPRequest>();
   #requestWillBeSentExtraInfoMap = new Map<
@@ -167,13 +182,14 @@ export class NetworkEventManager {
   storeRequestWillBeSent(
     networkRequestId: NetworkRequestId,
     event: Protocol.Network.RequestWillBeSentEvent,
+    client: CDPSession,
   ): void {
-    this.#requestWillBeSentMap.set(networkRequestId, event);
+    this.#requestWillBeSentMap.set(networkRequestId, {event, client});
   }
 
   getRequestWillBeSent(
     networkRequestId: NetworkRequestId,
-  ): Protocol.Network.RequestWillBeSentEvent | undefined {
+  ): EventWithSession<Protocol.Network.RequestWillBeSentEvent> | undefined {
     return this.#requestWillBeSentMap.get(networkRequestId);
   }
 
@@ -183,7 +199,7 @@ export class NetworkEventManager {
 
   getRequestPaused(
     networkRequestId: NetworkRequestId,
-  ): Protocol.Fetch.RequestPausedEvent | undefined {
+  ): EventWithSession<Protocol.Fetch.RequestPausedEvent> | undefined {
     return this.#requestPausedMap.get(networkRequestId);
   }
 
@@ -194,8 +210,9 @@ export class NetworkEventManager {
   storeRequestPaused(
     networkRequestId: NetworkRequestId,
     event: Protocol.Fetch.RequestPausedEvent,
+    client: CDPSession,
   ): void {
-    this.#requestPausedMap.set(networkRequestId, event);
+    this.#requestPausedMap.set(networkRequestId, {event, client});
   }
 
   getRequest(networkRequestId: NetworkRequestId): CdpHTTPRequest | undefined {
@@ -231,8 +248,13 @@ export class NetworkEventManager {
   }
 
   printState(): void {
-    function replacer(_key: unknown, value: unknown) {
-      if (value instanceof Map) {
+    function replacer(key: unknown, value: unknown) {
+      if (key === 'client') {
+        return {
+          dataType: 'CDPSession',
+          value: (value as CDPSession).id(),
+        };
+      } else if (value instanceof Map) {
         return {
           dataType: 'Map',
           value: Array.from(value.entries()), // or with spread: value: [...value]
