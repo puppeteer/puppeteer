@@ -9,6 +9,7 @@ import path from 'node:path';
 
 import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -757,6 +758,220 @@ describe('request interception', function () {
       ]);
 
       await page.setRequestInterception(true);
+    });
+
+    describe('dedicated workers', function () {
+      const STUB_PREFIX = 'https://stub.example/';
+      const REQUEST_COUNT = 10;
+
+      function stubUrls(): string[] {
+        return Array.from({length: REQUEST_COUNT}, (_, i) => {
+          return `${STUB_PREFIX}data/${i}`;
+        });
+      }
+
+      // Starts the worker and resolves with its first message, or 'timeout'.
+      async function startWorker(
+        page: Page,
+        url: string,
+        options: WorkerOptions = {},
+        message: unknown = null,
+      ): Promise<unknown> {
+        return await page.evaluate(
+          (url, options, message) => {
+            return new Promise(resolve => {
+              const worker = new Worker(url, options);
+              worker.onmessage = event => {
+                resolve(event.data);
+              };
+              worker.onerror = () => {
+                resolve('error');
+              };
+              worker.postMessage(message);
+              setTimeout(() => {
+                resolve('timeout');
+              }, 5000);
+            });
+          },
+          url,
+          options,
+          message,
+        );
+      }
+
+      async function fetchFromWorker(
+        page: Page,
+        urls: string[],
+        init: RequestInit = {},
+      ): Promise<unknown> {
+        return await startWorker(
+          page,
+          '/worker/worker-fetch.js',
+          {},
+          {urls, init},
+        );
+      }
+
+      it('should respond to worker requests', async () => {
+        const {page, server} = await getTestState();
+
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          if (!request.url().startsWith(STUB_PREFIX)) {
+            void request.continue();
+            return;
+          }
+          void request.respond({
+            status: 200,
+            headers: {'access-control-allow-origin': '*'},
+            body: `stub ${request.url()}`,
+          });
+        });
+        await page.goto(server.EMPTY_PAGE);
+
+        const urls = stubUrls();
+        expect(await fetchFromWorker(page, urls)).toEqual(
+          urls.map(url => {
+            return `stub ${url}`;
+          }),
+        );
+      });
+
+      it('should continue worker requests', async () => {
+        const {page, server} = await getTestState();
+
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          void request.continue();
+        });
+        const bodies: Array<Promise<string>> = [];
+        page.on('response', response => {
+          if (response.url().includes('/simple.json')) {
+            bodies.push(response.text());
+          }
+        });
+        await page.goto(server.EMPTY_PAGE);
+
+        const urls = Array.from({length: REQUEST_COUNT}, (_, i) => {
+          return `${server.PREFIX}/simple.json?i=${i}`;
+        });
+        const expected = fs.readFileSync(
+          path.join(import.meta.dirname, '../assets', 'simple.json'),
+          'utf8',
+        );
+        expect(await fetchFromWorker(page, urls)).toEqual(
+          urls.map(() => {
+            return expected;
+          }),
+        );
+        expect(await Promise.all(bodies)).toEqual(
+          urls.map(() => {
+            return expected;
+          }),
+        );
+      });
+
+      it('should abort worker requests', async () => {
+        const {page, server} = await getTestState();
+
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          if (!request.url().startsWith(STUB_PREFIX)) {
+            void request.continue();
+            return;
+          }
+          void request.abort();
+        });
+        await page.goto(server.EMPTY_PAGE);
+
+        expect(await fetchFromWorker(page, stubUrls())).toEqual(
+          stubUrls().map(() => {
+            return 'error';
+          }),
+        );
+      });
+
+      it('should provide post data for worker requests', async () => {
+        const {page, server} = await getTestState();
+
+        await page.setRequestInterception(true);
+        const postData: Array<[string | undefined, string | undefined]> = [];
+        page.on('request', async request => {
+          if (!request.url().startsWith(STUB_PREFIX)) {
+            void request.continue();
+            return;
+          }
+          postData.push([request.postData(), await request.fetchPostData()]);
+          void request.respond({
+            status: 200,
+            headers: {'access-control-allow-origin': '*'},
+            body: 'ok',
+          });
+        });
+        await page.goto(server.EMPTY_PAGE);
+
+        expect(
+          await fetchFromWorker(page, stubUrls(), {
+            method: 'POST',
+            body: 'payload',
+          }),
+        ).toEqual(
+          stubUrls().map(() => {
+            return 'ok';
+          }),
+        );
+        expect(postData).toEqual(
+          stubUrls().map(() => {
+            return ['payload', 'payload'];
+          }),
+        );
+      });
+
+      it('should respond to importScripts in a classic worker', async () => {
+        const {page, server} = await getTestState();
+
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          if (!request.url().endsWith('/worker/imported-script.js')) {
+            void request.continue();
+            return;
+          }
+          void request.respond({
+            status: 200,
+            contentType: 'text/javascript',
+            body: `self.importedValue = 'imported';`,
+          });
+        });
+        await page.goto(server.EMPTY_PAGE);
+
+        expect(
+          await startWorker(page, '/worker/worker-import-scripts.js'),
+        ).toBe('imported');
+      });
+
+      it('should respond to static imports in a module worker', async () => {
+        const {page, server} = await getTestState();
+
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          if (!request.url().endsWith('/worker/imported-module.js')) {
+            void request.continue();
+            return;
+          }
+          void request.respond({
+            status: 200,
+            contentType: 'text/javascript',
+            body: `export const importedValue = 'imported';`,
+          });
+        });
+        await page.goto(server.EMPTY_PAGE);
+
+        expect(
+          await startWorker(page, '/worker/worker-module.js', {
+            type: 'module',
+          }),
+        ).toBe('imported');
+      });
     });
   });
 
