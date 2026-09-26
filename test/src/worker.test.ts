@@ -9,7 +9,11 @@ import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import {WebWorkerEvent} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {
+  getTestState,
+  setupSeparateTestBrowserHooks,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Workers', function () {
@@ -126,6 +130,101 @@ describe('Workers', function () {
     expect(worker?.url()).toContain('worker.js');
 
     await Promise.all([waitEvent(page, 'workerdestroyed'), worker?.close()]);
+  });
+
+  describe('when the worker script does not load', function () {
+    it('evaluate should reject if the script is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/does-not-exist.js');
+        }),
+      ]);
+
+      await expect(
+        worker.evaluate(() => {
+          return 1;
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('evaluateHandle should reject if the script is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/does-not-exist.js');
+        }),
+      ]);
+
+      await expect(
+        worker.evaluateHandle(() => {
+          return self;
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('evaluate should reject if a static import of a module worker is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/worker/worker-missing-import.js', {type: 'module'});
+        }),
+      ]);
+
+      await expect(
+        worker.evaluate(() => {
+          return (globalThis as any).loaded;
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('close should not hang if the script is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/does-not-exist.js');
+        }),
+      ]);
+
+      // Depending on timing, `self.close()` runs before the worker is
+      // destroyed or the worker is already gone; either way it settles.
+      await worker.close().catch(() => {});
+    });
+
+    describe('with a short protocol timeout', function () {
+      const state = setupSeparateTestBrowserHooks({protocolTimeout: 1000});
+
+      it('close should not wait for the script to load', async () => {
+        const {page, server} = state;
+        await page.goto(server.EMPTY_PAGE);
+        // Never respond, so the worker script is stuck in `importScripts()`.
+        server.setRoute('/worker/never-loads.js', () => {});
+
+        const [worker] = await Promise.all([
+          waitEvent<WebWorker>(page, 'workercreated'),
+          server.waitForRequest('/worker/never-loads.js'),
+          page.evaluate(() => {
+            new Worker('/worker/worker-hanging-import-scripts.js');
+          }),
+        ]);
+
+        // The worker cannot run `self.close()` while it is blocked, so this
+        // fails with the protocol timeout instead of hanging.
+        await expect(worker.close()).rejects.toThrow();
+      });
+    });
   });
 
   it('should work with waitForNetworkIdle', async () => {
