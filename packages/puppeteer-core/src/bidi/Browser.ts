@@ -102,6 +102,9 @@ export class BidiBrowser extends Browser {
       },
     });
 
+    const browser = new BidiBrowser(session.browser, opts, opts.logger);
+    browser.#initialize();
+
     // Subscribe to all WebDriver BiDi events. Also subscribe to CDP events if CDP
     // connection is available.
     await session.subscribe(
@@ -141,8 +144,10 @@ export class BidiBrowser extends Browser {
       ),
     );
 
-    const browser = new BidiBrowser(session.browser, opts, opts.logger);
-    browser.#initialize();
+    setTimeout(() => {
+      browser.flushInitBuffer();
+    }, 0);
+
     return browser;
   }
 
@@ -159,6 +164,8 @@ export class BidiBrowser extends Browser {
   #cdpConnection?: CdpConnection;
   #networkEnabled: boolean;
   #issuesEnabled: boolean;
+  #isInitializing = true;
+  #initBuffer: Array<{event: BrowserEvent; data: any}> = [];
   #logger: Logger;
 
   private constructor(
@@ -192,6 +199,23 @@ export class BidiBrowser extends Browser {
       this.#browserCore.dispose('Browser process exited.', true);
       this.connection.dispose();
     });
+  }
+
+  /** @internal */
+  get isInitializing(): boolean {
+    return this.#isInitializing;
+  }
+
+  /** @internal */
+  flushInitBuffer(): void {
+    this.#isInitializing = false;
+    for (const {event, data} of this.#initBuffer) {
+      this.#trustedEmitter.emit(event, data);
+    }
+    this.#initBuffer = [];
+    for (const context of this.browserContexts()) {
+      (context as BidiBrowserContext).flushInitBuffer();
+    }
   }
 
   get #browserName() {
@@ -240,6 +264,32 @@ export class BidiBrowser extends Browser {
       BrowserContextEvent.TargetDestroyed,
       target => {
         this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
+      },
+    );
+    browserContext.trustedEmitter.on(
+      BrowserContextEvent.Console,
+      message => {
+        if (this.#isInitializing) {
+          this.#initBuffer.push({
+            event: BrowserEvent.Console,
+            data: message,
+          });
+        } else {
+          this.#trustedEmitter.emit(BrowserEvent.Console, message);
+        }
+      },
+    );
+    browserContext.trustedEmitter.on(
+      BrowserContextEvent.Request,
+      request => {
+        if (this.#isInitializing) {
+          this.#initBuffer.push({
+            event: BrowserEvent.Request,
+            data: request,
+          });
+        } else {
+          this.#trustedEmitter.emit(BrowserEvent.Request, request);
+        }
       },
     );
 

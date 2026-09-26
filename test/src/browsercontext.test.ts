@@ -457,4 +457,28 @@ describe('BrowserContext', function () {
       expect(await getPermission(page, 'midi')).toBe('prompt');
     });
   });
+
+  describe('BrowserContext Events', function () {
+    it('should emit console events', async () => {
+      const {context, page} = await getTestState();
+      const consoleEvents: any[] = [];
+      context.on('console', msg => {
+        consoleEvents.push(msg);
+      });
+      await page.evaluate(() => console.log('hello'));
+      expect(consoleEvents.length).toBe(1);
+      expect(consoleEvents[0].text()).toBe('hello');
+    });
+
+    it('should emit request events', async () => {
+      const {context, page, server} = await getTestState();
+      const requests: any[] = [];
+      context.on('request', req => {
+        requests.push(req);
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(requests.length).toBeGreaterThanOrEqual(1);
+      expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+    });
+  });
 });
