@@ -215,15 +215,22 @@ export class Cache {
     buildId: string,
   ): void {
     const metadata = this.readMetadata(browser);
+    let changed = false;
     for (const alias of Object.keys(metadata.aliases)) {
       if (metadata.aliases[alias] === buildId) {
         delete metadata.aliases[alias];
+        changed = true;
       }
     }
     // Clean up executable path entry
     const key = `${platform}-${buildId}`;
     if (metadata.executablePaths?.[key]) {
       delete metadata.executablePaths[key];
+      changed = true;
+    }
+    // Only touch the file if something was actually removed so that we do not
+    // create a .metadata for a browser that never had one.
+    if (changed) {
       this.writeMetadata(browser, metadata);
     }
     fs.rmSync(this.installationDir(browser, platform, buildId), {
