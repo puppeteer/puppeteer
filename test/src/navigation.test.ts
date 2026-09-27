@@ -289,7 +289,7 @@ describe('navigation', function () {
       // Resolving and timing out are both fine; never settling is not.
       const outcome = await Promise.race([
         page
-          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 1000})
+          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 100})
           .then(
             () => {
               return 'settled';
