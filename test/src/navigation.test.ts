@@ -8,6 +8,7 @@ import type {ServerResponse} from 'node:http';
 
 import expect from 'expect';
 import {type Frame, TimeoutError} from 'puppeteer';
+import sinon from 'sinon';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
@@ -286,25 +287,37 @@ describe('navigation', function () {
       // Hang for the request the page navigates to.
       server.setRoute('/hang.html', () => {});
 
-      // Resolving and timing out are both fine; never settling is not.
-      const outcome = await Promise.race([
-        page
-          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 100})
-          .then(
-            () => {
-              return 'settled';
-            },
-            () => {
-              return 'settled';
-            },
-          ),
-        new Promise(resolve => {
-          return setTimeout(() => {
-            return resolve('pending');
-          }, 5000);
-        }),
-      ]);
-      expect(outcome).toBe('settled');
+      const loaded = new Promise<void>(resolve => {
+        page.once('load', () => {
+          return resolve();
+        });
+      });
+      const hangRequested = server.waitForRequest('/hang.html');
+
+      const clock = sinon.useFakeTimers({
+        shouldAdvanceTime: true,
+        toFake: ['setTimeout'],
+      });
+      try {
+        // Resolving and timing out are both fine; never settling is not.
+        let settled = false;
+        const goto = page
+          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 1000})
+          .catch(() => {})
+          .then(() => {
+            settled = true;
+          });
+
+        // Only once the first document is done and the second navigation is in
+        // flight is the deadline the thing goto is waiting on.
+        await Promise.all([loaded, hangRequested]);
+        await clock.tickAsync(1000);
+        await Promise.race([goto, clock.tickAsync(5000)]);
+
+        expect(settled).toBe(true);
+      } finally {
+        clock.restore();
+      }
     });
     it('should fail when exceeding default maximum navigation timeout', async () => {
       const {page, server} = await getTestState();
