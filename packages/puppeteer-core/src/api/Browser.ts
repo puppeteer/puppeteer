@@ -22,6 +22,7 @@ import type {
 } from '../common/Cookie.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   fromEmitterEvent,
@@ -589,6 +590,47 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * {@link Browser.defaultBrowserContext | default browser context}).
    */
   abstract target(): Target;
+
+  /**
+   * Clears the current network conditions (blocklist and allowlist) and re-applies the
+   * empty conditions to all targets.
+   *
+   * @remarks
+   * Currently only supported for Chrome and the CDP protocol.
+   *
+   * @experimental
+   */
+  clearNetworkConditions(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  /**
+   * Sets the blocklist of URL patterns and re-applies the conditions to all targets.
+   *
+   * @param blocklist - An array of URL patterns to block.
+   *
+   * @remarks
+   * Currently only supported for Chrome and the CDP protocol.
+   *
+   * @experimental
+   */
+  setBlocklist(_blocklist: string[]): Promise<void> {
+    throw new UnsupportedOperation();
+  }
+
+  /**
+   * Sets the allowlist of URL patterns and re-applies the conditions to all targets.
+   *
+   * @param allowlist - An array of URL patterns to allow.
+   *
+   * @remarks
+   * Currently only supported for Chrome and the CDP protocol.
+   *
+   * @experimental
+   */
+  setAllowlist(_allowlist: string[]): Promise<void> {
+    throw new UnsupportedOperation();
+  }
 
   /**
    * Waits until a {@link Target | target} matching the given `predicate`

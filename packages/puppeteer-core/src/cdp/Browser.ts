@@ -245,6 +245,18 @@ export class CdpBrowser extends BrowserBase {
     return this.#targetManager;
   }
 
+  override clearNetworkConditions(): Promise<void> {
+    return this.#targetManager.clearNetworkConditions();
+  }
+
+  override setBlocklist(blocklist: string[]): Promise<void> {
+    return this.#targetManager.setBlocklist(blocklist);
+  }
+
+  override setAllowlist(allowlist: string[]): Promise<void> {
+    return this.#targetManager.setAllowlist(allowlist);
+  }
+
   #setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
     this.#isPageTargetCallback =
       isPageTargetCallback ||

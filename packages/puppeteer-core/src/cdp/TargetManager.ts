@@ -508,6 +508,49 @@ export class TargetManager
     return true;
   };
 
+  clearNetworkConditions(): Promise<void> {
+    this.#blocklist = [];
+    this.#allowlist = [];
+    return this.#reapplyNetworkConditions();
+  }
+
+  setBlocklist(blocklist: string[]): Promise<void> {
+    if (this.#allowlist.length) {
+      throw new Error('Cannot specify both blocklist and allowlist');
+    }
+    this.#blocklist = this.#mapPatterns(blocklist);
+    return this.#reapplyNetworkConditions();
+  }
+
+  setAllowlist(allowlist: string[]): Promise<void> {
+    if (this.#blocklist.length) {
+      throw new Error('Cannot specify both blocklist and allowlist');
+    }
+    this.#allowlist = this.#mapPatterns(allowlist);
+    return this.#reapplyNetworkConditions();
+  }
+
+  async #reapplyNetworkConditions(): Promise<void> {
+    const promises: Array<Promise<void>> = [];
+    for (const [
+      sessionId,
+      target,
+    ] of this.#attachedTargetsBySessionId.entries()) {
+      const session = this.#connection._session(sessionId);
+      if (session) {
+        promises.push(
+          this.#maybeSetupNetworkConditions(
+            session,
+            target._getTargetInfo(),
+          ).catch(error => {
+            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+          }),
+        );
+      }
+    }
+    await Promise.all(promises);
+  }
+
   #mapPatterns(rules?: string[]): Array<{pattern: URLPattern; rule: string}> {
     const result: Array<{pattern: URLPattern; rule: string}> = [];
     for (const rule of rules ?? []) {
@@ -516,13 +559,21 @@ export class TargetManager
     return result;
   }
 
+  #networkConditionsSet = false;
+
   #maybeSetupNetworkConditions = async (
     session: CDPSession,
     targetInfo: Protocol.Target.TargetInfo,
   ): Promise<void> => {
-    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
+    if (
+      this.#blocklist.length === 0 &&
+      this.#allowlist.length === 0 &&
+      !this.#networkConditionsSet
+    ) {
       return;
     }
+    this.#networkConditionsSet =
+      this.#blocklist.length > 0 || this.#allowlist.length > 0;
 
     const matchedNetworkConditions = [];
     for (const item of this.#blocklist) {

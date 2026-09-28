@@ -719,4 +719,100 @@ describe('Network Restrictions', function () {
       await close();
     }
   });
+  describe('dynamic restrictions', () => {
+    it('can set blocklist dynamically', async () => {
+      const {page, server, browser} = await getTestState();
+
+      const allowedUrl = server.PREFIX + '/title.html';
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      await page.goto(allowedUrl);
+      const res1 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res1).toBe(true);
+
+      await browser.setBlocklist(['*://*:*/empty.html']);
+
+      const res2 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res2).toBe(false);
+
+      await browser.clearNetworkConditions();
+
+      const res3 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res3).toBe(true);
+    });
+
+    it('can set allowlist dynamically', async () => {
+      const {page, server, browser} = await getTestState();
+
+      const allowedUrl = server.PREFIX + '/title.html';
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      await page.goto(allowedUrl);
+
+      // Require Chrome >= 149 for allowlist
+      const version = await browser.version();
+      const majorVersion = parseInt(
+        version.split('/')[1]?.split('.')[0] || '0',
+        10,
+      );
+      if (majorVersion < 149) {
+        return; // skip test if version is old
+      }
+
+      const res1 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res1).toBe(true);
+
+      await browser.setAllowlist(['*://*:*/title.html']);
+
+      const res2 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res2).toBe(false);
+
+      await browser.clearNetworkConditions();
+
+      const res3 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res3).toBe(true);
+    });
+  });
 });
