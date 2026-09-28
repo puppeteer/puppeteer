@@ -37,6 +37,36 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="download">download</span>
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="latency">latency</span>
+
+</td><td>
+
+</td><td>
+
+number
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="offline">offline</span>
 
 </td><td>
@@ -44,6 +74,21 @@ Default
 </td><td>
 
 boolean
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="upload">upload</span>
+
+</td><td>
+
+</td><td>
+
+number
 
 </td><td>
 
