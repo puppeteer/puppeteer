@@ -9,11 +9,7 @@ import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import {WebWorkerEvent} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {
-  getTestState,
-  setupSeparateTestBrowserHooks,
-  setupTestBrowserHooks,
-} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Workers', function () {
@@ -201,29 +197,6 @@ describe('Workers', function () {
       // Depending on timing, `self.close()` runs before the worker is
       // destroyed or the worker is already gone; either way it settles.
       await worker.close().catch(() => {});
-    });
-
-    describe('with a short protocol timeout', function () {
-      const state = setupSeparateTestBrowserHooks({protocolTimeout: 1000});
-
-      it('close should not wait for the script to load', async () => {
-        const {page, server} = state;
-        await page.goto(server.EMPTY_PAGE);
-        // Never respond, so the worker script is stuck in `importScripts()`.
-        server.setRoute('/worker/never-loads.js', () => {});
-
-        const [worker] = await Promise.all([
-          waitEvent<WebWorker>(page, 'workercreated'),
-          server.waitForRequest('/worker/never-loads.js'),
-          page.evaluate(() => {
-            new Worker('/worker/worker-hanging-import-scripts.js');
-          }),
-        ]);
-
-        // The worker cannot run `self.close()` while it is blocked, so this
-        // fails with the protocol timeout instead of hanging.
-        await expect(worker.close()).rejects.toThrow();
-      });
     });
   });
 

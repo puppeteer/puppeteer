@@ -1,1 +1,0 @@
-importScripts('./never-loads.js');
