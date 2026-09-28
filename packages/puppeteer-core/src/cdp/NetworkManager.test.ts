@@ -14,6 +14,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
+import {assertRejects} from '../util/testUtils.js';
 
 import type {CdpFrame} from './Frame.js';
 import {NetworkManager} from './NetworkManager.js';
@@ -1643,55 +1644,15 @@ describe('NetworkManager', () => {
     it('should throw on non-TargetClose errors', async () => {
       const mockCDPSession = createMockSession(Error);
       const manager = createNetworkManager();
-      let error: unknown;
-      let rejected = false;
-      try {
-        await manager.addClient(mockCDPSession);
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      let error = await assertRejects(manager.addClient(mockCDPSession));
       assert.instanceOf(error, Error);
-      error = undefined;
-      rejected = false;
-      try {
-        await manager.setCacheEnabled(true);
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      error = await assertRejects(manager.setCacheEnabled(true));
       assert.instanceOf(error, Error);
-      error = undefined;
-      rejected = false;
-      try {
-        await manager.setExtraHTTPHeaders({});
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      error = await assertRejects(manager.setExtraHTTPHeaders({}));
       assert.instanceOf(error, Error);
-      error = undefined;
-      rejected = false;
-      try {
-        await manager.setOfflineMode(true);
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      error = await assertRejects(manager.setOfflineMode(true));
       assert.instanceOf(error, Error);
-      error = undefined;
-      rejected = false;
-      try {
-        await manager.setUserAgent('test');
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      error = await assertRejects(manager.setUserAgent('test'));
       assert.instanceOf(error, Error);
     });
 

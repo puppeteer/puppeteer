@@ -8,6 +8,8 @@ import {describe, it, mock, afterEach} from 'node:test';
 
 import {assert} from 'chai';
 
+import {assertRejects} from '../util/testUtils.js';
+
 import {_connectToBrowser} from './BrowserConnector.js';
 
 describe('BrowserConnector', () => {
@@ -56,22 +58,16 @@ describe('BrowserConnector', () => {
 
   describe('_connectToBrowser', () => {
     it('should throw an error when both blocklist and allowlist are specified', async () => {
-      let error: unknown;
-      let rejected = false;
-      try {
-        await _connectToBrowser({
+      const error = await assertRejects(
+        _connectToBrowser({
           browserWSEndpoint: 'ws://localhost:1234',
           blocklist: ['test'],
           allowlist: ['test'],
           logger: () => {
             return undefined;
           },
-        });
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+        }),
+      );
       assert.instanceOf(error, Error);
       assert.include(
         error.message,
@@ -80,22 +76,16 @@ describe('BrowserConnector', () => {
     });
 
     it('should reject blocklist for WebDriver BiDi connections', async () => {
-      let error: unknown;
-      let rejected = false;
-      try {
-        await _connectToBrowser({
+      const error = await assertRejects(
+        _connectToBrowser({
           browserWSEndpoint: 'ws://localhost:1234',
           protocol: 'webDriverBiDi',
           blocklist: ['https://example.com/*'],
           logger: () => {
             return undefined;
           },
-        });
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+        }),
+      );
       assert.instanceOf(error, Error);
       assert.include(
         error.message,
@@ -104,22 +94,16 @@ describe('BrowserConnector', () => {
     });
 
     it('should reject allowlist for WebDriver BiDi connections', async () => {
-      let error: unknown;
-      let rejected = false;
-      try {
-        await _connectToBrowser({
+      const error = await assertRejects(
+        _connectToBrowser({
           browserWSEndpoint: 'ws://localhost:1234',
           protocol: 'webDriverBiDi',
           allowlist: ['https://example.com/*'],
           logger: () => {
             return undefined;
           },
-        });
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+        }),
+      );
       assert.instanceOf(error, Error);
       assert.include(
         error.message,

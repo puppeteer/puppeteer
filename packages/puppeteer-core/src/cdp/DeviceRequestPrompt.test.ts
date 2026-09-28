@@ -12,6 +12,7 @@ import type {CDPSessionEvents} from '../api/CDPSession.js';
 import {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
+import {assertRejects} from '../util/testUtils.js';
 
 import {
   CdpDeviceRequestPrompt,
@@ -66,15 +67,9 @@ describe('DeviceRequestPrompt', function () {
         timeoutSettings,
       );
 
-      let error: unknown;
-      let rejected = false;
-      try {
-        await manager.waitForDevicePrompt({timeout: 1});
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(
+        manager.waitForDevicePrompt({timeout: 1}),
+      );
       assert.instanceOf(error, TimeoutError);
     });
 
@@ -87,15 +82,7 @@ describe('DeviceRequestPrompt', function () {
       );
 
       timeoutSettings.setDefaultTimeout(1);
-      let error: unknown;
-      let rejected = false;
-      try {
-        await manager.waitForDevicePrompt();
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(manager.waitForDevicePrompt());
       assert.instanceOf(error, TimeoutError);
     });
 
@@ -108,15 +95,9 @@ describe('DeviceRequestPrompt', function () {
       );
 
       timeoutSettings.setDefaultTimeout(0);
-      let error: unknown;
-      let rejected = false;
-      try {
-        await manager.waitForDevicePrompt({timeout: 1});
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(
+        manager.waitForDevicePrompt({timeout: 1}),
+      );
       assert.instanceOf(error, TimeoutError);
     });
 
@@ -291,20 +272,14 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      let error: unknown;
-      let rejected = false;
-      try {
-        await prompt.waitForDevice(
+      const error = await assertRejects(
+        prompt.waitForDevice(
           ({name}) => {
             return name.includes('Device');
           },
           {timeout: 1},
-        );
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+        ),
+      );
       assert.instanceOf(error, TimeoutError);
     });
 
@@ -317,20 +292,14 @@ describe('DeviceRequestPrompt', function () {
       });
 
       timeoutSettings.setDefaultTimeout(1);
-      let error: unknown;
-      let rejected = false;
-      try {
-        await prompt.waitForDevice(
+      const error = await assertRejects(
+        prompt.waitForDevice(
           ({name}) => {
             return name.includes('Device');
           },
           {timeout: 1},
-        );
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+        ),
+      );
       assert.instanceOf(error, TimeoutError);
     });
 
@@ -343,20 +312,14 @@ describe('DeviceRequestPrompt', function () {
       });
 
       timeoutSettings.setDefaultTimeout(0);
-      let error: unknown;
-      let rejected = false;
-      try {
-        await prompt.waitForDevice(
+      const error = await assertRejects(
+        prompt.waitForDevice(
           ({name}) => {
             return name.includes('Device');
           },
           {timeout: 1},
-        );
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+        ),
+      );
       assert.instanceOf(error, TimeoutError);
     });
 
@@ -405,15 +368,7 @@ describe('DeviceRequestPrompt', function () {
         {signal: abortController.signal},
       );
       abortController.abort();
-      let error: unknown;
-      let rejected = false;
-      try {
-        await task;
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(task);
       assert.instanceOf(error, Error);
       assert.match(error.message, /aborted/);
     });
@@ -479,15 +434,7 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
 
-      let error: unknown;
-      let rejected = false;
-      try {
-        await prompt.select(DEVICE_1);
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(prompt.select(DEVICE_1));
       assert.instanceOf(error, Error);
       assert.include(error.message, 'Cannot select unknown device!');
     });
@@ -512,15 +459,7 @@ describe('DeviceRequestPrompt', function () {
         })(),
       ]);
       await prompt.select(device);
-      let error: unknown;
-      let rejected = false;
-      try {
-        await prompt.select(device);
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(prompt.select(device));
       assert.instanceOf(error, Error);
       assert.include(
         error.message,
@@ -548,15 +487,7 @@ describe('DeviceRequestPrompt', function () {
         devices: [],
       });
       await prompt.cancel();
-      let error: unknown;
-      let rejected = false;
-      try {
-        await prompt.cancel();
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(prompt.cancel());
       assert.instanceOf(error, Error);
       assert.include(
         error.message,

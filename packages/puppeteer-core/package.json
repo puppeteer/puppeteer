@@ -138,6 +138,7 @@
     "lib",
     "src",
     "!function-fixture.mjs",
+    "!testUtils.*",
     "!*.test.ts",
     "!*.test.js",
     "!*.test.d.ts",

@@ -43,28 +43,7 @@ export const assertGolden = (
   }
 };
 
-/**
- * Awaits the given promise and asserts that it rejects. Returns the rejection
- * reason so that callers can make further assertions on it.
- */
-export const assertRejects = async (
-  promise: Promise<unknown> | (() => Promise<unknown>),
-): Promise<any> => {
-  const resolved = Symbol('resolved');
-  const result = await (typeof promise === 'function' ? promise() : promise)
-    .then(() => {
-      return resolved;
-    })
-    .catch((error: unknown) => {
-      return error;
-    });
-  assert.notStrictEqual(
-    result,
-    resolved,
-    'Expected promise to reject, but it resolved',
-  );
-  return result;
-};
+export {assertRejects} from 'puppeteer-core/internal/util/testUtils.js';
 
 const matchesObject = (actual: unknown, expected: unknown): boolean => {
   if (Object.is(actual, expected)) {

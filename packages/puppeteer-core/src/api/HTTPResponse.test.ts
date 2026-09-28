@@ -7,6 +7,8 @@ import {describe, it} from 'node:test';
 
 import {assert} from 'chai';
 
+import {assertRejects} from '../util/testUtils.js';
+
 import {HTTPResponse} from './HTTPResponse.js';
 
 // @ts-expect-error we don't need to implement all the methods for the tests on
@@ -37,15 +39,7 @@ describe('HTTPResponse', () => {
       const testResponse = new TestResponse();
       testResponse.contentToReturn = new Uint8Array([0xff]);
 
-      let error: unknown;
-      let rejected = false;
-      try {
-        await testResponse.text();
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+      const error = await assertRejects(testResponse.text());
       assert.instanceOf(error, Error);
     });
   });

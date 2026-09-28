@@ -8,6 +8,8 @@ import {describe, it} from 'node:test';
 
 import {assert} from 'chai';
 
+import {assertRejects} from '../util/testUtils.js';
+
 import {FirefoxLauncher} from './FirefoxLauncher.js';
 import type {PuppeteerNode} from './PuppeteerNode.js';
 
@@ -29,17 +31,11 @@ describe('FirefoxLauncher', function () {
         return undefined;
       });
 
-      let error: unknown;
-      let rejected = false;
-      try {
-        await launcher.launch({
+      const error = await assertRejects(
+        launcher.launch({
           blocklist: ['https://example.com/*'],
-        });
-      } catch (e) {
-        rejected = true;
-        error = e;
-      }
-      assert.isTrue(rejected, 'Expected promise to reject');
+        }),
+      );
       assert.instanceOf(error, Error);
       assert.include(
         error.message,

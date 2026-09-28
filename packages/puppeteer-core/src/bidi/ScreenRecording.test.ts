@@ -12,6 +12,7 @@ import {assert} from 'chai';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {environment} from '../environment.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
+import {assertRejects} from '../util/testUtils.js';
 
 import {BidiPage} from './Page.js';
 import {BidiScreenRecording} from './ScreenRecording.js';
@@ -168,92 +169,28 @@ describe('BidiScreenRecording', () => {
     const context = new MockBrowsingContext();
     const page = new MockBidiPage(context);
 
-    let error: unknown;
-    let rejected = false;
-    try {
-      await page.record({maxWidth: 0});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    let error = await assertRejects(page.record({maxWidth: 0}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`maxWidth` must be greater than 0.');
-    error = undefined;
-    rejected = false;
-    try {
-      await page.record({maxWidth: -10});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    error = await assertRejects(page.record({maxWidth: -10}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`maxWidth` must be greater than 0.');
-    error = undefined;
-    rejected = false;
-    try {
-      await page.record({maxHeight: 0});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    error = await assertRejects(page.record({maxHeight: 0}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`maxHeight` must be greater than 0.');
-    error = undefined;
-    rejected = false;
-    try {
-      await page.record({maxHeight: -10});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    error = await assertRejects(page.record({maxHeight: -10}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`maxHeight` must be greater than 0.');
-    error = undefined;
-    rejected = false;
-    try {
-      await page.record({frameRate: 0});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    error = await assertRejects(page.record({frameRate: 0}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`frameRate` must be greater than 0.');
-    error = undefined;
-    rejected = false;
-    try {
-      await page.record({frameRate: -5});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    error = await assertRejects(page.record({frameRate: -5}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`frameRate` must be greater than 0.');
-    error = undefined;
-    rejected = false;
-    try {
-      await page.record({fps: 0});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    error = await assertRejects(page.record({fps: 0}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`fps` must be greater than 0.');
-    error = undefined;
-    rejected = false;
-    try {
-      await page.record({fps: -5});
-    } catch (e) {
-      rejected = true;
-      error = e;
-    }
-    assert.isTrue(rejected, 'Expected promise to reject');
+    error = await assertRejects(page.record({fps: -5}));
     assert.instanceOf(error, Error);
     assert.include(error.message, '`fps` must be greater than 0.');
   });
