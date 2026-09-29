@@ -1020,7 +1020,7 @@
     "testIdPattern": "[worker.test] Workers should report network requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
+    "expectations": ["SKIP"],
     "comment": "BiDi does not support worker network requests yet"
   },
   {
