@@ -111,4 +111,65 @@ describe('downloadFile', function () {
     );
     assert.ok(fs.existsSync(destPath));
   });
+
+  async function serveRedirects(handler: http.RequestListener): Promise<URL> {
+    await new Promise<void>(resolve => {
+      server.close(() => {
+        return resolve();
+      });
+    });
+    server = http.createServer(handler);
+    await new Promise<void>(resolve => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    const address = server.address() as {port: number};
+    return new URL(`http://127.0.0.1:${address.port}/start`);
+  }
+
+  it('follows a relative-path Location header', async () => {
+    const startUrl = await serveRedirects((req, res) => {
+      if (req.url === '/start') {
+        res.writeHead(302, {Location: '/file.bin'});
+        res.end();
+        return;
+      }
+      res.writeHead(200, {'Content-Length': String(testContent.length)});
+      res.end(testContent);
+    });
+    const destPath = path.join(tmpDir, 'relative-path.bin');
+    await downloadFile(startUrl, destPath);
+    assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+  });
+
+  it('follows a path-relative Location header', async () => {
+    const startUrl = await serveRedirects((req, res) => {
+      if (req.url === '/start') {
+        res.writeHead(302, {Location: 'file.bin'});
+        res.end();
+        return;
+      }
+      res.writeHead(200, {'Content-Length': String(testContent.length)});
+      res.end(testContent);
+    });
+    const destPath = path.join(tmpDir, 'path-relative.bin');
+    await downloadFile(startUrl, destPath);
+    assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+  });
+
+  it('follows an absolute Location header', async () => {
+    let origin = '';
+    const startUrl = await serveRedirects((req, res) => {
+      if (req.url === '/start') {
+        res.writeHead(302, {Location: `${origin}/file.bin`});
+        res.end();
+        return;
+      }
+      res.writeHead(200, {'Content-Length': String(testContent.length)});
+      res.end(testContent);
+    });
+    origin = startUrl.origin;
+    const destPath = path.join(tmpDir, 'absolute.bin');
+    await downloadFile(startUrl, destPath);
+    assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+  });
 });
