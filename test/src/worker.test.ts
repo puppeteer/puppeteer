@@ -128,6 +128,78 @@ describe('Workers', function () {
     await Promise.all([waitEvent(page, 'workerdestroyed'), worker?.close()]);
   });
 
+  describe('when the worker script does not load', function () {
+    it('evaluate should reject if the script is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/does-not-exist.js');
+        }),
+      ]);
+
+      await expect(
+        worker.evaluate(() => {
+          return 1;
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('evaluateHandle should reject if the script is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/does-not-exist.js');
+        }),
+      ]);
+
+      await expect(
+        worker.evaluateHandle(() => {
+          return self;
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('evaluate should reject if a static import of a module worker is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/worker/worker-missing-import.js', {type: 'module'});
+        }),
+      ]);
+
+      await expect(
+        worker.evaluate(() => {
+          return (globalThis as any).loaded;
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('close should not hang if the script is not found', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.evaluate(() => {
+          new Worker('/does-not-exist.js');
+        }),
+      ]);
+
+      // Depending on timing, `self.close()` runs before the worker is
+      // destroyed or the worker is already gone; either way it settles.
+      await worker.close().catch(() => {});
+    });
+  });
+
   it('should work with waitForNetworkIdle', async () => {
     const {page, server} = await getTestState();
 
