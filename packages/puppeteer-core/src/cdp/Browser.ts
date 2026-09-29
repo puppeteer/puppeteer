@@ -140,17 +140,6 @@ export class CdpBrowser extends BrowserBase {
   #hasNetworkRestrictions = false;
   #subscriptions = new DisposableStack();
 
-  /**
-   * Whether network restrictions (an URL blocklist or allowlist) are
-   * configured for this browser. When they are, standard network emulation
-   * must not be used because it would override the rules.
-   *
-   * @internal
-   */
-  get hasNetworkRestrictions(): boolean {
-    return this.#hasNetworkRestrictions;
-  }
-
   constructor(
     connection: Connection,
     contextIds: string[],

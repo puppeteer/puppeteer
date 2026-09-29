@@ -240,15 +240,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         latency: 0,
       };
     }
-    this.#emulatedNetworkConditions.upload = networkConditions
-      ? (networkConditions.upload ?? -1)
-      : -1;
-    this.#emulatedNetworkConditions.download = networkConditions
-      ? (networkConditions.download ?? -1)
-      : -1;
-    this.#emulatedNetworkConditions.latency = networkConditions
-      ? (networkConditions.latency ?? 0)
-      : 0;
+    this.#emulatedNetworkConditions.upload = networkConditions?.upload ?? -1;
+    this.#emulatedNetworkConditions.download =
+      networkConditions?.download ?? -1;
+    this.#emulatedNetworkConditions.latency = networkConditions?.latency ?? 0;
     this.#emulatedNetworkConditions.offline =
       networkConditions?.offline ?? false;
     await this.#applyToAllClients(this.#applyNetworkConditions.bind(this));
