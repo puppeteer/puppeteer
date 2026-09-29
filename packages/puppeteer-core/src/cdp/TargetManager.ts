@@ -615,14 +615,21 @@ export class TargetManager
     if (needsNetwork) {
       promises.push(session.send('Network.enable'));
     }
+    // When clearing network conditions (lists are empty), we must explicitly pass
+    // `offline: false` to force CDP to clear any previously set global offline state.
+    // When an allowlist is active, we must pass `undefined` to prevent globally
+    // overriding the allowlist's catch-all offline rule. When a blocklist is
+    // active, we pass `true`.
+    let offline: boolean | undefined = undefined;
+    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
+      offline = false;
+    } else if (this.#blocklist.length > 0) {
+      offline = true;
+    }
+
     promises.push(
       session.send('Network.emulateNetworkConditionsByRule', {
-        offline:
-          this.#blocklist.length === 0 && this.#allowlist.length === 0
-            ? false
-            : this.#blocklist.length > 0
-              ? true
-              : undefined,
+        offline,
         matchedNetworkConditions,
       }),
     );
