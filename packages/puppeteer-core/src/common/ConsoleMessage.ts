@@ -8,7 +8,8 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import type {Page, WebWorker} from '../index-browser.js';
+import type {Page} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 
 /**
  * @public
