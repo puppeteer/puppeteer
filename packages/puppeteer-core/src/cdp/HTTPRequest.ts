@@ -16,6 +16,7 @@ import {
   STATUS_TEXTS,
   handleError,
 } from '../api/HTTPRequest.js';
+import type {Page} from '../api/Page.js';
 import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {
@@ -176,6 +177,10 @@ export class CdpHTTPRequest extends HTTPRequest {
 
   override response(): CdpHTTPResponse | null {
     return this._response;
+  }
+
+  override page(): Page | null {
+    return this.#frame?.page() ?? null;
   }
 
   override worker(): WebWorker | null {

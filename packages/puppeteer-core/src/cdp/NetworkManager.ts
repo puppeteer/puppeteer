@@ -9,6 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import type {Credentials, Page} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {
@@ -16,7 +17,6 @@ import {
   type NetworkManagerEvents,
 } from '../common/NetworkManagerEvents.js';
 import {isString} from '../common/util.js';
-import type {WebWorker} from '../api/WebWorker.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';

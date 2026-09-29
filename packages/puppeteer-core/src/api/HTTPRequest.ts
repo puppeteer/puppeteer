@@ -15,6 +15,7 @@ import {typedArrayToBase64} from '../util/encoding.js';
 import type {CDPSession} from './CDPSession.js';
 import type {Frame} from './Frame.js';
 import type {HTTPResponse} from './HTTPResponse.js';
+import type {Page} from './Page.js';
 import type {WebWorker} from './WebWorker.js';
 
 /**
@@ -348,8 +349,15 @@ export abstract class HTTPRequest {
   abstract response(): HTTPResponse | null;
 
   /**
+   * The page that initiated the request, or null if navigating to
+   * error pages or the request is coming from a worker.
+   * @public
+   */
+  abstract page(): Page | null;
+
+  /**
    * The worker that initiated the request, or null if navigating to
-   * error pages.
+   * error pages or the request is coming from a page.
    * @public
    */
   abstract worker(): WebWorker | null;

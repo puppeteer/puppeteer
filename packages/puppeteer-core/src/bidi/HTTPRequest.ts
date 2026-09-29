@@ -28,6 +28,7 @@ import {stringToBase64} from '../util/encoding.js';
 import type {Request} from './core/Request.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiHTTPResponse} from './HTTPResponse.js';
+import type {BidiPage} from './Page.js';
 
 export const requests = new WeakMap<Request, BidiHTTPRequest>();
 
@@ -216,6 +217,10 @@ export class BidiHTTPRequest extends HTTPRequest {
    * */
   override worker(): WebWorker | null {
     return null;
+  }
+
+  override page(): BidiPage {
+    return this.#frame.page();
   }
 
   override frame(): BidiFrame {
