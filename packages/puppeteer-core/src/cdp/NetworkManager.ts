@@ -16,6 +16,7 @@ import {
   type NetworkManagerEvents,
 } from '../common/NetworkManagerEvents.js';
 import {isString} from '../common/util.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {assert} from '../util/assert.js';
 import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -102,6 +103,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   ] as const;
 
   #clients = new Map<CDPSession, DisposableStack>();
+  #workers = new WeakMap<CDPSession, WebWorker>();
   #networkEnabled: boolean;
   #logger: Logger;
 
@@ -125,13 +127,17 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
   }
 
-  async addClient(client: CDPSession): Promise<void> {
+  async addClient(client: CDPSession, webWorker?: WebWorker): Promise<void> {
     if (!this.#networkEnabled || this.#clients.has(client)) {
       return;
     }
     const subscriptions = new DisposableStack();
     this.#clients.set(client, subscriptions);
     const clientEmitter = subscriptions.use(new EventEmitter(client));
+
+    if (webWorker) {
+      this.#workers.set(client, webWorker);
+    }
 
     for (const [event, handler] of this.#handlers) {
       clientEmitter.on(event, (arg: any) => {
@@ -518,9 +524,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker = this.#workers.get(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker ?? null,
       event.requestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -584,9 +593,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker = this.#workers.get(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker ?? null,
       fetchRequestId,
       this.#userRequestInterceptionEnabled,
       event,

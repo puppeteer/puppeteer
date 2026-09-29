@@ -20,6 +20,7 @@ import {
   InterceptResolutionAction,
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import type {Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {stringToBase64} from '../util/encoding.js';
@@ -209,6 +210,12 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   override redirectChain(): BidiHTTPRequest[] {
     return this.#redirectChain.slice();
+  }
+  /*
+   * This required BiDi to implement network request for workers first
+   * */
+  override worker(): WebWorker | null {
+    return null;
   }
 
   override frame(): BidiFrame {
