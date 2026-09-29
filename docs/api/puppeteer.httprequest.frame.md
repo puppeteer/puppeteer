@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.frame
 
 # HTTPRequest.frame() method
 
-The frame that initiated the request, or null if navigating to error pages.
+The frame that initiated the request, or null if navigating to error pages or the request is coming from a worker.
 
 ### Signature
 

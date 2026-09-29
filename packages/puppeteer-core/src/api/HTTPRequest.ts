@@ -364,7 +364,7 @@ export abstract class HTTPRequest {
 
   /**
    * The frame that initiated the request, or null if navigating to
-   * error pages.
+   * error pages or the request is coming from a worker.
    * @public
    */
   abstract frame(): Frame | null;
