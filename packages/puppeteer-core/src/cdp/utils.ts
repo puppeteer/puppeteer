@@ -6,7 +6,9 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {Frame} from '../api/Frame.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {
   ConsoleMessage,
   type ConsoleMessageType,
@@ -21,6 +23,8 @@ export function createConsoleMessage(
   event: Protocol.Runtime.ConsoleAPICalledEvent,
   values: JSHandle[],
   targetId?: string,
+  frame?: Frame,
+  worker?: WebWorker,
 ): ConsoleMessage {
   const textTokens = [];
   // eslint-disable-next-line max-len -- The comment is long.
@@ -44,9 +48,10 @@ export function createConsoleMessage(
     textTokens.join(' '),
     values,
     stackTraceLocations,
-    undefined,
+    frame,
     event.stackTrace,
     targetId,
+    worker,
   );
 }
 

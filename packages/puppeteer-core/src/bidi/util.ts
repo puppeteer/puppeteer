@@ -7,6 +7,7 @@
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {Frame} from '../api/Frame.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   ConsoleMessageLocation,
@@ -65,6 +66,7 @@ export function getConsoleMessage(
   args: Array<BidiJSHandle<unknown> | BidiElementHandle<Node>>,
   frame?: Frame,
   targetId?: string,
+  worker?: WebWorker,
 ): ConsoleMessage {
   const text = args
     .reduce((value, arg) => {
@@ -84,6 +86,7 @@ export function getConsoleMessage(
     frame,
     undefined,
     targetId,
+    worker,
   );
 }
 

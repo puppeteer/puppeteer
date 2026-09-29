@@ -8,7 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import { Page, WebWorker } from '../index-browser.js';
+import type {Page, WebWorker} from '../index-browser.js';
 
 /**
  * @public
@@ -94,22 +94,25 @@ export class ConsoleMessage {
 
   /**
    * The worker of the console message if there's any.
+   * @public
    */
-  get worker(): WebWorker | null {
-    return this.worker || null;
+  worker(): WebWorker | null {
+    return this.#worker || null;
   }
 
   /**
    * The page of the console message if there's any.
+   * @public
    */
-  get page(): Page | null {
+  page(): Page | null {
     return this.#frame?.page() || null;
   }
 
   /**
    * The frame of the console message if there's any.
+   * @public
    */
-  get frame(): Frame | null {
+  frame(): Frame | null {
     return this.#frame || null;
   }
 
