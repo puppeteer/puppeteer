@@ -16,6 +16,78 @@ export declare class ConsoleMessage
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ConsoleMessage` class.
 
+## Properties
+
+<table><thead><tr><th>
+
+Property
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+<span id="frame">frame</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[Frame](./puppeteer.frame.md) \| null
+
+</td><td>
+
+The frame of the console message if there's any.
+
+</td></tr>
+<tr><td>
+
+<span id="page">page</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[Page](./puppeteer.page.md) \| null
+
+</td><td>
+
+The page of the console message if there's any.
+
+</td></tr>
+<tr><td>
+
+<span id="worker">worker</span>
+
+</td><td>
+
+`readonly`
+
+</td><td>
+
+[WebWorker](./puppeteer.webworker.md) \| null
+
+</td><td>
+
+The worker of the console message if there's any.
+
+</td></tr>
+</tbody></table>
+
 ## Methods
 
 <table><thead><tr><th>
