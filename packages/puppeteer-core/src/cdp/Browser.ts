@@ -245,16 +245,10 @@ export class CdpBrowser extends BrowserBase {
     return this.#targetManager;
   }
 
-  override clearNetworkConditions(): Promise<void> {
-    return this.#targetManager.clearNetworkConditions();
-  }
-
-  override setBlocklist(blocklist: string[]): Promise<void> {
-    return this.#targetManager.setBlocklist(blocklist);
-  }
-
-  override setAllowlist(allowlist: string[]): Promise<void> {
-    return this.#targetManager.setAllowlist(allowlist);
+  override setNetworkConditions(
+    conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
+  ): Promise<void> {
+    return this.#targetManager.setNetworkConditions(conditions);
   }
 
   #setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {

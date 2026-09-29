@@ -737,7 +737,7 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
       expect(res1).toBe(true);
 
-      await browser.setBlocklist(['*://*:*/empty.html']);
+      await browser.setNetworkConditions({blocklist: ['*://*:*/empty.html']});
 
       const res2 = await page.evaluate(async url => {
         try {
@@ -749,7 +749,7 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
       expect(res2).toBe(false);
 
-      await browser.clearNetworkConditions();
+      await browser.setNetworkConditions();
 
       const res3 = await page.evaluate(async url => {
         try {
@@ -790,7 +790,7 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
       expect(res1).toBe(true);
 
-      await browser.setAllowlist(['*://*:*/title.html']);
+      await browser.setNetworkConditions({allowlist: ['*://*:*/title.html']});
 
       const res2 = await page.evaluate(async url => {
         try {
@@ -802,7 +802,7 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
       expect(res2).toBe(false);
 
-      await browser.clearNetworkConditions();
+      await browser.setNetworkConditions();
 
       const res3 = await page.evaluate(async url => {
         try {

@@ -508,29 +508,26 @@ export class TargetManager
     return true;
   };
 
-  async clearNetworkConditions(): Promise<void> {
-    this.#blocklist = [];
-    this.#allowlist = [];
-    await this.#reapplyNetworkConditions();
-    this.#networkConditionsSet = false;
-  }
+  async setNetworkConditions(
+    conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
+  ): Promise<void> {
+    const blocklist = conditions?.blocklist ?? [];
+    const allowlist = conditions?.allowlist ?? [];
 
-  setBlocklist(blocklist: string[]): Promise<void> {
-    if (this.#allowlist.length) {
+    if (blocklist.length && allowlist.length) {
       throw new Error('Cannot specify both blocklist and allowlist');
     }
+
     this.#blocklist = this.#mapPatterns(blocklist);
-    this.#networkConditionsSet = true;
-    return this.#reapplyNetworkConditions();
-  }
-
-  setAllowlist(allowlist: string[]): Promise<void> {
-    if (this.#blocklist.length) {
-      throw new Error('Cannot specify both blocklist and allowlist');
-    }
     this.#allowlist = this.#mapPatterns(allowlist);
-    this.#networkConditionsSet = true;
-    return this.#reapplyNetworkConditions();
+
+    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
+      await this.#reapplyNetworkConditions();
+      this.#networkConditionsSet = false;
+    } else {
+      this.#networkConditionsSet = true;
+      await this.#reapplyNetworkConditions();
+    }
   }
 
   async #reapplyNetworkConditions(): Promise<void> {

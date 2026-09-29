@@ -176,21 +176,6 @@ In a newly-created [browser](./puppeteer.browser.md), this will return a single 
 </td></tr>
 <tr><td>
 
-<span id="clearnetworkconditions">[clearNetworkConditions()](./puppeteer.browser.clearnetworkconditions.md)</span>
-
-</td><td>
-
-</td><td>
-
-**_(Experimental)_** Clears the current network conditions (blocklist and allowlist) and re-applies the empty conditions to all targets.
-
-**Remarks:**
-
-Currently only supported for Chrome and the CDP protocol.
-
-</td></tr>
-<tr><td>
-
 <span id="close">[close()](./puppeteer.browser.close.md)</span>
 
 </td><td>
@@ -433,36 +418,6 @@ Gets a list of [screen information objects](./puppeteer.screeninfo.md).
 </td></tr>
 <tr><td>
 
-<span id="setallowlist">[setAllowlist(\_allowlist)](./puppeteer.browser.setallowlist.md)</span>
-
-</td><td>
-
-</td><td>
-
-**_(Experimental)_** Sets the allowlist of URL patterns and re-applies the conditions to all targets.
-
-**Remarks:**
-
-Currently only supported for Chrome and the CDP protocol.
-
-</td></tr>
-<tr><td>
-
-<span id="setblocklist">[setBlocklist(\_blocklist)](./puppeteer.browser.setblocklist.md)</span>
-
-</td><td>
-
-</td><td>
-
-**_(Experimental)_** Sets the blocklist of URL patterns and re-applies the conditions to all targets.
-
-**Remarks:**
-
-Currently only supported for Chrome and the CDP protocol.
-
-</td></tr>
-<tr><td>
-
 <span id="setcookie">[setCookie(cookies)](./puppeteer.browser.setcookie.md)</span>
 
 </td><td>
@@ -474,6 +429,21 @@ Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
 **Remarks:**
 
 Shortcut for [browser.defaultBrowserContext().setCookie()](./puppeteer.browsercontext.setcookie.md).
+
+</td></tr>
+<tr><td>
+
+<span id="setnetworkconditions">[setNetworkConditions(\_conditions)](./puppeteer.browser.setnetworkconditions.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Sets the network conditions (blocklist or allowlist) and re-applies the conditions to all targets. To clear all network conditions, omit the argument or pass `null`.
+
+**Remarks:**
+
+Currently only supported for Chrome and the CDP protocol.
 
 </td></tr>
 <tr><td>

@@ -592,43 +592,20 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   abstract target(): Target;
 
   /**
-   * Clears the current network conditions (blocklist and allowlist) and re-applies the
-   * empty conditions to all targets.
+   * Sets the network conditions (blocklist or allowlist) and re-applies the
+   * conditions to all targets.
+   * To clear all network conditions, omit the argument or pass `null`.
+   *
+   * @param conditions - The network conditions to apply.
    *
    * @remarks
    * Currently only supported for Chrome and the CDP protocol.
    *
    * @experimental
    */
-  clearNetworkConditions(): Promise<void> {
-    throw new UnsupportedOperation();
-  }
-
-  /**
-   * Sets the blocklist of URL patterns and re-applies the conditions to all targets.
-   *
-   * @param blocklist - An array of URL patterns to block.
-   *
-   * @remarks
-   * Currently only supported for Chrome and the CDP protocol.
-   *
-   * @experimental
-   */
-  setBlocklist(_blocklist: string[]): Promise<void> {
-    throw new UnsupportedOperation();
-  }
-
-  /**
-   * Sets the allowlist of URL patterns and re-applies the conditions to all targets.
-   *
-   * @param allowlist - An array of URL patterns to allow.
-   *
-   * @remarks
-   * Currently only supported for Chrome and the CDP protocol.
-   *
-   * @experimental
-   */
-  setAllowlist(_allowlist: string[]): Promise<void> {
+  setNetworkConditions(
+    _conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
+  ): Promise<void> {
     throw new UnsupportedOperation();
   }
 
