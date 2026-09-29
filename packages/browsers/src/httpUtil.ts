@@ -66,7 +66,6 @@ export async function httpRequest(
       res.headers.location
     ) {
       // Relative Location values must be resolved against the request URL.
-      // Relative Location values must be resolved against the request URL.
       void httpRequest(new URL(res.headers.location, url), method, response);
       // consume response data to free up memory
       // And prevents the connection from being kept alive
