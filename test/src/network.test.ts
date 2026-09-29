@@ -111,8 +111,9 @@ describe('network', function () {
 
       await page.goto(server.EMPTY_PAGE);
       const requestPromise = page.waitForRequest(server.EMPTY_PAGE);
-      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame = await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const request = await requestPromise;
+      expect(request.frame()).toBe(frame);
       expect(request.page()).toBe(page);
     });
     it('should work for fetch requests', async () => {
