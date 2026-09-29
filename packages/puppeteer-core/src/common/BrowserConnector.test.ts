@@ -18,7 +18,9 @@ describe('BrowserConnector', () => {
 
     it('rewrites browser URLs to the version endpoint', () => {
       expect(
-        getWSEndpointURL('http://localhost:1234/t/session/?token=secret#ignored'),
+        getWSEndpointURL(
+          'http://localhost:1234/t/session/?token=secret#ignored',
+        ),
       ).toBe('http://localhost:1234/t/session/json/version?token=secret');
     });
 
@@ -57,7 +59,6 @@ describe('BrowserConnector', () => {
         ],
       ).toBe('Bearer test-token');
     });
-
   });
 
   describe('_connectToBrowser', () => {
