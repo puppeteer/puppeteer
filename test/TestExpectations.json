@@ -1017,6 +1017,13 @@
     "comment": "BiDi does not support getting a Handle for log args"
   },
   {
+    "testIdPattern": "[worker.test] Workers should report network requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
     "testIdPattern": "[acceptInsecureCerts.test] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
