@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import { Page, WebWorker } from '../index-browser.js';
 
 /**
  * @public
@@ -66,6 +67,7 @@ export class ConsoleMessage {
   #frame?: Frame;
   #rawStackTrace?: Protocol.Runtime.StackTrace;
   #targetId?: string;
+  #worker?: WebWorker;
 
   /**
    * @internal
@@ -78,6 +80,7 @@ export class ConsoleMessage {
     frame?: Frame,
     rawStackTrace?: Protocol.Runtime.StackTrace,
     targetId?: string,
+    worker?: WebWorker,
   ) {
     this.#type = type;
     this.#text = text;
@@ -86,6 +89,28 @@ export class ConsoleMessage {
     this.#frame = frame;
     this.#rawStackTrace = rawStackTrace;
     this.#targetId = targetId;
+    this.#worker = worker;
+  }
+
+  /**
+   * The worker of the console message if there's any.
+   */
+  get worker(): WebWorker | null {
+    return this.worker || null;
+  }
+
+  /**
+   * The page of the console message if there's any.
+   */
+  get page(): Page | null {
+    return this.#frame?.page() || null;
+  }
+
+  /**
+   * The frame of the console message if there's any.
+   */
+  get frame(): Frame | null {
+    return this.#frame || null;
   }
 
   /**
