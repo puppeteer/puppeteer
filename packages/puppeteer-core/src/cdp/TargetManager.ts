@@ -508,10 +508,11 @@ export class TargetManager
     return true;
   };
 
-  clearNetworkConditions(): Promise<void> {
+  async clearNetworkConditions(): Promise<void> {
     this.#blocklist = [];
     this.#allowlist = [];
-    return this.#reapplyNetworkConditions();
+    await this.#reapplyNetworkConditions();
+    this.#networkConditionsSet = false;
   }
 
   setBlocklist(blocklist: string[]): Promise<void> {
@@ -519,6 +520,7 @@ export class TargetManager
       throw new Error('Cannot specify both blocklist and allowlist');
     }
     this.#blocklist = this.#mapPatterns(blocklist);
+    this.#networkConditionsSet = true;
     return this.#reapplyNetworkConditions();
   }
 
@@ -527,6 +529,7 @@ export class TargetManager
       throw new Error('Cannot specify both blocklist and allowlist');
     }
     this.#allowlist = this.#mapPatterns(allowlist);
+    this.#networkConditionsSet = true;
     return this.#reapplyNetworkConditions();
   }
 
@@ -572,8 +575,6 @@ export class TargetManager
     ) {
       return;
     }
-    this.#networkConditionsSet =
-      this.#blocklist.length > 0 || this.#allowlist.length > 0;
 
     const matchedNetworkConditions = [];
     for (const item of this.#blocklist) {
@@ -616,7 +617,12 @@ export class TargetManager
     }
     promises.push(
       session.send('Network.emulateNetworkConditionsByRule', {
-        offline: this.#blocklist.length > 0 ? true : undefined,
+        offline:
+          this.#blocklist.length === 0 && this.#allowlist.length === 0
+            ? false
+            : this.#blocklist.length > 0
+              ? true
+              : undefined,
         matchedNetworkConditions,
       }),
     );
