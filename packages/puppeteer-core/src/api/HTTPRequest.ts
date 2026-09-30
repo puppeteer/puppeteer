@@ -315,34 +315,23 @@ export abstract class HTTPRequest {
    *
    * @remarks
    *
-   * Headers are copied to the new Request instance, with multi-line
-   * `cookie` headers parsed into individual header entries.
-   * The request URL and method are preserved. The body is built from
-   * {@link HTTPRequest.fetchPostData} when available, otherwise the
-   * Request is created without a body. For `GET` and `HEAD` requests
-   * the body is always omitted, as required by the Fetch API.
+   * Headers are copied to the new Request instance. The request URL and
+   * method are preserved. The body is built from
+   * {@link HTTPRequest.fetchPostData} when the request has post data,
+   * otherwise the Request is created without a body. For `GET` and
+   * `HEAD` requests the body is always omitted, as required by the
+   * Fetch API.
    *
    * @returns A promise which resolves to a Fetch API Request object.
    */
   async asFetchRequest(): Promise<Request> {
-    const headers = new Headers();
-    for (const [key, value] of Object.entries(this.headers())) {
-      if (key === 'cookie') {
-        for (const cookie of value.split(';')) {
-          const trimmed = cookie.trim();
-          if (trimmed) {
-            headers.append(key, trimmed);
-          }
-        }
-      } else {
-        headers.append(key, value);
-      }
-    }
-
-    const postData = await this.fetchPostData();
     const method = this.method();
-    const body =
-      method === 'GET' || method === 'HEAD' ? null : (postData ?? null);
+    const headers = new Headers(this.headers());
+
+    let body: BodyInit | null = null;
+    if (method !== 'GET' && method !== 'HEAD' && this.hasPostData()) {
+      body = ((await this.fetchPostData()) ?? null) as BodyInit | null;
+    }
 
     return new Request(this.url(), {
       method,

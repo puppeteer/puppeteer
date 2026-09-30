@@ -125,7 +125,7 @@ Converts the request to a Fetch API Request instance.
 
 **Remarks:**
 
-Headers are copied to the new Request instance, with multi-line `cookie` headers parsed into individual header entries. The request URL and method are preserved. The body is built from [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md) when available, otherwise the Request is created without a body. For `GET` and `HEAD` requests the body is always omitted, as required by the Fetch API.
+Headers are copied to the new Request instance. The request URL and method are preserved. The body is built from [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md) when the request has post data, otherwise the Request is created without a body. For `GET` and `HEAD` requests the body is always omitted, as required by the Fetch API.
 
 </td></tr>
 <tr><td>

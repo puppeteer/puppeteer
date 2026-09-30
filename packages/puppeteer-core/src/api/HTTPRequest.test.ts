@@ -66,6 +66,8 @@ describe('HTTPRequest', () => {
       private _method = 'GET';
       private _headers: Record<string, string> = {};
       private _postData: string | undefined = undefined;
+      private _hasPostData = false;
+      private _fetchPostDataCalls = 0;
 
       set urlToReturn(url: string) {
         this._url = url;
@@ -83,6 +85,14 @@ describe('HTTPRequest', () => {
         this._postData = postData;
       }
 
+      set hasPostDataToReturn(hasPostData: boolean) {
+        this._hasPostData = hasPostData;
+      }
+
+      get fetchPostDataCalls(): number {
+        return this._fetchPostDataCalls;
+      }
+
       override url(): string {
         return this._url;
       }
@@ -95,7 +105,12 @@ describe('HTTPRequest', () => {
         return this._headers;
       }
 
+      override hasPostData(): boolean {
+        return this._hasPostData;
+      }
+
       override fetchPostData(): Promise<string | undefined> {
+        this._fetchPostDataCalls++;
         return Promise.resolve(this._postData);
       }
     }
@@ -106,6 +121,7 @@ describe('HTTPRequest', () => {
       testRequest.headersToReturn = {
         'content-type': 'application/json',
       };
+      testRequest.hasPostDataToReturn = true;
       testRequest.postDataToReturn = '{"foo": "bar"}';
 
       const fetchRequest = await testRequest.asFetchRequest();
@@ -114,6 +130,7 @@ describe('HTTPRequest', () => {
       expect(fetchRequest.method).toBe('POST');
       expect(fetchRequest.headers.get('content-type')).toBe('application/json');
       expect(await fetchRequest.text()).toBe('{"foo": "bar"}');
+      expect(testRequest.fetchPostDataCalls).toBe(1);
     });
 
     it('should preserve the HTTP method and URL', async () => {
@@ -126,7 +143,7 @@ describe('HTTPRequest', () => {
       expect(fetchRequest.url).toBe('https://example.com/api');
     });
 
-    it('should properly parse multi-value cookie headers', async () => {
+    it('should copy cookie headers without modification', async () => {
       const testRequest = new TestRequest();
       testRequest.headersToReturn = {
         cookie: 'session=xyz; theme=dark',
@@ -140,21 +157,37 @@ describe('HTTPRequest', () => {
 
     it('should omit the body for GET requests', async () => {
       const testRequest = new TestRequest();
+      testRequest.hasPostDataToReturn = true;
       testRequest.postDataToReturn = 'unexpected body';
 
       const fetchRequest = await testRequest.asFetchRequest();
       expect(fetchRequest.method).toBe('GET');
       expect(fetchRequest.bodyUsed).toBe(false);
+      expect(testRequest.fetchPostDataCalls).toBe(0);
     });
 
-    it('should create a request without a body when there is no post data', async () => {
+    it('should omit the body for HEAD requests', async () => {
       const testRequest = new TestRequest();
-      testRequest.methodToReturn = 'POST';
-      testRequest.postDataToReturn = undefined;
+      testRequest.methodToReturn = 'HEAD';
+      testRequest.hasPostDataToReturn = true;
+      testRequest.postDataToReturn = 'unexpected body';
 
       const fetchRequest = await testRequest.asFetchRequest();
+      expect(fetchRequest.method).toBe('HEAD');
+      expect(fetchRequest.bodyUsed).toBe(false);
+      expect(testRequest.fetchPostDataCalls).toBe(0);
+    });
+
+    it('should not fetch post data when the request has none', async () => {
+      const testRequest = new TestRequest();
+      testRequest.methodToReturn = 'POST';
+      testRequest.hasPostDataToReturn = false;
+
+      const fetchRequest = await testRequest.asFetchRequest();
+      expect(fetchRequest.method).toBe('POST');
       expect(fetchRequest.bodyUsed).toBe(false);
       expect(fetchRequest.headers.get('content-length')).toBeFalsy();
+      expect(testRequest.fetchPostDataCalls).toBe(0);
     });
   });
 });
