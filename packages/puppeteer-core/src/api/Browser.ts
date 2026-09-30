@@ -438,6 +438,14 @@ export interface PWAState {
 }
 
 /**
+ * @public
+ */
+export interface NetworkRestrictions {
+  blocklist?: string[];
+  allowlist?: string[];
+}
+
+/**
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
@@ -601,11 +609,15 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * @remarks
    * Currently only supported for Chrome and the CDP protocol.
    *
+   * Targets that are already on a blocked URL when `restrictNetwork` is called
+   * will remain attached and stay on the blocked page. This is a behavior difference
+   * compared to launching the browser with network restrictions, where such targets
+   * are detached immediately upon initial attach.
+   *
    * @experimental
    */
-  restrictNetwork(
-    _conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
-  ): Promise<void> {
+  restrictNetwork(conditions?: NetworkRestrictions | null): Promise<void> {
+    void conditions;
     throw new UnsupportedOperation();
   }
 

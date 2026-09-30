@@ -8,8 +8,10 @@ import type {Protocol} from 'devtools-protocol';
 
 import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyfill.js';
 import type {TargetFilterCallback} from '../api/Browser.js';
+import type {NetworkRestrictions} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
+import {assertSupportedUrlRestrictions} from '../common/BrowserConnector.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {assert} from '../util/assert.js';
@@ -131,6 +133,8 @@ export class TargetManager
 
     this.#blocklist = this.#mapPatterns(blocklist);
     this.#allowlist = this.#mapPatterns(allowlist);
+    this.#networkConditionsSet =
+      this.#blocklist.length > 0 || this.#allowlist.length > 0;
 
     const connectionEmitter = this.#subscriptions.use(
       new EventEmitter(this.#connection),
@@ -509,39 +513,39 @@ export class TargetManager
   };
 
   async setNetworkConditions(
-    conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
+    conditions?: NetworkRestrictions | null,
   ): Promise<void> {
     const blocklist = conditions?.blocklist ?? [];
     const allowlist = conditions?.allowlist ?? [];
 
-    if (blocklist.length && allowlist.length) {
-      throw new Error('Cannot specify both blocklist and allowlist');
-    }
+    assertSupportedUrlRestrictions({
+      blocklist: conditions?.blocklist,
+      allowlist: conditions?.allowlist,
+    });
+
+    const wasActive = this.#blocklist.length > 0 || this.#allowlist.length > 0;
 
     this.#blocklist = this.#mapPatterns(blocklist);
     this.#allowlist = this.#mapPatterns(allowlist);
 
-    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
-      await this.#reapplyNetworkConditions();
-      this.#networkConditionsSet = false;
-    } else {
-      this.#networkConditionsSet = true;
-      await this.#reapplyNetworkConditions();
+    const isActive = this.#blocklist.length > 0 || this.#allowlist.length > 0;
+    this.#networkConditionsSet = isActive;
+
+    if (isActive || wasActive) {
+      await this.#reapplyNetworkConditions(wasActive && !isActive);
     }
   }
 
-  async #reapplyNetworkConditions(): Promise<void> {
+  async #reapplyNetworkConditions(forceClear?: boolean): Promise<void> {
     const promises: Array<Promise<void>> = [];
-    for (const [
-      sessionId,
-      target,
-    ] of this.#attachedTargetsBySessionId.entries()) {
-      const session = this.#connection._session(sessionId);
+    for (const target of this.getAvailableTargets().values()) {
+      const session = target._session();
       if (session) {
         promises.push(
           this.#maybeSetupNetworkConditions(
             session,
             target._getTargetInfo(),
+            forceClear,
           ).catch(error => {
             this.#logger?.(DEBUG_PREFIXES.error)?.(error);
           }),
@@ -564,10 +568,12 @@ export class TargetManager
   #maybeSetupNetworkConditions = async (
     session: CDPSession,
     targetInfo: Protocol.Target.TargetInfo,
+    forceClear?: boolean,
   ): Promise<void> => {
     if (
       this.#blocklist.length === 0 &&
       this.#allowlist.length === 0 &&
+      !forceClear &&
       !this.#networkConditionsSet
     ) {
       return;

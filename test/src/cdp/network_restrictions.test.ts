@@ -720,6 +720,11 @@ describe('Network Restrictions', function () {
     }
   });
   describe('dynamic restrictions', () => {
+    afterEach(async () => {
+      const {browser} = await getTestState({skipLaunch: true});
+      await browser?.restrictNetwork(null);
+    });
+
     it('can set blocklist dynamically', async () => {
       const {page, server, browser} = await getTestState();
 
@@ -762,23 +767,13 @@ describe('Network Restrictions', function () {
       expect(res3).toBe(true);
     });
 
-    it('can set allowlist dynamically', async () => {
+    it('can set allowlist dynamically', async function () {
       const {page, server, browser} = await getTestState();
 
       const allowedUrl = server.PREFIX + '/title.html';
       const blockedUrl = server.PREFIX + '/empty.html';
 
       await page.goto(allowedUrl);
-
-      // Require Chrome >= 149 for allowlist
-      const version = await browser.version();
-      const majorVersion = parseInt(
-        version.split('/')[1]?.split('.')[0] || '0',
-        10,
-      );
-      if (majorVersion < 149) {
-        return; // skip test if version is old
-      }
 
       const res1 = await page.evaluate(async url => {
         try {
@@ -813,6 +808,91 @@ describe('Network Restrictions', function () {
         }
       }, blockedUrl);
       expect(res3).toBe(true);
+    });
+
+    it('can switch directly from blocklist to allowlist', async function () {
+      const {page, server, browser} = await getTestState();
+      const version = await browser.version();
+      const majorVersion = parseInt(version.match(/\d+/)?.[0] ?? '0', 10);
+      if (majorVersion < 149) {
+        this.skip();
+      }
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+      let error: Error | undefined;
+      await page.goto(server.PREFIX + '/empty.html').catch(e => {
+        return (error = e);
+      });
+      expect(error).toBeDefined();
+
+      await browser.restrictNetwork({allowlist: ['*://*:*/empty.html']});
+
+      // Should now be allowed
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(page.url()).toBe(server.PREFIX + '/empty.html');
+    });
+
+    it('blocks page.emulateNetworkConditions after restrictNetwork is called', async () => {
+      const {page, browser} = await getTestState();
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+
+      await expect(
+        page.emulateNetworkConditions({
+          offline: false,
+          latency: 0,
+          download: 0,
+          upload: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    });
+
+    it('applies restrictions to a worker target', async () => {
+      const {page, server, browser, context} = await getTestState();
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html');
+
+      const target = await context.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        },
+        {timeout: 3000},
+      );
+      const worker = (await target.worker())!;
+
+      const fetchError = await worker.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, server.PREFIX + '/empty.html');
+
+      expect(fetchError).toBeTruthy();
+      expect(fetchError).toContain('Failed to fetch');
+    });
+  });
+
+  describe('clearing launch-time lists', () => {
+    const state = setupSeparateTestBrowserHooks({
+      blocklist: ['*://*:*/empty.html'],
+    });
+
+    it('can clear launch-time lists', async () => {
+      const {browser, page, server} = state;
+      let error: Error | undefined;
+      await page.goto(server.PREFIX + '/empty.html').catch(e => {
+        return (error = e);
+      });
+      expect(error).toBeDefined();
+
+      await browser.restrictNetwork(null);
+
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(page.url()).toBe(server.PREFIX + '/empty.html');
     });
   });
 });

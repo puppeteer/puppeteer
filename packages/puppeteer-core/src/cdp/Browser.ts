@@ -29,6 +29,7 @@ import {
   type LaunchPWAOptions,
   type GetPWAStateOptions,
   type PWAState,
+  type NetworkRestrictions,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -105,16 +106,6 @@ export class CdpBrowser extends BrowserBase {
       logger,
     );
 
-    if (allowlist) {
-      const version = await browser.#getVersion();
-      const majorVersion = parseInt(
-        version.product.match(/\d+/)?.[0] ?? '0',
-        10,
-      );
-      if (majorVersion < 149) {
-        throw new Error('The allowlist option require Chrome 149 or greater.');
-      }
-    }
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
         ignore: true,
@@ -246,8 +237,14 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override restrictNetwork(
-    conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
+    conditions?: NetworkRestrictions | null,
   ): Promise<void> {
+    this.#hasNetworkRestrictions = Boolean(
+      (conditions?.blocklist && conditions.blocklist.length > 0) ||
+      (conditions?.allowlist && conditions.allowlist.length > 0),
+    );
+    this.#connection.rejectEmulateNetworkConditionsCalls =
+      this.#hasNetworkRestrictions;
     return this.#targetManager.setNetworkConditions(conditions);
   }
 

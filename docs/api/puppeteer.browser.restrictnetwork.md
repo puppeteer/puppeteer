@@ -10,12 +10,7 @@ Sets the network conditions (blocklist or allowlist) and re-applies the conditio
 
 ```typescript
 class Browser {
-  restrictNetwork(
-    _conditions?: {
-      blocklist?: string[];
-      allowlist?: string[];
-    } | null,
-  ): Promise<void>;
+  restrictNetwork(conditions?: NetworkRestrictions | null): Promise<void>;
 }
 ```
 
@@ -36,15 +31,15 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-\_conditions
+conditions
 
 </td><td>
 
-&#123; blocklist?: string\[\]; allowlist?: string\[\]; &#125; \| null
+[NetworkRestrictions](./puppeteer.networkrestrictions.md) \| null
 
 </td><td>
 
-_(Optional)_
+_(Optional)_ The network conditions to apply.
 
 </td></tr>
 </tbody></table>
@@ -56,3 +51,5 @@ Promise&lt;void&gt;
 ## Remarks
 
 Currently only supported for Chrome and the CDP protocol.
+
+Targets that are already on a blocked URL when `restrictNetwork` is called will remain attached and stay on the blocked page. This is a behavior difference compared to launching the browser with network restrictions, where such targets are detached immediately upon initial attach.
