@@ -236,16 +236,19 @@ export class CdpBrowser extends BrowserBase {
     return this.#targetManager;
   }
 
-  override restrictNetwork(
+  override async restrictNetwork(
     conditions?: NetworkRestrictions | null,
   ): Promise<void> {
+    await this.#targetManager.setNetworkConditions(conditions);
+    // Only update the state once the target manager has accepted the new
+    // conditions so that failures (e.g. invalid URL patterns) do not leave
+    // the browser and connection out of sync with the target manager.
     this.#hasNetworkRestrictions = Boolean(
       (conditions?.blocklist && conditions.blocklist.length > 0) ||
       (conditions?.allowlist && conditions.allowlist.length > 0),
     );
     this.#connection.rejectEmulateNetworkConditionsCalls =
       this.#hasNetworkRestrictions;
-    return this.#targetManager.setNetworkConditions(conditions);
   }
 
   #setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {

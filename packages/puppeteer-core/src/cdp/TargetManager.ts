@@ -109,6 +109,16 @@ export class TargetManager
   #initialAttachDone = false;
   #blocklist: Array<{pattern: URLPattern; rule: string}> = [];
   #allowlist: Array<{pattern: URLPattern; rule: string}> = [];
+  /**
+   * All live sessions that network conditions are applied to, including
+   * sessions that are not exposed via a target's `_session()` (e.g. workers,
+   * manually attached targets and kept service worker sessions). Used to
+   * re-apply network conditions at runtime.
+   */
+  #networkConditionsSessions = new Map<
+    CDPSession,
+    Protocol.Target.TargetInfo
+  >();
   #logger?: Logger;
 
   constructor(
@@ -121,7 +131,7 @@ export class TargetManager
     logger?: Logger,
   ) {
     super(undefined, logger);
-    if (blocklist && allowlist) {
+    if (blocklist?.length && allowlist?.length) {
       throw new Error('Cannot specify both blockList and allowList');
     }
 
@@ -133,8 +143,6 @@ export class TargetManager
 
     this.#blocklist = this.#mapPatterns(blocklist);
     this.#allowlist = this.#mapPatterns(allowlist);
-    this.#networkConditionsSet =
-      this.#blocklist.length > 0 || this.#allowlist.length > 0;
 
     const connectionEmitter = this.#subscriptions.use(
       new EventEmitter(this.#connection),
@@ -245,6 +253,7 @@ export class TargetManager
 
   #onSessionDetached = (session: CDPSession) => {
     this.#removeAttachmentListeners(session);
+    this.#networkConditionsSessions.delete(session);
   };
 
   #onTargetCreated = async (event: Protocol.Target.TargetCreatedEvent) => {
@@ -338,6 +347,7 @@ export class TargetManager
     }
 
     if (!this.#connection.isAutoAttached(targetInfo.targetId)) {
+      this.#networkConditionsSessions.set(session, targetInfo);
       await this.#maybeSetupNetworkConditions(session, targetInfo);
       return;
     }
@@ -358,6 +368,7 @@ export class TargetManager
     // CDP.
     if (targetInfo.type === 'service_worker') {
       if (!this.isUrlAllowed(targetInfo.url)) {
+        this.#networkConditionsSessions.set(session, targetInfo);
         await Promise.all([
           this.#maybeSetupNetworkConditions(session, targetInfo),
           session.send('Runtime.runIfWaitingForDebugger'),
@@ -432,6 +443,8 @@ export class TargetManager
     if (parentTarget?.type() === 'tab') {
       this.#finishInitializationIfReady(parentTarget._targetId);
     }
+
+    this.#networkConditionsSessions.set(session, targetInfo);
 
     // The browser might be shutting down here, so we
     // ignore potential errors.
@@ -525,11 +538,14 @@ export class TargetManager
 
     const wasActive = this.#blocklist.length > 0 || this.#allowlist.length > 0;
 
-    this.#blocklist = this.#mapPatterns(blocklist);
-    this.#allowlist = this.#mapPatterns(allowlist);
+    // Map both lists before assigning so that an invalid pattern does not
+    // leave the manager in a partially updated state.
+    const newBlocklist = this.#mapPatterns(blocklist);
+    const newAllowlist = this.#mapPatterns(allowlist);
+    this.#blocklist = newBlocklist;
+    this.#allowlist = newAllowlist;
 
     const isActive = this.#blocklist.length > 0 || this.#allowlist.length > 0;
-    this.#networkConditionsSet = isActive;
 
     if (isActive || wasActive) {
       await this.#reapplyNetworkConditions(wasActive && !isActive);
@@ -538,19 +554,23 @@ export class TargetManager
 
   async #reapplyNetworkConditions(forceClear?: boolean): Promise<void> {
     const promises: Array<Promise<void>> = [];
-    for (const target of this.getAvailableTargets().values()) {
-      const session = target._session();
-      if (session) {
-        promises.push(
-          this.#maybeSetupNetworkConditions(
-            session,
-            target._getTargetInfo(),
-            forceClear,
-          ).catch(error => {
-            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
-          }),
-        );
+    // Iterate over all tracked sessions rather than `target._session()`, as
+    // the latter is undefined for workers and targets that were not
+    // auto-attached.
+    for (const [session, targetInfo] of this.#networkConditionsSessions) {
+      if (session.detached) {
+        this.#networkConditionsSessions.delete(session);
+        continue;
       }
+      promises.push(
+        this.#maybeSetupNetworkConditions(
+          session,
+          targetInfo,
+          forceClear,
+        ).catch(error => {
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+        }),
+      );
     }
     await Promise.all(promises);
   }
@@ -563,8 +583,6 @@ export class TargetManager
     return result;
   }
 
-  #networkConditionsSet = false;
-
   #maybeSetupNetworkConditions = async (
     session: CDPSession,
     targetInfo: Protocol.Target.TargetInfo,
@@ -573,8 +591,7 @@ export class TargetManager
     if (
       this.#blocklist.length === 0 &&
       this.#allowlist.length === 0 &&
-      !forceClear &&
-      !this.#networkConditionsSet
+      !forceClear
     ) {
       return;
     }

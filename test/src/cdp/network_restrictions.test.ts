@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 
 import {
   launch,
@@ -13,7 +14,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
 } from '../mocha-utils.js';
-import {attachFrame, html} from '../utils.js';
+import {attachFrame, html, waitEvent} from '../utils.js';
 
 describe('Network Restrictions', function () {
   setupTestBrowserHooks();
@@ -873,6 +874,35 @@ describe('Network Restrictions', function () {
 
       expect(fetchError).toBeTruthy();
       expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('applies and clears restrictions on an already-running worker', async () => {
+      const {page, server, browser} = await getTestState();
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+
+      const canFetch = async () => {
+        return await worker.evaluate(async url => {
+          try {
+            await fetch(url);
+            return true;
+          } catch {
+            return false;
+          }
+        }, blockedUrl);
+      };
+
+      expect(await canFetch()).toBe(true);
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+      expect(await canFetch()).toBe(false);
+
+      await browser.restrictNetwork(null);
+      expect(await canFetch()).toBe(true);
     });
   });
 
