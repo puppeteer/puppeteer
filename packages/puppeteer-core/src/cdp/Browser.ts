@@ -245,7 +245,7 @@ export class CdpBrowser extends BrowserBase {
     return this.#targetManager;
   }
 
-  override setNetworkConditions(
+  override restrictNetwork(
     conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
   ): Promise<void> {
     return this.#targetManager.setNetworkConditions(conditions);

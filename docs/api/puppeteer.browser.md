@@ -407,6 +407,21 @@ Only supported in headless mode. Fails if the primary screen id is specified.
 </td></tr>
 <tr><td>
 
+<span id="restrictnetwork">[restrictNetwork(\_conditions)](./puppeteer.browser.restrictnetwork.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Sets the network conditions (blocklist or allowlist) and re-applies the conditions to all targets. To clear all network conditions, omit the argument or pass `null`.
+
+**Remarks:**
+
+Currently only supported for Chrome and the CDP protocol.
+
+</td></tr>
+<tr><td>
+
 <span id="screens">[screens()](./puppeteer.browser.screens.md)</span>
 
 </td><td>
@@ -429,21 +444,6 @@ Sets cookies in the default [BrowserContext](./puppeteer.browsercontext.md).
 **Remarks:**
 
 Shortcut for [browser.defaultBrowserContext().setCookie()](./puppeteer.browsercontext.setcookie.md).
-
-</td></tr>
-<tr><td>
-
-<span id="setnetworkconditions">[setNetworkConditions(\_conditions)](./puppeteer.browser.setnetworkconditions.md)</span>
-
-</td><td>
-
-</td><td>
-
-**_(Experimental)_** Sets the network conditions (blocklist or allowlist) and re-applies the conditions to all targets. To clear all network conditions, omit the argument or pass `null`.
-
-**Remarks:**
-
-Currently only supported for Chrome and the CDP protocol.
 
 </td></tr>
 <tr><td>

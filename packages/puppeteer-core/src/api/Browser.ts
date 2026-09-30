@@ -603,7 +603,7 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    *
    * @experimental
    */
-  setNetworkConditions(
+  restrictNetwork(
     _conditions?: {blocklist?: string[]; allowlist?: string[]} | null,
   ): Promise<void> {
     throw new UnsupportedOperation();

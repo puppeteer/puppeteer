@@ -1,8 +1,8 @@
 ---
-sidebar_label: Browser.setNetworkConditions
+sidebar_label: Browser.restrictNetwork
 ---
 
-# Browser.setNetworkConditions() method
+# Browser.restrictNetwork() method
 
 Sets the network conditions (blocklist or allowlist) and re-applies the conditions to all targets. To clear all network conditions, omit the argument or pass `null`.
 
@@ -10,7 +10,7 @@ Sets the network conditions (blocklist or allowlist) and re-applies the conditio
 
 ```typescript
 class Browser {
-  setNetworkConditions(
+  restrictNetwork(
     _conditions?: {
       blocklist?: string[];
       allowlist?: string[];
