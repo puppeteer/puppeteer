@@ -76,10 +76,61 @@ describe('downloadFile', function () {
     serverUrl = new URL(`http://127.0.0.1:${address.port}/test`);
 
     const destPath = path.join(tmpDir, 'download.bin');
-    await assert.rejects(() => {
-      return downloadFile(serverUrl, destPath);
-    }, /Download failed: expected \d+ bytes, received \d+ bytes/);
+    await assert.rejects(
+      () => {
+        return downloadFile(serverUrl, destPath);
+      },
+      (error: Error & {cause?: unknown}) => {
+        assert.match(
+          error.message,
+          /Download failed: expected \d+ bytes, received \d+ bytes/,
+        );
+        assert.ok(error.cause instanceof Error);
+        return true;
+      },
+    );
     assert.ok(!fs.existsSync(destPath));
+  });
+
+  it('closes the response when writing the file fails', async () => {
+    await new Promise<void>(resolve => {
+      server.close(() => {
+        return resolve();
+      });
+    });
+    let resolveResponseClosed!: () => void;
+    const responseClosed = new Promise<void>(resolve => {
+      resolveResponseClosed = resolve;
+    });
+    server = http.createServer((_req, res) => {
+      res.on('close', resolveResponseClosed);
+      res.writeHead(200, {'Content-Length': String(testContent.length + 1)});
+      res.write(testContent);
+    });
+    await new Promise<void>(resolve => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    const address = server.address() as {port: number};
+    serverUrl = new URL(`http://127.0.0.1:${address.port}/test`);
+
+    await assert.rejects(() => {
+      return downloadFile(serverUrl, tmpDir);
+    });
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(
+            new Error('Response was not closed after the file write failed'),
+          );
+        }, 1000);
+        void responseClosed.then(() => {
+          clearTimeout(timeout);
+          resolve();
+        });
+      });
+    } finally {
+      server.closeAllConnections();
+    }
   });
 
   it('downloads a file and resolves when the hash matches', async () => {

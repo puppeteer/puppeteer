@@ -124,14 +124,17 @@ export function downloadFile(
       } catch {}
     };
 
-    const downloadError = (): Error => {
+    const downloadError = (cause?: Error): Error => {
+      const options = cause ? {cause} : undefined;
       if (totalBytes === undefined) {
         return new Error(
           `Download failed: connection closed before the download completed. URL: ${url}`,
+          options,
         );
       }
       return new Error(
         `Download failed: expected ${totalBytes} bytes, received ${downloadedBytes} bytes. URL: ${url}`,
+        options,
       );
     };
 
@@ -150,17 +153,13 @@ export function downloadFile(
         let error: Error | undefined;
         const failDownload = (downloadError: Error): void => {
           error ??= downloadError;
+          response.destroy();
           file.destroy();
         };
         file.on('close', () => {
           if (error) {
             cleanup();
             reject(error);
-            return;
-          }
-          if (totalBytes !== undefined && downloadedBytes !== totalBytes) {
-            cleanup();
-            reject(downloadError());
             return;
           }
           if (verifier && expectedHash) {
@@ -173,24 +172,21 @@ export function downloadFile(
           }
           return resolve();
         });
-        file.on('error', (fileError: Error) => {
-          error ??= fileError;
-        });
+        file.on('error', failDownload);
         const contentLength = Number.parseInt(
           response.headers['content-length'] ?? '',
           10,
         );
         totalBytes = Number.isFinite(contentLength) ? contentLength : undefined;
-        response.on('aborted', () => {
-          failDownload(downloadError());
-        });
         response.on('close', () => {
           if (!response.complete) {
             failDownload(downloadError());
           }
         });
-        response.on('error', error => {
-          failDownload(error);
+        response.on('error', responseError => {
+          failDownload(
+            response.complete ? responseError : downloadError(responseError),
+          );
         });
         response.on('data', (chunk: Buffer) => {
           downloadedBytes += chunk.length;
