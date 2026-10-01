@@ -1447,8 +1447,8 @@
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "expectations": ["FAIL", "PASS"],
+    "comment": "targetFilter is not implemented in BiDi, but waitForInitialPage: false can finish before the initial page target is created"
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default argument in Firefox",

@@ -11,7 +11,7 @@ import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {
   createTimeout,
   getTestState,
-  setupSeparateTestBrowserHooks,
+  launch,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
 import {attachFrame, detachFrame, html, htmlRaw} from './utils.js';
@@ -1009,27 +1009,36 @@ describe('waittask specs', function () {
   });
 
   describe('protocol timeout', () => {
-    const state = setupSeparateTestBrowserHooks({
-      protocolTimeout: 5000,
-    });
-
     it('should error if underlying protocol command times out with raf polling', async () => {
-      let error!: Error;
-      await state.page
-        .waitForFunction(
-          () => {
-            return false;
-          },
-          {timeout: 6000},
-        )
-        .catch(error_ => {
-          return (error = error_);
-        });
+      const {page, close} = await launch(
+        {
+          protocolTimeout: 5000,
+        },
+        {
+          createContext: true,
+          createPage: true,
+        },
+      );
+      try {
+        let error!: Error;
+        await page
+          .waitForFunction(
+            () => {
+              return false;
+            },
+            {timeout: 6000},
+          )
+          .catch(error_ => {
+            return (error = error_);
+          });
 
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBe('Waiting failed');
-      expect(error.stack).toContain('waittask.test.ts');
-      expect(error.cause).toBeInstanceOf(Error);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toBe('Waiting failed');
+        expect(error.stack).toContain('waittask.test.ts');
+        expect(error.cause).toBeInstanceOf(Error);
+      } finally {
+        await close();
+      }
     });
   });
 });
