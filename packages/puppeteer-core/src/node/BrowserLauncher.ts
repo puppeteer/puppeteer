@@ -199,6 +199,9 @@ export abstract class BrowserLauncher {
       protocol === 'webDriverBiDi' &&
       usePipe
     ) {
+      await this.cleanUserDataDir(launchArgs.userDataDir, {
+        isTemp: launchArgs.isTempUserDataDir,
+      });
       throw new Error(
         'Pipe connections are not supported with Firefox and WebDriver BiDi',
       );
