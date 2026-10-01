@@ -11,7 +11,7 @@ export function setupBrowserHooks(path = ''): void {
 <% if(testRunner == 'jasmine' || testRunner == 'jest') { %>
   beforeAll(async () => {
     browser = await puppeteer.launch();
-  });
+  }, 30000);
 <% } %><% if(testRunner == 'mocha' || testRunner == 'node') { %>
   before(async () => {
     browser = await puppeteer.launch();
