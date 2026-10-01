@@ -629,6 +629,10 @@ export class CdpPage extends Page {
     return Array.from(this.#workers.values());
   }
 
+  worker(client: CDPSession): CdpWebWorker | null {
+    return this.#workers.get(client.id()) ?? null;
+  }
+
   override async setRequestInterception(value: boolean): Promise<void> {
     return await this.#frameManager.networkManager.setRequestInterception(
       value,

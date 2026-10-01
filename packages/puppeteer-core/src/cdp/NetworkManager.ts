@@ -66,7 +66,9 @@ export interface InternalNetworkConditions extends NetworkConditions {
  * @internal
  */
 export interface FrameProvider {
+  client: CDPSession;
   frame(id: string): Frame | null;
+  worker(client: CDPSession): WebWorker | null;
   page(): Page;
 }
 
@@ -76,6 +78,7 @@ export interface FrameProvider {
 export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
+  #workerRequests = new Map<string, WebWorker>();
   #extraHTTPHeaders?: Record<string, string>;
   #credentials: Credentials | null = null;
   #attemptedAuthentications = new Set<string>();
@@ -103,7 +106,6 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   ] as const;
 
   #clients = new Map<CDPSession, DisposableStack>();
-  #workers = new WeakMap<CDPSession, WebWorker>();
   #networkEnabled: boolean;
   #logger: Logger;
 
@@ -127,17 +129,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
   }
 
-  async addClient(client: CDPSession, webWorker?: WebWorker): Promise<void> {
+  async addClient(client: CDPSession): Promise<void> {
     if (!this.#networkEnabled || this.#clients.has(client)) {
       return;
     }
     const subscriptions = new DisposableStack();
     this.#clients.set(client, subscriptions);
     const clientEmitter = subscriptions.use(new EventEmitter(client));
-
-    if (webWorker) {
-      this.#workers.set(client, webWorker);
-    }
 
     for (const [event, handler] of this.#handlers) {
       clientEmitter.on(event, (arg: any) => {
@@ -397,6 +395,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     client: CDPSession,
     event: Protocol.Network.RequestWillBeSentEvent,
   ): void {
+    const worker = this.#frameManager.worker(client);
+    if (worker) {
+      this.#workerRequests.set(event.requestId, worker);
+    }
+
     // Request interception doesn't happen for data URLs with Network Service.
     if (
       this.#userRequestInterceptionEnabled &&
@@ -420,7 +423,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
       return;
     }
-    this.#onRequest(client, event, undefined);
+    this.#onRequest(client, event);
   }
 
   #onAuthRequired(
@@ -524,12 +527,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
-    const worker = this.#workers.get(client);
+    const worker = this.#frameManager.worker(client);
 
     const request = new CdpHTTPRequest(
       client,
       frame,
-      worker ?? null,
+      worker,
       event.requestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -593,12 +596,17 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
-    const worker = this.#workers.get(client);
+    const worker =
+      this.#workerRequests.get(event.requestId) ??
+      this.#frameManager.worker(client);
+
+    const requestClient =
+      fetchRequestId && worker ? this.#frameManager.client : client;
 
     const request = new CdpHTTPRequest(
-      client,
+      requestClient,
       frame,
-      worker ?? null,
+      worker,
       fetchRequestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -783,6 +791,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     const requestId = request.id;
     const interceptionId = request._interceptionId;
 
+    this.#workerRequests.delete(requestId);
     this.#networkEventManager.forgetRequest(requestId);
     if (interceptionId !== undefined) {
       this.#attemptedAuthentications.delete(interceptionId);

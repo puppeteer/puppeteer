@@ -212,9 +212,8 @@ export class BidiHTTPRequest extends HTTPRequest {
   override redirectChain(): BidiHTTPRequest[] {
     return this.#redirectChain.slice();
   }
-  /*
-   * This required BiDi to implement network request for workers first
-   * */
+
+  // TODO: BiDi needs to implement network requests for workers first.
   override worker(): WebWorker | null {
     return null;
   }

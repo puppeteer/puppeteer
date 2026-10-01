@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.worker
 
 # HTTPRequest.worker() method
 
-The worker that initiated the request, or null if navigating to error pages or the request is coming from a page.
+The worker that initiated the request, or null if the request was not initiated by a worker.
 
 ### Signature
 

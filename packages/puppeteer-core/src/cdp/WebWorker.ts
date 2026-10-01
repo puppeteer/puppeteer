@@ -131,7 +131,7 @@ export class CdpWebWorker extends WebWorker {
     });
 
     // This might fail if the target is closed before we receive all execution contexts.
-    networkManager?.addClient(this.#client, this).catch((err: Error) => {
+    networkManager?.addClient(this.#client).catch((err: Error) => {
       return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
     this.#client.send('Runtime.enable').catch((err: Error) => {

@@ -351,21 +351,18 @@ export abstract class HTTPRequest {
   /**
    * The page that initiated the request, or null if navigating to
    * error pages or the request is coming from a worker.
-   * @public
    */
   abstract page(): Page | null;
 
   /**
-   * The worker that initiated the request, or null if navigating to
-   * error pages or the request is coming from a page.
-   * @public
+   * The worker that initiated the request, or null if the request
+   * was not initiated by a worker.
    */
   abstract worker(): WebWorker | null;
 
   /**
    * The frame that initiated the request, or null if navigating to
    * error pages or the request is coming from a worker.
-   * @public
    */
   abstract frame(): Frame | null;
 

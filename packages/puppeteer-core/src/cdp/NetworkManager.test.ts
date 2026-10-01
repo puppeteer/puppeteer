@@ -21,10 +21,15 @@ import {NetworkManager} from './NetworkManager.js';
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.
 
+
 function createNetworkManager() {
   return new NetworkManager(
     {
+      client: new MockCDPSession() as any,
       frame(): CdpFrame | null {
+        return null;
+      },
+      worker(): null {
         return null;
       },
       page() {
@@ -1661,7 +1666,11 @@ describe('NetworkManager', () => {
       const mockCDPSession = new MockCDPSession();
       const manager = new NetworkManager(
         {
+          client: new MockCDPSession() as any,
           frame(): CdpFrame | null {
+            return null;
+          },
+          worker(): null {
             return null;
           },
           page() {

@@ -301,6 +301,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[worker.test] Workers should report network requests*",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
     "testIdPattern": "[worker.test] Workers when the worker script does not load *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1015,13 +1022,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "BiDi does not support getting a Handle for log args"
-  },
-  {
-    "testIdPattern": "[worker.test] Workers should report network requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "BiDi does not support worker network requests yet"
   },
   {
     "testIdPattern": "[acceptInsecureCerts.test] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",
