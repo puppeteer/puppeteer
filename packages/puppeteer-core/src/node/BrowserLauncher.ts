@@ -19,7 +19,7 @@ import {
 import {
   firstValueFrom,
   from,
-  map,
+  mergeMap,
   race,
   timer,
 } from '../../third_party/rxjs/rxjs.js';
@@ -412,7 +412,7 @@ export abstract class BrowserLauncher {
         race(
           from(browserProcess.hasClosed()),
           timer(5000).pipe(
-            map(() => {
+            mergeMap(() => {
               return from(browserProcess.close());
             }),
           ),

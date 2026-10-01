@@ -446,7 +446,6 @@ export class Process {
   };
 
   async close(): Promise<void> {
-    await this.#runHooks();
     if (!this.#exited) {
       this.kill();
     }
