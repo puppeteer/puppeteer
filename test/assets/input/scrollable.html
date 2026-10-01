@@ -18,6 +18,11 @@
               event.preventDefault();
               button.textContent = 'context menu';
             }
+            button.onmousedown = event => {
+              if ([1,3,4].includes(event.button)) {
+                event.preventDefault();
+              }
+            }
             button.onmouseup = event => {
               if (![1,3,4].includes(event.button)) {
                 return;
