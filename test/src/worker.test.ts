@@ -5,6 +5,7 @@
  */
 
 import expect from 'expect';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import {WebWorkerEvent} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
@@ -76,6 +77,44 @@ describe('Workers', function () {
     expect(request.frame()).toBeNull();
     expect(request.page()).toBeNull();
   });
+
+  for (const how of ['terminated', 'destroyed by navigation'] as const) {
+    it(`should report network requests as failed when the worker is ${how}`, async () => {
+      const {page, server} = await getTestState();
+
+      // Never responds, so the request stays pending until the worker dies.
+      server.setRoute('/hang', () => {});
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+      const requestPromise = page.waitForRequest(server.PREFIX + '/hang');
+      await worker.evaluate((url: string) => {
+        void fetch(url);
+      }, server.PREFIX + '/hang');
+      const request = await requestPromise;
+
+      const failedPromise = waitEvent<HTTPRequest>(
+        page,
+        'requestfailed',
+        failed => {
+          return failed === request;
+        },
+      );
+      if (how === 'terminated') {
+        await page.evaluate(() => {
+          (globalThis as any).worker.terminate();
+        });
+      } else {
+        await page.goto(server.EMPTY_PAGE);
+      }
+      await failedPromise;
+
+      expect(request.failure()).toEqual({errorText: 'net::ERR_ABORTED'});
+      await page.waitForNetworkIdle({idleTime: 100, timeout: 5000});
+    });
+  }
 
   it('should emit created and destroyed events', async () => {
     const {page} = await getTestState();
