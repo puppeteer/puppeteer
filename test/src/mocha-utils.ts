@@ -283,12 +283,12 @@ export const setupSeparateTestBrowserHooks = (
     });
 
     afterEach(async () => {
-      await state.context.close();
+      await state.context?.close();
     });
   }
 
   after(async () => {
-    await state.close();
+    await state.close?.();
   });
 
   return state;
