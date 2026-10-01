@@ -7,4 +7,5 @@
 module.exports = {
   testMatch: ['<rootDir>/build/**/*.e2e.js'],
   testEnvironment: 'node',
+  testTimeout: 30000,
 };
