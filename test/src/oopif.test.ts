@@ -738,7 +738,7 @@ describe('OOPIF', function () {
           signal: AbortSignal.timeout(5000),
         });
         return 'ok';
-      } catch (error) {
+      } catch {
         return 'error';
       }
     }, url);
