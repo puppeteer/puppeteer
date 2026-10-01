@@ -14,6 +14,7 @@ import type {
 } from '../api/HTTPRequest.js';
 import {
   HTTPRequest,
+  normalizeHeadersInput,
   STATUS_TEXTS,
   type ResourceType,
   handleError,
@@ -218,7 +219,9 @@ export class BidiHTTPRequest extends HTTPRequest {
   override async _continue(
     overrides: ContinueRequestOverrides = {},
   ): Promise<void> {
-    const headers: Bidi.Network.Header[] = getBidiHeaders(overrides.headers);
+    const headers: Bidi.Network.Header[] = getBidiHeaders(
+      overrides.headers ? normalizeHeadersInput(overrides.headers) : undefined,
+    );
     this.interception.handled = true;
 
     return await this.#request
@@ -263,7 +266,9 @@ export class BidiHTTPRequest extends HTTPRequest {
       parsedBody = HTTPRequest.getResponse(response.body);
     }
 
-    const headers: Bidi.Network.Header[] = getBidiHeaders(response.headers);
+    const headers: Bidi.Network.Header[] = getBidiHeaders(
+      response.headers ? normalizeHeadersInput(response.headers) : undefined,
+    );
     const hasContentLength = headers.some(header => {
       return header.name === 'content-length';
     });

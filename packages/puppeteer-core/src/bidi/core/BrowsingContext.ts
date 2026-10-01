@@ -8,6 +8,10 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {BluetoothEmulation} from '../../api/BluetoothEmulation.js';
 import type {DeviceRequestPrompt} from '../../api/DeviceRequestPrompt.js';
+import {
+  type HeadersInput,
+  normalizeHeadersInput,
+} from '../../api/HTTPRequest.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {isString} from '../../common/util.js';
 import {assert} from '../../util/assert.js';
@@ -850,19 +854,24 @@ export class BrowsingContext extends EventEmitter<{
     );
   }
 
-  async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
+  async setExtraHTTPHeaders(headers: HeadersInput): Promise<void> {
     await this.#session.send('network.setExtraHeaders', {
-      headers: Object.entries(headers).map(([key, value]) => {
-        assert(
-          isString(value),
-          `Expected value of header "${key}" to be String, but "${typeof value}" is found.`,
-        );
+      headers: Object.entries(normalizeHeadersInput(headers)).flatMap(
+        ([key, values]) => {
+          const headerValues = Array.isArray(values) ? values : [values];
+          return headerValues.map(value => {
+            assert(
+              isString(value),
+              `Expected value of header "${key}" to be String, but "${typeof value}" is found.`,
+            );
 
-        return {
-          name: key.toLowerCase(),
-          value: {type: 'string', value: value},
-        };
-      }),
+            return {
+              name: key.toLowerCase(),
+              value: {type: 'string', value: value},
+            };
+          });
+        },
+      ),
       contexts: [this.id],
     });
   }

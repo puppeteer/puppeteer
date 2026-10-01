@@ -15,6 +15,7 @@ import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Extension} from '../api/Extension.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
+import type {HeadersInput} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import type {
@@ -848,9 +849,7 @@ export class CdpPage extends Page {
     return await this.#frameManager.networkManager.authenticate(credentials);
   }
 
-  override async setExtraHTTPHeaders(
-    headers: Record<string, string>,
-  ): Promise<void> {
+  override async setExtraHTTPHeaders(headers: HeadersInput): Promise<void> {
     return await this.#frameManager.networkManager.setExtraHTTPHeaders(headers);
   }
 

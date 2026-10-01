@@ -73,11 +73,11 @@ string
 
 </td><td>
 
-Record&lt;string, string \| string\[\] \| unknown&gt;
+Headers \| Record&lt;string, string \| string\[\] \| unknown&gt;
 
 </td><td>
 
-Optional response headers.
+Optional response headers. Either a [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance or a plain record.
 
 The record values will be converted to string following: Arrays' values will be mapped to String (Used when you need multiple headers with the same name). Non-arrays will be converted to String.
 
