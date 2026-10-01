@@ -66,7 +66,6 @@ export interface InternalNetworkConditions extends NetworkConditions {
  * @internal
  */
 export interface FrameProvider {
-  client: CDPSession;
   frame(id: string): Frame | null;
   worker(client: CDPSession): WebWorker | null;
   page(): Page;
@@ -163,6 +162,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   async #removeClient(client: CDPSession) {
     this.#clients.get(client)?.dispose();
     this.#clients.delete(client);
+    for (const [requestId, worker] of this.#workerRequests) {
+      if (worker.client === client) {
+        this.#workerRequests.delete(requestId);
+      }
+    }
   }
 
   async authenticate(credentials: Credentials | null): Promise<void> {
@@ -412,12 +416,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       /**
        * CDP may have sent a Fetch.requestPaused event already. Check for it.
        */
-      const requestPausedEvent =
+      const requestPaused =
         this.#networkEventManager.getRequestPaused(networkRequestId);
-      if (requestPausedEvent) {
+      if (requestPaused) {
+        const {client: fetchClient, event: requestPausedEvent} = requestPaused;
         const {requestId: fetchRequestId} = requestPausedEvent;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
-        this.#onRequest(client, event, fetchRequestId);
+        this.#onRequest(fetchClient, event, fetchRequestId);
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
@@ -502,7 +507,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
       this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
     } else {
-      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      this.#networkEventManager.storeRequestPaused(networkRequestId, {
+        client,
+        event,
+      });
     }
   }
 
@@ -565,6 +573,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
           .shift();
         if (!redirectResponseExtraInfo) {
           this.#networkEventManager.queueRedirectInfo(event.requestId, {
+            client,
             event,
             fetchRequestId,
           });
@@ -600,11 +609,8 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#workerRequests.get(event.requestId) ??
       this.#frameManager.worker(client);
 
-    const requestClient =
-      fetchRequestId && worker ? this.#frameManager.client : client;
-
     const request = new CdpHTTPRequest(
-      requestClient,
+      client,
       frame,
       worker,
       fetchRequestId,
@@ -758,7 +764,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
     if (redirectInfo) {
       this.#networkEventManager.responseExtraInfo(event.requestId).push(event);
-      this.#onRequest(client, redirectInfo.event, redirectInfo.fetchRequestId);
+      this.#onRequest(
+        redirectInfo.client,
+        redirectInfo.event,
+        redirectInfo.fetchRequestId,
+      );
       return;
     }
 
@@ -791,13 +801,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     const requestId = request.id;
     const interceptionId = request._interceptionId;
 
-    this.#workerRequests.delete(requestId);
     this.#networkEventManager.forgetRequest(requestId);
     if (interceptionId !== undefined) {
       this.#attemptedAuthentications.delete(interceptionId);
     }
 
     if (events) {
+      this.#workerRequests.delete(requestId);
       this.#networkEventManager.forget(requestId);
     }
   }
