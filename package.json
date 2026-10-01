@@ -137,7 +137,7 @@
       ]
     },
     "test": {
-      "command": "npx ./tools/mocha-runner",
+      "command": "node ./tools/mocha-runner/bin/mocha-runner.js",
       "dependencies": [
         "build:tools",
         "./test:build",

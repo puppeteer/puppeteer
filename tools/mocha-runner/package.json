@@ -16,7 +16,8 @@
       "command": "tsc -b && node --experimental-strip-types ../../tools/chmod.ts 755 ./bin/mocha-runner.js",
       "clean": "if-file-deleted",
       "files": [
-        "src/**"
+        "src/**",
+        "tsconfig.json"
       ],
       "output": [
         "bin/**",

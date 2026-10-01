@@ -453,13 +453,6 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[coverage.test] Coverage specs JSCoverage should ignore pptr internal scripts if reportAnonymousScripts is true",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[devtools.test] DevTools browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["pipe"],
@@ -1701,6 +1694,13 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
     "comment": "Flaky across all Linux Chrome/CDP environments"
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "script.callFunction on popup with rel=opener times out in Chrome WebDriver BiDi"
   },
   {
     "testIdPattern": "[page.test] Page Page.setJavaScriptEnabled should work",
