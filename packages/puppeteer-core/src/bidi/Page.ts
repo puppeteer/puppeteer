@@ -854,15 +854,10 @@ export class BidiPage extends Page {
         latency: 0,
       };
     }
-    this.#emulatedNetworkConditions.upload = networkConditions
-      ? networkConditions.upload
-      : -1;
-    this.#emulatedNetworkConditions.download = networkConditions
-      ? networkConditions.download
-      : -1;
-    this.#emulatedNetworkConditions.latency = networkConditions
-      ? networkConditions.latency
-      : 0;
+    this.#emulatedNetworkConditions.upload = networkConditions?.upload ?? -1;
+    this.#emulatedNetworkConditions.download =
+      networkConditions?.download ?? -1;
+    this.#emulatedNetworkConditions.latency = networkConditions?.latency ?? 0;
     this.#emulatedNetworkConditions.offline =
       networkConditions?.offline ?? false;
     return await this.#applyNetworkConditions();
@@ -872,11 +867,27 @@ export class BidiPage extends Page {
     if (!this.#emulatedNetworkConditions) {
       return;
     }
-    await this._client().send('Network.emulateNetworkConditions', {
+    // `Network.emulateNetworkConditions` is deprecated by Chromium in favor
+    // of `Network.emulateNetworkConditionsByRule`. Rules only shape the
+    // network traffic, so `Network.overrideNetworkState` is also sent to
+    // emulate the network state exposed to the page via `navigator.onLine`
+    // and `navigator.connection`.
+    await this._client().send('Network.overrideNetworkState', {
       offline: this.#emulatedNetworkConditions.offline,
       latency: this.#emulatedNetworkConditions.latency,
       uploadThroughput: this.#emulatedNetworkConditions.upload,
       downloadThroughput: this.#emulatedNetworkConditions.download,
+    });
+    await this._client().send('Network.emulateNetworkConditionsByRule', {
+      matchedNetworkConditions: [
+        {
+          urlPattern: '',
+          offline: this.#emulatedNetworkConditions.offline,
+          latency: this.#emulatedNetworkConditions.latency,
+          downloadThroughput: this.#emulatedNetworkConditions.download,
+          uploadThroughput: this.#emulatedNetworkConditions.upload,
+        },
+      ],
     });
   }
 
