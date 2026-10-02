@@ -370,6 +370,27 @@
     "comment": "Screen methods are only supported in headless mode"
   },
   {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"console\") should report console messages from service workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support service worker targets"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"console\") should report console messages replayed when attaching after connect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi replays buffered log entries on session.subscribe inside puppeteer.connect(), before a listener can be registered"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
     "testIdPattern": "[browser.test] Browser specs Browser.screens should return default screen info",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

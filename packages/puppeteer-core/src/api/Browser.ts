@@ -15,6 +15,7 @@ import {
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {ProtocolType} from '../common/ConnectOptions.js';
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Cookie,
   CookieData,
@@ -33,6 +34,7 @@ import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Extension} from './Extension.js';
+import type {HTTPRequest} from './HTTPRequest.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 /**
@@ -204,6 +206,45 @@ export const enum BrowserEvent {
    * @internal
    */
   TargetDiscovered = 'targetdiscovered',
+  /**
+   * Emitted when JavaScript within any page or worker in the browser calls
+   * one of the console API methods, e.g. `console.log` or `console.dir`.
+   * Contains a {@link ConsoleMessage} instance.
+   *
+   * @remarks
+   * Use {@link ConsoleMessage.page}, {@link ConsoleMessage.frame} or
+   * {@link ConsoleMessage.worker} to identify the originating context.
+   *
+   * Events are only delivered for pages and workers that Puppeteer has
+   * attached to, e.g. via {@link Browser.pages} or {@link Target.page}.
+   * Registering the listener before attaching guarantees that console
+   * messages replayed by the browser on attachment are not lost.
+   *
+   * Service workers and shared workers are not attached automatically:
+   * their console messages are only delivered after {@link Target.worker}
+   * has been called for their target.
+   *
+   * The {@link ConsoleMessage.args | arguments} are shared with listeners
+   * registered on {@link Page} and {@link WebWorker}. Disposing them in one
+   * listener invalidates them for all other listeners.
+   */
+  Console = 'console',
+  /**
+   * Emitted when any page in the browser issues a request. Contains a
+   * {@link HTTPRequest} instance.
+   *
+   * @remarks
+   * Use {@link HTTPRequest.page}, {@link HTTPRequest.frame} or
+   * {@link HTTPRequest.worker} to identify the originating context.
+   *
+   * These listeners only observe requests. Do not call
+   * `request.continue()`, `abort()` or `respond()` from them: they are not
+   * coordinated with page-level handlers (see
+   * {@link https://pptr.dev/guides/network-interception#cooperative-intercept-mode | cooperative intercept mode}).
+   * To intercept requests, use {@link Page.setRequestInterception} with a
+   * {@link PageEvent.Request} listener.
+   */
+  Request = 'request',
 }
 
 /**
@@ -214,6 +255,8 @@ export interface BrowserEvents extends Record<EventType, unknown> {
   [BrowserEvent.TargetCreated]: Target;
   [BrowserEvent.TargetDestroyed]: Target;
   [BrowserEvent.TargetChanged]: Target;
+  [BrowserEvent.Console]: ConsoleMessage;
+  [BrowserEvent.Request]: HTTPRequest;
   /**
    * @internal
    */
