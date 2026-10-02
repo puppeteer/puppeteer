@@ -11,6 +11,7 @@ import {
   type ContinueRequestOverrides,
   headersArray,
   HTTPRequest,
+  normalizeHeadersInput,
   type ResourceType,
   type ResponseForRequest,
   STATUS_TEXTS,
@@ -225,7 +226,9 @@ export class CdpHTTPRequest extends HTTPRequest {
         url,
         method,
         postData: postDataBinaryBase64,
-        headers: headers ? headersArray(headers) : undefined,
+        headers: headers
+          ? headersArray(normalizeHeadersInput(headers))
+          : undefined,
       })
       .catch(error => {
         this.interception.handled = false;
@@ -248,9 +251,9 @@ export class CdpHTTPRequest extends HTTPRequest {
 
     const responseHeaders: Record<string, string | string[]> = {};
     if (response.headers) {
-      for (const header of Object.keys(response.headers)) {
-        const value = response.headers[header];
-
+      for (const [header, value] of Object.entries(
+        normalizeHeadersInput(response.headers),
+      )) {
         responseHeaders[header.toLowerCase()] = Array.isArray(value)
           ? value.map(item => {
               return String(item);

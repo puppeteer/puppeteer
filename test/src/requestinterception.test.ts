@@ -261,6 +261,28 @@ describe('request interception', function () {
       }
       expect(response.ok()).toBe(true);
     });
+    it('should show custom HTTP headers set as a Headers instance', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setExtraHTTPHeaders(new Headers({foo: 'bar'}));
+      await page.setRequestInterception(true);
+      let requestError;
+      page.on('request', request => {
+        try {
+          expect(request.headers()['foo']).toBe('bar');
+        } catch (error) {
+          requestError = error;
+        } finally {
+          void request.continue();
+        }
+      });
+
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      if (requestError) {
+        throw requestError;
+      }
+      expect(response.ok()).toBe(true);
+    });
     // @see https://github.com/puppeteer/puppeteer/issues/4337
     it('should work with redirect inside sync XHR', async () => {
       const {page, server} = await getTestState();
@@ -788,6 +810,26 @@ describe('request interception', function () {
       ]);
       expect(request.headers['foo']).toBe('bar');
     });
+    it('should amend HTTP headers given as a Headers instance', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue({
+          headers: new Headers({
+            FOO: 'bar',
+          }),
+        });
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => {
+          return fetch('/sleep.zzz');
+        }),
+      ]);
+      expect(request.headers['foo']).toBe('bar');
+    });
     it('should redirect in a way non-observable to page', async () => {
       const {page, server} = await getTestState();
 
@@ -899,6 +941,23 @@ describe('request interception', function () {
           return document.body.textContent;
         }),
       ).toBe('Yo, page!');
+    });
+    it('should work with headers given as a Headers instance', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({
+          status: 201,
+          headers: new Headers({
+            foo: 'bar',
+          }),
+          body: 'Yo, page!',
+        });
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.status()).toBe(201);
+      expect(response.headers()['foo']).toBe('bar');
     });
     it('should work with status code 422', async () => {
       const {page, server} = await getTestState();

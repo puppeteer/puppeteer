@@ -43,9 +43,11 @@ Default
 
 </td><td>
 
-Record&lt;string, string&gt;
+[HeadersInput](./puppeteer.headersinput.md)
 
 </td><td>
+
+Optional headers to set on the request. Either a [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance or a plain record of headers.
 
 </td><td>
 

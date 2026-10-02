@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
+import {type HeadersInput, normalizeHeadersInput} from '../api/HTTPRequest.js';
 import type {Credentials, Page} from '../api/Page.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -173,14 +174,15 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
   }
 
-  async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
+  async setExtraHTTPHeaders(headers: HeadersInput): Promise<void> {
     const extraHTTPHeaders: Record<string, string> = {};
-    for (const [key, value] of Object.entries(headers)) {
+    for (const [key, value] of Object.entries(normalizeHeadersInput(headers))) {
+      const headerValue = Array.isArray(value) ? value.join(', ') : value;
       assert(
-        isString(value),
-        `Expected value of header "${key}" to be String, but "${typeof value}" is found.`,
+        isString(headerValue),
+        `Expected value of header "${key}" to be String, but "${typeof headerValue}" is found.`,
       );
-      extraHTTPHeaders[key.toLowerCase()] = value;
+      extraHTTPHeaders[key.toLowerCase()] = headerValue;
     }
     this.#extraHTTPHeaders = extraHTTPHeaders;
 
