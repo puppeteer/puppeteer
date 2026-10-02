@@ -5,8 +5,12 @@
  */
 
 import expect from 'expect';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
+import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
+import {waitEvent} from './utils.js';
 
 describe('Browser specs', function () {
   setupTestBrowserHooks();
@@ -245,6 +249,181 @@ describe('Browser specs', function () {
 
       // Cleanup.
       await browser.removeScreen(screenInfo.id);
+    });
+  });
+
+  describe('Browser.on("console")', function () {
+    it('should report console messages from pages', async () => {
+      const {browser, page} = await getTestState();
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(browser, 'console', message => {
+          return message.text() === 'from-page';
+        }),
+        page.evaluate(() => {
+          console.log('from-page');
+        }),
+      ]);
+
+      expect(message.type()).toBe('log');
+      expect(message.page()).toBe(page);
+      expect(message.frame()).toBe(page.mainFrame());
+      expect(message.worker()).toBeNull();
+    });
+
+    it('should report console messages from dedicated workers', async () => {
+      const {browser, page, context} = await getTestState();
+
+      const received = {
+        page: [] as ConsoleMessage[],
+        context: [] as ConsoleMessage[],
+        browser: [] as ConsoleMessage[],
+      };
+      const collect = (into: ConsoleMessage[]) => {
+        return (message: ConsoleMessage) => {
+          if (message.text() === 'from-worker') {
+            into.push(message);
+          }
+        };
+      };
+      page.on('console', collect(received.page));
+      context.on('console', collect(received.context));
+      browser.on('console', collect(received.browser));
+
+      // `done` is logged after `from-worker`, so by the time it arrives every
+      // delivery of `from-worker` has been emitted.
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        waitEvent<ConsoleMessage>(browser, 'console', message => {
+          return message.text() === 'done';
+        }),
+        page.evaluate(() => {
+          return new Worker(
+            `data:text/javascript,console.log('from-worker');console.log('done')`,
+          );
+        }),
+      ]);
+
+      // Each level receives the same message exactly once.
+      expect(received.page).toHaveLength(1);
+      expect(received.context).toHaveLength(1);
+      expect(received.browser).toHaveLength(1);
+      const [message] = received.browser;
+      expect(received.page[0]).toBe(message);
+      expect(received.context[0]).toBe(message);
+
+      expect(message!.worker()).toBe(worker);
+      expect(message!.page()).toBeNull();
+      expect(message!.frame()).toBeNull();
+    });
+
+    it('should report console messages from service workers', async () => {
+      const {browser, page, server, context} = await getTestState();
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+      const target = await context.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        },
+        {timeout: 3000},
+      );
+      const worker = (await target.worker())!;
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(browser, 'console', message => {
+          return message.text() === 'from-service-worker';
+        }),
+        worker.evaluate(() => {
+          console.log('from-service-worker');
+        }),
+      ]);
+
+      expect(message.worker()).toBe(worker);
+      expect(message.page()).toBeNull();
+    });
+
+    it('should report console messages replayed when attaching after connect', async () => {
+      const {browser, page, server, puppeteer} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        console.log('logged-before-connect');
+      });
+
+      using remoteBrowser = await puppeteer.connect({
+        browserWSEndpoint: browser.wsEndpoint(),
+        protocol: browser.protocol,
+      });
+
+      // The listener is registered before any page is attached, so the
+      // messages replayed on attachment must not be dropped.
+      const messagePromise = waitEvent<ConsoleMessage>(
+        remoteBrowser,
+        'console',
+        message => {
+          return message.text() === 'logged-before-connect';
+        },
+      );
+      await remoteBrowser.pages();
+      const message = await messagePromise;
+
+      expect(message.page()?.url()).toBe(server.EMPTY_PAGE);
+    });
+  });
+
+  describe('Browser.on("request")', function () {
+    it('should report requests from pages', async () => {
+      const {browser, page, server} = await getTestState();
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'request', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(request.page()).toBe(page);
+      expect(request.frame()).toBe(page.mainFrame());
+      expect(request.worker()).toBeNull();
+    });
+
+    it('should report requests from dedicated workers', async () => {
+      const {browser, page, server} = await getTestState();
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'request', request => {
+          return request.url() === server.PREFIX + '/one-style.css';
+        }),
+        worker.evaluate((url: string) => {
+          return fetch(url);
+        }, server.PREFIX + '/one-style.css'),
+      ]);
+
+      expect(request.worker()).toBe(worker);
+      expect(request.page()).toBeNull();
+    });
+
+    it('should not interfere with request interception', async () => {
+      const {browser, page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue();
+      });
+
+      const [request, response] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'request', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(request.page()).toBe(page);
+      expect(response!.ok()).toBe(true);
     });
   });
 });
