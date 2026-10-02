@@ -238,6 +238,13 @@
     "comment": "no extension api for chrome-headless-shell"
   },
   {
+    "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception dedicated workers *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Workers do not work in Firefox yet"
+  },
+  {
     "testIdPattern": "[screencast.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
@@ -897,6 +904,13 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: BiDi does not support custom errors - https://github.com/w3c/webdriver-bidi/issues/508"
+  },
+  {
+    "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception dedicated workers should * worker requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Intercepted fetches from dedicated workers are never reported to the page over WebDriver BiDi"
   },
   {
     "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should be abortable with custom error codes",
