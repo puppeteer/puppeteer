@@ -264,6 +264,7 @@ export abstract class BrowserLauncher {
             networkEnabled,
             idGenerator,
             logger: options.logger,
+            wsOptions: options.wsOptions,
           },
         );
       } else {
@@ -282,6 +283,7 @@ export abstract class BrowserLauncher {
             slowMo,
             idGenerator,
             logger: options.logger,
+            wsOptions: options.wsOptions,
           });
         }
 
