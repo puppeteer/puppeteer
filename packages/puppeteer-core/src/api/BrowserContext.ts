@@ -21,6 +21,7 @@ import {fromEmitterEvent, filterAsync, timeout} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Browser,
   CreatePageOptions,
@@ -29,6 +30,7 @@ import type {
   PermissionState,
   WaitForTargetOptions,
 } from './Browser.js';
+import type {HTTPRequest} from './HTTPRequest.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 
@@ -56,6 +58,16 @@ export const enum BrowserContextEvent {
    * when a page is closed. Contains a {@link Target} instance.
    */
   TargetDestroyed = 'targetdestroyed',
+  /**
+   * Emitted when JavaScript within the page calls one of console API methods,
+   * e.g. `console.log` or `console.dir`. Also emitted if the page throws an
+   * error or a warning.
+   */
+  Console = 'console',
+  /**
+   * Emitted when a page issues a request and contains a {@link HTTPRequest}.
+   */
+  Request = 'request',
 }
 
 /**
@@ -65,6 +77,8 @@ export interface BrowserContextEvents extends Record<EventType, unknown> {
   [BrowserContextEvent.TargetChanged]: Target;
   [BrowserContextEvent.TargetCreated]: Target;
   [BrowserContextEvent.TargetDestroyed]: Target;
+  [BrowserContextEvent.Console]: ConsoleMessage;
+  [BrowserContextEvent.Request]: HTTPRequest;
 }
 
 /**

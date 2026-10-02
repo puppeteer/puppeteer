@@ -85,7 +85,25 @@ export class BidiBrowserContext extends BrowserContext {
   >();
 
   #overrides: Array<{origin: string; permission: Permission}> = [];
+  #isInitializing = true;
+  #initBuffer: Array<{event: keyof BrowserContextEvents; data: any}> = [];
   #logger: Logger;
+
+  get isInitializing(): boolean {
+    return this.#isInitializing;
+  }
+
+  /** @internal */
+  emitContextEvent<Key extends keyof BrowserContextEvents>(
+    event: Key,
+    data: BrowserContextEvents[Key],
+  ): void {
+    if (this.#isInitializing) {
+      this.#initBuffer.push({event, data});
+    } else {
+      this.trustedEmitter.emit(event, data);
+    }
+  }
 
   private constructor(
     browser: BidiBrowser,
@@ -124,6 +142,21 @@ export class BidiBrowserContext extends BrowserContext {
     this.userContext.on('closed', () => {
       this.trustedEmitter.removeAllListeners();
     });
+
+    if (!this.#browser.isInitializing) {
+      setTimeout(() => {
+        this.flushInitBuffer();
+      }, 0);
+    }
+  }
+
+  /** @internal */
+  flushInitBuffer(): void {
+    this.#isInitializing = false;
+    for (const {event, data} of this.#initBuffer) {
+      this.trustedEmitter.emit(event, data);
+    }
+    this.#initBuffer = [];
   }
 
   #createPage(browsingContext: BrowsingContext): BidiPage {

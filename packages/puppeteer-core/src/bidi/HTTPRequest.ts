@@ -19,10 +19,13 @@ import {
   handleError,
   InterceptResolutionAction,
 } from '../api/HTTPRequest.js';
+import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {PageEvent} from '../api/Page.js';
 import type {Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {stringToBase64} from '../util/encoding.js';
+
+import {BidiBrowserContext} from './BrowserContext.js';
 
 import type {Request} from './core/Request.js';
 import type {BidiFrame} from './Frame.js';
@@ -129,6 +132,9 @@ export class BidiHTTPRequest extends HTTPRequest {
     this.#request.on('authenticate', this.#handleAuthentication);
 
     this.#frame.page().trustedEmitter.emit(PageEvent.Request, this);
+    (
+      this.#frame.page().browserContext() as BidiBrowserContext
+    ).emitContextEvent(BrowserContextEvent.Request, this);
   }
 
   protected canBeIntercepted(): boolean {
