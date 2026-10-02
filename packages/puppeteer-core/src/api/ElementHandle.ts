@@ -933,11 +933,19 @@ export abstract class ElementHandle<
       const destination = await this.clickablePoint();
       await page.mouse.drop(destination, dataOrElement);
     } else {
-      // Note if the rest errors, we still want dragging off because the errors
+      // Note if the rest errors, we still want dragging off because the error
       // is most likely something implying the mouse is no longer dragging.
-      await dataOrElement.drag(this);
-      page._isDragging = false;
-      await page.mouse.up();
+      // Use try/finally so _isDragging is always reset and the mouse button is
+      // always released, even when drag() throws (e.g. the dragged node was
+      // detached mid-flight).
+      try {
+        await dataOrElement.drag(this);
+      } finally {
+        page._isDragging = false;
+        await page.mouse.up().catch(error => {
+          this.logger(DEBUG_PREFIXES.error)?.(error);
+        });
+      }
     }
   }
 
