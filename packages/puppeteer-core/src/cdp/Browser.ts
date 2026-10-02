@@ -13,6 +13,7 @@ import type {
   DebugInfo,
   ExtensionInstallOptions,
 } from '../api/Browser.js';
+import {DEBUG_PREFIXES} from '../common/Debug.js';
 import {
   Browser as BrowserBase,
   BrowserEvent,
@@ -688,8 +689,14 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async close(): Promise<void> {
-    await this.#closeCallback.call(null);
-    await this.disconnect();
+    try {
+      await this.#closeCallback.call(null);
+    } catch (error) {
+      // Fail silently.
+      this.logger?.(DEBUG_PREFIXES.error)?.(error);
+    } finally {
+      await this.disconnect();
+    }
   }
 
   override disconnect(): Promise<void> {
