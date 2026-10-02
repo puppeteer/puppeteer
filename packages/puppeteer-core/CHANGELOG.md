@@ -1,5 +1,33 @@
 # Changelog
 
+## [25.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.12.0...puppeteer-core-v25.13.0) (2026-10-02)
+
+
+### 🎉 Features
+
+* add page, frame and worker methods on ConsoleMessage ([#15515](https://github.com/puppeteer/puppeteer/issues/15515)) ([82e1fee](https://github.com/puppeteer/puppeteer/commit/82e1fee0b740358194ee2d769bc987e40830dac6))
+* **network:** add asFetchRequest method to HTTPRequest ([#15518](https://github.com/puppeteer/puppeteer/issues/15518)) ([f891aaa](https://github.com/puppeteer/puppeteer/commit/f891aaa1f64f9ea72a56ee4b5daf39d8516ecb20))
+* **network:** add asFetchResponse method to HTTPResponse ([#15446](https://github.com/puppeteer/puppeteer/issues/15446)) ([6ab0419](https://github.com/puppeteer/puppeteer/commit/6ab04192ac35d81609da29c6fe4769a3f72ba510))
+
+
+### 🛠️ Fixes
+
+* await browser process termination and run exit hooks after kill ([#15522](https://github.com/puppeteer/puppeteer/issues/15522)) ([a281197](https://github.com/puppeteer/puppeteer/commit/a2811971b59a52233391c5d837b116dc425fb7c0))
+* **cdp:** extend emulateMediaFeatures to media features Chrome honors ([#15495](https://github.com/puppeteer/puppeteer/issues/15495)) ([4758830](https://github.com/puppeteer/puppeteer/commit/47588308b962bc10a5b7979fb2402536186d2fd9))
+* **cdp:** settle worker evaluate and close when the script fails to load ([#15501](https://github.com/puppeteer/puppeteer/issues/15501)) ([02c2a3d](https://github.com/puppeteer/puppeteer/commit/02c2a3d57550eef82c33a9d45236823ab499b885))
+* **connect:** preserve browserURL path prefixes ([#15435](https://github.com/puppeteer/puppeteer/issues/15435)) ([8d816de](https://github.com/puppeteer/puppeteer/commit/8d816dedc1ce0ac8a79abc8cdf96a37f4bd30ebd))
+* **launcher:** remove the temporary profile when Firefox rejects pipes ([#15499](https://github.com/puppeteer/puppeteer/issues/15499)) ([889a6b7](https://github.com/puppeteer/puppeteer/commit/889a6b70635cf393adf3c0515a9818e326b7cb22))
+* remove injected scripts when clearing custom query handlers ([#15507](https://github.com/puppeteer/puppeteer/issues/15507)) ([909853c](https://github.com/puppeteer/puppeteer/commit/909853c03ccd876ef8dd35006c93840fddb5fd59))
+* use the shadow host when checking visibility of a text node in a shadow root ([#15466](https://github.com/puppeteer/puppeteer/issues/15466)) ([d08c868](https://github.com/puppeteer/puppeteer/commit/d08c86803e83af08eff4da426535845d1a070433))
+* **webdriver:** close the browser process when the BiDi close command fails ([#15469](https://github.com/puppeteer/puppeteer/issues/15469)) ([9e5fefa](https://github.com/puppeteer/puppeteer/commit/9e5fefac4fdd7bb1476441598bca078de608fc71))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.3 to 3.2.4
+
 ## [25.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.11.0...puppeteer-core-v25.12.0) (2026-09-23)
 
 
