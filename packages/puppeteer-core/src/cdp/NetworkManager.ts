@@ -473,27 +473,68 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       return;
     }
 
-    const requestWillBeSentEvent = (() => {
-      const requestWillBeSentEvent =
-        this.#networkEventManager.getRequestWillBeSent(networkRequestId);
-
-      // redirect requests have the same `requestId`,
-      if (
-        requestWillBeSentEvent &&
-        (requestWillBeSentEvent.request.url !== event.request.url ||
-          requestWillBeSentEvent.request.method !== event.request.method)
-      ) {
-        this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+    const requestWillBeSentEvent =
+      this.#networkEventManager.getRequestWillBeSent(networkRequestId);
+    if (!requestWillBeSentEvent) {
+      // Chrome may restart a request and send a second Fetch.requestPaused
+      // for a request Puppeteer already emitted (crbug.com/1196004). Repoint
+      // that request instead of emitting a duplicate that never finishes.
+      const request = this.#networkEventManager.getRequest(networkRequestId);
+      if (request && this.#isRestartedRequest(request, event)) {
+        this.#onRequestRestarted(request, fetchRequestId);
         return;
       }
-      return requestWillBeSentEvent;
-    })();
-
-    if (requestWillBeSentEvent) {
-      this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
-      this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
-    } else {
       this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      return;
+    }
+
+    // Redirect requests have the same `requestId`. Wait for the redirect's
+    // own Network.requestWillBeSent.
+    if (
+      requestWillBeSentEvent.request.url !== event.request.url ||
+      requestWillBeSentEvent.request.method !== event.request.method
+    ) {
+      this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      return;
+    }
+
+    this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
+    this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
+  }
+
+  #isRestartedRequest(
+    request: CdpHTTPRequest,
+    event: Protocol.Fetch.RequestPausedEvent,
+  ): boolean {
+    // Only a request with no response yet can be restarted. Redirects are
+    // excluded by id because in a same-URL redirect, the pause can arrive
+    // before the response does.
+    if (event.redirectedRequestId || request.response()) {
+      return false;
+    }
+    // Chrome pauses the request the user continued to, not the original.
+    const overrides = request.continueRequestOverrides();
+    return (
+      (overrides.url ?? request.url()) === event.request.url &&
+      (overrides.method ?? request.method()) === event.request.method
+    );
+  }
+
+  #onRequestRestarted(
+    request: CdpHTTPRequest,
+    fetchRequestId: FetchRequestId,
+  ): void {
+    request._interceptionId = fetchRequestId;
+    if (
+      this.#userRequestInterceptionEnabled &&
+      request.isInterceptResolutionHandled()
+    ) {
+      // The user already resolved the interception; the restarted job needs
+      // the same resolution or the request hangs.
+      void request._continue(request.continueRequestOverrides()).catch(err => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+      });
     }
   }
 
@@ -603,6 +644,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
     request._fromMemoryCache = fromMemoryCache;
     this.#networkEventManager.storeRequest(event.requestId, request);
+    this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
     this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
   }
