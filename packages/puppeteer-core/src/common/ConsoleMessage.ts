@@ -8,6 +8,8 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import type {Page} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 
 /**
  * @public
@@ -66,6 +68,7 @@ export class ConsoleMessage {
   #frame?: Frame;
   #rawStackTrace?: Protocol.Runtime.StackTrace;
   #targetId?: string;
+  #worker?: WebWorker;
 
   /**
    * @internal
@@ -78,6 +81,7 @@ export class ConsoleMessage {
     frame?: Frame,
     rawStackTrace?: Protocol.Runtime.StackTrace,
     targetId?: string,
+    worker?: WebWorker,
   ) {
     this.#type = type;
     this.#text = text;
@@ -86,6 +90,37 @@ export class ConsoleMessage {
     this.#frame = frame;
     this.#rawStackTrace = rawStackTrace;
     this.#targetId = targetId;
+    this.#worker = worker;
+  }
+
+  /**
+   * The {@link WebWorker} that initiated the console message, or `null` if the
+   * message originated from a frame.
+   *
+   * @public
+   */
+  worker(): WebWorker | null {
+    return this.#worker ?? null;
+  }
+
+  /**
+   * The {@link Page} that the console message originated from, or `null` if the
+   * message originated from a worker or outside of a frame context.
+   *
+   * @public
+   */
+  page(): Page | null {
+    return this.#frame?.page() ?? null;
+  }
+
+  /**
+   * The {@link Frame} that initiated the console message, or `null` if the
+   * message originated from a worker.
+   *
+   * @public
+   */
+  frame(): Frame | null {
+    return this.#frame ?? null;
   }
 
   /**

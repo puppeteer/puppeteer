@@ -103,7 +103,13 @@ export class CdpWebWorker extends WebWorker {
           return;
         }
 
-        const consoleMessages = createConsoleMessage(event, values, this.#id);
+        const consoleMessages = createConsoleMessage(
+          event,
+          values,
+          this.#id,
+          undefined,
+          this,
+        );
         this.#emitter.emit(WebWorkerEvent.Console, consoleMessages);
         if (!noWorkerListeners) {
           this.emit(WebWorkerEvent.Console, consoleMessages);
