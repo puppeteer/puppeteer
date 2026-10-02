@@ -65,7 +65,8 @@ export async function httpRequest(
       res.statusCode < 400 &&
       res.headers.location
     ) {
-      void httpRequest(new URL(res.headers.location), method, response);
+      // Relative Location values must be resolved against the request URL.
+      void httpRequest(new URL(res.headers.location, url), method, response);
       // consume response data to free up memory
       // And prevents the connection from being kept alive
       res.resume();
