@@ -6,6 +6,8 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {CDPSession} from '../api/CDPSession.js';
+
 import {CdpHTTPRequest} from './HTTPRequest.js';
 
 /**
@@ -26,10 +28,28 @@ export type FetchRequestId = string;
  * @internal
  */
 export interface RedirectInfo {
+  /**
+   * The session the request should be bound to. When `fetchRequestId` is set,
+   * this is the session that delivered the `Fetch.requestPaused` event.
+   */
+  client: CDPSession;
   event: Protocol.Network.RequestWillBeSentEvent;
   fetchRequestId?: FetchRequestId;
 }
 type RedirectInfoList = RedirectInfo[];
+
+/**
+ * `Fetch.requestPaused` can be delivered on a different session than the
+ * matching `Network.requestWillBeSent` (e.g. requests issued by a dedicated
+ * worker are paused on the owning frame's session). The delivering session is
+ * kept so that Fetch commands are issued on the correct session.
+ *
+ * @internal
+ */
+export interface RequestPausedInfo {
+  client: CDPSession;
+  event: Protocol.Fetch.RequestPausedEvent;
+}
 
 /**
  * @internal
@@ -78,10 +98,7 @@ export class NetworkEventManager {
     NetworkRequestId,
     Protocol.Network.RequestWillBeSentEvent
   >();
-  #requestPausedMap = new Map<
-    NetworkRequestId,
-    Protocol.Fetch.RequestPausedEvent
-  >();
+  #requestPausedMap = new Map<NetworkRequestId, RequestPausedInfo>();
   #httpRequestsMap = new Map<NetworkRequestId, CdpHTTPRequest>();
   #requestWillBeSentExtraInfoMap = new Map<
     NetworkRequestId,
@@ -183,7 +200,7 @@ export class NetworkEventManager {
 
   getRequestPaused(
     networkRequestId: NetworkRequestId,
-  ): Protocol.Fetch.RequestPausedEvent | undefined {
+  ): RequestPausedInfo | undefined {
     return this.#requestPausedMap.get(networkRequestId);
   }
 
@@ -193,9 +210,9 @@ export class NetworkEventManager {
 
   storeRequestPaused(
     networkRequestId: NetworkRequestId,
-    event: Protocol.Fetch.RequestPausedEvent,
+    info: RequestPausedInfo,
   ): void {
-    this.#requestPausedMap.set(networkRequestId, event);
+    this.#requestPausedMap.set(networkRequestId, info);
   }
 
   getRequest(networkRequestId: NetworkRequestId): CdpHTTPRequest | undefined {
