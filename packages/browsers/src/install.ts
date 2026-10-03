@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, unlink} from 'node:fs/promises';
+import {mkdir, rm, unlink} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -22,10 +22,48 @@ import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {
+  InstallLockError,
+  installLockPath,
+  withInstallLock,
+} from './installLock.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
 const times = new Map<string, [number, number]>();
+
+function browserInstallLockError(
+  error: InstallLockError,
+  options: InstallOptions,
+): Error {
+  const lockState: string[] = [];
+  if (error.reason !== undefined) {
+    lockState.push(`Last blocked reason: ${error.reason}.`);
+  }
+  if (error.owner !== undefined) {
+    lockState.push(
+      `Recorded owner: process ${error.owner.pid} on ${error.owner.hostname}.`,
+    );
+  }
+  if (error.observedAgeMs !== undefined) {
+    lockState.push(
+      `Observed lock age: ${Math.max(0, Math.round(error.observedAgeMs / 1000))}s.`,
+    );
+  }
+  return new Error(
+    [
+      'Browser installation timed out while waiting for its install lock.',
+      `Cache path: ${options.cacheDir}`,
+      `Lock path: ${error.lockPath}`,
+      error.message,
+      ...lockState,
+      'The browser installation task was not started, and Puppeteer did not claim or remove the existing lock.',
+      'Verify that no browser installation or related helper is still using this cache. If none is running, remove the lock directory and retry.',
+    ].join('\n'),
+    {cause: error},
+  );
+}
+
 function debugTime(label: string) {
   times.set(label, process.hrtime());
 }
@@ -99,6 +137,12 @@ export interface InstallOptions {
    * @defaultValue `false`
    */
   forceFallbackForTesting?: boolean;
+  /**
+   * Contention budget in milliseconds for the browser install lock.
+   *
+   * @internal
+   */
+  installLockTimeout?: number;
 
   /**
    * Whether to attempt to install system-level dependencies required
@@ -261,6 +305,9 @@ async function installWithProviders(
       // Download and install using the URL from the provider
       return await installUrl(url, options, provider, logger);
     } catch (err) {
+      if (err instanceof InstallLockError) {
+        throw browserInstallLockError(err, options);
+      }
       logger?.(DEBUG_PREFIXES.install)?.(
         `Provider ${provider.getName()} failed: ${(err as Error).message}`,
       );
@@ -391,6 +438,7 @@ async function installUrl(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
     );
   }
+  const platform = options.platform;
   let downloadProgressCallback = options.downloadProgressCallback;
   if (downloadProgressCallback === 'default') {
     downloadProgressCallback = await makeProgressCallback(
@@ -403,6 +451,20 @@ async function installUrl(
   const cache = new Cache(options.cacheDir, options.logger);
   const browserRoot = cache.browserRoot(options.browser);
   const archivePath = path.join(browserRoot, `${options.buildId}-${fileName}`);
+  const lockPath = installLockPath(
+    cache,
+    options.browser,
+    platform,
+    options.buildId,
+  );
+  const installLogger = logger?.(DEBUG_PREFIXES.install);
+  const withBrowserInstallLock = <T>(task: () => Promise<T>): Promise<T> => {
+    return withInstallLock(lockPath, task, {
+      acquisitionTimeout: options.installLockTimeout,
+      logger: installLogger,
+      warningLogger: installLogger,
+    });
+  };
   if (!existsSync(browserRoot)) {
     await mkdir(browserRoot, {recursive: true});
   }
@@ -414,72 +476,10 @@ async function installUrl(
   }
 
   if (!options.unpack) {
-    if (existsSync(archivePath)) {
-      return archivePath;
-    }
-    logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
-    debugTime('download');
-    await downloadFile(
-      url,
-      archivePath,
-      downloadProgressCallback,
-      options.expectedHash,
-    );
-    debugTimeEnd('download', logger);
-    return archivePath;
-  }
-
-  const outputPath = cache.installationDir(
-    options.browser,
-    options.platform,
-    options.buildId,
-  );
-
-  // Get executable path from provider once (used for both cached and new installations)
-  const relativeExecutablePath = await provider.getExecutablePath({
-    browser: options.browser,
-    buildId: options.buildId,
-    platform: options.platform,
-  });
-  logger?.(DEBUG_PREFIXES.install)?.(
-    `Using executable path from provider: ${relativeExecutablePath}`,
-  );
-
-  const installedBrowser = new InstalledBrowser(
-    cache,
-    options.browser,
-    options.buildId,
-    options.platform,
-  );
-
-  // Write metadata for the installation (only for non-default providers)
-  if (!(provider instanceof DefaultProvider)) {
-    cache.writeExecutablePath(
-      options.browser,
-      options.platform,
-      options.buildId,
-      relativeExecutablePath,
-    );
-  }
-
-  try {
-    if (existsSync(outputPath)) {
-      if (!existsSync(installedBrowser.executablePath)) {
-        throw new IncompleteInstallationError(
-          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing. ` +
-            `An earlier install of this build probably did not finish. ` +
-            `Delete ${outputPath} and install the browser again.`,
-        );
+    return await withBrowserInstallLock(async () => {
+      if (existsSync(archivePath)) {
+        return archivePath;
       }
-      await runSetup(installedBrowser, logger);
-      if (options.installDeps) {
-        await installDeps(installedBrowser, logger);
-      }
-      return installedBrowser;
-    }
-
-    // Check if archive already exists (e.g., from a custom provider)
-    if (!existsSync(archivePath)) {
       logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
       try {
         debugTime('download');
@@ -489,41 +489,112 @@ async function installUrl(
           downloadProgressCallback,
           options.expectedHash,
         );
+      } catch (error) {
+        await rm(archivePath, {force: true});
+        throw error;
       } finally {
         debugTimeEnd('download', logger);
       }
-    } else {
-      logger?.(DEBUG_PREFIXES.install)?.(
-        `Using existing archive at ${archivePath}`,
+      return archivePath;
+    });
+  }
+
+  const outputPath = cache.installationDir(
+    options.browser,
+    platform,
+    options.buildId,
+  );
+
+  // Get executable path from provider once (used for both cached and new installations)
+  const relativeExecutablePath = await provider.getExecutablePath({
+    browser: options.browser,
+    buildId: options.buildId,
+    platform,
+  });
+  logger?.(DEBUG_PREFIXES.install)?.(
+    `Using executable path from provider: ${relativeExecutablePath}`,
+  );
+
+  return await withBrowserInstallLock(async () => {
+    // Write metadata for the installation (only for non-default providers)
+    if (!(provider instanceof DefaultProvider)) {
+      cache.writeExecutablePath(
+        options.browser,
+        platform,
+        options.buildId,
+        relativeExecutablePath,
       );
     }
-
-    logger?.(DEBUG_PREFIXES.install)?.(
-      `Installing ${archivePath} to ${outputPath}`,
+    const installedBrowser = new InstalledBrowser(
+      cache,
+      options.browser,
+      options.buildId,
+      platform,
     );
+
     try {
-      debugTime('extract');
-      await unpackArchive(archivePath, outputPath, options.logger);
+      if (existsSync(outputPath)) {
+        if (!existsSync(installedBrowser.executablePath)) {
+          throw new IncompleteInstallationError(
+            `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing. ` +
+              `An earlier install of this build probably did not finish. ` +
+              `Delete ${outputPath} and install the browser again.`,
+          );
+        }
+        await runSetup(installedBrowser, logger);
+        if (options.installDeps) {
+          await installDeps(installedBrowser, logger);
+        }
+        return installedBrowser;
+      }
+
+      // Check if archive already exists (e.g., from a custom provider)
+      if (!existsSync(archivePath)) {
+        logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
+        try {
+          debugTime('download');
+          await downloadFile(
+            url,
+            archivePath,
+            downloadProgressCallback,
+            options.expectedHash,
+          );
+        } finally {
+          debugTimeEnd('download', logger);
+        }
+      } else {
+        logger?.(DEBUG_PREFIXES.install)?.(
+          `Using existing archive at ${archivePath}`,
+        );
+      }
+
+      logger?.(DEBUG_PREFIXES.install)?.(
+        `Installing ${archivePath} to ${outputPath}`,
+      );
+      try {
+        debugTime('extract');
+        await unpackArchive(archivePath, outputPath, options.logger);
+      } finally {
+        debugTimeEnd('extract', logger);
+      }
+
+      if (options.buildIdAlias) {
+        const metadata = installedBrowser.readMetadata();
+        metadata.aliases[options.buildIdAlias] = options.buildId;
+        installedBrowser.writeMetadata(metadata);
+      }
+
+      await runSetup(installedBrowser, logger);
+      if (options.installDeps) {
+        await installDeps(installedBrowser, logger);
+      }
+      return installedBrowser;
     } finally {
-      debugTimeEnd('extract', logger);
+      if (existsSync(archivePath)) {
+        await unlink(archivePath);
+      }
     }
-
-    if (options.buildIdAlias) {
-      const metadata = installedBrowser.readMetadata();
-      metadata.aliases[options.buildIdAlias] = options.buildId;
-      installedBrowser.writeMetadata(metadata);
-    }
-
-    await runSetup(installedBrowser, logger);
-    if (options.installDeps) {
-      await installDeps(installedBrowser, logger);
-    }
-    return installedBrowser;
-  } finally {
-    if (existsSync(archivePath)) {
-      await unlink(archivePath);
-    }
-  }
+  });
 }
 
 async function runSetup(
