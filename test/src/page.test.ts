@@ -974,6 +974,19 @@ describe('Page', function () {
       });
       expect(result).toBe(36);
     });
+    it('should survive missing/reassigned globalThis reference', async () => {
+      const {page} = await getTestState();
+
+      await page.exposeFunction('compute', function (a: number, b: number) {
+        return a * b;
+      });
+      const result = await page.evaluate(async function () {
+        const compute = (globalThis as any).compute.bind(globalThis);
+        delete (globalThis as any).compute;
+        return await compute(9, 4);
+      });
+      expect(result).toBe(36);
+    });
     it('should throw exception in page context', async () => {
       const {page} = await getTestState();
 
