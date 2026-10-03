@@ -407,6 +407,23 @@ Only supported in headless mode. Fails if the primary screen id is specified.
 </td></tr>
 <tr><td>
 
+<span id="restrictnetwork">[restrictNetwork(conditions)](./puppeteer.browser.restrictnetwork.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Sets the network conditions (blocklist or allowlist) and re-applies the conditions to all targets. To clear all network conditions, omit the argument or pass `null`.
+
+**Remarks:**
+
+Currently only supported for Chrome and the CDP protocol.
+
+Targets that are already on a blocked URL when `restrictNetwork` is called will remain attached and stay on the blocked page. This is a behavior difference compared to launching the browser with network restrictions, where such targets are detached immediately upon initial attach.
+
+</td></tr>
+<tr><td>
+
 <span id="screens">[screens()](./puppeteer.browser.screens.md)</span>
 
 </td><td>

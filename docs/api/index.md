@@ -1294,6 +1294,13 @@ A media feature to emulate.
 </td></tr>
 <tr><td>
 
+<span id="networkrestrictions">[NetworkRestrictions](./puppeteer.networkrestrictions.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="newdocumentscriptevaluation">[NewDocumentScriptEvaluation](./puppeteer.newdocumentscriptevaluation.md)</span>
 
 </td><td>

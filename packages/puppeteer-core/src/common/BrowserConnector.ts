@@ -34,7 +34,7 @@ export function assertSupportedUrlRestrictions(options: {
   blocklist?: string[];
   protocol?: string;
 }): void {
-  if (options.blocklist && options.allowlist) {
+  if (options.blocklist?.length && options.allowlist?.length) {
     throw new Error('Cannot specify both blocklist and allowlist');
   }
   if (
