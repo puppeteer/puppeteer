@@ -264,7 +264,7 @@ export class PageTarget extends CdpTarget {
         return true;
       })
       .catch(error => {
-        this.logger?.(DEBUG_PREFIXES.error)?.(error);
+        this.logger(DEBUG_PREFIXES.error)?.(error);
       });
     this._checkIfInitialized();
   }
