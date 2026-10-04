@@ -11,6 +11,7 @@ import {
   type ContinueRequestOverrides,
   headersArray,
   HTTPRequest,
+  InterceptResolutionAction,
   type ResourceType,
   type ResponseForRequest,
   STATUS_TEXTS,
@@ -26,9 +27,18 @@ import {
 import type {CdpHTTPResponse} from './HTTPResponse.js';
 
 type InterceptResolution =
-  | {action: 'continue'; overrides: ContinueRequestOverrides}
-  | {action: 'respond'; response: Partial<ResponseForRequest>}
-  | {action: 'abort'; errorReason: Protocol.Network.ErrorReason | null};
+  | {
+      action: InterceptResolutionAction.Continue;
+      overrides: ContinueRequestOverrides;
+    }
+  | {
+      action: InterceptResolutionAction.Respond;
+      response: Partial<ResponseForRequest>;
+    }
+  | {
+      action: InterceptResolutionAction.Abort;
+      errorReason: Protocol.Network.ErrorReason | null;
+    };
 
 /**
  * @internal
@@ -215,7 +225,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   async _continue(overrides: ContinueRequestOverrides = {}): Promise<void> {
     const {url, method, postData, headers} = overrides;
     this.interception.handled = true;
-    this.#resolution = {action: 'continue', overrides};
+    this.#resolution = {action: InterceptResolutionAction.Continue, overrides};
 
     const postDataBinaryBase64 = postData
       ? stringToBase64(postData)
@@ -242,7 +252,7 @@ export class CdpHTTPRequest extends HTTPRequest {
 
   async _respond(response: Partial<ResponseForRequest>): Promise<void> {
     this.interception.handled = true;
-    this.#resolution = {action: 'respond', response};
+    this.#resolution = {action: InterceptResolutionAction.Respond, response};
 
     let parsedBody:
       | {
@@ -297,7 +307,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     errorReason: Protocol.Network.ErrorReason | null,
   ): Promise<void> {
     this.interception.handled = true;
-    this.#resolution = {action: 'abort', errorReason};
+    this.#resolution = {action: InterceptResolutionAction.Abort, errorReason};
     if (this._interceptionId === undefined) {
       throw new Error(
         'HTTPRequest is missing _interceptionId needed for Fetch.failRequest',
@@ -322,11 +332,11 @@ export class CdpHTTPRequest extends HTTPRequest {
    */
   async _replayInterception(): Promise<void> {
     switch (this.#resolution?.action) {
-      case 'continue':
+      case InterceptResolutionAction.Continue:
         return await this._continue(this.#resolution.overrides);
-      case 'respond':
+      case InterceptResolutionAction.Respond:
         return await this._respond(this.#resolution.response);
-      case 'abort':
+      case InterceptResolutionAction.Abort:
         return await this._abort(this.#resolution.errorReason);
     }
   }
