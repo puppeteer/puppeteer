@@ -25,6 +25,11 @@ import {
 
 import type {CdpHTTPResponse} from './HTTPResponse.js';
 
+type InterceptResolution =
+  | {action: 'continue'; overrides: ContinueRequestOverrides}
+  | {action: 'respond'; response: Partial<ResponseForRequest>}
+  | {action: 'abort'; errorReason: Protocol.Network.ErrorReason | null};
+
 /**
  * @internal
  */
@@ -46,6 +51,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
   #logger: Logger;
+  #resolution: InterceptResolution | null = null;
 
   override get client(): CDPSession {
     return this.#client;
@@ -209,6 +215,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   async _continue(overrides: ContinueRequestOverrides = {}): Promise<void> {
     const {url, method, postData, headers} = overrides;
     this.interception.handled = true;
+    this.#resolution = {action: 'continue', overrides};
 
     const postDataBinaryBase64 = postData
       ? stringToBase64(postData)
@@ -235,6 +242,7 @@ export class CdpHTTPRequest extends HTTPRequest {
 
   async _respond(response: Partial<ResponseForRequest>): Promise<void> {
     this.interception.handled = true;
+    this.#resolution = {action: 'respond', response};
 
     let parsedBody:
       | {
@@ -289,6 +297,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     errorReason: Protocol.Network.ErrorReason | null,
   ): Promise<void> {
     this.interception.handled = true;
+    this.#resolution = {action: 'abort', errorReason};
     if (this._interceptionId === undefined) {
       throw new Error(
         'HTTPRequest is missing _interceptionId needed for Fetch.failRequest',
@@ -302,5 +311,23 @@ export class CdpHTTPRequest extends HTTPRequest {
       .catch(error => {
         return handleError(error, this.#logger);
       });
+  }
+
+  /**
+   * Re-sends the resolution the user already chose to the current
+   * `_interceptionId`. Used when Chrome restarts a request under a new
+   * interception id.
+   *
+   * @internal
+   */
+  async _replayInterception(): Promise<void> {
+    switch (this.#resolution?.action) {
+      case 'continue':
+        return await this._continue(this.#resolution.overrides);
+      case 'respond':
+        return await this._respond(this.#resolution.response);
+      case 'abort':
+        return await this._abort(this.#resolution.errorReason);
+    }
   }
 }

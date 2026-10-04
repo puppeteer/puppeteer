@@ -513,12 +513,18 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     if (event.redirectedRequestId || request.response()) {
       return false;
     }
-    // Chrome pauses the request the user continued to, not the original.
+    // Chrome usually pauses the request the user continued to, but can pause
+    // the original if it restarts before the overrides are applied.
     const overrides = request.continueRequestOverrides();
-    return (
-      (overrides.url ?? request.url()) === event.request.url &&
-      (overrides.method ?? request.method()) === event.request.method
-    );
+    const eventUrl = event.request.url + (event.request.urlFragment ?? '');
+    const urlMatches =
+      eventUrl === request.url() ||
+      eventUrl === overrides.url ||
+      event.request.url === overrides.url;
+    const methodMatches =
+      event.request.method === request.method() ||
+      event.request.method === overrides.method;
+    return urlMatches && methodMatches;
   }
 
   #onRequestRestarted(
@@ -526,13 +532,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     fetchRequestId: FetchRequestId,
   ): void {
     request._interceptionId = fetchRequestId;
-    if (
-      this.#userRequestInterceptionEnabled &&
-      request.isInterceptResolutionHandled()
-    ) {
-      // The user already resolved the interception; the restarted job needs
+    if (this.#userRequestInterceptionEnabled) {
+      // If the user already resolved the interception, the restarted job needs
       // the same resolution or the request hangs.
-      void request._continue(request.continueRequestOverrides()).catch(err => {
+      void request._replayInterception().catch(err => {
         this.#logger?.(DEBUG_PREFIXES.error)?.(err);
       });
     }
