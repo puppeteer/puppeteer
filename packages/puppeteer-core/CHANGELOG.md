@@ -1,5 +1,30 @@
 # Changelog
 
+## [25.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.11.0...puppeteer-core-v25.12.0) (2026-09-23)
+
+
+### 🎉 Features
+
+* roll to Chrome 154.0.8037.57 ([#15484](https://github.com/puppeteer/puppeteer/issues/15484)) ([00eec77](https://github.com/puppeteer/puppeteer/commit/00eec77b9d1ebd4edb29ff9a247b5a8b7edea7a1))
+* roll to Firefox 156.0 ([#15464](https://github.com/puppeteer/puppeteer/issues/15464)) ([abdc078](https://github.com/puppeteer/puppeteer/commit/abdc0785df19f5f4a7e935d0eb4757cf260758ab))
+
+
+### 🛠️ Fixes
+
+* **launcher:** clean temporary profiles on process exit ([#15441](https://github.com/puppeteer/puppeteer/issues/15441)) ([b30d91c](https://github.com/puppeteer/puppeteer/commit/b30d91c79c14b3709dba390ab9d9764fad67de92))
+* release the mouse button when a drag or drop fails ([#15231](https://github.com/puppeteer/puppeteer/issues/15231)) ([469621f](https://github.com/puppeteer/puppeteer/commit/469621f50a4927e0139d2e436cc143c441fa523b))
+* return the shadow host for a text node in a shadow root in SerializedAXNode.elementHandle ([#15451](https://github.com/puppeteer/puppeteer/issues/15451)) ([101c7d5](https://github.com/puppeteer/puppeteer/commit/101c7d501555072510b4f2df00c549617b515c57))
+* roll to Chrome 153.0.8010.47 ([#15465](https://github.com/puppeteer/puppeteer/issues/15465)) ([1ce3a9a](https://github.com/puppeteer/puppeteer/commit/1ce3a9a65ba8dbaf47925bbcf9e8f73369d75a9d))
+* roll to Chrome 153.0.8010.52 ([#15470](https://github.com/puppeteer/puppeteer/issues/15470)) ([257a6a1](https://github.com/puppeteer/puppeteer/commit/257a6a1973773e08131c432d31d65b16aaf87b12))
+* roll to Firefox 156.0.1 ([#15483](https://github.com/puppeteer/puppeteer/issues/15483)) ([73d8fec](https://github.com/puppeteer/puppeteer/commit/73d8fec63f23b1d20e28e13b2717f30f87ca2b83))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.2 to 3.2.3
+
 ## [25.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.10.0...puppeteer-core-v25.11.0) (2026-09-13)
 
 

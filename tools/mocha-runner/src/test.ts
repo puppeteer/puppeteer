@@ -253,3 +253,160 @@ describe('getExpectationUpdates', () => {
     assert.deepEqual(updates, []);
   });
 });
+
+describe('logger and Mocha Runner integration', async () => {
+  const {logger, setLogCapture, getCapturedLogs, clearCapturedLogs} =
+    await import('./interface.js');
+  const {registerLogListeners} = await import('./reporter.js');
+  const Mocha = (await import('mocha')).default;
+
+  it('should dump logs only after a test fails and clean before next test start', async () => {
+    setLogCapture(true);
+    clearCapturedLogs();
+    const logFn = logger('puppeteer:test');
+
+    const dumpedOutputs: string[] = [];
+    const origConsoleLog = console.log;
+    console.log = (...args: unknown[]) => {
+      dumpedOutputs.push(args.map(String).join(' '));
+    };
+
+    try {
+      const mocha = new Mocha({reporter: 'base'});
+      const suite = Mocha.Suite.create(mocha.suite, 'Test Suite');
+
+      suite.beforeAll('setup all', () => {
+        logFn?.('log from beforeAll');
+      });
+
+      suite.beforeEach('setup each', () => {
+        logFn?.('log from beforeEach');
+      });
+
+      suite.addTest(
+        new Mocha.Test('passing test', () => {
+          logFn?.('log from passing test');
+        }),
+      );
+
+      suite.addTest(
+        new Mocha.Test('failing test', () => {
+          logFn?.('log from failing test');
+          throw new Error('test failure');
+        }),
+      );
+
+      await new Promise<void>(resolve => {
+        const runner = mocha.run(() => {
+          resolve();
+        });
+        registerLogListeners(runner);
+      });
+
+      const fullOutput = dumpedOutputs.join('\n');
+      assert.ok(
+        !fullOutput.includes('log from beforeAll'),
+        'beforeAll logs should not be dumped when test fails',
+      );
+      assert.ok(
+        !fullOutput.includes('log from beforeEach'),
+        'beforeEach logs should not be dumped when test fails',
+      );
+      assert.ok(
+        !fullOutput.includes('log from passing test'),
+        'Passing test logs should not be dumped',
+      );
+      assert.ok(
+        fullOutput.includes(
+          '"Test Suite failing test" failed. Here is a debug log:',
+        ),
+        'Failing test header should be dumped',
+      );
+      assert.ok(
+        fullOutput.includes('puppeteer:test log from failing test'),
+        'Failing test logs should be dumped',
+      );
+      assert.deepEqual(
+        getCapturedLogs(),
+        [],
+        'Captured logs should be empty after run',
+      );
+    } finally {
+      console.log = origConsoleLog;
+      setLogCapture(false);
+      clearCapturedLogs();
+    }
+  });
+
+  it('should dump logs when a hook fails', async () => {
+    setLogCapture(true);
+    clearCapturedLogs();
+    const logFn = logger('puppeteer:hook');
+
+    const dumpedOutputs: string[] = [];
+    const origConsoleLog = console.log;
+    console.log = (...args: unknown[]) => {
+      dumpedOutputs.push(args.map(String).join(' '));
+    };
+
+    try {
+      const mocha = new Mocha({reporter: 'base'});
+      const suite = Mocha.Suite.create(mocha.suite, 'Hook Suite');
+
+      suite.beforeEach('failing hook', () => {
+        logFn?.('log from failing beforeEach hook');
+        throw new Error('hook error');
+      });
+
+      suite.addTest(
+        new Mocha.Test('test that will not run', () => {
+          logFn?.('should not reach here');
+        }),
+      );
+
+      await new Promise<void>(resolve => {
+        const runner = mocha.run(() => {
+          resolve();
+        });
+        registerLogListeners(runner);
+      });
+
+      const fullOutput = dumpedOutputs.join('\n');
+      assert.ok(
+        fullOutput.includes('failed. Here is a debug log:'),
+        'Failed hook should trigger debug log dump',
+      );
+      assert.ok(
+        fullOutput.includes('puppeteer:hook log from failing beforeEach hook'),
+        'Hook logs should be dumped',
+      );
+    } finally {
+      console.log = origConsoleLog;
+      setLogCapture(false);
+      clearCapturedLogs();
+    }
+  });
+
+  it('should respect RUNNER_DEBUG', async () => {
+    const origRunnerDebug = process.env['RUNNER_DEBUG'];
+    try {
+      process.env['RUNNER_DEBUG'] = '1';
+      setLogCapture(false);
+      clearCapturedLogs();
+      const {debug} = await import('puppeteer-core/internal/common/Debug.js');
+      const logFn = debug('puppeteer:debug');
+      logFn?.('logged because RUNNER_DEBUG is set');
+      assert.deepEqual(getCapturedLogs(), [
+        'puppeteer:debug logged because RUNNER_DEBUG is set',
+      ]);
+    } finally {
+      if (origRunnerDebug === undefined) {
+        delete process.env['RUNNER_DEBUG'];
+      } else {
+        process.env['RUNNER_DEBUG'] = origRunnerDebug;
+      }
+      setLogCapture(false);
+      clearCapturedLogs();
+    }
+  });
+});

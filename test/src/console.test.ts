@@ -326,4 +326,37 @@ describe('console', function () {
     // 5. Connect to the popup and make sure it doesn't throw and is not the same page.
     expect(await popupTarget.page()).not.toBe(page);
   });
+
+  it('should report the originating frame and page for main frame logs', async () => {
+    const {page} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        return console.log('hello from main frame');
+      }),
+    ]);
+    expect(message.frame()).toBe(page.mainFrame());
+    expect(message.page()).toBe(page);
+    expect(message.worker()).toBeNull();
+  });
+
+  it('should report the originating frame and page for iframe logs', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`<iframe></iframe>`);
+    using iframeElement = (await page.$('iframe'))!;
+    const iframe = await iframeElement.contentFrame();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      iframe!.evaluate(() => {
+        return console.log('hello from iframe');
+      }),
+    ]);
+    expect(message.frame()).toBe(iframe);
+    expect(message.frame()).not.toBe(page.mainFrame());
+    expect(message.page()).toBe(page);
+    expect(message.worker()).toBeNull();
+  });
 });

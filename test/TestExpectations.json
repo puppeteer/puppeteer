@@ -301,6 +301,13 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[worker.test] Workers when the worker script does not load *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "BiDi does not wait for the worker script to load, so evaluate sometimes runs in the worker realm before it is destroyed"
+  },
+  {
     "testIdPattern": "[a11yLoaderId.test] Accessibility loaderId should match loaderId for iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -443,13 +450,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[coverage.test] Coverage specs JSCoverage should ignore pptr internal scripts if reportAnonymousScripts is true",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
@@ -1227,6 +1227,27 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should work with forced-colors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
+  },
+  {
+    "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should work with prefers-contrast",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
+  },
+  {
+    "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should work with prefers-reduced-transparency",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
+  },
+  {
     "testIdPattern": "[emulation.test] Emulation Page.emulateMediaType should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1440,8 +1461,8 @@
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "expectations": ["FAIL", "PASS"],
+    "comment": "targetFilter is not implemented in BiDi, but waitForInitialPage: false can finish before the initial page target is created"
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default argument in Firefox",
@@ -1694,6 +1715,13 @@
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
     "comment": "Flaky across all Linux Chrome/CDP environments"
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "script.callFunction on popup with rel=opener times out in Chrome WebDriver BiDi"
   },
   {
     "testIdPattern": "[page.test] Page Page.setJavaScriptEnabled should work",

@@ -74,7 +74,7 @@ import {isTargetClosedError} from './Connection.js';
 import {Coverage} from './Coverage.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
-import type {CdpFrame} from './Frame.js';
+import {CdpFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
@@ -591,6 +591,7 @@ export class CdpPage extends Page {
           undefined,
           stackTrace,
           this.#primaryTarget._targetId,
+          undefined,
         ),
       );
     }
@@ -979,7 +980,15 @@ export class CdpPage extends Page {
       targetId = world.environment.client.target()._targetId;
     }
 
-    this.emit(PageEvent.Console, createConsoleMessage(event, values, targetId));
+    let frame;
+    if (world.environment instanceof CdpFrame) {
+      frame = world.environment;
+    }
+
+    this.emit(
+      PageEvent.Console,
+      createConsoleMessage(event, values, targetId, frame),
+    );
   }
 
   async #onBindingCalled(

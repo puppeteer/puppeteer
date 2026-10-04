@@ -52,7 +52,7 @@ async function readFile(
 
 environment.value = {
   path,
-  debuglog,
+  debuglog: environment.value.debuglog ?? debuglog,
   ScreenRecorder: environment.value.ScreenRecorder,
   followSymlinks: true,
   readFile,

@@ -115,8 +115,28 @@ export function downloadFile(
 ): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     let downloadedBytes = 0;
-    let totalBytes = 0;
+    let totalBytes: number | undefined;
     const verifier = expectedHash ? new HashVerifier() : null;
+
+    const cleanup = (): void => {
+      try {
+        unlinkSync(destinationPath);
+      } catch {}
+    };
+
+    const downloadError = (cause?: Error): Error => {
+      const options = cause ? {cause} : undefined;
+      if (totalBytes === undefined) {
+        return new Error(
+          `Download failed: connection closed before the download completed. URL: ${url}`,
+          options,
+        );
+      }
+      return new Error(
+        `Download failed: expected ${totalBytes} bytes, received ${downloadedBytes} bytes. URL: ${url}`,
+        options,
+      );
+    };
 
     try {
       const request = await httpRequest(url, 'GET', response => {
@@ -130,7 +150,18 @@ export function downloadFile(
           return;
         }
         const file = createWriteStream(destinationPath);
+        let error: Error | undefined;
+        const failDownload = (downloadError: Error): void => {
+          error ??= downloadError;
+          response.destroy();
+          file.destroy();
+        };
         file.on('close', () => {
+          if (error) {
+            cleanup();
+            reject(error);
+            return;
+          }
           if (verifier && expectedHash) {
             try {
               verifier.verify(url, destinationPath, expectedHash);
@@ -141,15 +172,27 @@ export function downloadFile(
           }
           return resolve();
         });
-        file.on('error', error => {
-          return reject(error);
+        file.on('error', failDownload);
+        const contentLength = Number.parseInt(
+          response.headers['content-length'] ?? '',
+          10,
+        );
+        totalBytes = Number.isFinite(contentLength) ? contentLength : undefined;
+        response.on('close', () => {
+          if (!response.complete) {
+            failDownload(downloadError());
+          }
         });
-        totalBytes = parseInt(response.headers['content-length']!, 10);
+        response.on('error', responseError => {
+          failDownload(
+            response.complete ? responseError : downloadError(responseError),
+          );
+        });
         response.on('data', (chunk: Buffer) => {
           downloadedBytes += chunk.length;
           verifier?.update(chunk);
           if (progressCallback) {
-            progressCallback(downloadedBytes, totalBytes);
+            progressCallback(downloadedBytes, totalBytes ?? 0);
           }
         });
         response.pipe(file);

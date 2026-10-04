@@ -166,13 +166,14 @@ export class BidiConnection
           );
           return;
         case 'event':
-          if (isCdpEvent(object)) {
+          if (isCdpEvent(object) && object.params.session) {
             BidiCdpSession.sessions
               .get(object.params.session)
               ?.emit(object.params.event, object.params.params);
             return;
           }
           // SAFETY: We know the method and parameter still match here.
+          // @ts-expect-error types do not match
           this.emit(object.method, object.params);
           return;
       }

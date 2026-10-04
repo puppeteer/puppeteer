@@ -829,6 +829,7 @@ describe('navigation', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
 
+      await page.setCacheEnabled(false);
       await page.goto(server.EMPTY_PAGE);
       await page.goto(server.PREFIX + '/grid.html');
 

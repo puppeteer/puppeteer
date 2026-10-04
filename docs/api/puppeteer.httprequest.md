@@ -115,6 +115,21 @@ The most recent reason for aborting the request
 </td></tr>
 <tr><td>
 
+<span id="asfetchrequest">[asFetchRequest()](./puppeteer.httprequest.asfetchrequest.md)</span>
+
+</td><td>
+
+</td><td>
+
+Converts the request to a Fetch API Request instance.
+
+**Remarks:**
+
+Headers are copied to the new Request instance. The request URL and method are preserved. The body is built from [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md) when the request has post data, otherwise the Request is created without a body. For `GET` and `HEAD` requests the body is always omitted, as required by the Fetch API.
+
+</td></tr>
+<tr><td>
+
 <span id="continue">[continue(overrides, priority)](./puppeteer.httprequest.continue.md)</span>
 
 </td><td>

@@ -15,6 +15,7 @@ import {
 } from '../api/WebWorker.js';
 import type {Logger} from '../common/Debug.js';
 import {DEBUG_PREFIXES} from '../common/Debug.js';
+import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../index-browser.js';
@@ -102,7 +103,13 @@ export class CdpWebWorker extends WebWorker {
           return;
         }
 
-        const consoleMessages = createConsoleMessage(event, values, this.#id);
+        const consoleMessages = createConsoleMessage(
+          event,
+          values,
+          this.#id,
+          undefined,
+          this,
+        );
         this.#emitter.emit(WebWorkerEvent.Console, consoleMessages);
         if (!noWorkerListeners) {
           this.emit(WebWorkerEvent.Console, consoleMessages);
@@ -113,6 +120,13 @@ export class CdpWebWorker extends WebWorker {
     });
     this.#client.on('Runtime.exceptionThrown', exceptionThrown);
     this.#client.once(CDPSessionEvent.Disconnected, () => {
+      // The worker might be destroyed before its script loads (e.g. a 404
+      // script), in which case `Inspector.workerScriptLoaded` never fires.
+      this.#workerLoaded.reject(
+        new TargetCloseError(
+          'Worker was closed before its script finished loading',
+        ),
+      );
       this.#world.dispose();
     });
 
@@ -153,7 +167,10 @@ export class CdpWebWorker extends WebWorker {
         break;
       }
       default:
-        await this.evaluate(() => {
+        // Dedicated workers do not support `Target.closeTarget`. Evaluate on
+        // the realm directly so that closing does not wait for the worker
+        // script to load.
+        await this.#world.evaluate(() => {
           self.close();
         });
     }
