@@ -63,7 +63,7 @@ describe('Workers', function () {
     ]);
   });
   it('should report console logs', async () => {
-    const {page} = await getTestState();
+    const {page, isChrome} = await getTestState();
 
     const [message] = await Promise.all([
       waitEvent(page, 'console'),
@@ -76,6 +76,7 @@ describe('Workers', function () {
       url: '',
       lineNumber: 0,
       columnNumber: 8,
+      ...(isChrome ? {scriptId: expect.any(String)} : {}),
     });
   });
   it('should work with console logs', async () => {
