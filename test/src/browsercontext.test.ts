@@ -11,7 +11,7 @@ import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {isFavicon, waitEvent} from './utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
@@ -502,7 +502,9 @@ describe('BrowserContext', function () {
 
       const requests: HTTPRequest[] = [];
       context.on('request', request => {
-        requests.push(request);
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
       });
 
       await otherPage.goto(server.PREFIX + '/one-style.html');
