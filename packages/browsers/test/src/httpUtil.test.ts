@@ -11,7 +11,7 @@ import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 
-import {downloadFile} from '../../lib/httpUtil.js';
+import {downloadFile, getText, headHttpRequest} from '../../lib/httpUtil.js';
 
 describe('downloadFile', function () {
   let tmpDir: string;
@@ -55,6 +55,82 @@ describe('downloadFile', function () {
     await downloadFile(serverUrl, destPath);
     assert.ok(fs.existsSync(destPath));
     assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+  });
+
+  for (const [name, location, expectedPath] of [
+    ['root-relative', '/file.bin', '/file.bin'],
+    ['path-relative', 'file.bin', '/downloads/file.bin'],
+    ['parent-relative', '../file.bin', '/file.bin'],
+    ['query-relative', '?download=1', '/downloads/start?download=1'],
+    ['absolute', 'absolute', '/file.bin'],
+    ['scheme-relative', 'scheme-relative', '/file.bin'],
+  ] as const) {
+    it(`downloads a file through ${name} redirects`, async () => {
+      serverUrl = new URL('/downloads/start', serverUrl);
+      const requests: string[] = [];
+      server.removeAllListeners('request');
+      server.on('request', (req, res) => {
+        requests.push(req.url!);
+        if (requests.length === 1) {
+          let redirect: string = location;
+          if (location === 'absolute') {
+            redirect = new URL('/file.bin', serverUrl).href;
+          } else if (location === 'scheme-relative') {
+            redirect = `//${serverUrl.host}/file.bin`;
+          }
+          res.writeHead(302, {Location: redirect});
+          res.end();
+          return;
+        }
+        res.writeHead(200, {'Content-Length': String(testContent.length)});
+        res.end(testContent);
+      });
+
+      const destPath = path.join(tmpDir, 'download.bin');
+      await downloadFile(serverUrl, destPath);
+      assert.deepStrictEqual(requests, ['/downloads/start', expectedPath]);
+      assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+    });
+  }
+
+  it('resolves each redirect against the current request URL', async () => {
+    const requests: string[] = [];
+    server.removeAllListeners('request');
+    server.on('request', (req, res) => {
+      requests.push(req.url!);
+      if (req.url === '/test') {
+        res.writeHead(301, {Location: '/downloads/start'});
+      } else if (req.url === '/downloads/start') {
+        res.writeHead(307, {Location: 'file.bin?download=1'});
+      } else {
+        res.writeHead(200);
+        res.end(testContent);
+        return;
+      }
+      res.end();
+    });
+
+    assert.strictEqual(await getText(serverUrl), testContent.toString());
+    assert.deepStrictEqual(requests, [
+      '/test',
+      '/downloads/start',
+      '/downloads/file.bin?download=1',
+    ]);
+  });
+
+  it('preserves the HEAD method through a relative redirect', async () => {
+    const methods: string[] = [];
+    server.removeAllListeners('request');
+    server.on('request', (req, res) => {
+      methods.push(req.method!);
+      res.writeHead(req.url === '/test' ? 308 : 200, {
+        Location: '/file.bin',
+      });
+      res.end();
+    });
+
+    assert.strictEqual(await headHttpRequest(serverUrl), true);
+    assert.deepStrictEqual(methods, ['HEAD', 'HEAD']);
   });
 
   it('rejects when the response ends before the content length is reached', async () => {
