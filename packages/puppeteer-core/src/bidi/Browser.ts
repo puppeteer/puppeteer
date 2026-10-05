@@ -102,6 +102,18 @@ export class BidiBrowser extends Browser {
       },
     });
 
+    // Console entries replayed from the WebDriver BiDi log event buffer on
+    // `session.subscribe`, arrive before any frame can listen to them.
+    // Collect them until `create` returns, so they can be re-emitted
+    // once the caller had a chance to add listeners.
+    const pendingConsoleEntries: Bidi.Log.Entry[] = [];
+    using sessionEmitter = new EventEmitter(session);
+    sessionEmitter.on('log.entryAdded', entry => {
+      if (entry.type === 'console') {
+        pendingConsoleEntries.push(entry);
+      }
+    });
+
     // Subscribe to all WebDriver BiDi events. Also subscribe to CDP events if CDP
     // connection is available.
     await session.subscribe(
@@ -143,6 +155,19 @@ export class BidiBrowser extends Browser {
 
     const browser = new BidiBrowser(session.browser, opts, opts.logger);
     browser.#initialize();
+    if (pendingConsoleEntries.length) {
+      // The caller's continuation after `await puppeteer.connect()` runs in
+      // microtasks, so listeners it adds synchronously are in place when this
+      // macrotask runs. The logs will be replayed at the first async task.
+      setTimeout(() => {
+        if (!browser.connected) {
+          return;
+        }
+        for (const entry of pendingConsoleEntries) {
+          session.emit('log.entryAdded', entry);
+        }
+      }, 0);
+    }
     return browser;
   }
 
