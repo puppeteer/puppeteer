@@ -236,6 +236,9 @@ export const enum BrowserEvent {
    * @remarks
    * Use {@link HTTPRequest.page}, {@link HTTPRequest.frame} or
    * {@link HTTPRequest.worker} to identify the originating context.
+   * Events are only delivered for pages that Puppeteer has attached to,
+   * e.g. via {@link Browser.pages} or {@link Target.page}. Requests from
+   * service workers and shared workers are not reported.
    *
    * These listeners only observe requests. Do not call
    * `request.continue()`, `abort()` or `respond()` from them: they are not
