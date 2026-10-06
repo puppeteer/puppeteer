@@ -272,6 +272,9 @@ describe('Workers', function () {
       expect(await message.args()[0]!.jsonValue()).toEqual('hello');
       expect(await message.args()[1]!.jsonValue()).toEqual(5);
       expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
+      expect(message.worker()).toBe(worker);
+      expect(message.frame()).toBeNull();
+      expect(message.page()).toBeNull();
     });
 
     it('should work for Error instances', async () => {

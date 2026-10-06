@@ -453,6 +453,7 @@ export class BidiWorkerRealm extends BidiRealm {
           args,
           undefined,
           this.realm.id,
+          this.#worker,
         );
         this.#worker.emit(WebWorkerEvent.Console, message);
       }
