@@ -147,6 +147,15 @@ export class WaitTask<T = unknown> {
           break;
       }
 
+      if (this.#result.finished()) {
+        // The task was terminated (e.g. timed out) while the poller was being
+        // created, so `terminate` had no poller to stop. Dispose of it without
+        // starting it.
+        using _poller = this.#poller;
+        this.#poller = undefined;
+        return;
+      }
+
       await this.#poller.evaluate(poller => {
         void poller.start();
       });

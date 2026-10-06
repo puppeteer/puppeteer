@@ -249,6 +249,42 @@ describe('waittask specs', function () {
       expect(error).toBeInstanceOf(TimeoutError);
       expect(error?.message).toContain('Waiting failed: 10ms exceeded');
     });
+    it('should not keep polling after timing out while the page is busy', async () => {
+      const {page} = await getTestState();
+
+      // Block the main thread so the poller is only created after the wait has
+      // already timed out.
+      void page.evaluate(() => {
+        const end = performance.now() + 500;
+        while (performance.now() < end) {}
+      });
+
+      let error!: Error;
+      await page
+        .waitForFunction(
+          () => {
+            (globalThis as any).__polls =
+              ((globalThis as any).__polls ?? 0) + 1;
+            return false;
+          },
+          {polling: 'raf', timeout: 10},
+        )
+        .catch(error_ => {
+          return (error = error_);
+        });
+      expect(error).toBeInstanceOf(TimeoutError);
+
+      const getPolls = () => {
+        return page.evaluate(() => {
+          return (globalThis as any).__polls ?? 0;
+        });
+      };
+      const polls = await getPolls();
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
+      expect(await getPolls()).toBe(polls);
+    });
     it('should respect default timeout', async () => {
       const {page} = await getTestState();
 
