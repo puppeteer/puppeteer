@@ -162,11 +162,39 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   async #removeClient(client: CDPSession) {
     this.#clients.get(client)?.dispose();
     this.#clients.delete(client);
+
     for (const [requestId, worker] of this.#workerRequests) {
       if (worker.client === client) {
-        this.#workerRequests.delete(requestId);
+        if (client.connection()?._closed) {
+          this.#workerRequests.delete(requestId);
+          this.#networkEventManager.forgetRequest(requestId);
+          this.#networkEventManager.forget(requestId);
+        } else {
+          this.#abortPendingWorkerRequest(requestId);
+        }
       }
     }
+  }
+
+  /**
+   * Chrome does not send `Network.loadingFailed` or `Network.loadingFinished`
+   * for requests that are still pending when a dedicated worker is
+   * terminated. Fail them so that listeners observe the end of the request
+   * and they no longer count as in flight (e.g. for `waitForNetworkIdle`).
+   */
+  #abortPendingWorkerRequest(requestId: string): void {
+    this.#workerRequests.delete(requestId);
+    const request = this.#networkEventManager.getRequest(requestId);
+    if (!request) {
+      // The request was never surfaced (e.g. still waiting for
+      // `Fetch.requestPaused`), so only drop the buffered events.
+      this.#networkEventManager.forget(requestId);
+      return;
+    }
+    request._failureText = 'net::ERR_ABORTED';
+    request.response()?._resolveBody();
+    this.#forgetRequest(request, true);
+    this.emit(NetworkManagerEvent.RequestFailed, request);
   }
 
   async authenticate(credentials: Credentials | null): Promise<void> {

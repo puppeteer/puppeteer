@@ -9,7 +9,11 @@ import {describe, it} from 'node:test';
 import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 
-import type {CDPSession, CDPSessionEvents} from '../api/CDPSession.js';
+import {
+  CDPSessionEvent,
+  type CDPSession,
+  type CDPSessionEvents,
+} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WebWorker} from '../api/WebWorker.js';
@@ -17,6 +21,7 @@ import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 
+import type {Connection} from './cdp.js';
 import type {CdpFrame} from './Frame.js';
 import {NetworkManager} from './NetworkManager.js';
 
@@ -54,6 +59,7 @@ function createNetworkManager(
 }
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
+  public closed?: boolean;
   readonly sent: Array<{method: string; params: unknown}> = [];
   constructor(readonly sessionId = '1') {
     super();
@@ -62,7 +68,7 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
     this.sent.push({method, params});
   }
   connection() {
-    return undefined;
+    return this.closed ? ({_closed: true} as Connection) : undefined;
   }
   readonly detached = false;
   async detach() {}
@@ -574,7 +580,7 @@ describe('NetworkManager', () => {
       };
     };
 
-    const setup = async () => {
+    const setup = async ({interception = true} = {}) => {
       const pageSession = new MockCDPSession('page');
       const workerSession = new MockCDPSession('worker');
       const worker = {client: workerSession} as unknown as WebWorker;
@@ -583,16 +589,24 @@ describe('NetworkManager', () => {
       });
       await manager.addClient(pageSession);
       await manager.addClient(workerSession);
-      await manager.setRequestInterception(true);
+      if (interception) {
+        await manager.setRequestInterception(true);
+      }
       pageSession.sent.length = 0;
       workerSession.sent.length = 0;
 
       const requests: HTTPRequest[] = [];
       manager.on(NetworkManagerEvent.Request, async (request: HTTPRequest) => {
         requests.push(request);
-        await request.continue();
+        if (interception) {
+          await request.continue();
+        }
       });
-      return {manager, pageSession, workerSession, worker, requests};
+      const failed: HTTPRequest[] = [];
+      manager.on(NetworkManagerEvent.RequestFailed, (request: HTTPRequest) => {
+        failed.push(request);
+      });
+      return {manager, pageSession, workerSession, worker, requests, failed};
     };
 
     it('should bind Fetch commands to the session that delivered Fetch.requestPaused when it arrives first', async () => {
@@ -656,6 +670,74 @@ describe('NetworkManager', () => {
       expect(requests[1]!.url()).toBe(url2);
       expect(requests[1]!.worker()).toBe(worker);
       expect(requests[1]!.redirectChain()).toHaveLength(1);
+    });
+
+    it('should not fail pending worker requests when the whole connection closes', async () => {
+      const {manager, workerSession, requests, failed} = await setup({
+        interception: false,
+      });
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', 'http://localhost/hang'),
+      );
+      expect(requests).toHaveLength(1);
+      expect(manager.inFlightRequestsCount()).toBe(1);
+
+      workerSession.closed = true;
+      workerSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(failed).toEqual([]);
+      expect(manager.inFlightRequestsCount()).toBe(0);
+    });
+
+    it('should fail pending requests when the worker session disconnects', async () => {
+      const {manager, workerSession, requests, failed} = await setup({
+        interception: false,
+      });
+
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', 'http://localhost/hang'),
+      );
+      expect(requests).toHaveLength(1);
+      expect(manager.inFlightRequestsCount()).toBe(1);
+
+      workerSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(failed).toEqual([requests[0]]);
+      expect(failed[0]!.failure()).toEqual({errorText: 'net::ERR_ABORTED'});
+      expect(manager.inFlightRequestsCount()).toBe(0);
+    });
+
+    it('should not fail pending page requests when a session disconnects', async () => {
+      const {manager, pageSession, requests, failed} = await setup({
+        interception: false,
+      });
+
+      pageSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('page-req-1', 'http://localhost/hang'),
+      );
+      pageSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(requests).toHaveLength(1);
+      expect(failed).toHaveLength(0);
+      expect(manager.inFlightRequestsCount()).toBe(1);
+    });
+
+    it('should not emit requestfailed for worker requests that were never surfaced', async () => {
+      const {workerSession, requests, failed} = await setup();
+
+      // With interception enabled, no request is emitted until
+      // Fetch.requestPaused arrives, which never happens here.
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', 'http://localhost/hang'),
+      );
+      workerSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(requests).toHaveLength(0);
+      expect(failed).toHaveLength(0);
     });
   });
 
