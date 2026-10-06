@@ -4,11 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {fileURLToPath} from 'node:url';
+
 import prettier from '@prettier/sync';
 import {ESLintUtils} from '@typescript-eslint/utils';
 
+// Resolve the path relative to this module (`tools/eslint/lib/`) rather than
+// the current working directory, which varies depending on where ESLint runs.
 const prettierConfigFile = prettier.resolveConfigFile(
-  '../../../prettier.config.js',
+  fileURLToPath(new URL('../../../prettier.config.js', import.meta.url)),
 );
 const prettierConfig = prettier.resolveConfig(prettierConfigFile ?? '');
 
