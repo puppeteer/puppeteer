@@ -21,6 +21,7 @@ import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 
+import type {Connection} from './cdp.js';
 import type {CdpFrame} from './Frame.js';
 import {NetworkManager} from './NetworkManager.js';
 
@@ -58,6 +59,7 @@ function createNetworkManager(
 }
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
+  public closed?: boolean;
   readonly sent: Array<{method: string; params: unknown}> = [];
   constructor(readonly sessionId = '1') {
     super();
@@ -66,7 +68,7 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
     this.sent.push({method, params});
   }
   connection() {
-    return undefined;
+    return this.closed ? ({_closed: true} as Connection) : undefined;
   }
   readonly detached = false;
   async detach() {}
@@ -668,6 +670,24 @@ describe('NetworkManager', () => {
       expect(requests[1]!.url()).toBe(url2);
       expect(requests[1]!.worker()).toBe(worker);
       expect(requests[1]!.redirectChain()).toHaveLength(1);
+    });
+
+    it('should not fail pending worker requests when the whole connection closes', async () => {
+      const {manager, workerSession, requests, failed} = await setup({
+        interception: false,
+      });
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', 'http://localhost/hang'),
+      );
+      expect(requests).toHaveLength(1);
+      expect(manager.inFlightRequestsCount()).toBe(1);
+
+      workerSession.closed = true;
+      workerSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(failed).toEqual([]);
+      expect(manager.inFlightRequestsCount()).toBe(0);
     });
 
     it('should fail pending requests when the worker session disconnects', async () => {

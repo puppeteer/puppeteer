@@ -162,9 +162,16 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   async #removeClient(client: CDPSession) {
     this.#clients.get(client)?.dispose();
     this.#clients.delete(client);
+
     for (const [requestId, worker] of this.#workerRequests) {
       if (worker.client === client) {
-        this.#abortPendingWorkerRequest(requestId);
+        if (client.connection()?._closed) {
+          this.#workerRequests.delete(requestId);
+          this.#networkEventManager.forgetRequest(requestId);
+          this.#networkEventManager.forget(requestId);
+        } else {
+          this.#abortPendingWorkerRequest(requestId);
+        }
       }
     }
   }
