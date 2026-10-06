@@ -6,10 +6,14 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {Browser} from '../api/Browser.js';
-import type {BrowserContext} from '../api/BrowserContext.js';
+import {BrowserEvent, type Browser} from '../api/Browser.js';
+import {
+  BrowserContextEvent,
+  type BrowserContext,
+} from '../api/BrowserContext.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
+import {WebWorkerEvent} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
@@ -317,7 +321,7 @@ export class WorkerTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        return new CdpWebWorker(
+        const worker = new CdpWebWorker(
           client,
           this._getTargetInfo().url,
           this._targetId,
@@ -326,9 +330,40 @@ export class WorkerTarget extends CdpTarget {
           undefined /* networkManager */,
           this.logger,
         );
+        this.#bubbleConsoleMessages(worker);
+        return worker;
       });
     }
     return await this.#workerPromise;
+  }
+
+  /**
+   * Service and shared workers are not owned by a page, so their console
+   * messages are bubbled up to the browser context and the browser here.
+   */
+  #bubbleConsoleMessages(worker: CdpWebWorker): void {
+    worker.internalEmitter.on(WebWorkerEvent.Console, message => {
+      const context = this.browserContext();
+      const browser = this.browser();
+      const hasListeners =
+        worker.listenerCount(WebWorkerEvent.Console) > 0 ||
+        context.listenerCount(BrowserContextEvent.Console) > 0 ||
+        browser.listenerCount(BrowserEvent.Console) > 0;
+
+      if (!hasListeners) {
+        // eslint-disable-next-line max-len -- The comment is long.
+        // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
+        for (const arg of message.args()) {
+          void arg.dispose().catch(error => {
+            this.logger?.(DEBUG_PREFIXES.error)?.(error);
+          });
+        }
+        return;
+      }
+
+      context.emit(BrowserContextEvent.Console, message);
+      browser.emit(BrowserEvent.Console, message);
+    });
   }
 }
 

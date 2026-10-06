@@ -370,6 +370,20 @@
     "comment": "Screen methods are only supported in headless mode"
   },
   {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"console\") should report console messages from service workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support service worker targets"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
     "testIdPattern": "[browser.test] Browser specs Browser.screens should return default screen info",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1088,6 +1102,27 @@
   },
   {
     "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"console\") should report console messages from dedicated workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox dedicated worker console messages are attributed to the owner frame, so ConsoleMessage.worker() is null"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"console\") should report console messages replayed when attaching after connect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"console\") should report console messages replayed when attaching after connect",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "pipe"],
     "expectations": ["SKIP"],
