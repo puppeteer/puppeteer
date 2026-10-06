@@ -18,6 +18,13 @@ import {packageVersion} from '../util/version.js';
 export const DEFAULT_KEEP_ALIVE_INTERVAL_MS = 30_000;
 
 /**
+ * Largest message accepted from the browser unless `maxPayload` is set.
+ *
+ * @internal
+ */
+export const DEFAULT_MAX_PAYLOAD_BYTES = 256 * 1024 * 1024;
+
+/**
  * @internal
  */
 export interface NodeWebSocketTransportOptions {
@@ -30,6 +37,10 @@ export interface NodeWebSocketTransportOptions {
    * Ping period in milliseconds. Only used when `keepAlive` is set.
    */
   keepAliveIntervalMs?: number;
+  /**
+   * Maximum allowed message size in bytes.
+   */
+  maxPayload?: number;
 }
 
 /**
@@ -47,7 +58,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
         followRedirects: true,
         perMessageDeflate: false,
         allowSynchronousEvents: false,
-        maxPayload: 256 * 1024 * 1024, // 256Mb
+        maxPayload: options.maxPayload ?? DEFAULT_MAX_PAYLOAD_BYTES,
         headers: {
           'User-Agent': `Puppeteer ${packageVersion}`,
           ...headers,
