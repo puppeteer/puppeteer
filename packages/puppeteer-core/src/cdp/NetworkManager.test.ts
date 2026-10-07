@@ -578,6 +578,72 @@ describe('NetworkManager', () => {
 
     expect(requests).toHaveLength(2);
   });
+
+  it(`should continue a request on the session that paused it (github.com/puppeteer/puppeteer/issues/15509)`, async () => {
+    class RecordingCDPSession extends MockCDPSession {
+      readonly calls: unknown[][] = [];
+      override async send(...args: unknown[]): Promise<any> {
+        this.calls.push(args);
+      }
+    }
+    const pageSession = new RecordingCDPSession();
+    const workerSession = new RecordingCDPSession();
+    const manager = createNetworkManager();
+    await manager.addClient(pageSession);
+    await manager.addClient(workerSession);
+    await manager.setRequestInterception(true);
+
+    const continued: Array<Promise<void>> = [];
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+      continued.push(request.continue());
+    });
+
+    // A fetch from a dedicated worker is paused on the page session, while its
+    // network events arrive on the worker session.
+    pageSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-3.0',
+      request: {
+        url: 'http://localhost:8907/data',
+        method: 'GET',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Fetch',
+      networkId: '1234.5',
+    });
+    workerSession.emit('Network.requestWillBeSent', {
+      requestId: '1234.5',
+      loaderId: '',
+      documentURL: 'http://localhost:8907/worker.js',
+      request: {
+        url: 'http://localhost:8907/data',
+        method: 'GET',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      timestamp: 224604.980827,
+      wallTime: 1637955746.786191,
+      initiator: {type: 'script'},
+      redirectHasExtraInfo: false,
+      type: 'Fetch',
+      hasUserGesture: false,
+    });
+
+    expect(continued).toHaveLength(1);
+    await Promise.all(continued);
+    expect(pageSession.calls).toContainEqual([
+      'Fetch.continueRequest',
+      expect.objectContaining({requestId: 'interception-job-3.0'}),
+    ]);
+    expect(
+      workerSession.calls.filter(([method]) => {
+        return method === 'Fetch.continueRequest';
+      }),
+    ).toHaveLength(0);
+  });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = createNetworkManager();
