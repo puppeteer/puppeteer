@@ -160,7 +160,7 @@
     "@babel/plugin-transform-modules-commonjs": "8.0.1",
     "@babel/plugin-transform-private-methods": "8.0.1",
     "@babel/plugin-transform-private-property-in-object": "8.0.1",
-    "@microsoft/api-extractor": "7.59.0",
+    "@microsoft/api-extractor": "7.59.3",
     "@rollup/plugin-babel": "7.1.0",
     "@rollup/plugin-node-resolve": "16.0.3",
     "@stylistic/eslint-plugin": "5.10.0",
