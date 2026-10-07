@@ -13,7 +13,6 @@ import type {
   DebugInfo,
   ExtensionInstallOptions,
 } from '../api/Browser.js';
-import {DEBUG_PREFIXES} from '../common/Debug.js';
 import {
   Browser as BrowserBase,
   BrowserEvent,
@@ -36,6 +35,7 @@ import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
+import {DEBUG_PREFIXES} from '../common/Debug.js';
 import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter} from '../common/EventEmitter.js';
