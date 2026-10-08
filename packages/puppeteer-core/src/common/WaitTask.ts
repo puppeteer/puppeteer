@@ -147,9 +147,19 @@ export class WaitTask<T = unknown> {
           break;
       }
 
+      if (this.#result.finished()) {
+        await this.terminate();
+        return;
+      }
+
       await this.#poller.evaluate(poller => {
         void poller.start();
       });
+
+      if (this.#result.finished()) {
+        await this.terminate();
+        return;
+      }
 
       const result = await this.#poller.evaluateHandle(poller => {
         return poller.result();
