@@ -1010,13 +1010,6 @@
     "comment": "tests chrome-specific flags"
   },
   {
-    "testIdPattern": "[webmcp.test] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"],
-    "comment": "Temp change while another PR lands"
-  },
-  {
     "testIdPattern": "[worker.test] Workers console should return remote objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
