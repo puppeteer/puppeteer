@@ -153,12 +153,12 @@
     "devtools-protocol": "0.0.1696802",
     "typed-query-selector": "^2.12.3",
     "webdriver-bidi-protocol": "1.0.1",
-    "ws": "^8.21.3"
+    "ws": "^8.22.0"
   },
   "devDependencies": {
     "@types/chrome": "0.3.4",
     "@types/node": "^18.17.15",
-    "@types/ws": "8.18.1",
+    "@types/ws": "8.18.2",
     "mitt": "3.0.1",
     "parsel-js": "1.2.3",
     "rxjs": "^7.8.2",
