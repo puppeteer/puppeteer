@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.4](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.3...browsers-v3.2.4) (2026-10-08)
+
+
+### 🛠️ Fixes
+
+* await browser process termination and run exit hooks after kill ([#15522](https://github.com/puppeteer/puppeteer/issues/15522)) ([a281197](https://github.com/puppeteer/puppeteer/commit/a2811971b59a52233391c5d837b116dc425fb7c0))
+* **browsers:** reject truncated downloads ([#15489](https://github.com/puppeteer/puppeteer/issues/15489)) ([2ff951c](https://github.com/puppeteer/puppeteer/commit/2ff951c98ea6545d1e884f7318dc5188423d0e14))
+
 ## [3.2.3](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.2...browsers-v3.2.3) (2026-09-23)
 
 
