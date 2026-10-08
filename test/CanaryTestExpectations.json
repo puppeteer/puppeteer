@@ -28,14 +28,6 @@
     "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097"
   },
   {
-    "testIdPattern": "[webmcp.test] Page.webmcp *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["SKIP", "FAIL", "TIMEOUT"],
-    "comment": "https://github.com/puppeteer/puppeteer/pull/15146"
-  },
-
-  {
     "testIdPattern": "[proxy.test] request proxy should proxy requests when configured",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
