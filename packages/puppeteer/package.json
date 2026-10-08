@@ -134,7 +134,7 @@
   "dependencies": {
     "@puppeteer/browsers": "3.2.3",
     "chromium-bidi": "157.0.8090-0",
-    "devtools-protocol": "0.0.1687809",
+    "devtools-protocol": "0.0.1696802",
     "lilconfig": "^3.1.3",
     "puppeteer-core": "25.12.0",
     "typed-query-selector": "^2.12.3"
