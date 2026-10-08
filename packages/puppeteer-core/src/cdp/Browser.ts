@@ -35,6 +35,7 @@ import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {Extension} from '../api/Extension.js';
 import type {Page} from '../api/Page.js';
 import type {Target} from '../api/Target.js';
+import {DEBUG_PREFIXES} from '../common/Debug.js';
 import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -688,8 +689,14 @@ export class CdpBrowser extends BrowserBase {
   }
 
   override async close(): Promise<void> {
-    await this.#closeCallback.call(null);
-    await this.disconnect();
+    try {
+      await this.#closeCallback.call(null);
+    } catch (error) {
+      // Fail silently.
+      this.logger?.(DEBUG_PREFIXES.error)?.(error);
+    } finally {
+      await this.disconnect();
+    }
   }
 
   override disconnect(): Promise<void> {
