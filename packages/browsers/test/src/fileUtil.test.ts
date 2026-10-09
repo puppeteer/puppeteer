@@ -177,6 +177,60 @@ describe('fileUtil', function () {
         'symlink pointing outside the target directory was created',
       );
     });
+
+    // A symlink target or an entry path can look inside the target directory
+    // lexically while routing outside on disk through a symlink created by an
+    // earlier entry. Each archive below is extracted into a nested target so
+    // that, were a regression to let it escape, the artifact still lands inside
+    // the temporary directory and is cleaned up. Creating symlinks on Windows
+    // requires elevated privileges, so these run on POSIX only.
+    const escapeArchives = [
+      {
+        name: 'symlink chains routed through an earlier symlink',
+        // browser -> . ; browser/browser/link -> ../.. ; file link/escape.txt
+        fixture: 'test-symlink-escape-chain.zip',
+        artifact: ['..', '..', 'escape.txt'],
+        message: /through a symlink/,
+      },
+      {
+        name: 'symlink targets that "../" out through an earlier symlink',
+        // a -> . ; f -> a/../pwned.txt ; file a/f
+        fixture: 'test-symlink-escape-bypass.zip',
+        artifact: ['..', 'pwned.txt'],
+        message: /point outside/,
+      },
+      {
+        name: 'directory entries routed outside through a symlink',
+        // a -> . ; b -> a/.. ; dir b/created-outside/
+        fixture: 'test-symlink-escape-dir.zip',
+        artifact: ['..', 'created-outside'],
+        message: /point outside/,
+      },
+    ];
+    for (const {name, fixture, artifact, message} of escapeArchives) {
+      (os.platform() === 'win32' ? it.skip : it)(
+        `rejects ${name}`,
+        async () => {
+          const target = path.join(tmpDir, 'nested', 'target');
+          fs.mkdirSync(target, {recursive: true});
+          const outside = path.join(target, ...artifact);
+          await assert.rejects(
+            () => {
+              return extractZipWithYauzl(path.join(fixturesPath, fixture), target);
+            },
+            (error: unknown) => {
+              const {cause} = error as {cause?: Error};
+              assert.match(cause?.message ?? '', message);
+              return true;
+            },
+          );
+          assert.ok(
+            !fs.existsSync(outside),
+            `entry escaped the target directory to ${outside}`,
+          );
+        },
+      );
+    }
   });
 
   it('throws an error if xz is not found', async () => {
