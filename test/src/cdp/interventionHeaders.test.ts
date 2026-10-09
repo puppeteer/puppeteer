@@ -34,10 +34,15 @@ describe('Page.setRequestInterception', function () {
       return request.continue();
     });
     await page.goto(server.PREFIX + '/intervention');
-    // Check for feature URL substring rather than https://www.chromestatus.com to
-    // make it work with Edgium.
-    expect(serverRequest!.headers['intervention']).toContain(
-      'feature/5718547946799104',
-    );
+    // The intercepted document.write() script must still reach the server.
+    expect(serverRequest).toBeDefined();
+    // Chrome 157+ no longer attaches the `Intervention` request header
+    // (https://crrev.com/c/8504605). Older versions still do; check for the
+    // feature URL substring rather than https://www.chromestatus.com to make it
+    // work with Edgium.
+    const intervention = serverRequest!.headers['intervention'];
+    if (intervention !== undefined) {
+      expect(intervention).toContain('feature/5718547946799104');
+    }
   });
 });
