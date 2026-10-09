@@ -205,12 +205,14 @@ describe('fileUtil', function () {
 
     // A symlink target or an entry path can look inside the target directory
     // lexically while routing outside on disk through a symlink created by an
-    // earlier or a later entry. Each archive below is extracted into a nested
-    // target so that, were a regression to let it escape, the artifact still
-    // lands inside the temporary directory and is cleaned up. Creating
-    // symlinks on Windows requires elevated privileges, so these run on POSIX
-    // only.
-    const escapeArchives = [
+    // earlier or a later entry. Entries are never extracted through a symlink,
+    // not even one that stays inside. Each archive below is extracted into a
+    // nested target so that, were a regression to let it escape, the artifact
+    // still lands inside the temporary directory and is cleaned up. `artifact`
+    // is a path, relative to the target, that must not exist afterwards.
+    // Creating symlinks on Windows requires elevated privileges, so these run
+    // on POSIX only.
+    const rejectedArchives = [
       {
         name: 'symlink chains routed through an earlier symlink',
         // browser -> . ; browser/browser/link -> ../.. ; file link/escape.txt
@@ -226,7 +228,7 @@ describe('fileUtil', function () {
         message: /point outside/,
       },
       {
-        name: 'directory entries routed outside through a symlink',
+        name: 'symlinks that would route a later directory entry outside',
         // a -> . ; b -> a/.. ; dir b/created-outside/
         fixture: 'test-symlink-escape-dir.zip',
         artifact: ['..', 'created-outside'],
@@ -240,14 +242,39 @@ describe('fileUtil', function () {
         artifact: ['esc'],
         message: /point outside/,
       },
+      {
+        name: 'directory entries created through a symlink',
+        // dir sub/ ; a -> sub ; dir a/x/
+        fixture: 'test-symlink-through-dir.zip',
+        artifact: ['sub', 'x'],
+        message: /through a symlink/,
+      },
+      {
+        name: 'files written through a symlink',
+        // dir sub/ ; n -> sub/f ; file n
+        fixture: 'test-symlink-through-file.zip',
+        artifact: ['sub', 'f'],
+        message: /through a symlink/,
+      },
+      {
+        name: 'directory entries in symlink mode created through a symlink',
+        // dir d/ ; s -> d ; s/ with symlink mode, extracted as a directory
+        fixture: 'test-symlink-through-hybrid.zip',
+        message: /through a symlink/,
+      },
+      {
+        name: 'symlinks without a path',
+        // . -> target/q
+        fixture: 'test-symlink-empty-path.zip',
+        message: /empty path/,
+      },
     ];
-    for (const {name, fixture, artifact, message} of escapeArchives) {
+    for (const {name, fixture, artifact, message} of rejectedArchives) {
       (os.platform() === 'win32' ? it.skip : it)(
         `rejects ${name}`,
         async () => {
           const target = path.join(tmpDir, 'nested', 'target');
           fs.mkdirSync(target, {recursive: true});
-          const forbidden = path.join(target, ...artifact);
           await assert.rejects(
             () => {
               return extractZipWithYauzl(
@@ -261,14 +288,73 @@ describe('fileUtil', function () {
               return true;
             },
           );
-          // lstat, so that a dangling or escaping symlink is detected too.
-          assert.ok(
-            !fs.lstatSync(forbidden, {throwIfNoEntry: false}),
-            `${forbidden} was created`,
-          );
+          if (artifact) {
+            // lstat, so that a dangling or escaping symlink is detected too.
+            const forbidden = path.join(target, ...artifact);
+            assert.ok(
+              !fs.lstatSync(forbidden, {throwIfNoEntry: false}),
+              `${forbidden} was created`,
+            );
+          }
         },
       );
     }
+
+    // Returns a target directory reached through the symlink "v": the real
+    // path of "v/target" is "d/r/target".
+    function createSymlinkedTarget(): string {
+      fs.mkdirSync(path.join(tmpDir, 'd', 'r', 'target'), {recursive: true});
+      fs.symlinkSync(path.join('d', 'r'), path.join(tmpDir, 'v'));
+      return path.join(tmpDir, 'v', 'target');
+    }
+
+    // Creating symlinks on Windows requires elevated privileges.
+    (os.platform() === 'win32' ? it.skip : it)(
+      'extracts symlinks into a target directory reached through a symlink',
+      async () => {
+        const target = createSymlinkedTarget();
+        await extractZipWithYauzl(
+          path.join(fixturesPath, 'test-symlink-framework.zip'),
+          target,
+        );
+        assert.strictEqual(
+          fs.readFileSync(
+            path.join(target, 'Fw.framework', 'Libraries', 'lib.txt'),
+            'utf8',
+          ),
+          'lib',
+        );
+      },
+    );
+
+    // Creating symlinks on Windows requires elevated privileges.
+    (os.platform() === 'win32' ? it.skip : it)(
+      'validates symlink targets against the real target directory',
+      async () => {
+        // Against the real path "d/r/target", the link target
+        // "../../v/target/q" resolves to "d/v/target/q", outside the target,
+        // although it looks inside when resolved against "v/target".
+        const target = createSymlinkedTarget();
+        await assert.rejects(
+          () => {
+            // l -> ../../v/target/q
+            return extractZipWithYauzl(
+              path.join(fixturesPath, 'test-symlink-escape-real-root.zip'),
+              target,
+            );
+          },
+          (error: unknown) => {
+            const {cause} = error as {cause?: Error};
+            assert.match(cause?.message ?? '', /point outside/);
+            return true;
+          },
+        );
+        assert.ok(
+          !fs.lstatSync(path.join(target, 'l'), {throwIfNoEntry: false}),
+          'symlink pointing outside the real target directory was created',
+        );
+      },
+    );
   });
 
   describe('isSymlinkTargetInside', () => {
@@ -299,10 +385,13 @@ describe('fileUtil', function () {
       assert.ok(!inside('a/..'));
       assert.ok(!inside('x/../a/..'));
       assert.ok(!inside('../a/../b', ['Versions']));
+      // Backslashes separate segments on Windows.
+      assert.ok(!inside('a\\..'));
     });
 
     it('rejects absolute targets even if they look inside', () => {
-      assert.ok(!inside(path.join(tmpDir, 'a', '..')));
+      // Built by hand because path.join would collapse "a/..".
+      assert.ok(!inside(`${tmpDir}${path.sep}a${path.sep}..`));
       assert.ok(!inside(path.join(tmpDir, 'chrome')));
       assert.ok(!inside('C:\\chrome'));
       assert.ok(!inside('C:chrome'));
