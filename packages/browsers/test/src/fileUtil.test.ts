@@ -263,9 +263,21 @@ describe('fileUtil', function () {
         message: /through a symlink/,
       },
       {
-        name: 'symlinks without a path',
+        name: 'symlinks named "."',
         // . -> target/q
-        fixture: 'test-symlink-empty-path.zip',
+        fixture: 'test-symlink-dot.zip',
+        message: /empty path/,
+      },
+      {
+        name: 'symlinks with an empty name',
+        // "" -> target/q
+        fixture: 'test-symlink-empty-name.zip',
+        message: /empty path/,
+      },
+      {
+        name: 'files named "."',
+        // file .
+        fixture: 'test-file-dot.zip',
         message: /empty path/,
       },
     ];
@@ -377,6 +389,8 @@ describe('fileUtil', function () {
     it('rejects targets that leave the target directory', () => {
       assert.ok(!inside('..'));
       assert.ok(!inside('../../..', ['Versions', 'A']));
+      // A sibling whose name starts with the target directory's name.
+      assert.ok(!inside(`../${path.basename(tmpDir)}-x/q`));
     });
 
     it('rejects ".." after a descending segment', () => {
@@ -390,6 +404,7 @@ describe('fileUtil', function () {
     });
 
     it('rejects absolute targets even if they look inside', () => {
+      assert.ok(!inside(tmpDir));
       // Built by hand because path.join would collapse "a/..".
       assert.ok(!inside(`${tmpDir}${path.sep}a${path.sep}..`));
       assert.ok(!inside(path.join(tmpDir, 'chrome')));

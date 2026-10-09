@@ -456,10 +456,12 @@ async function extractZipEntry(
       `Zip entry "${entry.fileName}" would be extracted through a symlink.`,
     );
   }
-  // A link named "" or "." would be created in place of the target directory,
-  // with its target resolved against the directory above it.
-  if (isLink && path.resolve(destination) === path.resolve(folderPath)) {
-    throw new Error(`Zip symlink "${entry.fileName}" has an empty path.`);
+  // A file or link named "" or "." names the target directory itself; a
+  // link's target would also be resolved against the directory above it.
+  // Reject it before anything is created. Directory entries such as "./" are
+  // harmless and still accepted.
+  if (!isDirectory && path.resolve(destination) === path.resolve(folderPath)) {
+    throw new Error(`Zip entry "${entry.fileName}" has an empty path.`);
   }
 
   if (isDirectory) {
