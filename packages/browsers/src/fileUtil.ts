@@ -7,7 +7,7 @@
 import type {ChildProcessByStdio} from 'node:child_process';
 import {spawnSync, spawn, execFile} from 'node:child_process';
 import {constants, createReadStream, createWriteStream} from 'node:fs';
-import {mkdir, readdir, symlink} from 'node:fs/promises';
+import {lstat, mkdir, readdir, realpath, symlink} from 'node:fs/promises';
 import * as path from 'node:path';
 import type {Readable, Transform} from 'node:stream';
 import {Stream, Writable} from 'node:stream';
@@ -235,13 +235,21 @@ export async function extractZipWithYauzl(
   });
   const open = promisify<string, Options, ZipFile>(yauzl.open);
   try {
+    // The real path of the target directory is the boundary symlink targets
+    // are validated against. It is resolved once, and only when the archive
+    // contains a symlink.
+    let realRoot: Promise<string> | undefined;
+    const getRealRoot = () => {
+      realRoot ??= realpath(folderPath);
+      return realRoot;
+    };
     const zipFile = await open(archivePath, {lazyEntries: true});
     await new Promise((resolve, reject) => {
       zipFile
         .on('error', reject)
         .on('end', resolve)
         .on('entry', entry => {
-          extractZipEntry(zipFile, entry, folderPath).then(() => {
+          extractZipEntry(zipFile, entry, folderPath, getRealRoot).then(() => {
             zipFile.readEntry();
           }, reject);
         })
@@ -250,6 +258,89 @@ export async function extractZipWithYauzl(
   } catch (error) {
     throw new Error(`Extraction failed: ${archivePath}`, {cause: error});
   }
+}
+
+/**
+ * Walks the components of the entry path `relPath` under `baseDir` and
+ * reports whether any component that already exists on disk is a symlink.
+ * Extraction never creates or writes an entry by traversing a symlink. With
+ * symlink targets validated by isSymlinkTargetInside this is defense in
+ * depth; it also covers symlinks that were not created from the archive.
+ *
+ * Only meant for entry paths, which yauzl guarantees to be relative and free
+ * of ".." segments, checked right before the entry is created.
+ *
+ * @internal
+ */
+async function pathTraversesSymlink(
+  baseDir: string,
+  relPath: string,
+  includeFinal: boolean,
+): Promise<boolean> {
+  const parts = relPath.split(/[/\\]+/).filter(part => {
+    return part.length > 0 && part !== '.';
+  });
+  let current = baseDir;
+  for (let i = 0; i < parts.length; i++) {
+    if (i === parts.length - 1 && !includeFinal) {
+      break;
+    }
+    current = path.join(current, parts[i]!);
+    let stats;
+    try {
+      stats = await lstat(current);
+    } catch {
+      // The component does not exist yet, so nothing beyond it can either.
+      return false;
+    }
+    if (stats.isSymbolicLink()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Reports whether the symlink target `linkTarget`, for a link created in the
+ * real directory `realParent`, stays inside `realRoot` however later entries
+ * fill in the components it names.
+ *
+ * The target is resolved by the OS when the link is used, not when it is
+ * created, so its components cannot be checked against the disk at extraction
+ * time. Instead the target must be relative and may use ".." only as leading
+ * segments. The upward part then starts from `realParent`, a real directory,
+ * and every following segment descends into a directory or through a symlink
+ * that was itself accepted by this rule. A target that stays inside lexically
+ * therefore stays inside on disk, independent of entry order. A segment such
+ * as "a/.." is rejected because "a" may be, or may later become, a symlink.
+ * In-tree chains such as macOS framework bundles
+ * (`Libraries -> Versions/Current/Libraries`) are still accepted.
+ *
+ * This assumes that the target directory contained no symlinks before
+ * extraction and that nothing else writes to it during extraction.
+ *
+ * @internal
+ */
+export function isSymlinkTargetInside(
+  realRoot: string,
+  realParent: string,
+  linkTarget: string,
+): boolean {
+  // Mirror yauzl's file name validation: no absolute or drive-letter paths.
+  if (path.isAbsolute(linkTarget) || /^[a-zA-Z]:/.test(linkTarget)) {
+    return false;
+  }
+  let descended = false;
+  for (const part of linkTarget.split(/[/\\]+/)) {
+    if (part === '..') {
+      if (descended) {
+        return false;
+      }
+    } else if (part.length > 0 && part !== '.') {
+      descended = true;
+    }
+  }
+  return isInsideDirectory(realRoot, path.resolve(realParent, linkTarget));
 }
 
 /**
@@ -335,6 +426,7 @@ async function extractZipEntry(
   zipFile: ZipFile,
   entry: Entry,
   folderPath: string,
+  getRealRoot: () => Promise<string>,
 ): Promise<void> {
   const {S_IFMT, S_IFDIR, S_IFLNK} = constants;
 
@@ -350,6 +442,28 @@ async function extractZipEntry(
     unixMode === 0 ? (isDirectory ? 0o755 : 0o644) : unixMode & 0o777;
 
   const destination = path.join(folderPath, entry.fileName);
+  // A symlink entry whose name ends with "/" is extracted as a directory.
+  const isLink = isSymlink && !isDirectory;
+
+  // Reject any entry that would be created by traversing an existing symlink
+  // (defense in depth, see pathTraversesSymlink). For a link the final
+  // component is the link we are about to create, so it is excluded; for files
+  // and directories it is included so a final component that already exists
+  // as a symlink is not written through. This runs before any mkdir so a
+  // rejected entry leaves nothing behind.
+  if (await pathTraversesSymlink(folderPath, entry.fileName, !isLink)) {
+    throw new Error(
+      `Zip entry "${entry.fileName}" would be extracted through a symlink.`,
+    );
+  }
+  // A file or link named "" or "." names the target directory itself; a
+  // link's target would also be resolved against the directory above it.
+  // Reject it before anything is created. Directory entries such as "./" are
+  // harmless and still accepted.
+  if (!isDirectory && path.resolve(destination) === path.resolve(folderPath)) {
+    throw new Error(`Zip entry "${entry.fileName}" has an empty path.`);
+  }
+
   if (isDirectory) {
     await mkdir(destination, {recursive: true, mode});
     return;
@@ -377,14 +491,12 @@ async function extractZipEntry(
       }),
     );
     const linkTarget = Buffer.concat(chunks).toString();
-    // Verify that the link does not resolve outside of the target directory.
-    const resolvedLinkTarget = path.resolve(
-      path.dirname(destination),
-      linkTarget,
-    );
-    if (!isInsideDirectory(folderPath, resolvedLinkTarget)) {
+    // Reject the link unless its target provably stays inside the target
+    // directory, see isSymlinkTargetInside.
+    const realParent = await realpath(path.dirname(destination));
+    if (!isSymlinkTargetInside(await getRealRoot(), realParent, linkTarget)) {
       throw new Error(
-        `Zip symlink "${entry.fileName}" would point outside of the target directory.`,
+        `Zip symlink "${entry.fileName}" may point outside of the target directory.`,
       );
     }
     await symlink(linkTarget, destination);
