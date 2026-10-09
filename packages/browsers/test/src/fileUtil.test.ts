@@ -12,6 +12,7 @@ import path from 'node:path';
 import {
   extractZipWithYauzl,
   internalConstantsForTesting,
+  isSymlinkTargetInside,
   unpackArchive,
 } from '../../lib/fileUtil.js';
 
@@ -178,12 +179,37 @@ describe('fileUtil', function () {
       );
     });
 
+    // Creating symlinks on Windows requires elevated privileges.
+    (os.platform() === 'win32' ? it.skip : it)(
+      'extracts symlink chains inside the target directory',
+      async () => {
+        // Laid out like a macOS framework bundle, in the entry order of the
+        // Chrome for Testing archive: "Libraries" goes through the earlier
+        // symlink "Versions/Current", "Resources" comes before it.
+        await extractZipWithYauzl(
+          path.join(fixturesPath, 'test-symlink-framework.zip'),
+          tmpDir,
+        );
+        const framework = path.join(tmpDir, 'Fw.framework');
+        const read = (...parts: string[]) => {
+          return fs.readFileSync(path.join(framework, ...parts), 'utf8');
+        };
+        assert.strictEqual(read('Libraries', 'lib.txt'), 'lib');
+        assert.strictEqual(read('Resources', 'r.txt'), 'res');
+        assert.strictEqual(
+          read('Versions', 'A', 'Helpers', 'res', 'r.txt'),
+          'res',
+        );
+      },
+    );
+
     // A symlink target or an entry path can look inside the target directory
     // lexically while routing outside on disk through a symlink created by an
-    // earlier entry. Each archive below is extracted into a nested target so
-    // that, were a regression to let it escape, the artifact still lands inside
-    // the temporary directory and is cleaned up. Creating symlinks on Windows
-    // requires elevated privileges, so these run on POSIX only.
+    // earlier or a later entry. Each archive below is extracted into a nested
+    // target so that, were a regression to let it escape, the artifact still
+    // lands inside the temporary directory and is cleaned up. Creating
+    // symlinks on Windows requires elevated privileges, so these run on POSIX
+    // only.
     const escapeArchives = [
       {
         name: 'symlink chains routed through an earlier symlink',
@@ -206,6 +232,14 @@ describe('fileUtil', function () {
         artifact: ['..', 'created-outside'],
         message: /point outside/,
       },
+      {
+        name: 'symlink targets routed outside by a later entry',
+        // a -> . ; esc -> x/../a/.. ; dir x/
+        // Once "x" exists, "esc" resolves to the parent of the target.
+        fixture: 'test-symlink-escape-late-dir.zip',
+        artifact: ['esc'],
+        message: /point outside/,
+      },
     ];
     for (const {name, fixture, artifact, message} of escapeArchives) {
       (os.platform() === 'win32' ? it.skip : it)(
@@ -213,10 +247,13 @@ describe('fileUtil', function () {
         async () => {
           const target = path.join(tmpDir, 'nested', 'target');
           fs.mkdirSync(target, {recursive: true});
-          const outside = path.join(target, ...artifact);
+          const forbidden = path.join(target, ...artifact);
           await assert.rejects(
             () => {
-              return extractZipWithYauzl(path.join(fixturesPath, fixture), target);
+              return extractZipWithYauzl(
+                path.join(fixturesPath, fixture),
+                target,
+              );
             },
             (error: unknown) => {
               const {cause} = error as {cause?: Error};
@@ -224,13 +261,52 @@ describe('fileUtil', function () {
               return true;
             },
           );
+          // lstat, so that a dangling or escaping symlink is detected too.
           assert.ok(
-            !fs.existsSync(outside),
-            `entry escaped the target directory to ${outside}`,
+            !fs.lstatSync(forbidden, {throwIfNoEntry: false}),
+            `${forbidden} was created`,
           );
         },
       );
     }
+  });
+
+  describe('isSymlinkTargetInside', () => {
+    function inside(linkTarget: string, parent: string[] = []): boolean {
+      return isSymlinkTargetInside(
+        tmpDir,
+        path.join(tmpDir, ...parent),
+        linkTarget,
+      );
+    }
+
+    it('accepts relative targets that stay inside', () => {
+      assert.ok(inside('.'));
+      assert.ok(inside('chrome'));
+      assert.ok(inside('Versions/Current/Libraries'));
+      assert.ok(inside('../Resources', ['Versions', 'A']));
+      assert.ok(inside('./../..', ['Versions', 'A']));
+    });
+
+    it('rejects targets that leave the target directory', () => {
+      assert.ok(!inside('..'));
+      assert.ok(!inside('../../..', ['Versions', 'A']));
+    });
+
+    it('rejects ".." after a descending segment', () => {
+      // "a" may be, or may later become, a symlink, so "a/.." cannot be
+      // resolved before the archive is fully extracted.
+      assert.ok(!inside('a/..'));
+      assert.ok(!inside('x/../a/..'));
+      assert.ok(!inside('../a/../b', ['Versions']));
+    });
+
+    it('rejects absolute targets even if they look inside', () => {
+      assert.ok(!inside(path.join(tmpDir, 'a', '..')));
+      assert.ok(!inside(path.join(tmpDir, 'chrome')));
+      assert.ok(!inside('C:\\chrome'));
+      assert.ok(!inside('C:chrome'));
+    });
   });
 
   it('throws an error if xz is not found', async () => {

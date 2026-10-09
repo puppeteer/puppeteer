@@ -256,11 +256,14 @@ export async function extractZipWithYauzl(
 }
 
 /**
- * Walks the components of `relPath` under `baseDir` and reports whether any
- * component that already exists on disk is a symlink. Extraction must never
- * create or write an entry by traversing a symlink produced by an earlier
- * entry, which is how a crafted archive routes a later entry outside the
- * target directory.
+ * Walks the components of the entry path `relPath` under `baseDir` and
+ * reports whether any component that already exists on disk is a symlink.
+ * Extraction must never create or write an entry by traversing a symlink
+ * produced by an earlier entry, which is how a crafted archive routes a later
+ * entry outside the target directory.
+ *
+ * Only meant for entry paths, which yauzl guarantees to be relative and free
+ * of ".." segments, checked right before the entry is created.
  *
  * @internal
  */
@@ -290,6 +293,46 @@ async function pathTraversesSymlink(
     }
   }
   return false;
+}
+
+/**
+ * Reports whether the symlink target `linkTarget`, for a link created in the
+ * real directory `realParent`, stays inside `realRoot` however later entries
+ * fill in the components it names.
+ *
+ * The target is resolved by the OS when the link is used, not when it is
+ * created, so its components cannot be checked against the disk at extraction
+ * time. Instead the target must be relative and may use ".." only as leading
+ * segments. The upward part then starts from `realParent`, a real directory,
+ * and every following segment descends into a directory or through a symlink
+ * that was itself accepted by this rule. A target that stays inside lexically
+ * therefore stays inside on disk, independent of entry order. A segment such
+ * as "a/.." is rejected because "a" may be, or may later become, a symlink.
+ * In-tree chains such as macOS framework bundles
+ * (`Libraries -> Versions/Current/Libraries`) are still accepted.
+ *
+ * @internal
+ */
+export function isSymlinkTargetInside(
+  realRoot: string,
+  realParent: string,
+  linkTarget: string,
+): boolean {
+  // Mirror yauzl's file name validation: no absolute or drive-letter paths.
+  if (path.isAbsolute(linkTarget) || /^[a-zA-Z]:/.test(linkTarget)) {
+    return false;
+  }
+  let descended = false;
+  for (const part of linkTarget.split(/[/\\]+/)) {
+    if (part === '..') {
+      if (descended) {
+        return false;
+      }
+    } else if (part.length > 0 && part !== '.') {
+      descended = true;
+    }
+  }
+  return isInsideDirectory(realRoot, path.resolve(realParent, linkTarget));
 }
 
 /**
@@ -401,7 +444,7 @@ async function extractZipEntry(
   // This runs before any mkdir so a rejected entry leaves nothing behind.
   if (await pathTraversesSymlink(folderPath, entry.fileName, !isSymlink)) {
     throw new Error(
-      `Zip entry "${entry.fileName}" would be extracted through a symlink outside of the target directory.`,
+      `Zip entry "${entry.fileName}" would be extracted through a symlink.`,
     );
   }
 
@@ -432,18 +475,12 @@ async function extractZipEntry(
       }),
     );
     const linkTarget = Buffer.concat(chunks).toString();
-    // Reject the link if its target escapes the target directory. The target
-    // is resolved against the real parent, and it must not itself route
-    // through an existing symlink (e.g. "a/../x" where "a" is a symlink),
-    // which would otherwise leave a link pointing outside the target.
+    // Reject the link unless its target provably stays inside the target
+    // directory, see isSymlinkTargetInside.
     const realParent = await realpath(path.dirname(destination));
-    const resolvedLinkTarget = path.resolve(realParent, linkTarget);
-    if (
-      !isInsideDirectory(realRoot, resolvedLinkTarget) ||
-      (await pathTraversesSymlink(realParent, linkTarget, false))
-    ) {
+    if (!isSymlinkTargetInside(realRoot, realParent, linkTarget)) {
       throw new Error(
-        `Zip symlink "${entry.fileName}" would point outside of the target directory.`,
+        `Zip symlink "${entry.fileName}" may point outside of the target directory.`,
       );
     }
     await symlink(linkTarget, destination);
