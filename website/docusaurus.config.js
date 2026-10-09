@@ -50,6 +50,7 @@ const config = {
   onBrokenLinks: 'warn',
   onBrokenAnchors: 'ignore',
   markdown: {
+    format: 'detect',
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },

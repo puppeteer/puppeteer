@@ -18,7 +18,7 @@ interface Version {
 }
 
 function parseChangelog(content: string) {
-  const log = content.split('\n');
+  const log = content.split(/\r\n|[\n\r]/g);
 
   const parsed: Version[] = [];
   let version: Version | undefined = undefined;

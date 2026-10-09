@@ -149,10 +149,7 @@ async function writeCombinedChangelog(
     readFile(path.join(sourceDir, puppeteerChangelogPath), 'utf-8'),
     readFile(path.join(sourceDir, puppeteerCoreChangelogPath), 'utf-8'),
   ]);
-  const changelog = mergeChangelogs(
-    puppeteerChangelog,
-    puppeteerCoreChangelog,
-  ).replaceAll('{', '\\{');
+  const changelog = mergeChangelogs(puppeteerChangelog, puppeteerCoreChangelog);
   await writeFile(path.join(target, 'CHANGELOG.md'), changelog);
 }
 
@@ -164,8 +161,8 @@ async function updateSupportedBrowsers(releaseVersion: string): Promise<void> {
   const filename = path.join(releaseDocsDir, 'supported-browsers.md');
   const content = await readFile(filename, 'utf-8');
   const updated = content.replace(
-    /(?<=(?:\{\/\*)\s*version-start\s*(?:\*\/)\n)[\s\S]*?(?=\n(?:\{\/\*)\s*version-end\s*(?:\*\/))/,
-    generateSupportedBrowsersTable(versionData, releaseVersion),
+    /(?<=<!--\s*version-start\s*-->\n)[\s\S]*?(?=\n<!--\s*version-end\s*-->)/,
+    `\n${generateSupportedBrowsersTable(versionData, releaseVersion)}\n`,
   );
   await writeFile(filename, updated);
 }
@@ -176,8 +173,11 @@ async function sanitizeMdxComments(dir: string): Promise<void> {
     if (entry.isFile() && entry.name.endsWith('.md')) {
       const fullPath = path.join(entry.parentPath ?? dir, entry.name);
       const content = await readFile(fullPath, 'utf-8');
-      if (content.includes('<!--')) {
-        const sanitized = content.replace(/<!--([\s\S]*?)-->/g, '{/*$1*/}');
+      if (content.includes('{/*')) {
+        const sanitized = content.replace(
+          /\{\/\*([\s\S]*?)\*\/\}/g,
+          '<!--$1-->',
+        );
         await writeFile(fullPath, sanitized);
       }
     }
