@@ -60,4 +60,27 @@ describe('common', () => {
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
   });
+
+  it('should throw on path traversal in buildId and not delete outside directories', async function () {
+    const siblingDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'puppeteer-browsers-sibling'),
+    );
+    const keepFile = path.join(siblingDir, 'keep');
+    fs.mkdirSync(keepFile, {recursive: true});
+
+    try {
+      await assert.rejects(
+        uninstall({
+          cacheDir: tmpDir,
+          browser: Browser.CHROME,
+          platform: BrowserPlatform.LINUX,
+          buildId: `../../../../${path.relative('/', siblingDir)}`,
+        }),
+        /Invalid buildId/,
+      );
+      assert.strictEqual(fs.existsSync(keepFile), true);
+    } finally {
+      fs.rmSync(siblingDir, {recursive: true, force: true});
+    }
+  });
 });

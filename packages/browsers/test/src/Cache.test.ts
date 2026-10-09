@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {Browser, Cache} from '../../lib/main.js';
+import {Browser, BrowserPlatform, Cache} from '../../lib/main.js';
 
 describe('Cache', () => {
   let tmpDir = '/tmp/puppeteer-browsers-test';
@@ -68,5 +68,41 @@ describe('Cache', () => {
       cache.resolveAlias(Browser.CHROME, 'latest'),
       '115.0.5789',
     );
+  });
+
+  it('prevents path traversal in installationDir and uninstall', () => {
+    const siblingDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'puppeteer-browsers-sibling'),
+    );
+    try {
+      const traversalBuildId = `../../../../${path.relative('/', siblingDir)}`;
+      assert.throws(() => {
+        cache.installationDir(
+          Browser.CHROME,
+          BrowserPlatform.LINUX,
+          traversalBuildId,
+        );
+      }, /Invalid buildId/);
+
+      assert.throws(() => {
+        cache.installationDir(
+          Browser.CHROME,
+          BrowserPlatform.LINUX,
+          '../.metadata',
+        );
+      }, /Invalid buildId/);
+
+      assert.throws(() => {
+        cache.uninstall(
+          Browser.CHROME,
+          BrowserPlatform.LINUX,
+          traversalBuildId,
+        );
+      }, /Invalid buildId/);
+
+      assert.strictEqual(fs.existsSync(siblingDir), true);
+    } finally {
+      fs.rmSync(siblingDir, {recursive: true, force: true});
+    }
   });
 });
