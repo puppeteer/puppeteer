@@ -41,6 +41,39 @@ function getApiUrl(version) {
   }
 }
 
+/**
+ * Remark plugin that renders raw HTML in the changelog as literal text.
+ *
+ * Changelog entries are derived from pull request metadata, which authors can
+ * still edit after a pull request has been reviewed and merged, so the
+ * changelog must be treated as untrusted. Docusaurus turns raw HTML in `.md`
+ * files into real elements (via `rehype-raw`), which would allow script
+ * injection into the website. Converting `html` nodes into `text` nodes makes
+ * them render verbatim instead. Other docs (e.g. the API reference) rely on
+ * raw HTML, so this only applies to the changelog, both in the current docs
+ * and in versioned docs.
+ */
+const remarkChangelogRawHtmlAsText = () => {
+  /** @param {any} node */
+  const visit = node => {
+    if (node.type === 'html') {
+      node.type = 'text';
+    }
+    for (const child of node.children ?? []) {
+      visit(child);
+    }
+  };
+  /**
+   * @param {any} tree
+   * @param {{path?: string}} file
+   */
+  return (tree, file) => {
+    if (path.basename(file.path ?? '') === 'CHANGELOG.md') {
+      visit(tree);
+    }
+  };
+};
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Puppeteer',
@@ -50,6 +83,7 @@ const config = {
   onBrokenLinks: 'warn',
   onBrokenAnchors: 'ignore',
   markdown: {
+    format: 'detect',
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },
@@ -272,6 +306,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
             [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
+            remarkChangelogRawHtmlAsText,
           ],
         },
         theme: {

@@ -100,4 +100,25 @@ Ping period in milliseconds. Only used when [WsOptions.keepAlive](./puppeteer.ws
 `30_000`
 
 </td></tr>
+<tr><td>
+
+<span id="maxpayload">maxPayload</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Maximum size in bytes of a single message received from the browser. Messages exceeding it close the connection. Raise it when a protocol response, such as a large PDF, does not fit.
+
+</td><td>
+
+`256 * 1024 * 1024`
+
+</td></tr>
 </tbody></table>

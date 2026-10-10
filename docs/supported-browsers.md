@@ -18,10 +18,11 @@ Prior to this version Puppeteer downloaded and worked with the nightly versions 
 The following table provides mapping between the Puppeteer version and the browsers version you can use it with.
 If an exact matching version of Puppeteer isn't listed, the supported version of the browser is that for the immediately prior version:
 
-{/* version-start */}
+<!-- version-start -->
 
 | Puppeteer                                                                                              | Chrome                                                                                     | Firefox                                                   |
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| [Puppeteer v25.13.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.13.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 155.0.8059.39  | [Firefox](https://www.mozilla.org/en-US/firefox/) 157.0.1 |
 | [Puppeteer v25.12.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.12.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 154.0.8037.57  | [Firefox](https://www.mozilla.org/en-US/firefox/) 156.0.1 |
 | [Puppeteer v25.11.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.11.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 153.0.8010.36  | [Firefox](https://www.mozilla.org/en-US/firefox/) 155.0.1 |
 | [Puppeteer v25.10.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.10.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 152.0.7977.75  | [Firefox](https://www.mozilla.org/en-US/firefox/) 155.0   |
@@ -198,4 +199,4 @@ If an exact matching version of Puppeteer isn't listed, the supported version of
 | [Puppeteer v1.13.0](https://github.com/puppeteer/puppeteer/blob/v1.13.0/docs/api.md)                   | Chromium 74.0.3723.0                                                                       | Firefox not supported                                     |
 | [Puppeteer v1.12.2](https://github.com/puppeteer/puppeteer/blob/v1.12.2/docs/api.md)                   | Chromium 73.0.3679.0                                                                       | Firefox not supported                                     |
 
-{/* version-end */}
+<!-- version-end -->

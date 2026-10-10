@@ -3,6 +3,7 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
+import type {AddressInfo} from 'node:net';
 import {describe, it, beforeEach, afterEach} from 'node:test';
 
 import expect from 'expect';
@@ -141,6 +142,61 @@ describe('NodeWebSocketTransport', () => {
       });
       expect(pings).toBe(0);
       expect(closed).toBe(false);
+    });
+  });
+
+  describe('maxPayload', () => {
+    let maxPayloadWss: WebSocketServer;
+    let maxPayloadTransport: NodeWebSocketTransport | undefined;
+
+    afterEach(() => {
+      maxPayloadTransport?.close();
+      maxPayloadTransport = undefined;
+      maxPayloadWss?.close();
+    });
+
+    it('accepts messages up to maxPayload', async () => {
+      maxPayloadWss = new WebSocketServer({port: 0});
+      maxPayloadWss.on('connection', c => {
+        c.send('a'.repeat(1024));
+      });
+      maxPayloadTransport = await NodeWebSocketTransport.create(
+        `ws://127.0.0.1:${(maxPayloadWss.address() as AddressInfo).port}`,
+        undefined,
+        () => {
+          return undefined;
+        },
+        {maxPayload: 1024},
+      );
+
+      const message = await new Promise(resolve => {
+        maxPayloadTransport!.onmessage = resolve;
+      });
+      expect(message).toHaveLength(1024);
+    });
+
+    it('closes the transport on messages larger than maxPayload', async () => {
+      maxPayloadWss = new WebSocketServer({port: 0});
+      maxPayloadWss.on('connection', c => {
+        c.send('a'.repeat(1025));
+      });
+      maxPayloadTransport = await NodeWebSocketTransport.create(
+        `ws://127.0.0.1:${(maxPayloadWss.address() as AddressInfo).port}`,
+        undefined,
+        () => {
+          return undefined;
+        },
+        {maxPayload: 1024},
+      );
+
+      let received = false;
+      maxPayloadTransport.onmessage = () => {
+        received = true;
+      };
+      await new Promise<void>(resolve => {
+        maxPayloadTransport!.onclose = resolve;
+      });
+      expect(received).toBe(false);
     });
   });
 });

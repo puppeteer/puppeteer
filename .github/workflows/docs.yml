@@ -47,18 +47,21 @@ jobs:
       check-mergeable-state: true
       ref: ${{ inputs.ref }}
 
-  deploy-docs:
+  build-docs:
     needs: check-changes
-    name: Build/deploy docs (if needed)
+    name: Build docs (if needed)
     if: ${{ needs.check-changes.result == 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'website') }}
     runs-on: ubuntu-latest
+    # The build compiles content derived from pull request metadata (e.g. the
+    # changelog), so it must never have write access to the repository.
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref }}
+          persist-credentials: false
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -74,8 +77,31 @@ jobs:
         run: npm run build
       - name: Check for tracked changes
         run: git diff --exit-code
-      - name: Deploy to GitHub Pages
+      - name: Upload website
         if: ${{ inputs.deploy }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: website
+          path: ./website/build
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy-docs:
+    needs: build-docs
+    name: Deploy docs
+    if: ${{ inputs.deploy && needs.build-docs.result == 'success' }}
+    runs-on: ubuntu-latest
+    # Only this job gets write access. It must not check out or execute any
+    # repository code.
+    permissions:
+      contents: write
+    steps:
+      - name: Download website
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: website
+          path: ./website/build
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
