@@ -265,7 +265,7 @@ describe('console', function () {
     });
   });
   it('should have location and stack trace for console API calls', async () => {
-    const {page, server} = await getTestState();
+    const {page, server, isChrome} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const [message] = await Promise.all([
@@ -278,24 +278,46 @@ describe('console', function () {
       url: server.PREFIX + '/consoletrace.html',
       lineNumber: 8,
       columnNumber: 16,
+      ...(isChrome ? {scriptId: expect.any(String)} : {}),
     });
     expect(message.stackTrace()).toEqual([
       {
         url: server.PREFIX + '/consoletrace.html',
         lineNumber: 8,
         columnNumber: 16,
+        ...(isChrome ? {scriptId: expect.any(String)} : {}),
       },
       {
         url: server.PREFIX + '/consoletrace.html',
         lineNumber: 11,
         columnNumber: 8,
+        ...(isChrome ? {scriptId: expect.any(String)} : {}),
       },
       {
         url: server.PREFIX + '/consoletrace.html',
         lineNumber: 13,
         columnNumber: 6,
+        ...(isChrome ? {scriptId: expect.any(String)} : {}),
       },
     ]);
+  });
+  it('should have scriptId in stack trace for eval console API calls', async () => {
+    const {page, isChrome} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        eval(
+          "function dynamicFoo() { console.trace('from eval'); }\ndynamicFoo();",
+        );
+      }),
+    ]);
+    expect(message.text()).toBe('from eval');
+    expect(message.type()).toBe('trace');
+    if (isChrome) {
+      expect(message.location().scriptId).toEqual(expect.any(String));
+      expect(message.stackTrace()[0]?.scriptId).toEqual(expect.any(String));
+    }
   });
   // @see https://github.com/puppeteer/puppeteer/issues/3865
   it('should not throw when there are console messages in detached iframes', async () => {

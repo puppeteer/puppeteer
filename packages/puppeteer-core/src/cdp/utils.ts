@@ -39,6 +39,7 @@ export function createConsoleMessage(
         url: callFrame.url,
         lineNumber: callFrame.lineNumber,
         columnNumber: callFrame.columnNumber,
+        scriptId: callFrame.scriptId,
       });
     }
   }
