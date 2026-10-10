@@ -7,7 +7,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {HTTPRequest} from './HTTPRequest.js';
+import {HTTPRequest, normalizeHeadersInput} from './HTTPRequest.js';
 
 describe('HTTPRequest', () => {
   describe('getResponse', () => {
@@ -188,6 +188,37 @@ describe('HTTPRequest', () => {
       expect(fetchRequest.bodyUsed).toBe(false);
       expect(fetchRequest.headers.get('content-length')).toBeFalsy();
       expect(testRequest.fetchPostDataCalls).toBe(0);
+    });
+  });
+
+  describe('normalizeHeadersInput', () => {
+    it('should return plain records as-is', () => {
+      const headers = {'X-Custom': 'value', foo: 'bar'};
+      expect(normalizeHeadersInput(headers)).toBe(headers);
+    });
+
+    it('should convert a Headers instance into a plain record', () => {
+      const headers = new Headers({
+        'X-Custom': 'value',
+        foo: 'bar',
+      });
+      expect(normalizeHeadersInput(headers)).toEqual({
+        'x-custom': 'value',
+        foo: 'bar',
+      });
+    });
+
+    it('should combine duplicate headers using the fetch spec semantics', () => {
+      const headers = new Headers();
+      headers.append('Set-Cookie', 'a=1');
+      headers.append('Set-Cookie', 'b=2');
+
+      const normalized = normalizeHeadersInput(headers);
+      expect(normalized).toEqual({'set-cookie': ['a=1', 'b=2']});
+    });
+
+    it('should produce an empty record for an empty Headers instance', () => {
+      expect(normalizeHeadersInput(new Headers())).toEqual({});
     });
   });
 });

@@ -22,7 +22,7 @@ page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing
 
 ```typescript
 class Page {
-  abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
+  abstract setExtraHTTPHeaders(headers: HeadersInput): Promise<void>;
 }
 ```
 
@@ -47,11 +47,11 @@ headers
 
 </td><td>
 
-Record&lt;string, string&gt;
+[HeadersInput](./puppeteer.headersinput.md)
 
 </td><td>
 
-An object containing additional HTTP headers to be sent with every request. All header values must be strings.
+Additional HTTP headers to be sent with every request. Either a [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance or a record of additional HTTP headers. All header values must be strings.
 
 </td></tr>
 </tbody></table>
