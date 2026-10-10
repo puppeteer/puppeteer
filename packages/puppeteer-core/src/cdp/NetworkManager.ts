@@ -403,12 +403,17 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       /**
        * CDP may have sent a Fetch.requestPaused event already. Check for it.
        */
-      const requestPausedEvent =
+      const requestPaused =
         this.#networkEventManager.getRequestPaused(networkRequestId);
-      if (requestPausedEvent) {
+      if (requestPaused) {
+        const {event: requestPausedEvent, client: requestPausedClient} =
+          requestPaused;
         const {requestId: fetchRequestId} = requestPausedEvent;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
-        this.#onRequest(client, event, fetchRequestId);
+        // The request has to be continued on the session that paused it. For
+        // dedicated workers, requests are paused on the page session but
+        // their network events arrive on the worker session.
+        this.#onRequest(requestPausedClient, event, fetchRequestId);
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
@@ -493,7 +498,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
       this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
     } else {
-      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      this.#networkEventManager.storeRequestPaused(
+        networkRequestId,
+        event,
+        client,
+      );
     }
   }
 

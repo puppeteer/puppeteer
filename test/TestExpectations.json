@@ -920,6 +920,20 @@
     "comment": "Workers do not work in Firefox yet"
   },
   {
+    "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should continue requests from a worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Workers do not work in Firefox yet"
+  },
+  {
+    "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should continue requests from a worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "No request event is emitted for requests from dedicated workers, so they stay blocked"
+  },
+  {
     "testIdPattern": "[screencast.test] Screencasts Page.screencast should validate options",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
