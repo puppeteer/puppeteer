@@ -61,6 +61,14 @@ class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   }
 }
 
+class RecordingCDPSession extends MockCDPSession {
+  readonly sent: string[] = [];
+  override async send(...args: any[]): Promise<any> {
+    this.sent.push(args[0]);
+    return {};
+  }
+}
+
 describe('NetworkManager', () => {
   it('should process extra info on multiple redirects', async () => {
     const mockCDPSession = new MockCDPSession();
@@ -577,6 +585,181 @@ describe('NetworkManager', () => {
     });
 
     expect(requests).toHaveLength(2);
+  });
+  describe('dedicated worker requests', () => {
+    // For requests made by a dedicated worker, Chrome sends
+    // Fetch.requestPaused on the page session (whose Fetch.enable covers the
+    // worker) and Network.* events on the worker session.
+    const workerRequestWillBeSent = (
+      overrides: Record<string, unknown> = {},
+    ) => {
+      return {
+        requestId: 'worker-request-1',
+        loaderId: '',
+        documentURL: 'http://localhost/worker.js',
+        request: {
+          url: 'https://stub.example/data',
+          method: 'POST',
+          headers: {},
+          hasPostData: true,
+          mixedContentType: 'none',
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'script'},
+        redirectHasExtraInfo: false,
+        type: 'Fetch',
+        ...overrides,
+      } as any;
+    };
+    const workerRequestPaused = (overrides: Record<string, unknown> = {}) => {
+      return {
+        requestId: 'interception-job-1.0',
+        request: {
+          url: 'https://stub.example/data',
+          method: 'POST',
+          headers: {},
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId: 'page-frame',
+        resourceType: 'Fetch',
+        networkId: 'worker-request-1',
+        ...overrides,
+      } as any;
+    };
+
+    async function setUp() {
+      const pageSession = new RecordingCDPSession();
+      const workerSession = new RecordingCDPSession();
+      const manager = createNetworkManager();
+      await manager.addClient(pageSession);
+      await manager.addClient(workerSession);
+      await manager.setRequestInterception(true);
+      pageSession.sent.length = 0;
+      workerSession.sent.length = 0;
+      const requests: HTTPRequest[] = [];
+      manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+        requests.push(request);
+      });
+      return {pageSession, workerSession, requests};
+    }
+
+    it('should intercept on the pausing session when Fetch.requestPaused arrives first', async () => {
+      const {pageSession, workerSession, requests} = await setUp();
+      pageSession.emit('Fetch.requestPaused', workerRequestPaused());
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent(),
+      );
+      expect(requests).toHaveLength(1);
+
+      await requests[0]!.respond({status: 200, body: 'ok'});
+      expect(pageSession.sent).toEqual(['Fetch.fulfillRequest']);
+      expect(workerSession.sent).toEqual([]);
+
+      await requests[0]!.fetchPostData();
+      expect(workerSession.sent).toEqual(['Network.getRequestPostData']);
+    });
+
+    it('should intercept on the pausing session when Network.requestWillBeSent arrives first', async () => {
+      const {pageSession, workerSession, requests} = await setUp();
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent(),
+      );
+      pageSession.emit('Fetch.requestPaused', workerRequestPaused());
+      expect(requests).toHaveLength(1);
+
+      await requests[0]!.continue();
+      expect(pageSession.sent).toEqual(['Fetch.continueRequest']);
+      expect(workerSession.sent).toEqual([]);
+
+      await requests[0]!.fetchPostData();
+      expect(workerSession.sent).toEqual(['Network.getRequestPostData']);
+    });
+
+    it('should abort on the pausing session', async () => {
+      const {pageSession, workerSession, requests} = await setUp();
+      pageSession.emit('Fetch.requestPaused', workerRequestPaused());
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent(),
+      );
+      expect(requests).toHaveLength(1);
+
+      await requests[0]!.abort();
+      expect(pageSession.sent).toEqual(['Fetch.failRequest']);
+      expect(workerSession.sent).toEqual([]);
+    });
+
+    it('should keep the pausing session for redirects waiting on extra info', async () => {
+      const {pageSession, workerSession, requests} = await setUp();
+      pageSession.emit('Fetch.requestPaused', workerRequestPaused());
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent(),
+      );
+      expect(requests).toHaveLength(1);
+      await requests[0]!.continue();
+
+      pageSession.emit(
+        'Fetch.requestPaused',
+        workerRequestPaused({
+          requestId: 'interception-job-2.0',
+          request: {
+            url: 'https://stub.example/redirected',
+            method: 'GET',
+            headers: {},
+            initialPriority: 'High',
+            referrerPolicy: 'strict-origin-when-cross-origin',
+          },
+        }),
+      );
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent({
+          request: {
+            url: 'https://stub.example/redirected',
+            method: 'GET',
+            headers: {},
+            mixedContentType: 'none',
+            initialPriority: 'High',
+            referrerPolicy: 'strict-origin-when-cross-origin',
+          },
+          redirectHasExtraInfo: true,
+          redirectResponse: {
+            url: 'https://stub.example/data',
+            status: 302,
+            statusText: 'Found',
+            headers: {location: 'https://stub.example/redirected'},
+            mimeType: '',
+            connectionReused: false,
+            connectionId: 0,
+            encodedDataLength: 0,
+            securityState: 'secure',
+          },
+        }),
+      );
+      // The redirect is queued until its extra info arrives.
+      expect(requests).toHaveLength(1);
+      workerSession.emit('Network.responseReceivedExtraInfo', {
+        requestId: 'worker-request-1',
+        blockedCookies: [],
+        headers: {location: 'https://stub.example/redirected'},
+        resourceIPAddressSpace: 'Public',
+        statusCode: 302,
+        headersText: '',
+      });
+      expect(requests).toHaveLength(2);
+
+      pageSession.sent.length = 0;
+      await requests[1]!.respond({status: 200, body: 'ok'});
+      expect(pageSession.sent).toEqual(['Fetch.fulfillRequest']);
+      expect(workerSession.sent).toEqual([]);
+    });
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();

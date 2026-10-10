@@ -398,17 +398,27 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     ) {
       const {requestId: networkRequestId} = event;
 
-      this.#networkEventManager.storeRequestWillBeSent(networkRequestId, event);
+      this.#networkEventManager.storeRequestWillBeSent(
+        networkRequestId,
+        event,
+        client,
+      );
 
       /**
        * CDP may have sent a Fetch.requestPaused event already. Check for it.
        */
-      const requestPausedEvent =
+      const requestPaused =
         this.#networkEventManager.getRequestPaused(networkRequestId);
-      if (requestPausedEvent) {
-        const {requestId: fetchRequestId} = requestPausedEvent;
+      if (requestPaused) {
+        const {event: requestPausedEvent, client: fetchClient} = requestPaused;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
-        this.#onRequest(client, event, fetchRequestId);
+        this.#onRequest(
+          client,
+          event,
+          requestPausedEvent.requestId,
+          false,
+          fetchClient,
+        );
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
@@ -473,27 +483,39 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       return;
     }
 
-    const requestWillBeSentEvent = (() => {
-      const requestWillBeSentEvent =
+    const requestWillBeSent = (() => {
+      const requestWillBeSent =
         this.#networkEventManager.getRequestWillBeSent(networkRequestId);
 
       // redirect requests have the same `requestId`,
       if (
-        requestWillBeSentEvent &&
-        (requestWillBeSentEvent.request.url !== event.request.url ||
-          requestWillBeSentEvent.request.method !== event.request.method)
+        requestWillBeSent &&
+        (requestWillBeSent.event.request.url !== event.request.url ||
+          requestWillBeSent.event.request.method !== event.request.method)
       ) {
         this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
         return;
       }
-      return requestWillBeSentEvent;
+      return requestWillBeSent;
     })();
 
-    if (requestWillBeSentEvent) {
+    if (requestWillBeSent) {
+      const {event: requestWillBeSentEvent, client: networkClient} =
+        requestWillBeSent;
       this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
-      this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
+      this.#onRequest(
+        networkClient,
+        requestWillBeSentEvent,
+        fetchRequestId,
+        false,
+        client,
+      );
     } else {
-      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      this.#networkEventManager.storeRequestPaused(
+        networkRequestId,
+        event,
+        client,
+      );
     }
   }
 
@@ -536,6 +558,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     event: Protocol.Network.RequestWillBeSentEvent,
     fetchRequestId?: FetchRequestId,
     fromMemoryCache = false,
+    fetchClient: CDPSession = client,
   ): void {
     let redirectChain: CdpHTTPRequest[] = [];
     if (event.redirectResponse) {
@@ -555,6 +578,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
           this.#networkEventManager.queueRedirectInfo(event.requestId, {
             event,
             fetchRequestId,
+            fetchClient,
           });
           return;
         }
@@ -592,6 +616,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       event,
       redirectChain,
       this.#logger,
+      fetchClient,
     );
 
     const extraInfo = this.#networkEventManager
@@ -624,7 +649,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     event: Protocol.Network.RequestServedFromCacheEvent,
   ): void {
     const requestWillBeSentEvent =
-      this.#networkEventManager.getRequestWillBeSent(event.requestId);
+      this.#networkEventManager.getRequestWillBeSent(event.requestId)?.event;
     let request = this.#networkEventManager.getRequest(event.requestId);
     // Requests served from memory cannot be intercepted.
     if (request) {
@@ -738,7 +763,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
     if (redirectInfo) {
       this.#networkEventManager.responseExtraInfo(event.requestId).push(event);
-      this.#onRequest(client, redirectInfo.event, redirectInfo.fetchRequestId);
+      this.#onRequest(
+        client,
+        redirectInfo.event,
+        redirectInfo.fetchRequestId,
+        false,
+        redirectInfo.fetchClient,
+      );
       return;
     }
 
