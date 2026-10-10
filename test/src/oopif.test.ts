@@ -10,7 +10,13 @@ import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame, dumpFrames, navigateFrame} from './utils.js';
+import {
+  attachFrame,
+  detachFrame,
+  dumpFrames,
+  html,
+  navigateFrame,
+} from './utils.js';
 
 describe('OOPIF', function () {
   // We start a new browser instance for this test because we need the
@@ -386,6 +392,61 @@ describe('OOPIF', function () {
     expect(resultBoundingBox.x).toBeGreaterThan(150); // padding + margin + border left
     expect(resultBoundingBox.y).toBeGreaterThan(150); // padding + margin + border top
   });
+
+  for (const scrollTarget of ['page', 'iframe'] as const) {
+    it(`should capture an OOPIF element when the ${scrollTarget} is scrolled`, async () => {
+      const {server, page} = state;
+
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(html`
+        <style>
+          body {
+            margin: 0;
+            width: 1000px;
+            height: 1000px;
+          }
+          iframe {
+            margin: 100px;
+            width: 300px;
+            height: 300px;
+            border: none;
+          }
+        </style>
+      `);
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/empty.html',
+      );
+      await frame.setContent(html`
+        <style>
+          body {
+            margin: 0;
+            width: 1000px;
+            height: 1000px;
+          }
+          div {
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            border: 2px solid blue;
+            background: green;
+            width: 50px;
+            height: 50px;
+          }
+        </style>
+        <div></div>
+      `);
+      await (scrollTarget === 'page' ? page : frame).evaluate(() => {
+        window.scrollTo(100, 100);
+      });
+
+      using elementHandle = (await frame.$('div'))!;
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+    });
+  }
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
     const {server, puppeteer, browser, page} = state;
