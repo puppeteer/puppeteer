@@ -2846,9 +2846,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
     return await this.mainFrame()
       .isolatedRealm()
       .evaluate(() => {
+        // Frames are whole pixels, so round off any floating-point error
+        // (e.g. 800 * 1.15 = 919.99...) that would make ffmpeg's pad filter
+        // one pixel smaller than the frames.
         return [
-          window.visualViewport!.width * window.devicePixelRatio,
-          window.visualViewport!.height * window.devicePixelRatio,
+          Math.round(window.visualViewport!.width * window.devicePixelRatio),
+          Math.round(window.visualViewport!.height * window.devicePixelRatio),
           window.devicePixelRatio,
         ] as const;
       });
