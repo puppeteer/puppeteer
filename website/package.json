@@ -24,7 +24,7 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.10.2",
     "@docusaurus/theme-common": "3.10.2",
     "@mdx-js/react": "3.1.1",
-    "algoliasearch-helper": "3.29.3",
+    "algoliasearch-helper": "3.30.0",
     "clsx": "2.1.1",
     "docusaurus-plugin-copy-page-button": "0.8.4",
     "prism-react-renderer": "2.4.1",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@swc/core": "1.16.2"
+    "@swc/core": "1.16.13"
   },
   "browserslist": {
     "production": [
