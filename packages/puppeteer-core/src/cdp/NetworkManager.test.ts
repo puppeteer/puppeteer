@@ -578,6 +578,87 @@ describe('NetworkManager', () => {
 
     expect(requests).toHaveLength(2);
   });
+  it(`should emit requestfailed when Network.loadingFailed arrives before Fetch.requestPaused (github.com/puppeteer/puppeteer/issues/15575)`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = createNetworkManager();
+    await manager.addClient(mockCDPSession);
+    await manager.setRequestInterception(true);
+
+    const events: string[] = [];
+    const requests: HTTPRequest[] = [];
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+      requests.push(request);
+      request.enqueueInterceptAction(async () => {
+        events.push('request handler');
+        await request.continue();
+      });
+    });
+    const failedRequests: HTTPRequest[] = [];
+    manager.on(NetworkManagerEvent.RequestFailed, (request: HTTPRequest) => {
+      events.push('requestfailed');
+      failedRequests.push(request);
+    });
+    manager.on(NetworkManagerEvent.RequestFinished, () => {
+      events.push('requestfinished');
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '58462.1',
+      loaderId: '',
+      documentURL: 'about:blank',
+      request: {
+        url: 'http://127.0.0.1:1337/arbitrary-endpoint',
+        method: 'GET',
+        headers: {},
+        mixedContentType: 'none',
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 1,
+      wallTime: 1,
+      initiator: {type: 'script'},
+      redirectHasExtraInfo: false,
+      type: 'Fetch',
+      frameId: 'frame-1',
+      hasUserGesture: false,
+    });
+    mockCDPSession.emit('Network.loadingFailed', {
+      requestId: '58462.1',
+      timestamp: 2,
+      type: 'Fetch',
+      errorText: 'net::ERR_ABORTED',
+      canceled: true,
+    });
+
+    expect(requests).toHaveLength(0);
+    expect(failedRequests).toHaveLength(0);
+
+    mockCDPSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-1.0',
+      request: {
+        url: 'http://127.0.0.1:1337/arbitrary-endpoint',
+        method: 'GET',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      frameId: 'frame-1',
+      resourceType: 'Fetch',
+      networkId: '58462.1',
+    });
+
+    expect(requests).toHaveLength(1);
+    await new Promise(resolve => {
+      return setTimeout(resolve, 0);
+    });
+
+    expect(events).toEqual(['request handler', 'requestfailed']);
+    expect(failedRequests[0]).toBe(requests[0]);
+    expect(failedRequests[0]!.failure()).toEqual({
+      errorText: 'net::ERR_ABORTED',
+    });
+  });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = createNetworkManager();
