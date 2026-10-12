@@ -702,7 +702,17 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     this.#networkEventManager.storeRequest(event.requestId, request);
     this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
     this.emit(NetworkManagerEvent.Request, request);
-    void request.finalizeInterceptions();
+    // With request interception enabled, Network.loadingFailed may have
+    // arrived before the Fetch.requestPaused that created this request. Emit
+    // the failure once the request's interception handlers have run.
+    const loadingFailedEvent =
+      this.#networkEventManager.takePendingLoadingFailed(event.requestId);
+    const interceptionsFinalized = request.finalizeInterceptions();
+    if (loadingFailedEvent) {
+      void interceptionsFinalized.finally(() => {
+        this.#emitLoadingFailed(client, loadingFailedEvent);
+      });
+    }
   }
 
   #onRequestWillBeSentExtraInfo(
@@ -944,9 +954,21 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     event: Protocol.Network.LoadingFailedEvent,
   ): void {
     const request = this.#networkEventManager.getRequest(event.requestId);
-    // For certain requestIds we never receive requestWillBeSent event.
-    // @see https://crbug.com/750469
     if (!request) {
+      // With request interception enabled, the request is only created on
+      // Fetch.requestPaused, which can arrive after Network.loadingFailed.
+      // Keep the failure until then so that `requestfailed` is still emitted.
+      if (
+        this.#userRequestInterceptionEnabled &&
+        this.#networkEventManager.getRequestWillBeSent(event.requestId)
+      ) {
+        this.#networkEventManager.storePendingLoadingFailed(
+          event.requestId,
+          event,
+        );
+      }
+      // For certain requestIds we never receive requestWillBeSent event.
+      // @see https://crbug.com/750469
       return;
     }
     this.#adoptCdpSessionIfNeeded(client, request);
