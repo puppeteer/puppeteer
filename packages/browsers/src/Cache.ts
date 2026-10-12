@@ -19,6 +19,10 @@ import {DEBUG_PREFIXES, type Logger} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {readInstallMarker} from './installMarker.js';
 
+const METADATA_RENAME_MAX_ATTEMPTS = 5;
+const METADATA_RENAME_RETRY_DELAY = 50;
+const metadataRenameWait = new Int32Array(new SharedArrayBuffer(4));
+
 /**
  * @public
  */
@@ -67,6 +71,7 @@ export class InstalledBrowser {
   }
 
   writeMetadata(metadata: Metadata): void {
+    // This replaces the complete snapshot; a separate read is not a transaction.
     this.#cache.writeMetadata(this.browser, metadata);
   }
 }
@@ -163,6 +168,7 @@ export class Cache {
     browser: Browser,
     mutator: (metadata: Metadata) => void,
   ): boolean {
+    // Synchronous RMW avoids yielding, but does not serialize other processes.
     const metadata = this.readMetadata(browser);
     const previous = JSON.stringify(metadata);
     mutator(metadata);
@@ -247,18 +253,14 @@ export class Cache {
     platform: BrowserPlatform,
     buildId: string,
   ): void {
-    const metadata = this.readMetadata(browser);
-    for (const alias of Object.keys(metadata.aliases)) {
-      if (metadata.aliases[alias] === buildId) {
-        delete metadata.aliases[alias];
+    this.updateMetadata(browser, metadata => {
+      for (const alias of Object.keys(metadata.aliases)) {
+        if (metadata.aliases[alias] === buildId) {
+          delete metadata.aliases[alias];
+        }
       }
-    }
-    // Clean up executable path entry
-    const key = `${platform}-${buildId}`;
-    if (metadata.executablePaths?.[key]) {
-      delete metadata.executablePaths[key];
-      this.writeMetadata(browser, metadata);
-    }
+      delete metadata.executablePaths?.[`${platform}-${buildId}`];
+    });
     fs.rmSync(this.installationDir(browser, platform, buildId), {
       force: true,
       recursive: true,
@@ -350,7 +352,33 @@ export class Cache {
       fs.writeFileSync(temporaryPath, JSON.stringify(metadata, null, 2), {
         flag: 'wx',
       });
-      fs.renameSync(temporaryPath, metadataPath);
+      for (let attempt = 1; ; attempt++) {
+        try {
+          fs.renameSync(temporaryPath, metadataPath);
+          break;
+        } catch (error) {
+          if (
+            process.platform !== 'win32' ||
+            attempt >= METADATA_RENAME_MAX_ATTEMPTS ||
+            !(error instanceof Error) ||
+            !('code' in error) ||
+            !(
+              error.code === 'EPERM' ||
+              error.code === 'EBUSY' ||
+              error.code === 'EACCES'
+            )
+          ) {
+            throw error;
+          }
+          // Bound the wait while preserving the synchronous metadata API.
+          Atomics.wait(
+            metadataRenameWait,
+            0,
+            0,
+            attempt * METADATA_RENAME_RETRY_DELAY,
+          );
+        }
+      }
     } finally {
       try {
         fs.rmSync(temporaryPath, {force: true});
