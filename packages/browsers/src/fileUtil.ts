@@ -7,7 +7,7 @@
 import type {ChildProcessByStdio} from 'node:child_process';
 import {spawnSync, spawn, execFile} from 'node:child_process';
 import {constants, createReadStream, createWriteStream} from 'node:fs';
-import {mkdir, readdir, symlink} from 'node:fs/promises';
+import {lstat, mkdir, readdir, symlink} from 'node:fs/promises';
 import * as path from 'node:path';
 import type {Readable, Transform} from 'node:stream';
 import {Stream, Writable} from 'node:stream';
@@ -317,15 +317,29 @@ async function extractZipWithCli(
 }
 
 /**
- * @internal
+ * Checks that `linkTarget` is relative, uses `..` only as leading segments,
+ * and climbs at most `depth` directories (staying within the extraction root).
  */
-function isInsideDirectory(directory: string, candidate: string): boolean {
-  const resolvedDirectory = path.resolve(directory);
-  const resolvedCandidate = path.resolve(candidate);
-  return (
-    resolvedCandidate === resolvedDirectory ||
-    resolvedCandidate.startsWith(resolvedDirectory + path.sep)
-  );
+function isValidSymlinkTarget(linkTarget: string, depth: number): boolean {
+  if (
+    !linkTarget ||
+    path.isAbsolute(linkTarget) ||
+    /^[a-zA-Z]:/.test(linkTarget)
+  ) {
+    return false;
+  }
+  let descended = false;
+  for (const part of linkTarget.split(/[/\\]+/)) {
+    if (part === '..') {
+      if (descended || depth === 0) {
+        return false;
+      }
+      depth--;
+    } else if (part.length > 0 && part !== '.') {
+      descended = true;
+    }
+  }
+  return true;
 }
 
 /**
@@ -348,6 +362,33 @@ async function extractZipEntry(
   // Fall back to sensible defaults for archives without Unix attributes.
   const mode =
     unixMode === 0 ? (isDirectory ? 0o755 : 0o644) : unixMode & 0o777;
+
+  const parts = entry.fileName.split(/[/\\]+/).filter(part => {
+    return part.length > 0 && part !== '.';
+  });
+  if (parts.length === 0) {
+    if (isDirectory) {
+      await mkdir(folderPath, {recursive: true, mode});
+      return;
+    }
+    throw new Error(`Zip entry "${entry.fileName}" has an empty path.`);
+  }
+
+  let current = folderPath;
+  for (const part of parts) {
+    current = path.join(current, part);
+    const stats = await lstat(current).catch(() => {
+      return undefined;
+    });
+    if (!stats) {
+      break;
+    }
+    if (stats.isSymbolicLink()) {
+      throw new Error(
+        `Zip entry "${entry.fileName}" would be extracted through a symlink.`,
+      );
+    }
+  }
 
   const destination = path.join(folderPath, entry.fileName);
   if (isDirectory) {
@@ -378,11 +419,7 @@ async function extractZipEntry(
     );
     const linkTarget = Buffer.concat(chunks).toString();
     // Verify that the link does not resolve outside of the target directory.
-    const resolvedLinkTarget = path.resolve(
-      path.dirname(destination),
-      linkTarget,
-    );
-    if (!isInsideDirectory(folderPath, resolvedLinkTarget)) {
+    if (!isValidSymlinkTarget(linkTarget, parts.length - 1)) {
       throw new Error(
         `Zip symlink "${entry.fileName}" would point outside of the target directory.`,
       );
