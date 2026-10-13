@@ -319,12 +319,12 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
     const cookiesToDelete = cookies.filter(cookie => {
       return filters.some(filter => {
         if (filter.name === cookie.name) {
-          if (filter.domain !== undefined && filter.domain === cookie.domain) {
-            return true;
+          if (filter.domain !== undefined && filter.domain !== cookie.domain) {
+            return false;
           }
 
-          if (filter.path !== undefined && filter.path === cookie.path) {
-            return true;
+          if (filter.path !== undefined && filter.path !== cookie.path) {
+            return false;
           }
           if (
             filter.partitionKey !== undefined &&
@@ -334,25 +334,25 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
               throw new Error('Unexpected string partition key');
             }
             if (typeof filter.partitionKey === 'string') {
-              if (filter.partitionKey === cookie.partitionKey?.sourceOrigin) {
-                return true;
+              if (filter.partitionKey !== cookie.partitionKey?.sourceOrigin) {
+                return false;
               }
             } else {
               if (
-                filter.partitionKey.sourceOrigin ===
+                filter.partitionKey.sourceOrigin !==
                 cookie.partitionKey?.sourceOrigin
               ) {
-                return true;
+                return false;
               }
             }
           }
           if (filter.url !== undefined) {
             const url = new URL(filter.url);
             if (
-              url.hostname === cookie.domain &&
-              url.pathname === cookie.path
+              url.hostname !== cookie.domain ||
+              url.pathname !== cookie.path
             ) {
-              return true;
+              return false;
             }
           }
           return true;
