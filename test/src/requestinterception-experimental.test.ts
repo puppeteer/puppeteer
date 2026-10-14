@@ -176,6 +176,31 @@ describe('cooperative request interception', function () {
         throw requestError;
       }
     });
+    it('should normalize Headers instances for cooperative interception', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      let requestError;
+      page.on('request', request => {
+        void request.continue({headers: new Headers({foo: 'bar'})}, 0);
+        try {
+          expect(request.continueRequestOverrides().headers).toEqual({
+            foo: 'bar',
+          });
+        } catch (error) {
+          requestError = error;
+        }
+      });
+
+      const [serverRequest] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      if (requestError) {
+        throw requestError;
+      }
+      expect(serverRequest.headers['foo']).toBe('bar');
+    });
     // @see https://github.com/puppeteer/puppeteer/issues/4743
     it('should be able to remove headers', async () => {
       const {page, server} = await getTestState();

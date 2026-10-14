@@ -31,19 +31,19 @@ export type HeadersInput = Headers | Record<string, string>;
  *
  * @internal
  */
-export function normalizeHeadersInput<T = string>(
-  headers: Headers | Record<string, T>,
-): Record<string, T | T[]> {
+export function normalizeHeadersInput(
+  headers: HeadersInput,
+): Record<string, string | string[]> {
   if (headers instanceof Headers) {
-    const result: Record<string, T | T[]> = {};
+    const result: Record<string, string | string[]> = {};
     headers.forEach((value, key) => {
       const existing = result[key];
       if (existing === undefined) {
-        result[key] = value as T;
+        result[key] = value;
       } else if (Array.isArray(existing)) {
-        (existing as T[]).push(value as T);
+        existing.push(value);
       } else {
-        result[key] = [existing, value] as T[];
+        result[key] = [existing, value];
       }
     });
     return result;
@@ -68,6 +68,16 @@ export interface ContinueRequestOverrides {
    */
   headers?: HeadersInput;
 }
+
+/**
+ * @internal
+ */
+export type ContinueRequestOverridesInternal = Omit<
+  ContinueRequestOverrides,
+  'headers'
+> & {
+  headers?: Record<string, string | string[]>;
+};
 
 /**
  * @public
@@ -98,6 +108,13 @@ export interface ResponseForRequest {
   contentType: string;
   body: string | Uint8Array;
 }
+
+/**
+ * @internal
+ */
+export type ResponseForRequestInternal = Omit<ResponseForRequest, 'headers'> & {
+  headers: Record<string, string | string[] | unknown>;
+};
 
 /**
  * Resource types for HTTPRequests as perceived by the rendering engine.
@@ -180,8 +197,8 @@ export abstract class HTTPRequest {
     handled: boolean;
     handlers: Array<() => void | PromiseLike<any>>;
     resolutionState: InterceptResolutionState;
-    requestOverrides: ContinueRequestOverrides;
-    response: Partial<ResponseForRequest> | null;
+    requestOverrides: ContinueRequestOverridesInternal;
+    response: Partial<ResponseForRequestInternal> | null;
     abortReason: Protocol.Network.ErrorReason | null;
   } = {
     enabled: false,
@@ -218,7 +235,8 @@ export abstract class HTTPRequest {
    * `respond()` aren't called).
    */
   continueRequestOverrides(): ContinueRequestOverrides {
-    return this.interception.requestOverrides;
+    return this.interception
+      .requestOverrides as unknown as ContinueRequestOverrides;
   }
 
   /**
@@ -226,7 +244,7 @@ export abstract class HTTPRequest {
    * interception is allowed to respond (ie, `abort()` is not called).
    */
   responseForRequest(): Partial<ResponseForRequest> | null {
-    return this.interception.response;
+    return this.interception.response as Partial<ResponseForRequest> | null;
   }
 
   /**
@@ -287,12 +305,16 @@ export abstract class HTTPRequest {
   /**
    * @internal
    */
-  abstract _respond(response: Partial<ResponseForRequest>): Promise<void>;
+  abstract _respond(
+    response: Partial<ResponseForRequestInternal>,
+  ): Promise<void>;
 
   /**
    * @internal
    */
-  abstract _continue(overrides: ContinueRequestOverrides): Promise<void>;
+  abstract _continue(
+    overrides: ContinueRequestOverridesInternal,
+  ): Promise<void>;
 
   /**
    * Awaits pending interception handlers and then decides how to fulfill
@@ -504,10 +526,16 @@ export abstract class HTTPRequest {
       return;
     }
 
+    const normalizedOverrides: ContinueRequestOverridesInternal = {
+      ...overrides,
+      headers: overrides.headers
+        ? normalizeHeadersInput(overrides.headers)
+        : undefined,
+    };
     if (priority === undefined) {
-      return await this._continue(overrides);
+      return await this._continue(normalizedOverrides);
     }
-    this.interception.requestOverrides = overrides;
+    this.interception.requestOverrides = normalizedOverrides;
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority
@@ -571,10 +599,17 @@ export abstract class HTTPRequest {
     if (!this.canBeIntercepted()) {
       return;
     }
+    const normalizedResponse: Partial<ResponseForRequestInternal> = {
+      ...response,
+      headers:
+        response.headers instanceof Headers
+          ? normalizeHeadersInput(response.headers)
+          : response.headers,
+    };
     if (priority === undefined) {
-      return await this._respond(response);
+      return await this._respond(normalizedResponse);
     }
-    this.interception.response = response;
+    this.interception.response = normalizedResponse;
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority

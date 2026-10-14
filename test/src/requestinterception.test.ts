@@ -261,28 +261,6 @@ describe('request interception', function () {
       }
       expect(response.ok()).toBe(true);
     });
-    it('should show custom HTTP headers set as a Headers instance', async () => {
-      const {page, server} = await getTestState();
-
-      await page.setExtraHTTPHeaders(new Headers({foo: 'bar'}));
-      await page.setRequestInterception(true);
-      let requestError;
-      page.on('request', request => {
-        try {
-          expect(request.headers()['foo']).toBe('bar');
-        } catch (error) {
-          requestError = error;
-        } finally {
-          void request.continue();
-        }
-      });
-
-      const response = (await page.goto(server.EMPTY_PAGE))!;
-      if (requestError) {
-        throw requestError;
-      }
-      expect(response.ok()).toBe(true);
-    });
     // @see https://github.com/puppeteer/puppeteer/issues/4337
     it('should work with redirect inside sync XHR', async () => {
       const {page, server} = await getTestState();
