@@ -1,5 +1,28 @@
 # Changelog
 
+## [25.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.13.0...puppeteer-core-v25.14.0) (2026-10-14)
+
+
+### 🎉 Features
+
+* migrate network emulation to Network.emulateNetworkConditionsByRule ([#15508](https://github.com/puppeteer/puppeteer/issues/15508)) ([2952199](https://github.com/puppeteer/puppeteer/commit/29521992a24f0b6185f5049bb03a9e8c87cd3369))
+* **network:** accept Headers instances for request interception and extra headers ([#15530](https://github.com/puppeteer/puppeteer/issues/15530)) ([b20d03b](https://github.com/puppeteer/puppeteer/commit/b20d03b4d5df7f08c2b3be3a754578534039ba1d))
+* roll to Firefox 158.0 ([#15582](https://github.com/puppeteer/puppeteer/issues/15582)) ([3902129](https://github.com/puppeteer/puppeteer/commit/3902129f2bb11d9b54767e619df1ec6c03317847))
+
+
+### 🛠️ Fixes
+
+* enforce blocklist/allowlist for service worker requests ([#15586](https://github.com/puppeteer/puppeteer/issues/15586)) ([414231a](https://github.com/puppeteer/puppeteer/commit/414231a716973ff99daa82eed0998dc4f263df4a))
+* roll to Chrome 155.0.8059.79 ([#15584](https://github.com/puppeteer/puppeteer/issues/15584)) ([9ea69c1](https://github.com/puppeteer/puppeteer/commit/9ea69c154d66ce7d6210264e272cc6c1258d0796))
+* **screencast:** round the frame size to whole pixels ([#15574](https://github.com/puppeteer/puppeteer/issues/15574)) ([565e584](https://github.com/puppeteer/puppeteer/commit/565e5840ca72160ec70f2e748a63bdbc87c63cc5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.4 to 3.2.5
+
 ## [25.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.12.0...puppeteer-core-v25.13.0) (2026-10-08)
 
 
