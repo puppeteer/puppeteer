@@ -793,10 +793,10 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
       page.on('request', request => {
+        const headers = new Headers(request.headers());
+        headers.set('foo', 'bar');
         void request.continue({
-          headers: new Headers({
-            FOO: 'bar',
-          }),
+          headers,
         });
       });
       await page.goto(server.EMPTY_PAGE);

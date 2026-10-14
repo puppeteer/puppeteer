@@ -182,11 +182,16 @@ describe('cooperative request interception', function () {
       await page.setRequestInterception(true);
       let requestError;
       page.on('request', request => {
-        void request.continue({headers: new Headers({foo: 'bar'})}, 0);
+        const headers = new Headers(request.headers());
+        headers.set('foo', 'bar');
+        void request.continue({headers}, 0);
         try {
-          expect(request.continueRequestOverrides().headers).toEqual({
-            foo: 'bar',
-          });
+          const overridesHeaders = request.continueRequestOverrides().headers;
+          expect(overridesHeaders).not.toBeInstanceOf(Headers);
+          if (overridesHeaders instanceof Headers) {
+            throw new Error('Expected normalized headers');
+          }
+          expect(overridesHeaders?.['foo']).toBe('bar');
         } catch (error) {
           requestError = error;
         }
