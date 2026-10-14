@@ -19,6 +19,56 @@ import type {HTTPResponse} from './HTTPResponse.js';
 /**
  * @public
  */
+export type HeadersInput = Headers | Record<string, string>;
+
+/**
+ * Converts a Fetch API {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers | Headers}
+ * instance into a plain record. Plain records are returned as-is.
+ *
+ * Header values provided by a `Headers` instance that repeat the same name
+ * (e.g., `set-cookie`) are collected into an array so that the information
+ * is not lost.
+ *
+ * @internal
+ */
+export function normalizeHeadersInput(
+  headers: HeadersInput,
+): Record<string, string | string[]> {
+  if (headers instanceof Headers) {
+    const result: Record<string, string | string[]> = {};
+    headers.forEach((value, key) => {
+      const existing = result[key];
+      if (existing === undefined) {
+        result[key] = value;
+      } else if (Array.isArray(existing)) {
+        existing.push(value);
+      } else {
+        result[key] = [existing, value];
+      }
+    });
+    return result;
+  }
+  return headers;
+}
+
+/**
+ * Converts header input into a plain record with string values.
+ *
+ * @internal
+ */
+export function headersInputToRecord(
+  headers: HeadersInput,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(normalizeHeadersInput(headers)).map(([key, value]) => {
+      return [key, Array.isArray(value) ? value.join(', ') : value];
+    }),
+  );
+}
+
+/**
+ * @public
+ */
 export interface ContinueRequestOverrides {
   /**
    * If set, the request URL will change. This is not a redirect.
@@ -26,8 +76,23 @@ export interface ContinueRequestOverrides {
   url?: string;
   method?: string;
   postData?: string;
-  headers?: Record<string, string>;
+  /**
+   * Optional headers to set on the request. Either a
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers | Headers}
+   * instance or a plain record of headers.
+   */
+  headers?: HeadersInput;
 }
+
+/**
+ * @internal
+ */
+export type ContinueRequestOverridesInternal = Omit<
+  ContinueRequestOverrides,
+  'headers'
+> & {
+  headers?: Record<string, string>;
+};
 
 /**
  * @public
@@ -45,17 +110,26 @@ export interface InterceptResolutionState {
 export interface ResponseForRequest {
   status: number;
   /**
-   * Optional response headers.
+   * Optional response headers. Either a
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers | Headers}
+   * instance or a plain record.
    *
    * The record values will be converted to string following:
    * Arrays' values will be mapped to String
    * (Used when you need multiple headers with the same name).
    * Non-arrays will be converted to String.
    */
-  headers: Record<string, string | string[] | unknown>;
+  headers: Headers | Record<string, string | string[] | unknown>;
   contentType: string;
   body: string | Uint8Array;
 }
+
+/**
+ * @internal
+ */
+export type ResponseForRequestInternal = Omit<ResponseForRequest, 'headers'> & {
+  headers: Record<string, string | string[] | unknown>;
+};
 
 /**
  * Resource types for HTTPRequests as perceived by the rendering engine.
@@ -138,8 +212,8 @@ export abstract class HTTPRequest {
     handled: boolean;
     handlers: Array<() => void | PromiseLike<any>>;
     resolutionState: InterceptResolutionState;
-    requestOverrides: ContinueRequestOverrides;
-    response: Partial<ResponseForRequest> | null;
+    requestOverrides: ContinueRequestOverridesInternal;
+    response: Partial<ResponseForRequestInternal> | null;
     abortReason: Protocol.Network.ErrorReason | null;
   } = {
     enabled: false,
@@ -245,12 +319,16 @@ export abstract class HTTPRequest {
   /**
    * @internal
    */
-  abstract _respond(response: Partial<ResponseForRequest>): Promise<void>;
+  abstract _respond(
+    response: Partial<ResponseForRequestInternal>,
+  ): Promise<void>;
 
   /**
    * @internal
    */
-  abstract _continue(overrides: ContinueRequestOverrides): Promise<void>;
+  abstract _continue(
+    overrides: ContinueRequestOverridesInternal,
+  ): Promise<void>;
 
   /**
    * Awaits pending interception handlers and then decides how to fulfill
@@ -462,10 +540,17 @@ export abstract class HTTPRequest {
       return;
     }
 
+    const {headers, ...rest} = overrides;
+    const normalizedOverrides: ContinueRequestOverridesInternal = {
+      ...rest,
+      ...(headers && {
+        headers: headersInputToRecord(headers),
+      }),
+    };
     if (priority === undefined) {
-      return await this._continue(overrides);
+      return await this._continue(normalizedOverrides);
     }
-    this.interception.requestOverrides = overrides;
+    this.interception.requestOverrides = normalizedOverrides;
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority
@@ -529,10 +614,17 @@ export abstract class HTTPRequest {
     if (!this.canBeIntercepted()) {
       return;
     }
+    const normalizedResponse: Partial<ResponseForRequestInternal> = {
+      ...response,
+      headers:
+        response.headers instanceof Headers
+          ? normalizeHeadersInput(response.headers)
+          : response.headers,
+    };
     if (priority === undefined) {
-      return await this._respond(response);
+      return await this._respond(normalizedResponse);
     }
-    this.interception.response = response;
+    this.interception.response = normalizedResponse;
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority

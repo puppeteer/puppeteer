@@ -1937,6 +1937,13 @@ See individual properties for more information.
 </td></tr>
 <tr><td>
 
+<span id="headersinput">[HeadersInput](./puppeteer.headersinput.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="imageformat">[ImageFormat](./puppeteer.imageformat.md)</span>
 
 </td><td>

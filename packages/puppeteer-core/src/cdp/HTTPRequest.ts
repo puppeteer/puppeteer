@@ -8,11 +8,11 @@ import type {Protocol} from 'devtools-protocol';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {
-  type ContinueRequestOverrides,
+  type ContinueRequestOverridesInternal,
   headersArray,
   HTTPRequest,
   type ResourceType,
-  type ResponseForRequest,
+  type ResponseForRequestInternal,
   STATUS_TEXTS,
   handleError,
 } from '../api/HTTPRequest.js';
@@ -206,7 +206,9 @@ export class CdpHTTPRequest extends HTTPRequest {
   /**
    * @internal
    */
-  async _continue(overrides: ContinueRequestOverrides = {}): Promise<void> {
+  async _continue(
+    overrides: ContinueRequestOverridesInternal = {},
+  ): Promise<void> {
     const {url, method, postData, headers} = overrides;
     this.interception.handled = true;
 
@@ -233,7 +235,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       });
   }
 
-  async _respond(response: Partial<ResponseForRequest>): Promise<void> {
+  async _respond(response: Partial<ResponseForRequestInternal>): Promise<void> {
     this.interception.handled = true;
 
     let parsedBody:
@@ -248,9 +250,7 @@ export class CdpHTTPRequest extends HTTPRequest {
 
     const responseHeaders: Record<string, string | string[]> = {};
     if (response.headers) {
-      for (const header of Object.keys(response.headers)) {
-        const value = response.headers[header];
-
+      for (const [header, value] of Object.entries(response.headers)) {
         responseHeaders[header.toLowerCase()] = Array.isArray(value)
           ? value.map(item => {
               return String(item);

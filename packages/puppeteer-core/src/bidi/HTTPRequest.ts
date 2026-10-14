@@ -8,9 +8,9 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import type {
-  ContinueRequestOverrides,
+  ContinueRequestOverridesInternal,
   InterceptResolutionState,
-  ResponseForRequest,
+  ResponseForRequestInternal,
 } from '../api/HTTPRequest.js';
 import {
   HTTPRequest,
@@ -216,7 +216,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async _continue(
-    overrides: ContinueRequestOverrides = {},
+    overrides: ContinueRequestOverridesInternal = {},
   ): Promise<void> {
     const headers: Bidi.Network.Header[] = getBidiHeaders(overrides.headers);
     this.interception.handled = true;
@@ -248,7 +248,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async _respond(
-    response: Partial<ResponseForRequest>,
+    response: Partial<ResponseForRequestInternal>,
     _priority?: number,
   ): Promise<void> {
     this.interception.handled = true;

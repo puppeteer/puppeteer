@@ -28,7 +28,7 @@ import {
   timer,
   type Observable,
 } from '../../third_party/rxjs/rxjs.js';
-import type {HTTPRequest} from '../api/HTTPRequest.js';
+import type {HeadersInput, HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
@@ -1775,10 +1775,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * :::
    *
-   * @param headers - An object containing additional HTTP headers to be sent
-   * with every request. All header values must be strings.
+   * @param headers - Additional HTTP headers to be sent with every request.
+   * Either a {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers | Headers}
+   * instance or a record of additional HTTP headers. All header values must be
+   * strings.
    */
-  abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
+  abstract setExtraHTTPHeaders(headers: HeadersInput): Promise<void>;
 
   /**
    * @param userAgent - Specific user agent to use in this page
