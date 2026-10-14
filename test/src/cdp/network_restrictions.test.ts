@@ -25,6 +25,7 @@ describe('Network Restrictions', function () {
         '*://*:*/pptr.png',
         '*://*:*/serviceworkers/empty/sw.js',
         '*://*:*/serviceworkers/fetch/style.css',
+        '*://*:*/serviceworkers/fetch-on-install/blocked.json',
       ],
     });
 
@@ -98,6 +99,45 @@ describe('Network Restrictions', function () {
 
       expect(swError).toBeTruthy();
       expect(swError).toContain('Failed to register a ServiceWorker');
+    });
+
+    it('should fail fetch requests forwarded by a service worker to URLs in the blocklist', async () => {
+      const {page, server} = state;
+      const blockedUrl = server.PREFIX + '/serviceworkers/fetch/style.css';
+
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html');
+      // Wait until the page is controlled by the worker so that the fetch
+      // below is forwarded by the worker instead of going out directly.
+      await page.evaluate(() => {
+        return (window as any).activationPromise;
+      });
+
+      const fetchError = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, blockedUrl);
+
+      expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should fail fetch requests made by a service worker during install to URLs in the blocklist', async () => {
+      const {page, server} = state;
+
+      await page.goto(
+        server.PREFIX + '/serviceworkers/fetch-on-install/sw.html',
+      );
+      const installFetchResults = await page.evaluate(() => {
+        return (window as any).installFetchResultsPromise;
+      });
+
+      expect(installFetchResults).toEqual({
+        './blocked.json': 'Failed to fetch',
+        './allowed.json': 'success',
+      });
     });
 
     it('should fail fetch requests from within a service worker to URLs in the blocklist', async () => {
@@ -511,6 +551,73 @@ describe('Network Restrictions', function () {
       ).rejects.toThrow(
         'Cannot reset network conditions: rule-based emulation is enabled.',
       );
+    });
+  });
+
+  describe('allowlist validation with service workers', () => {
+    const state = setupSeparateTestBrowserHooks({
+      allowlist: [
+        '*://*:*/serviceworkers/fetch/sw.html',
+        '*://*:*/serviceworkers/fetch/sw.js',
+        '*://*:*/serviceworkers/fetch-on-install/sw.html',
+        '*://*:*/serviceworkers/fetch-on-install/sw.js',
+        '*://*:*/serviceworkers/fetch-on-install/allowed.json',
+      ],
+    });
+
+    it('should fail fetch requests forwarded by a service worker to URLs not in the allowlist', async () => {
+      const {page, server} = state;
+      const blockedUrl = server.PREFIX + '/serviceworkers/fetch/style.css';
+
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html');
+      await page.evaluate(() => {
+        return (window as any).activationPromise;
+      });
+
+      const fetchError = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, blockedUrl);
+
+      expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should fail fetch requests made by a service worker during install to URLs not in the allowlist', async () => {
+      const {page, server} = state;
+
+      await page.goto(
+        server.PREFIX + '/serviceworkers/fetch-on-install/sw.html',
+      );
+      const installFetchResults = await page.evaluate(() => {
+        return (window as any).installFetchResultsPromise;
+      });
+
+      expect(installFetchResults).toEqual({
+        './blocked.json': 'Failed to fetch',
+        './allowed.json': 'success',
+      });
+    });
+  });
+
+  describe('no restrictions', () => {
+    it('should not affect fetch requests made by a service worker during install', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(
+        server.PREFIX + '/serviceworkers/fetch-on-install/sw.html',
+      );
+      const installFetchResults = await page.evaluate(() => {
+        return (window as any).installFetchResultsPromise;
+      });
+
+      expect(installFetchResults).toEqual({
+        './blocked.json': 'success',
+        './allowed.json': 'success',
+      });
     });
   });
 

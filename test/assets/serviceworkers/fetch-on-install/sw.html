@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+  window.installFetchResultsPromise = navigator.serviceWorker
+    .register('sw.js')
+    .then(() => navigator.serviceWorker.ready)
+    .then(registration => {
+      return new Promise(resolve => {
+        navigator.serviceWorker.addEventListener(
+          'message',
+          event => resolve(event.data),
+          {once: true},
+        );
+        registration.active.postMessage('install-fetch-result');
+      });
+    });
+</script>
