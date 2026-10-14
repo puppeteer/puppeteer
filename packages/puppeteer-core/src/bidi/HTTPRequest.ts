@@ -174,6 +174,10 @@ export class BidiHTTPRequest extends HTTPRequest {
     return await this.#request.fetchPostData();
   }
 
+  override async content(): Promise<Uint8Array | undefined> {
+    return await this.#request.getRequestContent();
+  }
+
   override headers(): Record<string, string> {
     // Callers should not be allowed to mutate internal structure.
     const headers: Record<string, string> = {};
