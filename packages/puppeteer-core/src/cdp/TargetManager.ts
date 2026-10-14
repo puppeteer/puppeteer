@@ -346,20 +346,44 @@ export class TargetManager
     }
 
     // Special case for service workers: being attached to service workers will
-    // prevent them from ever being destroyed. Therefore, we silently detach
-    // from service workers unless the connection was manually created via
-    // `page.worker()`. To determine this, we use
+    // prevent them from ever being destroyed. Therefore, when no
+    // blocklist/allowlist is configured, we silently detach from service
+    // workers unless the connection was manually created via `page.worker()`.
+    // To determine this, we use
     // `this.#connection.isAutoAttached(targetInfo.targetId)`. In the future, we
     // should determine if a target is auto-attached or not with the help of
     // CDP.
+    //
+    // When a blocklist/allowlist is configured, we stay attached to every
+    // service worker instead: network conditions are reset when the session
+    // that set them detaches, so staying attached is what keeps the rules
+    // enforced for requests the worker issues, including the ones it forwards
+    // on behalf of controlled pages. As a consequence, the browser never
+    // idle-terminates service workers while rules are configured.
     if (targetInfo.type === 'service_worker') {
-      if (!this.isUrlAllowed(targetInfo.url)) {
-        await Promise.all([
-          this.#maybeSetupNetworkConditions(session, targetInfo),
-          session.send('Runtime.runIfWaitingForDebugger'),
-        ]).catch(error => {
+      if (this.#hasNetworkRules()) {
+        // The rules are applied before the worker is resumed so that requests
+        // made during `install` are covered as well:
+        // #maybeSetupNetworkConditions dispatches its commands synchronously,
+        // so they are on the wire ahead of Runtime.runIfWaitingForDebugger.
+        // They are only acknowledged once the worker runs, though, so they
+        // are awaited after resuming it.
+        const networkConditionsSetUp = this.#maybeSetupNetworkConditions(
+          session,
+          targetInfo,
+        );
+        await session.send('Runtime.runIfWaitingForDebugger').catch(error => {
           this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         });
+        await networkConditionsSetUp;
+        if (
+          !this.isUrlAllowed(targetInfo.url) ||
+          this.#ignoredTargets.has(targetInfo.targetId) ||
+          !this.#discoveredTargetsByTargetId.has(targetInfo.targetId)
+        ) {
+          return;
+        }
+        this.#attachServiceWorkerTarget(targetInfo, session, parentSession);
         return;
       }
       await this.#silentDetach(session, parentSession);
@@ -445,6 +469,43 @@ export class TargetManager
     });
   };
 
+  /**
+   * Registers a service worker session that is kept open (see the
+   * blocklist/allowlist handling in {@link TargetManager.#onAttachedToTarget})
+   * so that the session is visible to the manager's bookkeeping and
+   * `WorkerTarget.worker()` reuses it instead of opening a second one.
+   */
+  #attachServiceWorkerTarget(
+    targetInfo: Protocol.Target.TargetInfo,
+    session: CdpCDPSession,
+    parentSession: Connection | CDPSession,
+  ): void {
+    let target = this.#attachedTargetsByTargetId.get(targetInfo.targetId);
+    const isExistingTarget = target !== undefined;
+    if (!target) {
+      target = this.#targetFactory(
+        targetInfo,
+        session,
+        parentSession instanceof CdpCDPSession ? parentSession : undefined,
+      );
+    }
+
+    this.#setupAttachmentListeners(session);
+
+    if (isExistingTarget) {
+      session.setTarget(target);
+    } else {
+      target._initialize();
+      this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
+    }
+    this.#attachedTargetsBySessionId.set(session.id(), target);
+    this.#getParentTarget(parentSession)?._addChildTarget(target);
+
+    if (!isExistingTarget) {
+      this.emit(TargetManagerEvent.TargetAvailable, target);
+    }
+  }
+
   #finishInitializationIfReady(targetId?: string): void {
     if (targetId !== undefined) {
       this.#targetsIdsForInit.delete(targetId);
@@ -477,11 +538,15 @@ export class TargetManager
     this.emit(TargetManagerEvent.TargetGone, target);
   };
 
+  #hasNetworkRules(): boolean {
+    return this.#blocklist.length > 0 || this.#allowlist.length > 0;
+  }
+
   /**
    * Helper to validate URL against blocklist patterns
    */
   isUrlAllowed = (url: string): boolean => {
-    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
+    if (!this.#hasNetworkRules()) {
       return true;
     }
 
@@ -516,12 +581,20 @@ export class TargetManager
     return result;
   }
 
-  #maybeSetupNetworkConditions = async (
+  /**
+   * Issues the `Network.*` commands that enforce the blocklist/allowlist on
+   * `session`. The commands are sent synchronously (before this function
+   * returns), so callers can rely on them being dispatched ahead of any command
+   * they send afterwards. The returned promise settles once the commands are
+   * acknowledged; for worker targets that only happens once the worker is
+   * running, so it must not be awaited before `Runtime.runIfWaitingForDebugger`.
+   */
+  #maybeSetupNetworkConditions = (
     session: CDPSession,
     targetInfo: Protocol.Target.TargetInfo,
-  ): Promise<void> => {
-    if (this.#blocklist.length === 0 && this.#allowlist.length === 0) {
-      return;
+  ): Promise<unknown> => {
+    if (!this.#hasNetworkRules()) {
+      return Promise.resolve();
     }
 
     const matchedNetworkConditions = [];
@@ -569,7 +642,7 @@ export class TargetManager
         matchedNetworkConditions,
       }),
     );
-    await Promise.all(promises).catch(error => {
+    return Promise.all(promises).catch(error => {
       this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     });
   };
