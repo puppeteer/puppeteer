@@ -15,7 +15,7 @@ import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Extension} from '../api/Extension.js';
 import type {WaitForOptions} from '../api/Frame.js';
-import {type HeadersInput, normalizeHeadersInput} from '../api/HTTPRequest.js';
+import {headersInputToRecord, type HeadersInput} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
   Credentials,
@@ -766,13 +766,8 @@ export class BidiPage extends Page {
    * @internal
    */
   override async setExtraHTTPHeaders(headers: HeadersInput): Promise<void> {
-    const normalizedHeaders = normalizeHeadersInput(headers);
     await this.#frame.browsingContext.setExtraHTTPHeaders(
-      Object.fromEntries(
-        Object.entries(normalizedHeaders).map(([key, value]) => {
-          return [key, Array.isArray(value) ? value.join(', ') : value];
-        }),
-      ),
+      headersInputToRecord(headers),
     );
   }
 

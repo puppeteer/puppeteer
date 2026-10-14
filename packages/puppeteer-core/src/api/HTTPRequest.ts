@@ -52,6 +52,21 @@ export function normalizeHeadersInput(
 }
 
 /**
+ * Converts header input into a plain record with string values.
+ *
+ * @internal
+ */
+export function headersInputToRecord(
+  headers: HeadersInput,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(normalizeHeadersInput(headers)).map(([key, value]) => {
+      return [key, Array.isArray(value) ? value.join(', ') : value];
+    }),
+  );
+}
+
+/**
  * @public
  */
 export interface ContinueRequestOverrides {
@@ -76,7 +91,7 @@ export type ContinueRequestOverridesInternal = Omit<
   ContinueRequestOverrides,
   'headers'
 > & {
-  headers?: Record<string, string | string[]>;
+  headers?: Record<string, string>;
 };
 
 /**
@@ -235,8 +250,7 @@ export abstract class HTTPRequest {
    * `respond()` aren't called).
    */
   continueRequestOverrides(): ContinueRequestOverrides {
-    return this.interception
-      .requestOverrides as unknown as ContinueRequestOverrides;
+    return this.interception.requestOverrides;
   }
 
   /**
@@ -244,7 +258,7 @@ export abstract class HTTPRequest {
    * interception is allowed to respond (ie, `abort()` is not called).
    */
   responseForRequest(): Partial<ResponseForRequest> | null {
-    return this.interception.response as Partial<ResponseForRequest> | null;
+    return this.interception.response;
   }
 
   /**
@@ -526,11 +540,12 @@ export abstract class HTTPRequest {
       return;
     }
 
+    const {headers, ...rest} = overrides;
     const normalizedOverrides: ContinueRequestOverridesInternal = {
-      ...overrides,
-      headers: overrides.headers
-        ? normalizeHeadersInput(overrides.headers)
-        : undefined,
+      ...rest,
+      ...(headers && {
+        headers: headersInputToRecord(headers),
+      }),
     };
     if (priority === undefined) {
       return await this._continue(normalizedOverrides);

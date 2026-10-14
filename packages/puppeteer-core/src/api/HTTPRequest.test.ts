@@ -7,7 +7,11 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {HTTPRequest, normalizeHeadersInput} from './HTTPRequest.js';
+import {
+  headersInputToRecord,
+  HTTPRequest,
+  normalizeHeadersInput,
+} from './HTTPRequest.js';
 
 describe('HTTPRequest', () => {
   describe('getResponse', () => {
@@ -219,6 +223,18 @@ describe('HTTPRequest', () => {
 
     it('should produce an empty record for an empty Headers instance', () => {
       expect(normalizeHeadersInput(new Headers())).toEqual({});
+    });
+  });
+
+  describe('headersInputToRecord', () => {
+    it('should join repeated header values', () => {
+      const headers = new Headers();
+      headers.append('set-cookie', 'a=1');
+      headers.append('set-cookie', 'b=2');
+
+      expect(headersInputToRecord(headers)).toEqual({
+        'set-cookie': 'a=1, b=2',
+      });
     });
   });
 });
