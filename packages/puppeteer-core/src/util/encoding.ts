@@ -10,7 +10,7 @@
 export function stringToTypedArray(
   string: string,
   base64Encoded = false,
-): Uint8Array {
+): Uint8Array<ArrayBuffer> {
   if (base64Encoded) {
     if ('fromBase64' in Uint8Array) {
       // @ts-expect-error fromBase64 is newer than the types we use.
@@ -55,7 +55,7 @@ export function typedArrayToBase64(typedArray: Uint8Array): string {
 /**
  * @internal
  */
-export function mergeUint8Arrays(items: Uint8Array[]): Uint8Array {
+export function mergeUint8Arrays(items: Uint8Array[]): Uint8Array<ArrayBuffer> {
   let length = 0;
   for (const item of items) {
     length += item.length;

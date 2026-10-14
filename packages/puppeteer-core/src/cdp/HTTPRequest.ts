@@ -42,7 +42,6 @@ export class CdpHTTPRequest extends HTTPRequest {
   #method: string;
   #hasPostData = false;
   #postData?: string;
-  #postDataBuffer?: Uint8Array;
   #headers: Record<string, string> = {};
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
@@ -104,21 +103,19 @@ export class CdpHTTPRequest extends HTTPRequest {
       data.request.postDataEntries &&
       data.request.postDataEntries.length > 0
     ) {
-      this.#postDataBuffer = mergeUint8Arrays(
-        data.request.postDataEntries
-          .map(entry => {
-            return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
-          })
-          .filter((entry): entry is Uint8Array => {
-            return entry !== null;
-          }),
+      this.#postData = new TextDecoder().decode(
+        mergeUint8Arrays(
+          data.request.postDataEntries
+            .map(entry => {
+              return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
+            })
+            .filter(entry => {
+              return entry !== null;
+            }),
+        ),
       );
-      this.#postData = new TextDecoder().decode(this.#postDataBuffer);
     } else {
       this.#postData = data.request.postData;
-      if (data.request.postData !== undefined) {
-        this.#postDataBuffer = stringToTypedArray(data.request.postData);
-      }
     }
     this.#hasPostData = data.request.hasPostData ?? false;
     this.#frame = frame;
@@ -157,23 +154,14 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   override async fetchPostData(): Promise<string | undefined> {
-    try {
-      const result = await this.#client.send('Network.getRequestPostData', {
-        requestId: this.id,
-      });
-      if (result.base64Encoded) {
-        return new TextDecoder().decode(
-          stringToTypedArray(result.postData, true),
-        );
-      }
-      return result.postData;
-    } catch (err) {
-      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
-      return;
+    const content = await this.content();
+    if (content === undefined) {
+      return undefined;
     }
+    return new TextDecoder().decode(content);
   }
 
-  override async content(): Promise<Uint8Array | undefined> {
+  override async content(): Promise<Uint8Array<ArrayBuffer> | undefined> {
     try {
       const result = await this.#client.send('Network.getRequestPostData', {
         requestId: this.id,
@@ -181,7 +169,7 @@ export class CdpHTTPRequest extends HTTPRequest {
       return stringToTypedArray(result.postData, result.base64Encoded);
     } catch (err) {
       this.#logger?.(DEBUG_PREFIXES.error)?.(err);
-      return this.#postDataBuffer;
+      return;
     }
   }
 

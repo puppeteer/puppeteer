@@ -174,7 +174,7 @@ export class BidiHTTPRequest extends HTTPRequest {
     return await this.#request.fetchPostData();
   }
 
-  override async content(): Promise<Uint8Array | undefined> {
+  override async content(): Promise<Uint8Array<ArrayBuffer> | undefined> {
     return await this.#request.getRequestContent();
   }
 

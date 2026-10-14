@@ -139,7 +139,7 @@ describe('CdpHTTPRequest', () => {
     expect(Array.from(fetchBytes)).toEqual(Array.from(rawBytes));
   });
 
-  it('should fallback to postDataEntries bytes in content() when getRequestPostData fails', async () => {
+  it('should return undefined in content() and fetchPostData() when getRequestPostData fails', async () => {
     const rawBytes = new Uint8Array([0, 255, 128, 10, 200, 1]);
     const base64Bytes = Buffer.from(rawBytes).toString('base64');
     const client = {
@@ -168,8 +168,7 @@ describe('CdpHTTPRequest', () => {
         return undefined;
       },
     );
-    const content = await request.content();
-    expect(content).toBeDefined();
-    expect(Array.from(content!)).toEqual(Array.from(rawBytes));
+    expect(await request.content()).toBeUndefined();
+    expect(await request.fetchPostData()).toBeUndefined();
   });
 });

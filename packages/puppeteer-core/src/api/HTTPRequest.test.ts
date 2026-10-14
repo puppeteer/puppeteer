@@ -7,6 +7,8 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {stringToTypedArray} from '../util/encoding.js';
+
 import {HTTPRequest} from './HTTPRequest.js';
 
 describe('HTTPRequest', () => {
@@ -112,6 +114,15 @@ describe('HTTPRequest', () => {
       override fetchPostData(): Promise<string | undefined> {
         this._fetchPostDataCalls++;
         return Promise.resolve(this._postData);
+      }
+
+      override content(): Promise<Uint8Array<ArrayBuffer> | undefined> {
+        this._fetchPostDataCalls++;
+        return Promise.resolve(
+          this._postData !== undefined
+            ? stringToTypedArray(this._postData)
+            : undefined,
+        );
       }
     }
 

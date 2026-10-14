@@ -138,6 +138,10 @@ Headers are copied to the new Request instance. The request URL and method are p
 
 Fetches the POST data for the request from the browser as a `Uint8Array`.
 
+**Remarks:**
+
+If the request has no POST data or fetching the POST data from the browser fails, this method resolves to `undefined`.
+
 </td></tr>
 <tr><td>
 

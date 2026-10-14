@@ -40,7 +40,7 @@ export class Request extends EventEmitter<{
   }
 
   #responseContentPromise: Promise<Uint8Array<ArrayBufferLike>> | null = null;
-  #requestContentPromise: Promise<Uint8Array<ArrayBufferLike>> | null = null;
+  #requestContentPromise: Promise<Uint8Array<ArrayBuffer>> | null = null;
   #error?: string;
   #redirect?: Request;
   #response?: Bidi.Network.ResponseData;
@@ -259,7 +259,7 @@ export class Request extends EventEmitter<{
     });
   }
 
-  async getRequestContent(): Promise<Uint8Array | undefined> {
+  async getRequestContent(): Promise<Uint8Array<ArrayBuffer> | undefined> {
     if (!this.hasPostData) {
       return undefined;
     }

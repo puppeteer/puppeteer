@@ -10,7 +10,7 @@ import type {Logger} from '../common/Debug.js';
 import type {ProtocolError} from '../common/Errors.js';
 import {isString} from '../common/util.js';
 import {assert} from '../util/assert.js';
-import {stringToTypedArray, typedArrayToBase64} from '../util/encoding.js';
+import {typedArrayToBase64} from '../util/encoding.js';
 
 import type {CDPSession} from './CDPSession.js';
 import type {Frame} from './Frame.js';
@@ -307,16 +307,14 @@ export abstract class HTTPRequest {
   /**
    * Fetches the POST data for the request from the browser as a `Uint8Array`.
    *
+   * @remarks
+   * If the request has no POST data or fetching the POST data from the browser
+   * fails, this method resolves to `undefined`.
+   *
    * @returns A promise that resolves to the raw POST data bytes, or
-   * `undefined` when the request has no POST data or it is not available.
+   * `undefined` when the request has no POST data or fetching it fails.
    */
-  async content(): Promise<Uint8Array | undefined> {
-    const postData = await this.fetchPostData();
-    if (postData === undefined) {
-      return undefined;
-    }
-    return stringToTypedArray(postData);
-  }
+  abstract content(): Promise<Uint8Array<ArrayBuffer> | undefined>;
 
   /**
    * An object with HTTP headers associated with the request. All
@@ -344,7 +342,7 @@ export abstract class HTTPRequest {
 
     let body: BodyInit | null = null;
     if (method !== 'GET' && method !== 'HEAD' && this.hasPostData()) {
-      body = ((await this.content()) ?? null) as BodyInit | null;
+      body = (await this.content()) ?? null;
     }
 
     return new Request(this.url(), {
