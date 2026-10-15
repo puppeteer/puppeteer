@@ -15,6 +15,7 @@ import {
   Observable,
   timer,
 } from '../../third_party/rxjs/rxjs.js';
+import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyfill.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {environment} from '../environment.js';
 import {assert} from '../util/assert.js';
@@ -471,4 +472,35 @@ export function filterAsync<T>(
       }),
     );
   });
+}
+
+/**
+ * @internal
+ */
+export function assertSupportedUrlRestrictions(options: {
+  allowlist?: string[];
+  blocklist?: string[];
+  protocol?: string;
+}): void {
+  if (options.blocklist?.length && options.allowlist?.length) {
+    throw new Error('Cannot specify both blocklist and allowlist');
+  }
+  if (
+    options.protocol === 'webDriverBiDi' &&
+    (options.blocklist || options.allowlist)
+  ) {
+    throw new Error(
+      'blocklist and allowlist are only supported with the CDP protocol',
+    );
+  }
+  if (options.blocklist) {
+    for (const rule of options.blocklist) {
+      new URLPattern(rule);
+    }
+  }
+  if (options.allowlist) {
+    for (const rule of options.allowlist) {
+      new URLPattern(rule);
+    }
+  }
 }

@@ -29,6 +29,7 @@ import {
   type LaunchPWAOptions,
   type GetPWAStateOptions,
   type PWAState,
+  type NetworkRestrictions,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -106,16 +107,6 @@ export class CdpBrowser extends BrowserBase {
       logger,
     );
 
-    if (allowlist) {
-      const version = await browser.#getVersion();
-      const majorVersion = parseInt(
-        version.product.match(/\d+/)?.[0] ?? '0',
-        10,
-      );
-      if (majorVersion < 149) {
-        throw new Error('The allowlist option require Chrome 149 or greater.');
-      }
-    }
     if (acceptInsecureCerts) {
       await connection.send('Security.setIgnoreCertificateErrors', {
         ignore: true,
@@ -244,6 +235,21 @@ export class CdpBrowser extends BrowserBase {
 
   _targetManager(): TargetManager {
     return this.#targetManager;
+  }
+
+  override async restrictNetwork(
+    conditions?: NetworkRestrictions | null,
+  ): Promise<void> {
+    await this.#targetManager.setNetworkConditions(conditions);
+    // Only update the state once the target manager has accepted the new
+    // conditions so that failures (e.g. invalid URL patterns) do not leave
+    // the browser and connection out of sync with the target manager.
+    this.#hasNetworkRestrictions = Boolean(
+      (conditions?.blocklist && conditions.blocklist.length > 0) ||
+      (conditions?.allowlist && conditions.allowlist.length > 0),
+    );
+    this.#connection.rejectEmulateNetworkConditionsCalls =
+      this.#hasNetworkRestrictions;
   }
 
   #setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
