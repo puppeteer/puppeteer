@@ -85,6 +85,16 @@ export interface WsOptions {
    * @defaultValue `256 * 1024 * 1024`
    */
   maxPayload?: number;
+
+  /**
+   * Time in milliseconds to wait for the WebSocket opening handshake before
+   * failing. Without it, connecting to a host that accepts the TCP connection
+   * but never answers the upgrade request waits until the operating system
+   * gives up. Node.js only.
+   *
+   * @defaultValue no timeout
+   */
+  handshakeTimeout?: number;
 }
 
 /**
