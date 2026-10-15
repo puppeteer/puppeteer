@@ -72,6 +72,9 @@ export class MutationPoller<T> implements Poller<T> {
     }
     const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
+    if (this.#stopped) {
+      return;
+    }
     if (result) {
       deferred.resolve(result);
       return;
@@ -143,7 +146,6 @@ export class MutationPoller<T> implements Poller<T> {
     if (!this.#deferred) {
       return;
     }
-    assert(this.#deferred, 'Polling never started.');
     if (!this.#deferred.finished()) {
       this.#deferred.reject(new Error('Polling stopped'));
     }
@@ -176,6 +178,9 @@ export class RAFPoller<T> implements Poller<T> {
     }
     const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
+    if (this.#stopped) {
+      return;
+    }
     if (result) {
       deferred.resolve(result);
       return;
@@ -201,7 +206,6 @@ export class RAFPoller<T> implements Poller<T> {
     if (!this.#deferred) {
       return;
     }
-    assert(this.#deferred, 'Polling never started.');
     if (!this.#deferred.finished()) {
       this.#deferred.reject(new Error('Polling stopped'));
     }
@@ -235,6 +239,9 @@ export class IntervalPoller<T> implements Poller<T> {
     }
     const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
+    if (this.#stopped) {
+      return;
+    }
     if (result) {
       deferred.resolve(result);
       return;
@@ -255,7 +262,6 @@ export class IntervalPoller<T> implements Poller<T> {
     if (!this.#deferred) {
       return;
     }
-    assert(this.#deferred, 'Polling never started.');
     if (!this.#deferred.finished()) {
       this.#deferred.reject(new Error('Polling stopped'));
     }

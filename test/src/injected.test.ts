@@ -27,6 +27,45 @@ describe('PuppeteerUtil tests', function () {
     expect(value).toBeTruthy();
   });
 
+  for (const kind of ['mutation', 'raf', 'interval'] as const) {
+    it(`should not restart a stopped ${kind} poller after its first predicate await`, async () => {
+      const {page} = await getTestState();
+      const calls = await page.mainFrame().isolatedRealm().evaluate(
+        async ({Deferred, MutationPoller, RAFPoller, IntervalPoller}, kind) => {
+          const pending = Deferred.create<boolean>();
+          let calls = 0;
+          const predicate = async () => {
+            ++calls;
+            return await pending.valueOrThrow();
+          };
+          const poller = kind === 'mutation'
+            ? new MutationPoller(predicate, document)
+            : kind === 'raf'
+              ? new RAFPoller(predicate)
+              : new IntervalPoller(predicate, 1);
+          const starting = poller.start();
+          const result = poller.result().catch(() => {});
+          await poller.stop();
+          pending.resolve(false);
+          await starting;
+          await result;
+          document.body.append(document.createElement('div'));
+          await new Promise(resolve => {
+            setTimeout(resolve, 50);
+          });
+          // Also clean up if the regression recreates a polling resource.
+          await poller.stop();
+          return calls;
+        },
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
+        kind,
+      );
+      expect(calls).toBe(1);
+    });
+  }
+
   describe('createFunction tests', function () {
     it('should work', async () => {
       const {page} = await getTestState();
