@@ -41,6 +41,10 @@ export interface NodeWebSocketTransportOptions {
    * Maximum allowed message size in bytes.
    */
   maxPayload?: number;
+  /**
+   * Time in milliseconds to wait for the opening handshake.
+   */
+  handshakeTimeout?: number;
 }
 
 /**
@@ -59,6 +63,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
         perMessageDeflate: false,
         allowSynchronousEvents: false,
         maxPayload: options.maxPayload ?? DEFAULT_MAX_PAYLOAD_BYTES,
+        handshakeTimeout: options.handshakeTimeout,
         headers: {
           'User-Agent': `Puppeteer ${packageVersion}`,
           ...headers,
