@@ -34,6 +34,49 @@ describe('Workers', function () {
     expect(page.workers()).toHaveLength(0);
   });
 
+  it('should report network requests', async () => {
+    const {page, server} = await getTestState();
+
+    const [worker] = await Promise.all([
+      waitEvent<WebWorker>(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+    const requestPromise = page.waitForRequest(server.EMPTY_PAGE);
+    await worker.evaluate((url: string) => {
+      return fetch(url);
+    }, server.EMPTY_PAGE);
+    const request = await requestPromise;
+
+    expect(request.url()).toBe(server.EMPTY_PAGE);
+    expect(request.worker()).toBe(worker);
+    expect(request.frame()).toBeNull();
+    expect(request.page()).toBeNull();
+  });
+
+  it('should report network requests with request interception', async () => {
+    const {page, server} = await getTestState();
+
+    await page.setRequestInterception(true);
+    page.on('request', request => {
+      void request.continue();
+    });
+
+    const [worker] = await Promise.all([
+      waitEvent<WebWorker>(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+    const requestPromise = page.waitForRequest(server.EMPTY_PAGE);
+    await worker.evaluate((url: string) => {
+      return fetch(url);
+    }, server.EMPTY_PAGE);
+    const request = await requestPromise;
+
+    expect(request.url()).toBe(server.EMPTY_PAGE);
+    expect(request.worker()).toBe(worker);
+    expect(request.frame()).toBeNull();
+    expect(request.page()).toBeNull();
+  });
+
   it('should emit created and destroyed events', async () => {
     const {page} = await getTestState();
 

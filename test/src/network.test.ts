@@ -97,6 +97,51 @@ describe('network', function () {
     });
   });
 
+  describe('Request.page', function () {
+    it('should work for main frame navigation request', async () => {
+      const {page, server} = await getTestState();
+
+      const requestPromise = page.waitForRequest(server.EMPTY_PAGE);
+      await page.goto(server.EMPTY_PAGE);
+      const request = await requestPromise;
+      expect(request.page()).toBe(page);
+    });
+    it('should work for subframe navigation request', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const requestPromise = page.waitForRequest(server.EMPTY_PAGE);
+      const frame = await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const request = await requestPromise;
+      expect(request.frame()).toBe(frame);
+      expect(request.page()).toBe(page);
+    });
+    it('should work for fetch requests', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const requestPromise = page.waitForRequest(
+        server.PREFIX + '/digits/1.png',
+      );
+      await page.evaluate(() => {
+        return fetch('/digits/1.png');
+      });
+      const request = await requestPromise;
+      expect(request.page()).toBe(page);
+    });
+  });
+
+  describe('Request.worker', function () {
+    it('should return null for page navigation requests', async () => {
+      const {page, server} = await getTestState();
+
+      const requestPromise = page.waitForRequest(server.EMPTY_PAGE);
+      await page.goto(server.EMPTY_PAGE);
+      const request = await requestPromise;
+      expect(request.worker()).toBeNull();
+    });
+  });
+
   describe('Request.headers', function () {
     it('should define Browser in user agent header', async () => {
       const {page, server, isChrome} = await getTestState();

@@ -6,11 +6,13 @@
 
 import {describe, it} from 'node:test';
 
+import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 
-import type {CDPSessionEvents} from '../api/CDPSession.js';
+import type {CDPSession, CDPSessionEvents} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -21,12 +23,17 @@ import {NetworkManager} from './NetworkManager.js';
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.
 
-function createNetworkManager() {
+function createNetworkManager(
+  worker: (client: CDPSession) => WebWorker | null = () => {
+    return null;
+  },
+) {
   return new NetworkManager(
     {
       frame(): CdpFrame | null {
         return null;
       },
+      worker,
       page() {
         return {
           browser() {
@@ -47,14 +54,20 @@ function createNetworkManager() {
 }
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
-  async send(): Promise<any> {}
+  readonly sent: Array<{method: string; params: unknown}> = [];
+  constructor(readonly sessionId = '1') {
+    super();
+  }
+  async send(method: string, params?: unknown): Promise<any> {
+    this.sent.push({method, params});
+  }
   connection() {
     return undefined;
   }
   readonly detached = false;
   async detach() {}
   id() {
-    return '1';
+    return this.sessionId;
   }
   parentSession() {
     return undefined;
@@ -498,6 +511,154 @@ describe('NetworkManager', () => {
       frameId: '099A5216AF03AAFEC988F214B024DF08',
     });
   });
+  describe('worker requests', () => {
+    const workerRequestWillBeSent = (
+      requestId: string,
+      url: string,
+      redirectResponse?: {url: string; status: number},
+    ): Protocol.Network.RequestWillBeSentEvent => {
+      return {
+        requestId,
+        loaderId: '',
+        documentURL: 'http://localhost:8907/worker/worker.js',
+        request: {
+          url,
+          method: 'GET',
+          headers: {},
+          mixedContentType: 'none',
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+          isSameSite: true,
+        },
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'script'},
+        redirectHasExtraInfo: false,
+        type: 'Fetch',
+        hasUserGesture: false,
+        ...(redirectResponse
+          ? {
+              redirectResponse: {
+                url: redirectResponse.url,
+                status: redirectResponse.status,
+                statusText: 'Found',
+                headers: {},
+                mimeType: '',
+                charset: '',
+                connectionReused: false,
+                connectionId: 0,
+                encodedDataLength: 0,
+                securityState: 'secure',
+              },
+            }
+          : {}),
+      };
+    };
+    const workerRequestPaused = (
+      fetchRequestId: string,
+      networkId: string,
+      url: string,
+    ): Protocol.Fetch.RequestPausedEvent => {
+      return {
+        requestId: fetchRequestId,
+        request: {
+          url,
+          method: 'GET',
+          headers: {},
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId: '84AC261A351B86932B775B76D1DD79F8',
+        resourceType: 'Fetch',
+        networkId,
+      };
+    };
+
+    const setup = async () => {
+      const pageSession = new MockCDPSession('page');
+      const workerSession = new MockCDPSession('worker');
+      const worker = {client: workerSession} as unknown as WebWorker;
+      const manager = createNetworkManager(client => {
+        return client === workerSession ? worker : null;
+      });
+      await manager.addClient(pageSession);
+      await manager.addClient(workerSession);
+      await manager.setRequestInterception(true);
+      pageSession.sent.length = 0;
+      workerSession.sent.length = 0;
+
+      const requests: HTTPRequest[] = [];
+      manager.on(NetworkManagerEvent.Request, async (request: HTTPRequest) => {
+        requests.push(request);
+        await request.continue();
+      });
+      return {manager, pageSession, workerSession, worker, requests};
+    };
+
+    it('should bind Fetch commands to the session that delivered Fetch.requestPaused when it arrives first', async () => {
+      const {pageSession, workerSession, worker, requests} = await setup();
+      const url = 'http://localhost:8907/empty.html';
+
+      pageSession.emit(
+        'Fetch.requestPaused',
+        workerRequestPaused('interception-job-1.0', 'worker-req-1', url),
+      );
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', url),
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 0);
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0]!.worker()).toBe(worker);
+      expect(requests[0]!.frame()).toBeNull();
+      expect(requests[0]!.client).toBe(pageSession);
+      expect(
+        pageSession.sent.filter(({method}) => {
+          return method === 'Fetch.continueRequest';
+        }),
+      ).toHaveLength(1);
+      expect(
+        workerSession.sent.filter(({method}) => {
+          return method === 'Fetch.continueRequest';
+        }),
+      ).toHaveLength(0);
+    });
+
+    it('should keep the worker across redirects', async () => {
+      const {pageSession, workerSession, worker, requests} = await setup();
+      const url1 = 'http://localhost:8907/redirect/1.html';
+      const url2 = 'http://localhost:8907/redirect/2.html';
+
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', url1),
+      );
+      pageSession.emit(
+        'Fetch.requestPaused',
+        workerRequestPaused('interception-job-1.0', 'worker-req-1', url1),
+      );
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', url2, {url: url1, status: 302}),
+      );
+      pageSession.emit(
+        'Fetch.requestPaused',
+        workerRequestPaused('interception-job-2.0', 'worker-req-1', url2),
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 0);
+      });
+
+      expect(requests).toHaveLength(2);
+      expect(requests[1]!.url()).toBe(url2);
+      expect(requests[1]!.worker()).toBe(worker);
+      expect(requests[1]!.redirectChain()).toHaveLength(1);
+    });
+  });
+
   it(`should handle "double pause" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event`, async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = createNetworkManager();
@@ -1662,6 +1823,9 @@ describe('NetworkManager', () => {
       const manager = new NetworkManager(
         {
           frame(): CdpFrame | null {
+            return null;
+          },
+          worker(): null {
             return null;
           },
           page() {

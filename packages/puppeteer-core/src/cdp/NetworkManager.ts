@@ -10,6 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {headersInputToRecord, type HeadersInput} from '../api/HTTPRequest.js';
 import type {Credentials, Page} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {
@@ -72,6 +73,7 @@ export interface InternalNetworkConditions extends NetworkConditions {
  */
 export interface FrameProvider {
   frame(id: string): Frame | null;
+  worker(client: CDPSession): WebWorker | null;
   page(): Page;
 }
 
@@ -81,6 +83,7 @@ export interface FrameProvider {
 export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
+  #workerRequests = new Map<string, WebWorker>();
   #extraHTTPHeaders?: Record<string, string>;
   #credentials: Credentials | null = null;
   #attemptedAuthentications = new Set<string>();
@@ -165,6 +168,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   async #removeClient(client: CDPSession) {
     this.#clients.get(client)?.dispose();
     this.#clients.delete(client);
+    for (const [requestId, worker] of this.#workerRequests) {
+      if (worker.client === client) {
+        this.#workerRequests.delete(requestId);
+      }
+    }
   }
 
   async authenticate(credentials: Credentials | null): Promise<void> {
@@ -413,6 +421,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     client: CDPSession,
     event: Protocol.Network.RequestWillBeSentEvent,
   ): void {
+    const worker = this.#frameManager.worker(client);
+    if (worker) {
+      this.#workerRequests.set(event.requestId, worker);
+    }
+
     // Request interception doesn't happen for data URLs with Network Service.
     if (
       this.#userRequestInterceptionEnabled &&
@@ -425,18 +438,19 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       /**
        * CDP may have sent a Fetch.requestPaused event already. Check for it.
        */
-      const requestPausedEvent =
+      const requestPaused =
         this.#networkEventManager.getRequestPaused(networkRequestId);
-      if (requestPausedEvent) {
+      if (requestPaused) {
+        const {client: fetchClient, event: requestPausedEvent} = requestPaused;
         const {requestId: fetchRequestId} = requestPausedEvent;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
-        this.#onRequest(client, event, fetchRequestId);
+        this.#onRequest(fetchClient, event, fetchRequestId);
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
       return;
     }
-    this.#onRequest(client, event, undefined);
+    this.#onRequest(client, event);
   }
 
   #onAuthRequired(
@@ -515,7 +529,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
       this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
     } else {
-      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      this.#networkEventManager.storeRequestPaused(networkRequestId, {
+        client,
+        event,
+      });
     }
   }
 
@@ -540,9 +557,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker = this.#frameManager.worker(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker,
       event.requestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -575,6 +595,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
           .shift();
         if (!redirectResponseExtraInfo) {
           this.#networkEventManager.queueRedirectInfo(event.requestId, {
+            client,
             event,
             fetchRequestId,
           });
@@ -606,9 +627,14 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker =
+      this.#workerRequests.get(event.requestId) ??
+      this.#frameManager.worker(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker,
       fetchRequestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -760,7 +786,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
     if (redirectInfo) {
       this.#networkEventManager.responseExtraInfo(event.requestId).push(event);
-      this.#onRequest(client, redirectInfo.event, redirectInfo.fetchRequestId);
+      this.#onRequest(
+        redirectInfo.client,
+        redirectInfo.event,
+        redirectInfo.fetchRequestId,
+      );
       return;
     }
 
@@ -799,6 +829,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
 
     if (events) {
+      this.#workerRequests.delete(requestId);
       this.#networkEventManager.forget(requestId);
     }
   }

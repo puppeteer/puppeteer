@@ -19,6 +19,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -44,6 +45,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
