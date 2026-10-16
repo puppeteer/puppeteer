@@ -546,19 +546,22 @@ export class EmulationManager implements ClientProvider {
     if (!state.active) {
       return;
     }
-    await client.send(
-      'Emulation.setGeolocationOverride',
-      state.geoLocation
-        ? {
-            longitude: state.geoLocation.longitude,
-            latitude: state.geoLocation.latitude,
-            accuracy: state.geoLocation.accuracy,
-          }
-        : undefined,
-    );
+    if (!state.geoLocation) {
+      await client.send('Emulation.clearGeolocationOverride');
+      return;
+    }
+    await client.send('Emulation.setGeolocationOverride', {
+      longitude: state.geoLocation.longitude,
+      latitude: state.geoLocation.latitude,
+      accuracy: state.geoLocation.accuracy,
+    });
   }
 
-  async setGeolocation(options: GeolocationOptions): Promise<void> {
+  async setGeolocation(options: GeolocationOptions | null): Promise<void> {
+    if (options === null) {
+      await this.#geoLocationState.setState({active: true});
+      return;
+    }
     const {longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180) {
       throw new Error(

@@ -553,7 +553,9 @@ export class CdpPage extends Page {
     }
   }
 
-  override async setGeolocation(options: GeolocationOptions): Promise<void> {
+  override async setGeolocation(
+    options: GeolocationOptions | null,
+  ): Promise<void> {
     return await this.#emulationManager.setGeolocation(options);
   }
 

@@ -450,6 +450,34 @@ describe('Page', function () {
         longitude: 10,
       });
     });
+    it('should remove the override when called with null', async () => {
+      const {page, server, context} = await getTestState();
+
+      await context.overridePermissions(server.PREFIX, ['geolocation']);
+      await page.goto(server.EMPTY_PAGE);
+      await page.setGeolocation({longitude: 10, latitude: 10});
+      await page.setGeolocation(null);
+      const geolocation = await page.evaluate(() => {
+        return new Promise(resolve => {
+          return navigator.geolocation.getCurrentPosition(
+            position => {
+              resolve({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              });
+            },
+            () => {
+              resolve('no position');
+            },
+            {timeout: 1000},
+          );
+        });
+      });
+      expect(geolocation).not.toEqual({
+        latitude: 10,
+        longitude: 10,
+      });
+    });
     it('should throw when invalid longitude', async () => {
       const {page} = await getTestState();
 

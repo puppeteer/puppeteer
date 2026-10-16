@@ -10,7 +10,7 @@ Sets the page's geolocation.
 
 ```typescript
 class Page {
-  abstract setGeolocation(options: GeolocationOptions): Promise<void>;
+  abstract setGeolocation(options: GeolocationOptions | null): Promise<void>;
 }
 ```
 
@@ -35,7 +35,7 @@ options
 
 </td><td>
 
-[GeolocationOptions](./puppeteer.geolocationoptions.md)
+[GeolocationOptions](./puppeteer.geolocationoptions.md) \| null
 
 </td><td>
 
@@ -50,8 +50,12 @@ Promise&lt;void&gt;
 
 Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext.overridepermissions.md) to grant permissions for the page to read its geolocation.
 
+Pass `null` to remove the geolocation override.
+
 ## Example
 
 ```ts
 await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
+// Later, go back to the browser's real geolocation:
+await page.setGeolocation(null);
 ```
