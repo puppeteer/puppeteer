@@ -343,7 +343,14 @@ export class BidiPage extends Page {
     return this.#frame.browsingContext.isJavaScriptEnabled();
   }
 
-  override async setGeolocation(options: GeolocationOptions): Promise<void> {
+  override async setGeolocation(
+    options: GeolocationOptions | null,
+  ): Promise<void> {
+    if (options === null) {
+      return await this.#frame.browsingContext.setGeolocationOverride({
+        coordinates: null,
+      });
+    }
     const {longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180) {
       throw new Error(

@@ -986,13 +986,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Consider using {@link BrowserContext.overridePermissions} to grant
    * permissions for the page to read its geolocation.
    *
+   * Pass `null` to remove the geolocation override.
+   *
    * @example
    *
    * ```ts
    * await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
+   * // Later, go back to the browser's real geolocation:
+   * await page.setGeolocation(null);
    * ```
    */
-  abstract setGeolocation(options: GeolocationOptions): Promise<void>;
+  abstract setGeolocation(options: GeolocationOptions | null): Promise<void>;
 
   /**
    * A target this page was created from.
