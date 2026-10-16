@@ -102,6 +102,15 @@ export class NetworkEventManager {
   >();
   #queuedRedirectInfoMap = new Map<NetworkRequestId, RedirectInfoList>();
   #queuedEventGroupMap = new Map<NetworkRequestId, QueuedEventGroup>();
+  /*
+   * With request interception enabled, Network.loadingFailed can arrive before
+   * the Fetch.requestPaused event that creates the request. The failure is kept
+   * here until the request exists, so that its `requestfailed` is not lost.
+   */
+  #pendingLoadingFailedMap = new Map<
+    NetworkRequestId,
+    Protocol.Network.LoadingFailedEvent
+  >();
 
   forget(networkRequestId: NetworkRequestId): void {
     this.#requestWillBeSentMap.delete(networkRequestId);
@@ -110,6 +119,7 @@ export class NetworkEventManager {
     this.#queuedEventGroupMap.delete(networkRequestId);
     this.#queuedRedirectInfoMap.delete(networkRequestId);
     this.#responseReceivedExtraInfoMap.delete(networkRequestId);
+    this.#pendingLoadingFailedMap.delete(networkRequestId);
   }
 
   requestExtraInfo(
@@ -211,6 +221,21 @@ export class NetworkEventManager {
 
   forgetRequest(networkRequestId: NetworkRequestId): void {
     this.#httpRequestsMap.delete(networkRequestId);
+  }
+
+  storePendingLoadingFailed(
+    networkRequestId: NetworkRequestId,
+    event: Protocol.Network.LoadingFailedEvent,
+  ): void {
+    this.#pendingLoadingFailedMap.set(networkRequestId, event);
+  }
+
+  takePendingLoadingFailed(
+    networkRequestId: NetworkRequestId,
+  ): Protocol.Network.LoadingFailedEvent | undefined {
+    const event = this.#pendingLoadingFailedMap.get(networkRequestId);
+    this.#pendingLoadingFailedMap.delete(networkRequestId);
+    return event;
   }
 
   getQueuedEventGroup(
