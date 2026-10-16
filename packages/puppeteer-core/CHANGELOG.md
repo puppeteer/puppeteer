@@ -1,5 +1,21 @@
 # Changelog
 
+## [25.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.14.0...puppeteer-core-v25.15.0) (2026-10-16)
+
+
+### 🎉 Features
+
+* add handshakeTimeout to wsOptions ([#15587](https://github.com/puppeteer/puppeteer/issues/15587)) ([78a9baf](https://github.com/puppeteer/puppeteer/commit/78a9baffe31ad9aa96bf28237c0185e6d50118bd))
+* allow page.setGeolocation(null) to remove the geolocation override ([#15590](https://github.com/puppeteer/puppeteer/issues/15590)) ([7883246](https://github.com/puppeteer/puppeteer/commit/78832469c7d0fce5513ed651354f8d46d9d70ba3))
+* support setting allow/block lists as an API ([#15510](https://github.com/puppeteer/puppeteer/issues/15510)) ([07d2e71](https://github.com/puppeteer/puppeteer/commit/07d2e71b1de1a402f6e4d4696600d1ae63761831))
+
+
+### 🛠️ Fixes
+
+* handle stop() rejection when page.record() fails to start ([#15593](https://github.com/puppeteer/puppeteer/issues/15593)) ([ff3103c](https://github.com/puppeteer/puppeteer/commit/ff3103c8e46f1b97e00a6a4a72f8e2509cbc796f))
+* roll to Chrome 155.0.8059.84 ([#15589](https://github.com/puppeteer/puppeteer/issues/15589)) ([2bf492b](https://github.com/puppeteer/puppeteer/commit/2bf492ba747f101899fc73dd5f104fb6878901ad))
+* **webdriver:** handle continueWithAuth rejections ([#15460](https://github.com/puppeteer/puppeteer/issues/15460)) ([10c43c1](https://github.com/puppeteer/puppeteer/commit/10c43c1b9101ab62835332393f49e3fb426dde88))
+
 ## [25.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.13.0...puppeteer-core-v25.14.0) (2026-10-14)
 
 
