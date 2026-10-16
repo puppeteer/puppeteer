@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 
 import {
   launch,
@@ -13,7 +14,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
 } from '../mocha-utils.js';
-import {attachFrame, html} from '../utils.js';
+import {attachFrame, html, waitEvent} from '../utils.js';
 
 describe('Network Restrictions', function () {
   setupTestBrowserHooks();
@@ -825,5 +826,288 @@ describe('Network Restrictions', function () {
     } finally {
       await close();
     }
+  });
+  describe('dynamic restrictions', () => {
+    afterEach(async () => {
+      const {browser} = await getTestState({skipLaunch: true});
+      await browser?.restrictNetwork(null);
+    });
+
+    it('can set blocklist dynamically', async () => {
+      const {page, server, browser} = await getTestState();
+
+      const allowedUrl = server.PREFIX + '/title.html';
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      await page.goto(allowedUrl);
+      const res1 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res1).toBe(true);
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+
+      const res2 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res2).toBe(false);
+
+      await browser.restrictNetwork();
+
+      const res3 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res3).toBe(true);
+    });
+
+    it('can set allowlist dynamically', async () => {
+      const {page, server, browser} = await getTestState();
+
+      const allowedUrl = server.PREFIX + '/title.html';
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      await page.goto(allowedUrl);
+
+      const res1 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res1).toBe(true);
+
+      await browser.restrictNetwork({allowlist: ['*://*:*/title.html']});
+
+      const res2 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res2).toBe(false);
+
+      await browser.restrictNetwork();
+
+      const res3 = await page.evaluate(async url => {
+        try {
+          await fetch(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }, blockedUrl);
+      expect(res3).toBe(true);
+    });
+
+    it('can switch directly from blocklist to allowlist', async () => {
+      const {page, server, browser} = await getTestState();
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+      let error: Error | undefined;
+      await page.goto(server.PREFIX + '/empty.html').catch(e => {
+        return (error = e);
+      });
+      expect(error).toBeDefined();
+
+      await browser.restrictNetwork({allowlist: ['*://*:*/empty.html']});
+
+      // Should now be allowed
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(page.url()).toBe(server.PREFIX + '/empty.html');
+    });
+
+    it('blocks page.emulateNetworkConditions after restrictNetwork is called', async () => {
+      const {page, browser} = await getTestState();
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+
+      await expect(
+        page.emulateNetworkConditions({
+          offline: false,
+          latency: 0,
+          download: 0,
+          upload: 0,
+        }),
+      ).rejects.toThrow(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    });
+
+    it('does not mutate state when restrictNetwork fails with an invalid pattern', async () => {
+      const {page, server, browser} = await getTestState();
+
+      await expect(
+        browser.restrictNetwork({blocklist: ['(invalid pattern']}),
+      ).rejects.toThrow('URLPattern');
+
+      // Browser and connection state should remain unrestricted.
+      await expect(
+        page.emulateNetworkConditions({
+          offline: false,
+          latency: 0,
+          download: 0,
+          upload: 0,
+        }),
+      ).resolves.toBeUndefined();
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+
+      await expect(
+        browser.restrictNetwork({allowlist: ['(invalid pattern']}),
+      ).rejects.toThrow('URLPattern');
+
+      // Previous blocklist restriction should still be enforced.
+      await expect(page.goto(server.PREFIX + '/empty.html')).rejects.toThrow(
+        'is blocked by blocklist/allowlist rules',
+      );
+    });
+
+    it('allows empty arrays alongside a populated or empty list', async () => {
+      const {page, server, browser} = await getTestState();
+
+      await browser.restrictNetwork({
+        blocklist: [],
+        allowlist: ['*://*:*/title.html'],
+      });
+
+      await expect(page.goto(server.PREFIX + '/empty.html')).rejects.toThrow(
+        'is blocked by blocklist/allowlist rules',
+      );
+      await page.goto(server.PREFIX + '/title.html');
+      expect(page.url()).toBe(server.PREFIX + '/title.html');
+
+      await browser.restrictNetwork({blocklist: [], allowlist: []});
+
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(page.url()).toBe(server.PREFIX + '/empty.html');
+    });
+
+    it('applies restrictions to a worker target', async () => {
+      const {page, server, browser, context} = await getTestState();
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html');
+
+      const target = await context.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        },
+        {timeout: 3000},
+      );
+      const worker = (await target.worker())!;
+
+      const fetchError = await worker.evaluate(async url => {
+        try {
+          await fetch(url);
+          return null;
+        } catch (e) {
+          return (e as Error).message;
+        }
+      }, server.PREFIX + '/empty.html');
+
+      expect(fetchError).toBeTruthy();
+      expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('applies and clears restrictions on an already-running worker', async () => {
+      const {page, server, browser} = await getTestState();
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+
+      const canFetch = async () => {
+        return await worker.evaluate(async url => {
+          try {
+            await fetch(url);
+            return true;
+          } catch {
+            return false;
+          }
+        }, blockedUrl);
+      };
+
+      expect(await canFetch()).toBe(true);
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+      expect(await canFetch()).toBe(false);
+
+      await browser.restrictNetwork(null);
+      expect(await canFetch()).toBe(true);
+    });
+
+    it('applies and clears restrictions on an already-running service worker', async () => {
+      const {page, server, browser, context} = await getTestState();
+      const blockedUrl = server.PREFIX + '/empty.html';
+
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html');
+
+      const target = await context.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        },
+        {timeout: 3000},
+      );
+      const worker = (await target.worker())!;
+
+      const canFetch = async () => {
+        return await worker.evaluate(async url => {
+          try {
+            await fetch(url);
+            return true;
+          } catch {
+            return false;
+          }
+        }, blockedUrl);
+      };
+
+      expect(await canFetch()).toBe(true);
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+      expect(await canFetch()).toBe(false);
+
+      await browser.restrictNetwork(null);
+      expect(await canFetch()).toBe(true);
+    });
+  });
+
+  describe('clearing launch-time lists', () => {
+    const state = setupSeparateTestBrowserHooks({
+      blocklist: ['*://*:*/empty.html'],
+    });
+
+    it('can clear launch-time lists', async () => {
+      const {browser, page, server} = state;
+      let error: Error | undefined;
+      await page.goto(server.PREFIX + '/empty.html').catch(e => {
+        return (error = e);
+      });
+      expect(error).toBeDefined();
+
+      await browser.restrictNetwork(null);
+
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(page.url()).toBe(server.PREFIX + '/empty.html');
+    });
   });
 });
