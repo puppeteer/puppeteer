@@ -2784,7 +2784,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
     try {
       await recording._start();
     } catch (error) {
-      void recording.stop();
+      // Clean up the recording. Ignore errors from stop() so the original
+      // error from _start() is the one that propagates.
+      await recording.stop().catch(() => {});
       throw error;
     }
 
