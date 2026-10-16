@@ -62,14 +62,15 @@ export class CdpScreenRecording extends ScreenRecording {
     this.stopped = true;
 
     try {
+      if (!this.#streamHandle) {
+        // `_start()` did not succeed, so there is no recording to stop.
+        return;
+      }
+
       const {client} = this.page.mainFrame();
       await client.send('Page.stopScreenRecording').catch(err => {
         this.logger(DEBUG_PREFIXES.error)?.(err);
       });
-
-      if (!this.#streamHandle) {
-        throw new Error('Screen recording stream handle is missing.');
-      }
 
       let eof = false;
       while (!eof) {
