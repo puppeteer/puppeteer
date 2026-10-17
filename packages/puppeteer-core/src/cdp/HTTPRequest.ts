@@ -29,11 +29,11 @@ import type {CdpHTTPResponse} from './HTTPResponse.js';
 type InterceptResolution =
   | {
       action: InterceptResolutionAction.Continue;
-      overrides: ContinueRequestOverrides;
+      overrides: ContinueRequestOverridesInternal;
     }
   | {
       action: InterceptResolutionAction.Respond;
-      response: Partial<ResponseForRequest>;
+      response: Partial<ResponseForRequestInternal>;
     }
   | {
       action: InterceptResolutionAction.Abort;
@@ -321,6 +321,18 @@ export class CdpHTTPRequest extends HTTPRequest {
       .catch(error => {
         return handleError(error, this.#logger);
       });
+  }
+
+  /**
+   * The overrides sent with `Fetch.continueRequest`, or an empty object if
+   * the request was not continued.
+   *
+   * @internal
+   */
+  get _continueOverrides(): ContinueRequestOverridesInternal {
+    return this.#resolution?.action === InterceptResolutionAction.Continue
+      ? this.#resolution.overrides
+      : {};
   }
 
   /**

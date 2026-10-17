@@ -547,10 +547,10 @@ export abstract class HTTPRequest {
         headers: headersInputToRecord(headers),
       }),
     };
-    this.interception.requestOverrides = normalizedOverrides;
     if (priority === undefined) {
       return await this._continue(normalizedOverrides);
     }
+    this.interception.requestOverrides = normalizedOverrides;
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority

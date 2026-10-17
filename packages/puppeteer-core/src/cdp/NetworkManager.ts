@@ -537,7 +537,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
     // Chrome usually pauses the request the user continued to, but can pause
     // the original if it restarts before the overrides are applied.
-    const overrides = request.continueRequestOverrides();
+    const overrides = request._continueOverrides;
     const eventUrl = event.request.url + (event.request.urlFragment ?? '');
     const urlMatches =
       eventUrl === request.url() ||
