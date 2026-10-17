@@ -8,7 +8,7 @@ import {statSync} from 'node:fs';
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from '../mocha-utils.js';
 import {getUniqueVideoFilePlaceholder} from '../utils.js';
 
 describe('Screencasts', function () {
@@ -62,6 +62,30 @@ describe('Screencasts', function () {
       const DELTA = 1.3;
       expect(ratio).toBeGreaterThan(2 - DELTA);
       expect(ratio).toBeLessThan(2 + DELTA);
+    });
+    it('should work with a fractional device scale factor', async () => {
+      using file = getUniqueVideoFilePlaceholder();
+
+      // 800 * 1.15 and 600 * 1.15 are just below whole numbers in floating
+      // point, while the frames are 920 x 690.
+      const {browser, close} = await launch({
+        args: ['--force-device-scale-factor=1.15'],
+        defaultViewport: {width: 800, height: 600},
+      });
+      try {
+        const page = await browser.newPage();
+        const recorder = await page.screencast({path: file.filename});
+
+        await page.goto('data:text/html,<input>');
+        using input = await page.locator('input').waitHandle();
+        await input.type('ab', {delay: 100});
+
+        await recorder.stop();
+      } finally {
+        await close();
+      }
+
+      expect(statSync(file.filename).size).toBeGreaterThan(0);
     });
     it('should validate options', async () => {
       const {page} = await getTestState();

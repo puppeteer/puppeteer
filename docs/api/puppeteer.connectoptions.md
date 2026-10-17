@@ -86,6 +86,8 @@ Currently only supported for Chrome.
 
 The feature works while Puppeteer is attached to the CDP targets. It intercepts requests in the network service in Chrome. Chrome may perform some network access in other ways or some web features may omit the network service. The feature is meant as an additional guardrails to LLM-based usage under Puppeteer control and not a complete network sandbox. For complete network sandboxing, we recommend using container/OS-level sandbox mechanism.
 
+To enforce the patterns for requests made by service workers (including requests they forward on behalf of controlled pages), Puppeteer stays attached to every service worker while this option is set. As a consequence, the browser never idle-terminates service workers.
+
 Cannot be used along with [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist).
 
 </td><td>
@@ -118,6 +120,8 @@ For any network requests made by the browser (including navigations and subresou
 Currently only supported for Chrome.
 
 The feature works while Puppeteer is attached to the CDP targets. It intercepts requests in the network service in Chrome. Chrome may perform some network access in other ways or some web features may omit the network service. The feature is meant as an additional guardrails to LLM-based usage under Puppeteer control and not a complete network sandbox. For complete network sandboxing, we recommend using container/OS-level sandbox mechanism.
+
+To enforce the patterns for requests made by service workers (including requests they forward on behalf of controlled pages), Puppeteer stays attached to every service worker while this option is set. As a consequence, the browser never idle-terminates service workers.
 
 Cannot be used along with [ConnectOptions.allowlist](./puppeteer.connectoptions.md#allowlist).
 

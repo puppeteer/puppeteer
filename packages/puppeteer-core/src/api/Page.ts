@@ -28,7 +28,7 @@ import {
   timer,
   type Observable,
 } from '../../third_party/rxjs/rxjs.js';
-import type {HTTPRequest} from '../api/HTTPRequest.js';
+import type {HeadersInput, HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../cdp/Accessibility.js';
 import type {Coverage} from '../cdp/Coverage.js';
@@ -986,13 +986,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Consider using {@link BrowserContext.overridePermissions} to grant
    * permissions for the page to read its geolocation.
    *
+   * Pass `null` to remove the geolocation override.
+   *
    * @example
    *
    * ```ts
    * await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
+   * // Later, go back to the browser's real geolocation:
+   * await page.setGeolocation(null);
    * ```
    */
-  abstract setGeolocation(options: GeolocationOptions): Promise<void>;
+  abstract setGeolocation(options: GeolocationOptions | null): Promise<void>;
 
   /**
    * A target this page was created from.
@@ -1775,10 +1779,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * :::
    *
-   * @param headers - An object containing additional HTTP headers to be sent
-   * with every request. All header values must be strings.
+   * @param headers - Additional HTTP headers to be sent with every request.
+   * Either a {@link https://developer.mozilla.org/en-US/docs/Web/API/Headers | Headers}
+   * instance or a record of additional HTTP headers. All header values must be
+   * strings.
    */
-  abstract setExtraHTTPHeaders(headers: Record<string, string>): Promise<void>;
+  abstract setExtraHTTPHeaders(headers: HeadersInput): Promise<void>;
 
   /**
    * @param userAgent - Specific user agent to use in this page
@@ -2778,7 +2784,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
     try {
       await recording._start();
     } catch (error) {
-      void recording.stop();
+      // Clean up the recording. Ignore errors from stop() so the original
+      // error from _start() is the one that propagates.
+      await recording.stop().catch(() => {});
       throw error;
     }
 
@@ -2846,9 +2854,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
     return await this.mainFrame()
       .isolatedRealm()
       .evaluate(() => {
+        // Frames are whole pixels, so round off any floating-point error
+        // (e.g. 800 * 1.15 = 919.99...) that would make ffmpeg's pad filter
+        // one pixel smaller than the frames.
         return [
-          window.visualViewport!.width * window.devicePixelRatio,
-          window.visualViewport!.height * window.devicePixelRatio,
+          Math.round(window.visualViewport!.width * window.devicePixelRatio),
+          Math.round(window.visualViewport!.height * window.devicePixelRatio),
           window.devicePixelRatio,
         ] as const;
       });

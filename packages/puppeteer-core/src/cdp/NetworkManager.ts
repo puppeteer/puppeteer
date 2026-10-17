@@ -8,6 +8,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
+import {headersInputToRecord, type HeadersInput} from '../api/HTTPRequest.js';
 import type {Credentials, Page} from '../api/Page.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -41,17 +42,19 @@ export interface NetworkConditions {
    */
   offline?: boolean;
   /**
-   * Download speed (bytes/s)
+   * Download speed (bytes/s). If not provided, download throttling is
+   * disabled and only the offline mode is emulated.
    */
-  download: number;
+  download?: number;
   /**
-   * Upload speed (bytes/s)
+   * Upload speed (bytes/s). If not provided, upload throttling is
+   * disabled and only the offline mode is emulated.
    */
-  upload: number;
+  upload?: number;
   /**
-   * Latency (ms)
+   * Latency (ms). If not provided, no latency is emulated.
    */
-  latency: number;
+  latency?: number;
 }
 
 /**
@@ -59,6 +62,9 @@ export interface NetworkConditions {
  */
 export interface InternalNetworkConditions extends NetworkConditions {
   offline: boolean;
+  download: number;
+  upload: number;
+  latency: number;
 }
 
 /**
@@ -173,9 +179,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
   }
 
-  async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
+  async setExtraHTTPHeaders(headers: HeadersInput): Promise<void> {
     const extraHTTPHeaders: Record<string, string> = {};
-    for (const [key, value] of Object.entries(headers)) {
+    for (const [key, value] of Object.entries(headersInputToRecord(headers))) {
       assert(
         isString(value),
         `Expected value of header "${key}" to be String, but "${typeof value}" is found.`,
@@ -235,15 +241,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         latency: 0,
       };
     }
-    this.#emulatedNetworkConditions.upload = networkConditions
-      ? networkConditions.upload
-      : -1;
-    this.#emulatedNetworkConditions.download = networkConditions
-      ? networkConditions.download
-      : -1;
-    this.#emulatedNetworkConditions.latency = networkConditions
-      ? networkConditions.latency
-      : 0;
+    this.#emulatedNetworkConditions.upload = networkConditions?.upload ?? -1;
+    this.#emulatedNetworkConditions.download =
+      networkConditions?.download ?? -1;
+    this.#emulatedNetworkConditions.latency = networkConditions?.latency ?? 0;
     this.#emulatedNetworkConditions.offline =
       networkConditions?.offline ?? false;
     await this.#applyToAllClients(this.#applyNetworkConditions.bind(this));
@@ -261,12 +262,33 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     if (this.#emulatedNetworkConditions === undefined) {
       return;
     }
+    if (client.connection()?.rejectEmulateNetworkConditionsCalls) {
+      throw new Error(
+        'Cannot reset network conditions: rule-based emulation is enabled.',
+      );
+    }
     try {
-      await client.send('Network.emulateNetworkConditions', {
+      // `Network.emulateNetworkConditions` is deprecated by Chromium in favor
+      // of `Network.emulateNetworkConditionsByRule`. Rules only shape the
+      // network traffic, so `Network.overrideNetworkState` is also sent to
+      // emulate the network state exposed to the page via `navigator.onLine`
+      // and `navigator.connection`.
+      await client.send('Network.overrideNetworkState', {
         offline: this.#emulatedNetworkConditions.offline,
         latency: this.#emulatedNetworkConditions.latency,
         uploadThroughput: this.#emulatedNetworkConditions.upload,
         downloadThroughput: this.#emulatedNetworkConditions.download,
+      });
+      await client.send('Network.emulateNetworkConditionsByRule', {
+        matchedNetworkConditions: [
+          {
+            urlPattern: '',
+            offline: this.#emulatedNetworkConditions.offline,
+            latency: this.#emulatedNetworkConditions.latency,
+            downloadThroughput: this.#emulatedNetworkConditions.download,
+            uploadThroughput: this.#emulatedNetworkConditions.upload,
+          },
+        ],
       });
     } catch (error) {
       if (this.#canIgnoreError(error)) {

@@ -131,7 +131,15 @@ export class Cache {
   }
 
   browserRoot(browser: Browser): string {
-    return path.join(this.#rootDir, browser);
+    const browserRoot = path.join(this.#rootDir, browser);
+    if (
+      !browser ||
+      path.dirname(path.resolve(browserRoot)) !== path.resolve(this.#rootDir) ||
+      path.basename(path.resolve(browserRoot)) !== browser
+    ) {
+      throw new Error(`Invalid browser: ${browser}`);
+    }
+    return browserRoot;
   }
 
   metadataFile(browser: Browser): string {
@@ -197,7 +205,19 @@ export class Cache {
     platform: BrowserPlatform,
     buildId: string,
   ): string {
-    return path.join(this.browserRoot(browser), `${platform}-${buildId}`);
+    const browserRoot = this.browserRoot(browser);
+    const folderName = `${platform}-${buildId}`;
+    const installationDir = path.join(browserRoot, folderName);
+    if (
+      !buildId ||
+      !platform ||
+      path.dirname(path.resolve(installationDir)) !==
+        path.resolve(browserRoot) ||
+      path.basename(path.resolve(installationDir)) !== folderName
+    ) {
+      throw new Error(`Invalid buildId: ${buildId}`);
+    }
+    return installationDir;
   }
 
   clear(): void {
@@ -214,19 +234,27 @@ export class Cache {
     platform: BrowserPlatform,
     buildId: string,
   ): void {
+    const installationDir = this.installationDir(browser, platform, buildId);
     const metadata = this.readMetadata(browser);
+    let changed = false;
     for (const alias of Object.keys(metadata.aliases)) {
       if (metadata.aliases[alias] === buildId) {
         delete metadata.aliases[alias];
+        changed = true;
       }
     }
     // Clean up executable path entry
     const key = `${platform}-${buildId}`;
     if (metadata.executablePaths?.[key]) {
       delete metadata.executablePaths[key];
+      changed = true;
+    }
+    // Only touch the file if something was actually removed so that we do not
+    // create a .metadata for a browser that never had one.
+    if (changed) {
       this.writeMetadata(browser, metadata);
     }
-    fs.rmSync(this.installationDir(browser, platform, buildId), {
+    fs.rmSync(installationDir, {
       force: true,
       recursive: true,
       maxRetries: 10,

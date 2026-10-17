@@ -15,9 +15,14 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
     _headers: Record<string, string> | undefined,
     logger: Logger,
     // Accepted so this stays call-compatible with NodeWebSocketTransport, which
-    // BrowserConnector picks between at runtime. The keep-alive options are
-    // Node-only: the browser WebSocket API exposes no ping frame.
-    _options?: {keepAlive?: boolean; keepAliveIntervalMs?: number},
+    // BrowserConnector picks between at runtime. The keep-alive and handshake
+    // timeout options are Node-only: the browser WebSocket API exposes neither
+    // ping frames nor a handshake timeout.
+    _options?: {
+      keepAlive?: boolean;
+      keepAliveIntervalMs?: number;
+      handshakeTimeout?: number;
+    },
   ): Promise<BrowserWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url);

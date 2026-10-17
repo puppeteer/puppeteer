@@ -85,6 +85,16 @@ export interface WsOptions {
    * @defaultValue `256 * 1024 * 1024`
    */
   maxPayload?: number;
+
+  /**
+   * Time in milliseconds to wait for the WebSocket opening handshake before
+   * failing. Without it, connecting to a host that accepts the TCP connection
+   * but never answers the upgrade request waits until the operating system
+   * gives up. Node.js only.
+   *
+   * @defaultValue no timeout
+   */
+  handshakeTimeout?: number;
 }
 
 /**
@@ -245,6 +255,11 @@ export interface ConnectOptions {
    * For complete network sandboxing, we recommend using
    * container/OS-level sandbox mechanism.
    *
+   * To enforce the patterns for requests made by service workers (including
+   * requests they forward on behalf of controlled pages), Puppeteer stays
+   * attached to every service worker while this option is set. As a
+   * consequence, the browser never idle-terminates service workers.
+   *
    * Cannot be used along with {@link ConnectOptions.allowlist}.
    *
    * @experimental
@@ -283,6 +298,11 @@ export interface ConnectOptions {
    * usage under Puppeteer control and not a complete network sandbox.
    * For complete network sandboxing, we recommend using
    * container/OS-level sandbox mechanism.
+   *
+   * To enforce the patterns for requests made by service workers (including
+   * requests they forward on behalf of controlled pages), Puppeteer stays
+   * attached to every service worker while this option is set. As a
+   * consequence, the browser never idle-terminates service workers.
    *
    * Cannot be used along with {@link ConnectOptions.blocklist}.
    *

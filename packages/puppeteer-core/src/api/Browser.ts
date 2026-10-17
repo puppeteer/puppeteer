@@ -22,6 +22,7 @@ import type {
 } from '../common/Cookie.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {
   fromEmitterEvent,
@@ -437,6 +438,25 @@ export interface PWAState {
 }
 
 /**
+ * @experimental
+ * @public
+ */
+export interface NetworkRestrictions {
+  /**
+   * A list of {@link https://urlpattern.spec.whatwg.org/ | URLPattern} strings to block.
+   * Mutually exclusive with {@link NetworkRestrictions.allowlist}.
+   * Passing `[]` or omitting this option means no restriction.
+   */
+  blocklist?: string[];
+  /**
+   * A list of {@link https://urlpattern.spec.whatwg.org/ | URLPattern} strings to allow.
+   * Mutually exclusive with {@link NetworkRestrictions.blocklist}.
+   * Passing `[]` or omitting this option means no restriction.
+   */
+  allowlist?: string[];
+}
+
+/**
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
@@ -589,6 +609,28 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * {@link Browser.defaultBrowserContext | default browser context}).
    */
   abstract target(): Target;
+
+  /**
+   * Sets the network conditions (blocklist or allowlist) and re-applies the
+   * conditions to all targets.
+   * To clear all network conditions, omit the argument or pass `null`.
+   *
+   * @param conditions - The network conditions to apply.
+   *
+   * @remarks
+   * Currently only supported for Chrome and the CDP protocol.
+   *
+   * Targets that are already on a blocked URL when `restrictNetwork` is called
+   * will remain attached and stay on the blocked page. This is a behavior difference
+   * compared to launching the browser with network restrictions, where such targets
+   * are detached immediately upon initial attach.
+   *
+   * @experimental
+   */
+  restrictNetwork(conditions?: NetworkRestrictions | null): Promise<void> {
+    void conditions;
+    throw new UnsupportedOperation();
+  }
 
   /**
    * Waits until a {@link Target | target} matching the given `predicate`

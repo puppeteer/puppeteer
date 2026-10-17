@@ -1272,6 +1272,8 @@ Sets the page's geolocation.
 
 Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext.overridepermissions.md) to grant permissions for the page to read its geolocation.
 
+Pass `null` to remove the geolocation override.
+
 </td></tr>
 <tr><td>
 
