@@ -1484,6 +1484,15 @@ WebDriver BiDi capabilities that are not set by Puppeteer itself.
 </td></tr>
 <tr><td>
 
+<span id="tabinfo">[TabInfo](./puppeteer.tabinfo.md)</span>
+
+</td><td>
+
+**_(Experimental)_** Information about the browser tab of a page. See [Page.tabInfo()](./puppeteer.page.tabinfo.md).
+
+</td></tr>
+<tr><td>
+
 <span id="touchhandle">[TouchHandle](./puppeteer.touchhandle.md)</span>
 
 </td><td>

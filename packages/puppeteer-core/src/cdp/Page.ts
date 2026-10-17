@@ -33,6 +33,7 @@ import {
   type NewDocumentScriptEvaluation,
   type ScreenshotClip,
   type ScreenshotOptions,
+  type TabInfo,
   type WaitTimeoutOptions,
 } from '../api/Page.js';
 import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
@@ -445,6 +446,25 @@ export class CdpPage extends Page {
     );
 
     return windowId.toString();
+  }
+
+  override async tabInfo(): Promise<TabInfo | null> {
+    const {targetInfo} = await this.#tabTargetClient.send(
+      'Target.getTargetInfo',
+    );
+    const data = targetInfo.embedderData;
+    if (typeof data?.tabStripIndex !== 'number') {
+      return null;
+    }
+    const tabInfo: TabInfo = {
+      index: data.tabStripIndex,
+      active: data.tabActive,
+      pinned: data.tabPinned,
+    };
+    if (data.tabGroupId) {
+      tabInfo.groupId = data.tabGroupId;
+    }
+    return tabInfo;
   }
 
   async #onFileChooser(

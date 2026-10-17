@@ -753,6 +753,31 @@ export interface HeapSnapshotOptions {
 }
 
 /**
+ * Information about the browser tab of a page. See {@link Page.tabInfo}.
+ *
+ * @public
+ * @experimental
+ */
+export interface TabInfo {
+  /**
+   * Zero-based index of the tab in its window's tab strip.
+   */
+  index: number;
+  /**
+   * Whether the tab is the active tab in its window.
+   */
+  active: boolean;
+  /**
+   * Whether the tab is pinned.
+   */
+  pinned: boolean;
+  /**
+   * ID of the tab group the tab belongs to, if any.
+   */
+  groupId?: string;
+}
+
+/**
  * Page provides methods to interact with a single tab or
  * {@link https://developer.chrome.com/extensions/background_pages | extension background page}
  * in the browser.
@@ -3464,6 +3489,17 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @experimental
    */
   abstract windowId(): Promise<WindowId>;
+
+  /**
+   * Returns information about the browser tab of this page. The result is a
+   * snapshot and is not updated when the tab changes.
+   *
+   * @returns `null` if the page is not in a tab strip, for example, in
+   * `chrome-headless-shell`.
+   *
+   * @experimental
+   */
+  abstract tabInfo(): Promise<TabInfo | null>;
 
   override [disposeSymbol](): void {
     return void this[asyncDisposeSymbol]().catch(error => {
