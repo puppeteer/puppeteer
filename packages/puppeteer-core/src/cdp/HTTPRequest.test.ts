@@ -63,3 +63,45 @@ describe('CdpHTTPRequest', () => {
     expect(request.postData()).toBe('originalData');
   });
 });
+
+describe('CdpHTTPRequest respond', () => {
+  it('should not send headers whose value is undefined', async () => {
+    const sent: Array<{method: string; params: any}> = [];
+    const client = {
+      async send(method: string, params: any) {
+        sent.push({method, params});
+        return {};
+      },
+    } as unknown as CDPSession;
+    const frame = {} as Frame;
+    const request = new CdpHTTPRequest(
+      client,
+      frame,
+      'interceptionId',
+      true,
+      {
+        requestId: 'requestId',
+        request: {
+          url: 'http://example.com',
+          method: 'GET',
+          headers: {},
+        } as any,
+      } as any,
+      [],
+      () => {
+        return undefined;
+      },
+    );
+    await request.respond({
+      status: 200,
+      headers: {'x-keep': 'yes', 'x-drop': undefined},
+      body: 'ok',
+    });
+    expect(sent).toHaveLength(1);
+    expect(sent[0]!.method).toBe('Fetch.fulfillRequest');
+    expect(sent[0]!.params.responseHeaders).toEqual([
+      {name: 'x-keep', value: 'yes'},
+      {name: 'content-length', value: '2'},
+    ]);
+  });
+});
