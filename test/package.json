@@ -28,7 +28,7 @@
     "diff": "9.0.0",
     "mime": "4.1.0",
     "jpeg-js": "0.4.4",
-    "pixelmatch": "7.1.0",
+    "pixelmatch": "8.0.0",
     "pngjs": "7.0.0"
   },
   "devDependencies": {
