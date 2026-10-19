@@ -69,7 +69,7 @@ describe('HTTPRequest', () => {
       private _headers: Record<string, string> = {};
       private _postData: string | undefined = undefined;
       private _hasPostData = false;
-      private _fetchPostDataCalls = 0;
+      private _contentCalls = 0;
 
       set urlToReturn(url: string) {
         this._url = url;
@@ -91,8 +91,8 @@ describe('HTTPRequest', () => {
         this._hasPostData = hasPostData;
       }
 
-      get fetchPostDataCalls(): number {
-        return this._fetchPostDataCalls;
+      get contentCalls(): number {
+        return this._contentCalls;
       }
 
       override url(): string {
@@ -111,13 +111,8 @@ describe('HTTPRequest', () => {
         return this._hasPostData;
       }
 
-      override fetchPostData(): Promise<string | undefined> {
-        this._fetchPostDataCalls++;
-        return Promise.resolve(this._postData);
-      }
-
       override content(): Promise<Uint8Array<ArrayBuffer> | undefined> {
-        this._fetchPostDataCalls++;
+        this._contentCalls++;
         return Promise.resolve(
           this._postData !== undefined
             ? stringToTypedArray(this._postData)
@@ -141,7 +136,7 @@ describe('HTTPRequest', () => {
       expect(fetchRequest.method).toBe('POST');
       expect(fetchRequest.headers.get('content-type')).toBe('application/json');
       expect(await fetchRequest.text()).toBe('{"foo": "bar"}');
-      expect(testRequest.fetchPostDataCalls).toBe(1);
+      expect(testRequest.contentCalls).toBe(1);
     });
 
     it('should preserve the HTTP method and URL', async () => {
@@ -174,7 +169,7 @@ describe('HTTPRequest', () => {
       const fetchRequest = await testRequest.asFetchRequest();
       expect(fetchRequest.method).toBe('GET');
       expect(fetchRequest.bodyUsed).toBe(false);
-      expect(testRequest.fetchPostDataCalls).toBe(0);
+      expect(testRequest.contentCalls).toBe(0);
     });
 
     it('should omit the body for HEAD requests', async () => {
@@ -186,7 +181,7 @@ describe('HTTPRequest', () => {
       const fetchRequest = await testRequest.asFetchRequest();
       expect(fetchRequest.method).toBe('HEAD');
       expect(fetchRequest.bodyUsed).toBe(false);
-      expect(testRequest.fetchPostDataCalls).toBe(0);
+      expect(testRequest.contentCalls).toBe(0);
     });
 
     it('should not fetch post data when the request has none', async () => {
@@ -198,7 +193,7 @@ describe('HTTPRequest', () => {
       expect(fetchRequest.method).toBe('POST');
       expect(fetchRequest.bodyUsed).toBe(false);
       expect(fetchRequest.headers.get('content-length')).toBeFalsy();
-      expect(testRequest.fetchPostDataCalls).toBe(0);
+      expect(testRequest.contentCalls).toBe(0);
     });
   });
 });

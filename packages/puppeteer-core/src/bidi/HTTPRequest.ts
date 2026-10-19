@@ -20,7 +20,7 @@ import {
   InterceptResolutionAction,
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
-import type {Logger} from '../common/Debug.js';
+import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {stringToBase64} from '../util/encoding.js';
 
@@ -175,7 +175,12 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async content(): Promise<Uint8Array<ArrayBuffer> | undefined> {
-    return await this.#request.getRequestContent();
+    try {
+      return await this.#request.getRequestContent();
+    } catch (err) {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+      return;
+    }
   }
 
   override headers(): Record<string, string> {
