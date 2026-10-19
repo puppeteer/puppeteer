@@ -452,14 +452,14 @@ export class CdpPage extends Page {
     const {targetInfo} = await this.#tabTargetClient.send(
       'Target.getTargetInfo',
     );
-    const data = targetInfo.embedderData;
+    const data = targetInfo.embedderData as TabEmbedderData | undefined;
     if (typeof data?.tabStripIndex !== 'number') {
       return null;
     }
     const tabInfo: TabInfo = {
       index: data.tabStripIndex,
-      active: data.tabActive,
-      pinned: data.tabPinned,
+      active: data.tabActive ?? false,
+      pinned: data.tabPinned ?? false,
     };
     if (data.tabGroupId) {
       tabInfo.groupId = data.tabGroupId;
@@ -1402,6 +1402,16 @@ export class CdpPage extends Page {
   ): CdpScreenRecording {
     return new CdpScreenRecording(this, options, this.logger);
   }
+}
+
+/**
+ * Shape of `TargetInfo.embedderData` for tab targets.
+ */
+interface TabEmbedderData {
+  tabStripIndex?: number;
+  tabActive?: boolean;
+  tabPinned?: boolean;
+  tabGroupId?: string;
 }
 
 const supportedMetrics = new Set<string>([

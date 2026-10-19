@@ -3495,7 +3495,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * snapshot and is not updated when the tab changes.
    *
    * @returns `null` if the page is not in a tab strip, for example, in
-   * `chrome-headless-shell`.
+   * `chrome-headless-shell`. Chrome before M150 does not report tab
+   * information, so the method also returns `null` there.
    *
    * @experimental
    */

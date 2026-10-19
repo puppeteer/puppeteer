@@ -2666,6 +2666,8 @@ describe('Page', function () {
       expect(tabInfo1).toMatchObject({active: true, pinned: false});
       expect(tabInfo2).toMatchObject({active: false, pinned: false});
       expect(tabInfo2!.index).toBe(tabInfo1!.index + 1);
+      expect(tabInfo1!.groupId).toBeUndefined();
+      expect(tabInfo2!.groupId).toBeUndefined();
 
       await page2.bringToFront();
       expect(await page1.tabInfo()).toMatchObject({active: false});

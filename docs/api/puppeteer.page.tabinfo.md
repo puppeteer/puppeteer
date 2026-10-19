@@ -18,4 +18,4 @@ class Page {
 
 Promise&lt;[TabInfo](./puppeteer.tabinfo.md) \| null&gt;
 
-`null` if the page is not in a tab strip, for example, in `chrome-headless-shell`.
+`null` if the page is not in a tab strip, for example, in `chrome-headless-shell`. Chrome before M150 does not report tab information, so the method also returns `null` there.
