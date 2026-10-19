@@ -295,14 +295,14 @@ describe('navigation', function () {
       const hangRequested = server.waitForRequest('/hang.html');
 
       const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
         shouldAdvanceTime: true,
-        toFake: ['setTimeout'],
       });
       try {
         // Resolving and timing out are both fine; never settling is not.
         let settled = false;
         const goto = page
-          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 1000})
+          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 10000})
           .catch(() => {})
           .then(() => {
             settled = true;
@@ -311,7 +311,7 @@ describe('navigation', function () {
         // Only once the first document is done and the second navigation is in
         // flight is the deadline the thing goto is waiting on.
         await Promise.all([loaded, hangRequested]);
-        await clock.tickAsync(1000);
+        await clock.tickAsync(10000);
         await Promise.race([goto, clock.tickAsync(5000)]);
 
         expect(settled).toBe(true);
