@@ -372,8 +372,9 @@ export class TargetManager
     // service worker instead: network conditions are reset when the session
     // that set them detaches, so staying attached is what keeps the rules
     // enforced for requests the worker issues, including the ones it forwards
-    // on behalf of controlled pages. As a consequence, the browser never
-    // idle-terminates service workers while rules are configured.
+    // on behalf of controlled pages. Kept sessions are not released when rules
+    // are cleared, so the browser never idle-terminates these service workers
+    // once rules have been configured.
     if (targetInfo.type === 'service_worker') {
       if (this.#hasNetworkRules()) {
         this.#networkConditionsSessions.set(session, targetInfo);
@@ -391,6 +392,9 @@ export class TargetManager
           this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         });
         await networkConditionsSetUp;
+        // An already exposed WorkerTarget (created on the silent-detach path)
+        // proceeds to #attachServiceWorkerTarget() even when its script URL is
+        // now disallowed, so the target receives the kept session.
         if (
           (!this.isUrlAllowed(targetInfo.url) &&
             !this.#attachedTargetsByTargetId.has(targetInfo.targetId)) ||
@@ -646,37 +650,29 @@ export class TargetManager
   }
 
   async #attachToServiceWorkers(): Promise<void> {
-    let hasServiceWorker = false;
-    for (const targetInfo of this.#discoveredTargetsByTargetId.values()) {
-      if (targetInfo.type === 'service_worker') {
-        hasServiceWorker = true;
-        break;
+    const trackedTargetIds = new Set<string>();
+    for (const [session, targetInfo] of this.#networkConditionsSessions) {
+      if (!session.detached) {
+        trackedTargetIds.add(targetInfo.targetId);
       }
     }
-    if (!hasServiceWorker) {
-      return;
-    }
 
-    const {targetInfos} = await this.#connection.send('Target.getTargets', {
-      filter: [
-        {
-          type: 'service_worker',
-        },
-      ],
-    });
-    await Promise.all(
-      targetInfos.map(async targetInfo => {
-        if (
-          targetInfo.attached ||
-          this.#ignoredTargets.has(targetInfo.targetId)
-        ) {
-          return;
-        }
-        await this.#connection._createSession(targetInfo, true).catch(error => {
+    const promises: Array<Promise<unknown>> = [];
+    for (const targetInfo of this.#discoveredTargetsByTargetId.values()) {
+      if (
+        targetInfo.type !== 'service_worker' ||
+        trackedTargetIds.has(targetInfo.targetId) ||
+        this.#ignoredTargets.has(targetInfo.targetId)
+      ) {
+        continue;
+      }
+      promises.push(
+        this.#connection._createSession(targetInfo, true).catch(error => {
           this.#logger?.(DEBUG_PREFIXES.error)?.(error);
-        });
-      }),
-    );
+        }),
+      );
+    }
+    await Promise.all(promises);
   }
 
   #mapPatterns(rules?: string[]): Array<{pattern: URLPattern; rule: string}> {
