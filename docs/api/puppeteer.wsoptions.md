@@ -41,6 +41,27 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="handshaketimeout">handshakeTimeout</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Time in milliseconds to wait for the WebSocket opening handshake before failing. Without it, connecting to a host that accepts the TCP connection but never answers the upgrade request waits until the operating system gives up. Node.js only.
+
+</td><td>
+
+no timeout
+
+</td></tr>
+<tr><td>
+
 <span id="headers">headers</span>
 
 </td><td>

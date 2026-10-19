@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyfill.js';
 import type {Browser} from '../api/Browser.js';
 import {_connectToBiDiBrowser} from '../bidi/BrowserConnector.js';
 import {_connectToCdpBrowser} from '../cdp/BrowserConnector.js';
@@ -15,6 +14,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import type {ConnectionTransport} from './ConnectionTransport.js';
 import type {ConnectOptions} from './ConnectOptions.js';
 import type {Logger} from './Debug.js';
+import {assertSupportedUrlRestrictions} from './util.js';
 
 const getWebSocketTransportClass = async () => {
   return isNode
@@ -27,37 +27,6 @@ const getWebSocketTransportClass = async () => {
  * Users should never call this directly; it's called when calling
  * `puppeteer.connect`. This method attaches Puppeteer to an existing browser instance.
  *
- * @internal
- */
-export function assertSupportedUrlRestrictions(options: {
-  allowlist?: string[];
-  blocklist?: string[];
-  protocol?: string;
-}): void {
-  if (options.blocklist && options.allowlist) {
-    throw new Error('Cannot specify both blocklist and allowlist');
-  }
-  if (
-    options.protocol === 'webDriverBiDi' &&
-    (options.blocklist || options.allowlist)
-  ) {
-    throw new Error(
-      'blocklist and allowlist are only supported with the CDP protocol',
-    );
-  }
-  if (options.blocklist) {
-    for (const rule of options.blocklist) {
-      new URLPattern(rule);
-    }
-  }
-  if (options.allowlist) {
-    for (const rule of options.allowlist) {
-      new URLPattern(rule);
-    }
-  }
-}
-
-/**
  * @internal
  */
 export async function _connectToBrowser(

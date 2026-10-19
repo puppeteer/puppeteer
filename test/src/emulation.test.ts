@@ -696,6 +696,32 @@ describe('Emulation', () => {
       }
     });
 
+    it('should support offline without additional parameters', async () => {
+      const {isFirefox, page, server} = await getTestState();
+
+      await page.emulateNetworkConditions({
+        offline: true,
+      });
+
+      try {
+        await page.goto(server.EMPTY_PAGE);
+        throw new Error('not reached');
+      } catch (err) {
+        let expectedError;
+        if (isFirefox) {
+          expectedError = /NS_ERROR_OFFLINE/;
+        } else {
+          expectedError = /ERR_INTERNET_DISCONNECTED/;
+        }
+        expect((err as Error).message).toMatch(expectedError);
+      }
+
+      await page.emulateNetworkConditions(null);
+
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.status()).toBe(200);
+    });
+
     it('should change navigator.connection.effectiveType', async () => {
       const {page} = await getTestState();
 

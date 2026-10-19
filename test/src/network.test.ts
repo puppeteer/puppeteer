@@ -836,6 +836,16 @@ describe('network', function () {
       ]);
       expect(request.headers['foo']).toBe('bar');
     });
+    it('should work with a Headers instance', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setExtraHTTPHeaders(new Headers({foo: 'bar'}));
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['foo']).toBe('bar');
+    });
     it('should throw for non-string header values', async () => {
       const {page} = await getTestState();
 

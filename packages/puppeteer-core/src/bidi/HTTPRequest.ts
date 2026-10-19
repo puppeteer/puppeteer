@@ -8,9 +8,9 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {CDPSession} from '../api/CDPSession.js';
 import type {
-  ContinueRequestOverrides,
+  ContinueRequestOverridesInternal,
   InterceptResolutionState,
-  ResponseForRequest,
+  ResponseForRequestInternal,
 } from '../api/HTTPRequest.js';
 import {
   HTTPRequest,
@@ -225,7 +225,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async _continue(
-    overrides: ContinueRequestOverrides = {},
+    overrides: ContinueRequestOverridesInternal = {},
   ): Promise<void> {
     const headers: Bidi.Network.Header[] = getBidiHeaders(overrides.headers);
     this.interception.handled = true;
@@ -257,7 +257,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override async _respond(
-    response: Partial<ResponseForRequest>,
+    response: Partial<ResponseForRequestInternal>,
     _priority?: number,
   ): Promise<void> {
     this.interception.handled = true;
@@ -324,18 +324,29 @@ export class BidiHTTPRequest extends HTTPRequest {
     const credentials = this.#frame.page()._credentials;
     if (credentials && !this.#authenticationHandled) {
       this.#authenticationHandled = true;
-      void this.#request.continueWithAuth({
-        action: 'provideCredentials',
-        credentials: {
-          type: 'password',
-          username: credentials.username,
-          password: credentials.password,
-        },
-      });
+      await this.#request
+        .continueWithAuth({
+          action: 'provideCredentials',
+          credentials: {
+            type: 'password',
+            username: credentials.username,
+            password: credentials.password,
+          },
+        })
+        .catch(error => {
+          // The request may have been canceled or the page closed before the
+          // auth challenge could be answered. Tolerate these errors instead of
+          // rejecting, which would surface as an unhandled rejection.
+          this.#logger(DEBUG_PREFIXES.error)?.(error);
+        });
     } else {
-      void this.#request.continueWithAuth({
-        action: 'cancel',
-      });
+      await this.#request
+        .continueWithAuth({
+          action: 'cancel',
+        })
+        .catch(error => {
+          this.#logger(DEBUG_PREFIXES.error)?.(error);
+        });
     }
   };
 

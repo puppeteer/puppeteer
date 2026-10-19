@@ -1294,6 +1294,15 @@ A media feature to emulate.
 </td></tr>
 <tr><td>
 
+<span id="networkrestrictions">[NetworkRestrictions](./puppeteer.networkrestrictions.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
+
+</td></tr>
+<tr><td>
+
 <span id="newdocumentscriptevaluation">[NewDocumentScriptEvaluation](./puppeteer.newdocumentscriptevaluation.md)</span>
 
 </td><td>
@@ -1471,6 +1480,15 @@ Represents a Node and the properties of it that are relevant to Accessibility.
 </td><td>
 
 WebDriver BiDi capabilities that are not set by Puppeteer itself.
+
+</td></tr>
+<tr><td>
+
+<span id="tabinfo">[TabInfo](./puppeteer.tabinfo.md)</span>
+
+</td><td>
+
+**_(Experimental)_** Information about the browser tab of a page. See [Page.tabInfo()](./puppeteer.page.tabinfo.md).
 
 </td></tr>
 <tr><td>
@@ -1931,6 +1949,13 @@ See individual properties for more information.
 <tr><td>
 
 <span id="handler">[Handler](./puppeteer.handler.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="headersinput">[HeadersInput](./puppeteer.headersinput.md)</span>
 
 </td><td>
 

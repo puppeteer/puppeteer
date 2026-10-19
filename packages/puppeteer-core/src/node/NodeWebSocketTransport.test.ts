@@ -3,7 +3,12 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import type {AddressInfo} from 'node:net';
+import {
+  createServer,
+  type AddressInfo,
+  type Server,
+  type Socket,
+} from 'node:net';
 import {describe, it, beforeEach, afterEach} from 'node:test';
 
 import expect from 'expect';
@@ -197,6 +202,59 @@ describe('NodeWebSocketTransport', () => {
         maxPayloadTransport!.onclose = resolve;
       });
       expect(received).toBe(false);
+    });
+  });
+  describe('handshakeTimeout', () => {
+    let silentServer: Server | undefined;
+    const sockets: Socket[] = [];
+
+    afterEach(() => {
+      for (const socket of sockets) {
+        socket.destroy();
+      }
+      sockets.length = 0;
+      silentServer?.close();
+      silentServer = undefined;
+    });
+
+    it('rejects when the server never answers the upgrade request', async () => {
+      // Accepts the TCP connection but never responds to the HTTP upgrade.
+      silentServer = createServer(socket => {
+        sockets.push(socket);
+      });
+      await new Promise<void>(resolve => {
+        silentServer!.listen(0, '127.0.0.1', resolve);
+      });
+      const port = (silentServer.address() as AddressInfo).port;
+
+      const start = Date.now();
+      await expect(
+        NodeWebSocketTransport.create(
+          `ws://127.0.0.1:${port}`,
+          undefined,
+          () => {
+            return undefined;
+          },
+          {handshakeTimeout: 100},
+        ),
+        // `create` rejects with the WebSocket error event, as for any other
+        // connection error.
+      ).rejects.toMatchObject({
+        message: expect.stringMatching(/handshake has timed out/),
+      });
+      expect(Date.now() - start).toBeLessThan(5000);
+    });
+
+    it('connects normally when the handshake finishes in time', async () => {
+      const handshakeTransport = await NodeWebSocketTransport.create(
+        'ws://127.0.0.1:8080',
+        undefined,
+        () => {
+          return undefined;
+        },
+        {handshakeTimeout: 5000},
+      );
+      handshakeTransport.close();
     });
   });
 });

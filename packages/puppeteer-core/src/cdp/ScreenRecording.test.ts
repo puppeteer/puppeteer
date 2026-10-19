@@ -303,4 +303,42 @@ describe('ScreenRecording', () => {
       }).length,
     ).toBe(1);
   });
+
+  it('should propagate the start error without unhandled rejections', async () => {
+    const client = new MockCDPSession();
+    const originalSend = client.send.bind(client);
+    client.send = async (method: string, params?: unknown) => {
+      if (method === 'Page.startScreenRecording') {
+        client.commands.push({method, params});
+        throw new Error('Protocol error: startScreenRecording failed');
+      }
+      return await originalSend(method, params);
+    };
+
+    const unhandled: unknown[] = [];
+    const onUnhandled = (reason: unknown) => {
+      unhandled.push(reason);
+    };
+    process.on('unhandledRejection', onUnhandled);
+    try {
+      const page = new MockPage(client);
+      await expect(page.record()).rejects.toThrow(
+        'Protocol error: startScreenRecording failed',
+      );
+      // Let any pending rejections surface.
+      await new Promise(resolve => {
+        return setImmediate(resolve);
+      });
+    } finally {
+      process.off('unhandledRejection', onUnhandled);
+    }
+
+    expect(unhandled).toEqual([]);
+    // No recording was started, so nothing should be stopped or read.
+    expect(
+      client.commands.map(c => {
+        return c.method;
+      }),
+    ).toEqual(['Page.startScreenRecording']);
+  });
 });

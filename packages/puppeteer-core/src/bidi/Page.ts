@@ -15,6 +15,7 @@ import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
 import type {Extension} from '../api/Extension.js';
 import type {WaitForOptions} from '../api/Frame.js';
+import {headersInputToRecord, type HeadersInput} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {
   Credentials,
@@ -31,6 +32,7 @@ import {
   PageEvent,
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
+  type TabInfo,
 } from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import {Coverage} from '../cdp/Coverage.js';
@@ -251,6 +253,10 @@ export class BidiPage extends Page {
     return this.#frame.browsingContext.windowId;
   }
 
+  override tabInfo(): Promise<TabInfo | null> {
+    throw new UnsupportedOperation();
+  }
+
   override openDevTools(): Promise<Page> {
     throw new UnsupportedOperation();
   }
@@ -342,7 +348,14 @@ export class BidiPage extends Page {
     return this.#frame.browsingContext.isJavaScriptEnabled();
   }
 
-  override async setGeolocation(options: GeolocationOptions): Promise<void> {
+  override async setGeolocation(
+    options: GeolocationOptions | null,
+  ): Promise<void> {
+    if (options === null) {
+      return await this.#frame.browsingContext.setGeolocationOverride({
+        coordinates: null,
+      });
+    }
     const {longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180) {
       throw new Error(
@@ -764,10 +777,10 @@ export class BidiPage extends Page {
   /**
    * @internal
    */
-  override async setExtraHTTPHeaders(
-    headers: Record<string, string>,
-  ): Promise<void> {
-    await this.#frame.browsingContext.setExtraHTTPHeaders(headers);
+  override async setExtraHTTPHeaders(headers: HeadersInput): Promise<void> {
+    await this.#frame.browsingContext.setExtraHTTPHeaders(
+      headersInputToRecord(headers),
+    );
   }
 
   /**
@@ -854,15 +867,10 @@ export class BidiPage extends Page {
         latency: 0,
       };
     }
-    this.#emulatedNetworkConditions.upload = networkConditions
-      ? networkConditions.upload
-      : -1;
-    this.#emulatedNetworkConditions.download = networkConditions
-      ? networkConditions.download
-      : -1;
-    this.#emulatedNetworkConditions.latency = networkConditions
-      ? networkConditions.latency
-      : 0;
+    this.#emulatedNetworkConditions.upload = networkConditions?.upload ?? -1;
+    this.#emulatedNetworkConditions.download =
+      networkConditions?.download ?? -1;
+    this.#emulatedNetworkConditions.latency = networkConditions?.latency ?? 0;
     this.#emulatedNetworkConditions.offline =
       networkConditions?.offline ?? false;
     return await this.#applyNetworkConditions();
@@ -872,11 +880,27 @@ export class BidiPage extends Page {
     if (!this.#emulatedNetworkConditions) {
       return;
     }
-    await this._client().send('Network.emulateNetworkConditions', {
+    // `Network.emulateNetworkConditions` is deprecated by Chromium in favor
+    // of `Network.emulateNetworkConditionsByRule`. Rules only shape the
+    // network traffic, so `Network.overrideNetworkState` is also sent to
+    // emulate the network state exposed to the page via `navigator.onLine`
+    // and `navigator.connection`.
+    await this._client().send('Network.overrideNetworkState', {
       offline: this.#emulatedNetworkConditions.offline,
       latency: this.#emulatedNetworkConditions.latency,
       uploadThroughput: this.#emulatedNetworkConditions.upload,
       downloadThroughput: this.#emulatedNetworkConditions.download,
+    });
+    await this._client().send('Network.emulateNetworkConditionsByRule', {
+      matchedNetworkConditions: [
+        {
+          urlPattern: '',
+          offline: this.#emulatedNetworkConditions.offline,
+          latency: this.#emulatedNetworkConditions.latency,
+          downloadThroughput: this.#emulatedNetworkConditions.download,
+          uploadThroughput: this.#emulatedNetworkConditions.upload,
+        },
+      ],
     });
   }
 
