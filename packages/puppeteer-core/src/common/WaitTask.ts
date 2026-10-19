@@ -147,6 +147,7 @@ export class WaitTask<T = unknown> {
           break;
       }
 
+      // Avoid starting a poller created after the task has already terminated.
       if (this.#result.finished()) {
         await this.terminate();
         return;
@@ -156,6 +157,7 @@ export class WaitTask<T = unknown> {
         void poller.start();
       });
 
+      // Termination already stops the poller; only skip the result round trip.
       if (this.#result.finished()) {
         await this.terminate();
         return;

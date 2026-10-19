@@ -8,6 +8,8 @@ import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 /**
+ * A stopped poller is single-use and does not restart.
+ *
  * @internal
  */
 export interface Poller<T> {
