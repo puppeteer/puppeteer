@@ -1359,6 +1359,17 @@ NOTE: in certain cases, setting viewport will reload the page in order to set th
 </td></tr>
 <tr><td>
 
+<span id="tabinfo">[tabInfo()](./puppeteer.page.tabinfo.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns information about the browser tab of this page. The result is a snapshot and is not updated when the tab changes.
+
+</td></tr>
+<tr><td>
+
 <span id="tap">[tap(selector)](./puppeteer.page.tap.md)</span>
 
 </td><td>

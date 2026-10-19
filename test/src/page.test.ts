@@ -2654,6 +2654,30 @@ describe('Page', function () {
     });
   });
 
+  describe('Page.tabInfo', function () {
+    it('should return the tab index and active state', async () => {
+      const {context} = await getTestState();
+      const page1 = await context.newPage();
+      const page2 = await context.newPage();
+
+      await page1.bringToFront();
+      const tabInfo1 = await page1.tabInfo();
+      const tabInfo2 = await page2.tabInfo();
+      expect(tabInfo1).toMatchObject({active: true, pinned: false});
+      expect(tabInfo2).toMatchObject({active: false, pinned: false});
+      expect(tabInfo2!.index).toBe(tabInfo1!.index + 1);
+      expect(tabInfo1!.groupId).toBeUndefined();
+      expect(tabInfo2!.groupId).toBeUndefined();
+
+      await page2.bringToFront();
+      expect(await page1.tabInfo()).toMatchObject({active: false});
+      expect(await page2.tabInfo()).toMatchObject({active: true});
+
+      await page1.close();
+      await page2.close();
+    });
+  });
+
   describe('Page.resize', function () {
     const state = setupSeparateTestBrowserHooks({
       args: ['--screen-info={3840x2160}'],
