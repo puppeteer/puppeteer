@@ -81,6 +81,12 @@ export interface FrameProvider {
 export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
+  // Requests from dedicated workers are paused on the page session but
+  // announced on the worker session, which has no Fetch domain.
+  #requestPausedClients = new WeakMap<
+    Protocol.Fetch.RequestPausedEvent,
+    CDPSession
+  >();
   #extraHTTPHeaders?: Record<string, string>;
   #credentials: Credentials | null = null;
   #attemptedAuthentications = new Set<string>();
@@ -430,7 +436,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       if (requestPausedEvent) {
         const {requestId: fetchRequestId} = requestPausedEvent;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
-        this.#onRequest(client, event, fetchRequestId);
+        this.#onRequest(
+          this.#requestPausedClients.get(requestPausedEvent) ?? client,
+          event,
+          fetchRequestId,
+        );
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
@@ -506,6 +516,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         this.#onRequestRestarted(request, fetchRequestId);
         return;
       }
+      this.#requestPausedClients.set(event, client);
       this.#networkEventManager.storeRequestPaused(networkRequestId, event);
       return;
     }
@@ -517,6 +528,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       requestWillBeSentEvent.request.method !== event.request.method
     ) {
       this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+      this.#requestPausedClients.set(event, client);
       this.#networkEventManager.storeRequestPaused(networkRequestId, event);
       return;
     }

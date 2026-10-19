@@ -934,6 +934,13 @@
     "comment": "Workers do not work in Firefox yet"
   },
   {
+    "testIdPattern": "[requestinterception.test] request interception Request.respond should work for requests from a dedicated worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL", "TIMEOUT"],
+    "comment": "Intercepted worker requests are never resolved over WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[screencast.test] Screencasts Page.screencast should validate options",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],

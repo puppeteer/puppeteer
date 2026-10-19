@@ -9,6 +9,7 @@ import path from 'node:path';
 
 import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -952,6 +953,29 @@ describe('request interception', function () {
           return document.body.textContent;
         }),
       ).toBe('Yo, page!');
+    });
+    it('should work for requests from a dedicated worker', async () => {
+      const {page, server} = await getTestState();
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({body: 'stubbed'});
+      });
+
+      const results = await worker.evaluate(() => {
+        return Promise.all(
+          Array.from({length: 8}, (_, i) => {
+            return fetch(`/stub-${i}`).then(response => {
+              return response.text();
+            });
+          }),
+        );
+      });
+      expect(results).toEqual(Array(8).fill('stubbed'));
     });
     it('should work with headers given as a Headers instance', async () => {
       const {page, server} = await getTestState();
