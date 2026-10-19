@@ -1251,7 +1251,8 @@ export abstract class ElementHandle<
   }
 
   /**
-   * This method returns the bounding box of the element (relative to the main frame),
+   * This method returns the bounding box of the element (relative to the main
+   * frame's viewport),
    * or `null` if the element is {@link https://drafts.csswg.org/css-display-4/#box-generation | not part of the layout}
    * (example: `display: none`).
    */
@@ -1452,7 +1453,7 @@ export abstract class ElementHandle<
     }
     const elementClip = await this.#nonEmptyVisibleBoundingBox();
 
-    // The bounding box is relative to the main frame's viewport.
+    // Convert boundingBox()'s viewport coordinates to page coordinates.
     const [pageLeft, pageTop] = await page
       .mainFrame()
       .isolatedRealm()
