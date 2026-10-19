@@ -57,13 +57,49 @@ describe('downloadFile', function () {
     assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
   });
 
-  for (const [name, location, expectedPath] of [
-    ['root-relative', '/file.bin', '/file.bin'],
-    ['path-relative', 'file.bin', '/downloads/file.bin'],
-    ['parent-relative', '../file.bin', '/file.bin'],
-    ['query-relative', '?download=1', '/downloads/start?download=1'],
-    ['absolute', 'absolute', '/file.bin'],
-    ['scheme-relative', 'scheme-relative', '/file.bin'],
+  for (const [name, getLocation, expectedPath] of [
+    [
+      'root-relative',
+      () => {
+        return '/file.bin';
+      },
+      '/file.bin',
+    ],
+    [
+      'path-relative',
+      () => {
+        return 'file.bin';
+      },
+      '/downloads/file.bin',
+    ],
+    [
+      'parent-relative',
+      () => {
+        return '../file.bin';
+      },
+      '/file.bin',
+    ],
+    [
+      'query-relative',
+      () => {
+        return '?download=1';
+      },
+      '/downloads/start?download=1',
+    ],
+    [
+      'absolute',
+      (url: URL) => {
+        return new URL('/file.bin', url).href;
+      },
+      '/file.bin',
+    ],
+    [
+      'scheme-relative',
+      (url: URL) => {
+        return `//${url.host}/file.bin`;
+      },
+      '/file.bin',
+    ],
   ] as const) {
     it(`downloads a file through ${name} redirects`, async () => {
       serverUrl = new URL('/downloads/start', serverUrl);
@@ -72,13 +108,7 @@ describe('downloadFile', function () {
       server.on('request', (req, res) => {
         requests.push(req.url!);
         if (requests.length === 1) {
-          let redirect: string = location;
-          if (location === 'absolute') {
-            redirect = new URL('/file.bin', serverUrl).href;
-          } else if (location === 'scheme-relative') {
-            redirect = `//${serverUrl.host}/file.bin`;
-          }
-          res.writeHead(302, {Location: redirect});
+          res.writeHead(302, {Location: getLocation(serverUrl)});
           res.end();
           return;
         }
