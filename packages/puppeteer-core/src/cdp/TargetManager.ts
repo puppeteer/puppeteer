@@ -392,7 +392,8 @@ export class TargetManager
         });
         await networkConditionsSetUp;
         if (
-          !this.isUrlAllowed(targetInfo.url) ||
+          (!this.isUrlAllowed(targetInfo.url) &&
+            !this.#attachedTargetsByTargetId.has(targetInfo.targetId)) ||
           this.#ignoredTargets.has(targetInfo.targetId) ||
           !this.#discoveredTargetsByTargetId.has(targetInfo.targetId)
         ) {
@@ -510,7 +511,7 @@ export class TargetManager
     this.#setupAttachmentListeners(session);
 
     if (isExistingTarget) {
-      session.setTarget(target);
+      target._setSession(session);
     } else {
       target._initialize();
       this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
@@ -612,6 +613,10 @@ export class TargetManager
 
     const isActive = this.#hasNetworkRules();
 
+    if (isActive && !wasActive) {
+      await this.#attachToServiceWorkers();
+    }
+
     if (isActive || wasActive) {
       await this.#reapplyNetworkConditions(wasActive && !isActive);
     }
@@ -638,6 +643,40 @@ export class TargetManager
       );
     }
     await Promise.all(promises);
+  }
+
+  async #attachToServiceWorkers(): Promise<void> {
+    let hasServiceWorker = false;
+    for (const targetInfo of this.#discoveredTargetsByTargetId.values()) {
+      if (targetInfo.type === 'service_worker') {
+        hasServiceWorker = true;
+        break;
+      }
+    }
+    if (!hasServiceWorker) {
+      return;
+    }
+
+    const {targetInfos} = await this.#connection.send('Target.getTargets', {
+      filter: [
+        {
+          type: 'service_worker',
+        },
+      ],
+    });
+    await Promise.all(
+      targetInfos.map(async targetInfo => {
+        if (
+          targetInfo.attached ||
+          this.#ignoredTargets.has(targetInfo.targetId)
+        ) {
+          return;
+        }
+        await this.#connection._createSession(targetInfo, true).catch(error => {
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+        });
+      }),
+    );
   }
 
   #mapPatterns(rules?: string[]): Array<{pattern: URLPattern; rule: string}> {
