@@ -11,6 +11,7 @@ import {
   type ContinueRequestOverridesInternal,
   headersArray,
   HTTPRequest,
+  InterceptResolutionAction,
   type ResourceType,
   type ResponseForRequestInternal,
   STATUS_TEXTS,
@@ -24,6 +25,20 @@ import {
 } from '../util/encoding.js';
 
 import type {CdpHTTPResponse} from './HTTPResponse.js';
+
+type InterceptResolution =
+  | {
+      action: InterceptResolutionAction.Continue;
+      overrides: ContinueRequestOverridesInternal;
+    }
+  | {
+      action: InterceptResolutionAction.Respond;
+      response: Partial<ResponseForRequestInternal>;
+    }
+  | {
+      action: InterceptResolutionAction.Abort;
+      errorReason: Protocol.Network.ErrorReason | null;
+    };
 
 /**
  * @internal
@@ -46,6 +61,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
   #logger: Logger;
+  #resolution: InterceptResolution | null = null;
 
   override get client(): CDPSession {
     return this.#client;
@@ -211,6 +227,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   ): Promise<void> {
     const {url, method, postData, headers} = overrides;
     this.interception.handled = true;
+    this.#resolution = {action: InterceptResolutionAction.Continue, overrides};
 
     const postDataBinaryBase64 = postData
       ? stringToBase64(postData)
@@ -237,6 +254,7 @@ export class CdpHTTPRequest extends HTTPRequest {
 
   async _respond(response: Partial<ResponseForRequestInternal>): Promise<void> {
     this.interception.handled = true;
+    this.#resolution = {action: InterceptResolutionAction.Respond, response};
 
     let parsedBody:
       | {
@@ -289,6 +307,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     errorReason: Protocol.Network.ErrorReason | null,
   ): Promise<void> {
     this.interception.handled = true;
+    this.#resolution = {action: InterceptResolutionAction.Abort, errorReason};
     if (this._interceptionId === undefined) {
       throw new Error(
         'HTTPRequest is missing _interceptionId needed for Fetch.failRequest',
@@ -302,5 +321,35 @@ export class CdpHTTPRequest extends HTTPRequest {
       .catch(error => {
         return handleError(error, this.#logger);
       });
+  }
+
+  /**
+   * The overrides sent with `Fetch.continueRequest`, or an empty object if
+   * the request was not continued.
+   *
+   * @internal
+   */
+  get _continueOverrides(): ContinueRequestOverridesInternal {
+    return this.#resolution?.action === InterceptResolutionAction.Continue
+      ? this.#resolution.overrides
+      : {};
+  }
+
+  /**
+   * Re-sends the resolution the user already chose to the current
+   * `_interceptionId`. Used when Chrome restarts a request under a new
+   * interception id.
+   *
+   * @internal
+   */
+  async _replayInterception(): Promise<void> {
+    switch (this.#resolution?.action) {
+      case InterceptResolutionAction.Continue:
+        return await this._continue(this.#resolution.overrides);
+      case InterceptResolutionAction.Respond:
+        return await this._respond(this.#resolution.response);
+      case InterceptResolutionAction.Abort:
+        return await this._abort(this.#resolution.errorReason);
+    }
   }
 }

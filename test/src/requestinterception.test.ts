@@ -748,6 +748,39 @@ describe('request interception', function () {
       await page.goto(server.PREFIX + '/cached/one-style-font.html');
       await responsePromise;
     });
+    // @see https://crbug.com/1196004
+    it('should emit a single request for a font Chrome restarts', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(true);
+      const isFont = (request: HTTPRequest) => {
+        return request.url().endsWith('.ttf');
+      };
+      const events: string[] = [];
+      page.on('request', request => {
+        if (isFont(request)) {
+          events.push('request');
+        }
+        void request.continue();
+      });
+      page.on('requestfinished', request => {
+        if (isFont(request)) {
+          events.push('requestfinished');
+        }
+      });
+      page.on('requestfailed', request => {
+        if (isFont(request)) {
+          events.push('requestfailed');
+        }
+      });
+
+      const fontLoaded = waitEvent(page, 'requestfinished', isFont);
+      await page.goto(server.PREFIX + '/font-face.html');
+      await fontLoaded;
+
+      expect(events).toEqual(['request', 'requestfinished']);
+    });
     it('should work with worker', async () => {
       const {page, server} = await getTestState();
 
