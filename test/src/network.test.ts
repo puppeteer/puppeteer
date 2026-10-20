@@ -110,6 +110,42 @@ describe('network', function () {
       }
     });
 
+    it('should report all headers sent to the server on response.request()', async () => {
+      const {page, server} = await getTestState();
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue();
+      });
+
+      const [serverRequest, response] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(response!.request().headers()).toEqual(serverRequest.headers);
+    });
+
+    it('should report all headers sent to the server on requestfailed', async () => {
+      const {page, server} = await getTestState();
+      server.setRoute('/fail.html', req => {
+        req.socket.destroy();
+      });
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue();
+      });
+
+      const [serverRequest, failedRequest] = await Promise.all([
+        server.waitForRequest('/fail.html'),
+        waitEvent<HTTPRequest>(page, 'requestfailed', req => {
+          return !isFavicon(req);
+        }),
+        page.goto(server.PREFIX + '/fail.html').catch(() => {}),
+      ]);
+
+      expect(failedRequest.headers()).toEqual(serverRequest.headers);
+    });
+
     // In CDP cookie header is only when the request actually
     // hits the network, verify that we populate the correctly
     describe('cookie header', () => {

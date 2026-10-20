@@ -119,6 +119,8 @@ export class Request extends EventEmitter<{
         return;
       }
       this.#error = event.errorText;
+      this.#event.request.headers = event.request.headers;
+      this.#event.request.timings = event.request.timings;
       this.emit('error', this.#error);
       this.dispose();
     });
@@ -131,6 +133,7 @@ export class Request extends EventEmitter<{
         return;
       }
       this.#response = event.response;
+      this.#event.request.headers = event.request.headers;
       this.#event.request.timings = event.request.timings;
       this.emit('response', this.#response);
     });
@@ -143,6 +146,7 @@ export class Request extends EventEmitter<{
         return;
       }
       this.#response = event.response;
+      this.#event.request.headers = event.request.headers;
       this.#event.request.timings = event.request.timings;
       this.emit('success', this.#response);
       // In case this is a redirect.
