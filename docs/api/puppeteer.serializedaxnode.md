@@ -649,7 +649,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="elementhandle">[elementHandle()](./puppeteer.serializedaxnode.elementhandle.md)</span>
+<span id="elementhandle">[elementHandle](./puppeteer.serializedaxnode.elementhandle.md)</span>
 
 </td><td>
 

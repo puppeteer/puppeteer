@@ -69,7 +69,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="defaultargs">[defaultArgs(object)](./puppeteer.browserlauncher.defaultargs.md)</span>
+<span id="defaultargs">[defaultArgs](./puppeteer.browserlauncher.defaultargs.md)</span>
 
 </td><td>
 
@@ -78,7 +78,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="executablepath">[executablePath(channel, validatePath)](./puppeteer.browserlauncher.executablepath.md)</span>
+<span id="executablepath">[executablePath](./puppeteer.browserlauncher.executablepath.md)</span>
 
 </td><td>
 
@@ -87,7 +87,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="launch">[launch(options)](./puppeteer.browserlauncher.launch.md)</span>
+<span id="launch">[launch](./puppeteer.browserlauncher.launch.md)</span>
 
 </td><td>
 

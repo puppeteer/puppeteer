@@ -150,7 +150,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="pages">[pages()](./puppeteer.extension.pages.md)</span>
+<span id="pages">[pages](./puppeteer.extension.pages.md)</span>
 
 </td><td>
 
@@ -161,7 +161,7 @@ Returns a list of the currently active and visible pages belonging to the extens
 </td></tr>
 <tr><td>
 
-<span id="triggeraction">[triggerAction(page)](./puppeteer.extension.triggeraction.md)</span>
+<span id="triggeraction">[triggerAction](./puppeteer.extension.triggeraction.md)</span>
 
 </td><td>
 
@@ -172,7 +172,7 @@ Triggers the default action of the extension for a specified page. This typicall
 </td></tr>
 <tr><td>
 
-<span id="workers">[workers()](./puppeteer.extension.workers.md)</span>
+<span id="workers">[workers](./puppeteer.extension.workers.md)</span>
 
 </td><td>
 

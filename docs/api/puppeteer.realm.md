@@ -69,7 +69,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.realm._disposesymbol_.md)</span>
+<span id="_disposesymbol_">[\[disposeSymbol\]](./puppeteer.realm._disposesymbol_.md)</span>
 
 </td><td>
 
@@ -78,7 +78,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="evaluate">[evaluate(pageFunction, args)](./puppeteer.realm.evaluate.md)</span>
+<span id="evaluate">[evaluate](./puppeteer.realm.evaluate.md)</span>
 
 </td><td>
 
@@ -93,7 +93,7 @@ If the function passed to `realm.evaluate` returns a Promise, the method will wa
 </td></tr>
 <tr><td>
 
-<span id="evaluatehandle">[evaluateHandle(pageFunction, args)](./puppeteer.realm.evaluatehandle.md)</span>
+<span id="evaluatehandle">[evaluateHandle](./puppeteer.realm.evaluatehandle.md)</span>
 
 </td><td>
 
@@ -108,7 +108,7 @@ If the function passed to `realm.evaluateHandle` returns a Promise, the method w
 </td></tr>
 <tr><td>
 
-<span id="extension">[extension()](./puppeteer.realm.extension.md)</span>
+<span id="extension">[extension](./puppeteer.realm.extension.md)</span>
 
 </td><td>
 
@@ -119,7 +119,7 @@ If the function passed to `realm.evaluateHandle` returns a Promise, the method w
 </td></tr>
 <tr><td>
 
-<span id="waitforfunction">[waitForFunction(pageFunction, options, args)](./puppeteer.realm.waitforfunction.md)</span>
+<span id="waitforfunction">[waitForFunction](./puppeteer.realm.waitforfunction.md)</span>
 
 </td><td>
 

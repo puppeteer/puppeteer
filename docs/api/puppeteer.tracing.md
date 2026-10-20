@@ -43,7 +43,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="start">[start(options)](./puppeteer.tracing.start.md)</span>
+<span id="start">[start](./puppeteer.tracing.start.md)</span>
 
 </td><td>
 
@@ -58,7 +58,7 @@ Only one trace can be active at a time per browser.
 </td></tr>
 <tr><td>
 
-<span id="stop">[stop()](./puppeteer.tracing.stop.md)</span>
+<span id="stop">[stop](./puppeteer.tracing.stop.md)</span>
 
 </td><td>
 

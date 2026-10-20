@@ -89,7 +89,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="abort">[abort(errorCode, priority)](./puppeteer.httprequest.abort.md)</span>
+<span id="abort">[abort](./puppeteer.httprequest.abort.md)</span>
 
 </td><td>
 
@@ -104,7 +104,7 @@ To use this, request interception should be enabled with [Page.setRequestInterce
 </td></tr>
 <tr><td>
 
-<span id="aborterrorreason">[abortErrorReason()](./puppeteer.httprequest.aborterrorreason.md)</span>
+<span id="aborterrorreason">[abortErrorReason](./puppeteer.httprequest.aborterrorreason.md)</span>
 
 </td><td>
 
@@ -115,7 +115,7 @@ The most recent reason for aborting the request
 </td></tr>
 <tr><td>
 
-<span id="asfetchrequest">[asFetchRequest()](./puppeteer.httprequest.asfetchrequest.md)</span>
+<span id="asfetchrequest">[asFetchRequest](./puppeteer.httprequest.asfetchrequest.md)</span>
 
 </td><td>
 
@@ -130,7 +130,7 @@ Headers are copied to the new Request instance. The request URL and method are p
 </td></tr>
 <tr><td>
 
-<span id="continue">[continue(overrides, priority)](./puppeteer.httprequest.continue.md)</span>
+<span id="continue">[continue](./puppeteer.httprequest.continue.md)</span>
 
 </td><td>
 
@@ -147,7 +147,7 @@ Exception is immediately thrown if the request interception is not enabled.
 </td></tr>
 <tr><td>
 
-<span id="continuerequestoverrides">[continueRequestOverrides()](./puppeteer.httprequest.continuerequestoverrides.md)</span>
+<span id="continuerequestoverrides">[continueRequestOverrides](./puppeteer.httprequest.continuerequestoverrides.md)</span>
 
 </td><td>
 
@@ -158,7 +158,7 @@ The `ContinueRequestOverrides` that will be used if the interception is allowed 
 </td></tr>
 <tr><td>
 
-<span id="enqueueinterceptaction">[enqueueInterceptAction(pendingHandler)](./puppeteer.httprequest.enqueueinterceptaction.md)</span>
+<span id="enqueueinterceptaction">[enqueueInterceptAction](./puppeteer.httprequest.enqueueinterceptaction.md)</span>
 
 </td><td>
 
@@ -169,7 +169,7 @@ Adds an async request handler to the processing queue. Deferred handlers are not
 </td></tr>
 <tr><td>
 
-<span id="failure">[failure()](./puppeteer.httprequest.failure.md)</span>
+<span id="failure">[failure](./puppeteer.httprequest.failure.md)</span>
 
 </td><td>
 
@@ -182,7 +182,7 @@ Access information about the request's failure.
 </td></tr>
 <tr><td>
 
-<span id="fetchpostdata">[fetchPostData()](./puppeteer.httprequest.fetchpostdata.md)</span>
+<span id="fetchpostdata">[fetchPostData](./puppeteer.httprequest.fetchpostdata.md)</span>
 
 </td><td>
 
@@ -193,7 +193,7 @@ Fetches the POST data for the request from the browser.
 </td></tr>
 <tr><td>
 
-<span id="finalizeinterceptions">[finalizeInterceptions()](./puppeteer.httprequest.finalizeinterceptions.md)</span>
+<span id="finalizeinterceptions">[finalizeInterceptions](./puppeteer.httprequest.finalizeinterceptions.md)</span>
 
 </td><td>
 
@@ -204,7 +204,7 @@ Awaits pending interception handlers and then decides how to fulfill the request
 </td></tr>
 <tr><td>
 
-<span id="frame">[frame()](./puppeteer.httprequest.frame.md)</span>
+<span id="frame">[frame](./puppeteer.httprequest.frame.md)</span>
 
 </td><td>
 
@@ -215,7 +215,7 @@ The frame that initiated the request, or null if navigating to error pages.
 </td></tr>
 <tr><td>
 
-<span id="haspostdata">[hasPostData()](./puppeteer.httprequest.haspostdata.md)</span>
+<span id="haspostdata">[hasPostData](./puppeteer.httprequest.haspostdata.md)</span>
 
 </td><td>
 
@@ -226,7 +226,7 @@ True when the request has POST data. Note that [HTTPRequest.postData()](./puppet
 </td></tr>
 <tr><td>
 
-<span id="headers">[headers()](./puppeteer.httprequest.headers.md)</span>
+<span id="headers">[headers](./puppeteer.httprequest.headers.md)</span>
 
 </td><td>
 
@@ -237,7 +237,7 @@ An object with HTTP headers associated with the request. All header names are lo
 </td></tr>
 <tr><td>
 
-<span id="initiator">[initiator()](./puppeteer.httprequest.initiator.md)</span>
+<span id="initiator">[initiator](./puppeteer.httprequest.initiator.md)</span>
 
 </td><td>
 
@@ -248,7 +248,7 @@ The initiator of the request.
 </td></tr>
 <tr><td>
 
-<span id="interceptresolutionstate">[interceptResolutionState()](./puppeteer.httprequest.interceptresolutionstate.md)</span>
+<span id="interceptresolutionstate">[interceptResolutionState](./puppeteer.httprequest.interceptresolutionstate.md)</span>
 
 </td><td>
 
@@ -263,7 +263,7 @@ InterceptResolutionAction is one of: `abort`, `respond`, `continue`, `disabled`,
 </td></tr>
 <tr><td>
 
-<span id="isinterceptresolutionhandled">[isInterceptResolutionHandled()](./puppeteer.httprequest.isinterceptresolutionhandled.md)</span>
+<span id="isinterceptresolutionhandled">[isInterceptResolutionHandled](./puppeteer.httprequest.isinterceptresolutionhandled.md)</span>
 
 </td><td>
 
@@ -274,7 +274,7 @@ Is `true` if the intercept resolution has already been handled, `false` otherwis
 </td></tr>
 <tr><td>
 
-<span id="isnavigationrequest">[isNavigationRequest()](./puppeteer.httprequest.isnavigationrequest.md)</span>
+<span id="isnavigationrequest">[isNavigationRequest](./puppeteer.httprequest.isnavigationrequest.md)</span>
 
 </td><td>
 
@@ -285,7 +285,7 @@ True if the request is the driver of the current frame's navigation.
 </td></tr>
 <tr><td>
 
-<span id="method">[method()](./puppeteer.httprequest.method.md)</span>
+<span id="method">[method](./puppeteer.httprequest.method.md)</span>
 
 </td><td>
 
@@ -296,7 +296,7 @@ The method used (`GET`, `POST`, etc.)
 </td></tr>
 <tr><td>
 
-<span id="postdata">[postData()](./puppeteer.httprequest.postdata.md)</span>
+<span id="postdata">[postData](./puppeteer.httprequest.postdata.md)</span>
 
 </td><td>
 
@@ -311,7 +311,7 @@ Use [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md).
 </td></tr>
 <tr><td>
 
-<span id="redirectchain">[redirectChain()](./puppeteer.httprequest.redirectchain.md)</span>
+<span id="redirectchain">[redirectChain](./puppeteer.httprequest.redirectchain.md)</span>
 
 </td><td>
 
@@ -343,7 +343,7 @@ console.log(chain.length); // 0
 </td></tr>
 <tr><td>
 
-<span id="resourcetype">[resourceType()](./puppeteer.httprequest.resourcetype.md)</span>
+<span id="resourcetype">[resourceType](./puppeteer.httprequest.resourcetype.md)</span>
 
 </td><td>
 
@@ -354,7 +354,7 @@ Contains the request's resource type as it was perceived by the rendering engine
 </td></tr>
 <tr><td>
 
-<span id="respond">[respond(response, priority)](./puppeteer.httprequest.respond.md)</span>
+<span id="respond">[respond](./puppeteer.httprequest.respond.md)</span>
 
 </td><td>
 
@@ -371,7 +371,7 @@ Exception is immediately thrown if the request interception is not enabled.
 </td></tr>
 <tr><td>
 
-<span id="response">[response()](./puppeteer.httprequest.response.md)</span>
+<span id="response">[response](./puppeteer.httprequest.response.md)</span>
 
 </td><td>
 
@@ -382,7 +382,7 @@ A matching `HTTPResponse` object, or null if the response has not been received 
 </td></tr>
 <tr><td>
 
-<span id="responseforrequest">[responseForRequest()](./puppeteer.httprequest.responseforrequest.md)</span>
+<span id="responseforrequest">[responseForRequest](./puppeteer.httprequest.responseforrequest.md)</span>
 
 </td><td>
 
@@ -393,7 +393,7 @@ The `ResponseForRequest` that gets used if the interception is allowed to respon
 </td></tr>
 <tr><td>
 
-<span id="url">[url()](./puppeteer.httprequest.url.md)</span>
+<span id="url">[url](./puppeteer.httprequest.url.md)</span>
 
 </td><td>
 

@@ -113,7 +113,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.browsercontext._asyncdisposesymbol_.md)</span>
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]](./puppeteer.browsercontext._asyncdisposesymbol_.md)</span>
 
 </td><td>
 
@@ -122,7 +122,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="_disposesymbol_">[\[disposeSymbol\]()](./puppeteer.browsercontext._disposesymbol_.md)</span>
+<span id="_disposesymbol_">[\[disposeSymbol\]](./puppeteer.browsercontext._disposesymbol_.md)</span>
 
 </td><td>
 
@@ -131,7 +131,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="browser">[browser()](./puppeteer.browsercontext.browser.md)</span>
+<span id="browser">[browser](./puppeteer.browsercontext.browser.md)</span>
 
 </td><td>
 
@@ -142,7 +142,7 @@ Gets the [browser](./puppeteer.browser.md) associated with this [browser context
 </td></tr>
 <tr><td>
 
-<span id="clearpermissionoverrides">[clearPermissionOverrides()](./puppeteer.browsercontext.clearpermissionoverrides.md)</span>
+<span id="clearpermissionoverrides">[clearPermissionOverrides](./puppeteer.browsercontext.clearpermissionoverrides.md)</span>
 
 </td><td>
 
@@ -153,7 +153,7 @@ Clears all permission overrides for this [browser context](./puppeteer.browserco
 </td></tr>
 <tr><td>
 
-<span id="close">[close()](./puppeteer.browsercontext.close.md)</span>
+<span id="close">[close](./puppeteer.browsercontext.close.md)</span>
 
 </td><td>
 
@@ -168,7 +168,7 @@ The [default browser context](./puppeteer.browser.defaultbrowsercontext.md) cann
 </td></tr>
 <tr><td>
 
-<span id="cookies">[cookies()](./puppeteer.browsercontext.cookies.md)</span>
+<span id="cookies">[cookies](./puppeteer.browsercontext.cookies.md)</span>
 
 </td><td>
 
@@ -179,7 +179,7 @@ Gets all cookies in the browser context.
 </td></tr>
 <tr><td>
 
-<span id="deletecookie">[deleteCookie(cookies)](./puppeteer.browsercontext.deletecookie.md)</span>
+<span id="deletecookie">[deleteCookie](./puppeteer.browsercontext.deletecookie.md)</span>
 
 </td><td>
 
@@ -190,7 +190,7 @@ Removes cookie in this browser context.
 </td></tr>
 <tr><td>
 
-<span id="deletematchingcookies">[deleteMatchingCookies(filters)](./puppeteer.browsercontext.deletematchingcookies.md)</span>
+<span id="deletematchingcookies">[deleteMatchingCookies](./puppeteer.browsercontext.deletematchingcookies.md)</span>
 
 </td><td>
 
@@ -201,7 +201,7 @@ Deletes cookies matching the provided filters in this browser context.
 </td></tr>
 <tr><td>
 
-<span id="newpage">[newPage(options)](./puppeteer.browsercontext.newpage.md)</span>
+<span id="newpage">[newPage](./puppeteer.browsercontext.newpage.md)</span>
 
 </td><td>
 
@@ -212,7 +212,7 @@ Creates a new [page](./puppeteer.page.md) in this [browser context](./puppeteer.
 </td></tr>
 <tr><td>
 
-<span id="overridepermissions">[overridePermissions(origin, permissions)](./puppeteer.browsercontext.overridepermissions.md)</span>
+<span id="overridepermissions">[overridePermissions](./puppeteer.browsercontext.overridepermissions.md)</span>
 
 </td><td>
 
@@ -229,7 +229,7 @@ in favor of [BrowserContext.setPermission()](./puppeteer.browsercontext.setpermi
 </td></tr>
 <tr><td>
 
-<span id="pages">[pages(includeAll)](./puppeteer.browsercontext.pages.md)</span>
+<span id="pages">[pages](./puppeteer.browsercontext.pages.md)</span>
 
 </td><td>
 
@@ -244,7 +244,7 @@ Non-visible [pages](./puppeteer.page.md), such as `"background_page"`, will not 
 </td></tr>
 <tr><td>
 
-<span id="setcookie">[setCookie(cookies)](./puppeteer.browsercontext.setcookie.md)</span>
+<span id="setcookie">[setCookie](./puppeteer.browsercontext.setcookie.md)</span>
 
 </td><td>
 
@@ -255,7 +255,7 @@ Sets a cookie in the browser context.
 </td></tr>
 <tr><td>
 
-<span id="setpermission">[setPermission(origin, permissions)](./puppeteer.browsercontext.setpermission.md)</span>
+<span id="setpermission">[setPermission](./puppeteer.browsercontext.setpermission.md)</span>
 
 </td><td>
 
@@ -266,7 +266,7 @@ Sets the permission for a specific origin.
 </td></tr>
 <tr><td>
 
-<span id="targets">[targets()](./puppeteer.browsercontext.targets.md)</span>
+<span id="targets">[targets](./puppeteer.browsercontext.targets.md)</span>
 
 </td><td>
 
@@ -277,7 +277,7 @@ Gets all active [targets](./puppeteer.target.md) inside this [browser context](.
 </td></tr>
 <tr><td>
 
-<span id="waitfortarget">[waitForTarget(predicate, options)](./puppeteer.browsercontext.waitfortarget.md)</span>
+<span id="waitfortarget">[waitForTarget](./puppeteer.browsercontext.waitfortarget.md)</span>
 
 </td><td>
 

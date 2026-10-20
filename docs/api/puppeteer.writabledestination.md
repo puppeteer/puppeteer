@@ -99,21 +99,21 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="end">[end()](./puppeteer.writabledestination.end.md)</span>
+<span id="end">[end](./puppeteer.writabledestination.end.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="once">[once(event, cb)](./puppeteer.writabledestination.once.md)</span>
+<span id="once">[once](./puppeteer.writabledestination.once.md)</span>
 
 </td><td>
 
 </td></tr>
 <tr><td>
 
-<span id="write">[write(chunk)](./puppeteer.writabledestination.write.md)</span>
+<span id="write">[write](./puppeteer.writabledestination.write.md)</span>
 
 </td><td>
 

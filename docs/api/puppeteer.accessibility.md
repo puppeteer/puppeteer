@@ -39,7 +39,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="snapshot">[snapshot(options)](./puppeteer.accessibility.snapshot.md)</span>
+<span id="snapshot">[snapshot](./puppeteer.accessibility.snapshot.md)</span>
 
 </td><td>
 

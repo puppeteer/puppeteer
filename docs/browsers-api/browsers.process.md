@@ -27,7 +27,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_constructor_">[(constructor)(opts)](./browsers.process._constructor_.md)</span>
+<span id="_constructor_">[(constructor)](./browsers.process._constructor_.md)</span>
 
 </td><td>
 
@@ -91,7 +91,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="close">[close()](./browsers.process.close.md)</span>
+<span id="close">[close](./browsers.process.close.md)</span>
 
 </td><td>
 
@@ -100,7 +100,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="getrecentlogs">[getRecentLogs()](./browsers.process.getrecentlogs.md)</span>
+<span id="getrecentlogs">[getRecentLogs](./browsers.process.getrecentlogs.md)</span>
 
 </td><td>
 
@@ -111,7 +111,7 @@ Get recent logs (stderr + stdout) emitted by the browser.
 </td></tr>
 <tr><td>
 
-<span id="hasclosed">[hasClosed()](./browsers.process.hasclosed.md)</span>
+<span id="hasclosed">[hasClosed](./browsers.process.hasclosed.md)</span>
 
 </td><td>
 
@@ -120,7 +120,7 @@ Get recent logs (stderr + stdout) emitted by the browser.
 </td></tr>
 <tr><td>
 
-<span id="kill">[kill()](./browsers.process.kill.md)</span>
+<span id="kill">[kill](./browsers.process.kill.md)</span>
 
 </td><td>
 
@@ -129,7 +129,7 @@ Get recent logs (stderr + stdout) emitted by the browser.
 </td></tr>
 <tr><td>
 
-<span id="waitforlineoutput">[waitForLineOutput(regex, timeout)](./browsers.process.waitforlineoutput.md)</span>
+<span id="waitforlineoutput">[waitForLineOutput](./browsers.process.waitforlineoutput.md)</span>
 
 </td><td>
 

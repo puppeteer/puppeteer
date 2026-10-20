@@ -33,7 +33,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.screenrecording._asyncdisposesymbol_.md)</span>
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]](./puppeteer.screenrecording._asyncdisposesymbol_.md)</span>
 
 </td><td>
 
@@ -42,7 +42,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="pipe">[pipe(destination)](./puppeteer.screenrecording.pipe.md)</span>
+<span id="pipe">[pipe](./puppeteer.screenrecording.pipe.md)</span>
 
 </td><td>
 
@@ -53,7 +53,7 @@ Pipes the recorded stream to a destination stream.
 </td></tr>
 <tr><td>
 
-<span id="pipe">[pipe(destination)](./puppeteer.screenrecording.pipe.md#overload-2)</span>
+<span id="pipe">[pipe](./puppeteer.screenrecording.pipe.md#overload-2)</span>
 
 </td><td>
 
@@ -62,7 +62,7 @@ Pipes the recorded stream to a destination stream.
 </td></tr>
 <tr><td>
 
-<span id="stop">[stop()](./puppeteer.screenrecording.stop.md)</span>
+<span id="stop">[stop](./puppeteer.screenrecording.stop.md)</span>
 
 </td><td>
 
