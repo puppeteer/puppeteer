@@ -93,10 +93,6 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #platform?: string;
   #acceptLanguage?: string;
   #userAgentOverrideApplied = false;
-  #requestPausedClients = new WeakMap<
-    Protocol.Fetch.RequestPausedEvent,
-    CDPSession
-  >();
 
   readonly #handlers = [
     ['Fetch.requestPaused', this.#onRequestPaused],
@@ -424,21 +420,26 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     ) {
       const {requestId: networkRequestId} = event;
 
-      this.#networkEventManager.storeRequestWillBeSent(networkRequestId, event);
+      this.#networkEventManager.storeRequestWillBeSent(
+        networkRequestId,
+        event,
+        client,
+      );
 
       /**
        * CDP may have sent a Fetch.requestPaused event already. Check for it.
        * It may come from another session, e.g. the page for a worker request.
        */
-      const requestPausedEvent =
+      const requestPaused =
         this.#networkEventManager.getRequestPaused(networkRequestId);
-      if (requestPausedEvent) {
-        const {requestId: fetchRequestId} = requestPausedEvent;
+      if (requestPaused) {
+        const {event: requestPausedEvent, client: fetchClient} = requestPaused;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
         this.#onRequest(
-          this.#requestPausedClients.get(requestPausedEvent) ?? client,
+          client,
           event,
-          fetchRequestId,
+          requestPausedEvent.requestId,
+          fetchClient,
         );
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
@@ -504,9 +505,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       return;
     }
 
-    const requestWillBeSentEvent =
+    const requestWillBeSent =
       this.#networkEventManager.getRequestWillBeSent(networkRequestId);
-    if (!requestWillBeSentEvent) {
+    if (!requestWillBeSent) {
       // Chrome may restart a request and send a second Fetch.requestPaused
       // for a request Puppeteer already emitted (crbug.com/1196004). Repoint
       // that request instead of emitting a duplicate that never finishes.
@@ -515,10 +516,15 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         this.#onRequestRestarted(request, fetchRequestId);
         return;
       }
-      this.#requestPausedClients.set(event, client);
-      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      this.#networkEventManager.storeRequestPaused(
+        networkRequestId,
+        event,
+        client,
+      );
       return;
     }
+    const {event: requestWillBeSentEvent, client: networkClient} =
+      requestWillBeSent;
 
     // Redirect requests have the same `requestId`. Wait for the redirect's
     // own Network.requestWillBeSent.
@@ -527,13 +533,21 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       requestWillBeSentEvent.request.method !== event.request.method
     ) {
       this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
-      this.#requestPausedClients.set(event, client);
-      this.#networkEventManager.storeRequestPaused(networkRequestId, event);
+      this.#networkEventManager.storeRequestPaused(
+        networkRequestId,
+        event,
+        client,
+      );
       return;
     }
 
     this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
-    this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
+    this.#onRequest(
+      networkClient,
+      requestWillBeSentEvent,
+      fetchRequestId,
+      client,
+    );
   }
 
   #isRestartedRequest(
@@ -612,6 +626,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     client: CDPSession,
     event: Protocol.Network.RequestWillBeSentEvent,
     fetchRequestId?: FetchRequestId,
+    fetchClient = client,
     fromMemoryCache = false,
   ): void {
     let redirectChain: CdpHTTPRequest[] = [];
@@ -633,6 +648,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
             event,
             fetchRequestId,
             client,
+            fetchClient,
           });
           return;
         }
@@ -670,6 +686,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       event,
       redirectChain,
       this.#logger,
+      fetchClient,
     );
 
     const extraInfo = this.#networkEventManager
@@ -702,8 +719,9 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     client: CDPSession,
     event: Protocol.Network.RequestServedFromCacheEvent,
   ): void {
-    const requestWillBeSentEvent =
-      this.#networkEventManager.getRequestWillBeSent(event.requestId);
+    const requestWillBeSent = this.#networkEventManager.getRequestWillBeSent(
+      event.requestId,
+    );
     let request = this.#networkEventManager.getRequest(event.requestId);
     // Requests served from memory cannot be intercepted.
     if (request) {
@@ -711,8 +729,8 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
     // If request ended up being served from cache, we need to convert
     // requestWillBeSentEvent to a HTTP request.
-    if (!request && requestWillBeSentEvent) {
-      this.#onRequest(client, requestWillBeSentEvent, undefined, true);
+    if (!request && requestWillBeSent) {
+      this.#onRequest(client, requestWillBeSent.event, undefined, client, true);
       request = this.#networkEventManager.getRequest(event.requestId);
     }
     if (!request) {
@@ -821,6 +839,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         redirectInfo.client,
         redirectInfo.event,
         redirectInfo.fetchRequestId,
+        redirectInfo.fetchClient,
       );
       return;
     }

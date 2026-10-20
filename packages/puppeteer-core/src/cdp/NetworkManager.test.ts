@@ -596,9 +596,13 @@ describe('NetworkManager', () => {
     await manager.setRequestInterception(true);
 
     let aborted!: Promise<void>;
+    let postData!: Promise<string | undefined>;
     manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
       aborted = request.abort();
+      postData = request.fetchPostData();
     });
+    pageCommands.length = 0;
+    workerCommands.length = 0;
 
     pageSession.emit('Fetch.requestPaused', {
       requestId: 'interception-job-1.0',
@@ -633,10 +637,73 @@ describe('NetworkManager', () => {
       type: 'Fetch',
       hasUserGesture: false,
     });
-    await aborted;
+    await Promise.all([aborted, postData]);
 
-    expect(pageCommands).toContain('Fetch.failRequest');
-    expect(workerCommands).not.toContain('Fetch.failRequest');
+    expect(pageCommands).toEqual(['Fetch.failRequest']);
+    expect(workerCommands).toEqual(['Network.getRequestPostData']);
+  });
+  it(`should send Fetch commands to the pausing session and Network commands to the request session`, async () => {
+    const pageSession = new MockCDPSession();
+    const workerSession = new MockCDPSession();
+    const pageCommands: string[] = [];
+    const workerCommands: string[] = [];
+    pageSession.send = (async (method: string) => {
+      pageCommands.push(method);
+    }) as any;
+    workerSession.send = (async (method: string) => {
+      workerCommands.push(method);
+    }) as any;
+    const manager = createNetworkManager();
+    await manager.addClient(pageSession);
+    await manager.addClient(workerSession);
+    await manager.setRequestInterception(true);
+
+    let continued!: Promise<void>;
+    let postData!: Promise<string | undefined>;
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+      continued = request.continue();
+      postData = request.fetchPostData();
+    });
+    pageCommands.length = 0;
+    workerCommands.length = 0;
+
+    workerSession.emit('Network.requestWillBeSent', {
+      requestId: '58462.1',
+      loaderId: '',
+      documentURL: 'http://localhost:8907/worker.js',
+      request: {
+        url: 'http://localhost:8907/post-1',
+        method: 'POST',
+        headers: {},
+        mixedContentType: 'none',
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 224604.980827,
+      wallTime: 1637955746.786191,
+      initiator: {type: 'script'},
+      redirectHasExtraInfo: false,
+      type: 'Fetch',
+      hasUserGesture: false,
+    });
+    pageSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-1.0',
+      request: {
+        url: 'http://localhost:8907/post-1',
+        method: 'POST',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Fetch',
+      networkId: '58462.1',
+    });
+    await Promise.all([continued, postData]);
+
+    expect(pageCommands).toEqual(['Fetch.continueRequest']);
+    expect(workerCommands).toEqual(['Network.getRequestPostData']);
   });
   it(`should intercept a redirect on the session that paused it when its extra info arrives late`, async () => {
     const pageSession = new MockCDPSession();

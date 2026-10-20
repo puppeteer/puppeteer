@@ -791,6 +791,41 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
     });
+    it('should intercept parallel fetches from a dedicated worker', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        if (request.url().includes('abort')) {
+          void request.abort();
+        } else {
+          void request.continue();
+        }
+      });
+
+      const settled = await page.evaluate(() => {
+        const source = `onmessage = async ({data: url}) => {
+          const results = await Promise.allSettled(
+            Array.from({length: 20}, (_, i) => {
+              return fetch(url + (i % 2 ? '?abort=' : '?continue=') + i);
+            }),
+          );
+          postMessage(results.length);
+        };`;
+        const worker = new Worker(
+          URL.createObjectURL(new Blob([source], {type: 'text/javascript'})),
+        );
+        return new Promise(resolve => {
+          worker.onmessage = event => {
+            resolve(event.data);
+          };
+          worker.postMessage(location.href);
+        });
+      });
+
+      expect(settled).toBe(20);
+    });
   });
 
   describe('Request.continue', function () {
