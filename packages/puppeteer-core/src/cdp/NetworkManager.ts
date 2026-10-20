@@ -93,6 +93,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #platform?: string;
   #acceptLanguage?: string;
   #userAgentOverrideApplied = false;
+  #requestPausedClients = new WeakMap<
+    Protocol.Fetch.RequestPausedEvent,
+    CDPSession
+  >();
 
   readonly #handlers = [
     ['Fetch.requestPaused', this.#onRequestPaused],
@@ -424,13 +428,18 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
       /**
        * CDP may have sent a Fetch.requestPaused event already. Check for it.
+       * It may come from another session, e.g. the page for a worker request.
        */
       const requestPausedEvent =
         this.#networkEventManager.getRequestPaused(networkRequestId);
       if (requestPausedEvent) {
         const {requestId: fetchRequestId} = requestPausedEvent;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
-        this.#onRequest(client, event, fetchRequestId);
+        this.#onRequest(
+          this.#requestPausedClients.get(requestPausedEvent) ?? client,
+          event,
+          fetchRequestId,
+        );
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
@@ -506,6 +515,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         this.#onRequestRestarted(request, fetchRequestId);
         return;
       }
+      this.#requestPausedClients.set(event, client);
       this.#networkEventManager.storeRequestPaused(networkRequestId, event);
       return;
     }
@@ -517,6 +527,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       requestWillBeSentEvent.request.method !== event.request.method
     ) {
       this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+      this.#requestPausedClients.set(event, client);
       this.#networkEventManager.storeRequestPaused(networkRequestId, event);
       return;
     }
@@ -621,6 +632,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
           this.#networkEventManager.queueRedirectInfo(event.requestId, {
             event,
             fetchRequestId,
+            client,
           });
           return;
         }
@@ -805,7 +817,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     );
     if (redirectInfo) {
       this.#networkEventManager.responseExtraInfo(event.requestId).push(event);
-      this.#onRequest(client, redirectInfo.event, redirectInfo.fetchRequestId);
+      this.#onRequest(
+        redirectInfo.client,
+        redirectInfo.event,
+        redirectInfo.fetchRequestId,
+      );
       return;
     }
 

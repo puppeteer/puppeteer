@@ -6,6 +6,8 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {CDPSession} from '../api/CDPSession.js';
+
 import {CdpHTTPRequest} from './HTTPRequest.js';
 
 /**
@@ -28,6 +30,7 @@ export type FetchRequestId = string;
 export interface RedirectInfo {
   event: Protocol.Network.RequestWillBeSentEvent;
   fetchRequestId?: FetchRequestId;
+  client: CDPSession;
 }
 type RedirectInfoList = RedirectInfo[];
 
