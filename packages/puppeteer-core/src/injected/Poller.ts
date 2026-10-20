@@ -8,6 +8,8 @@ import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 /**
+ * A stopped poller is single-use and does not restart.
+ *
  * @internal
  */
 export interface Poller<T> {
@@ -60,14 +62,21 @@ export class MutationPoller<T> implements Poller<T> {
   #observer?: MutationObserver;
   #observedRoots = new WeakSet<Node>();
   #deferred?: Deferred<T>;
+  #stopped = false;
   constructor(fn: () => Promise<T>, root: Node) {
     this.#fn = fn;
     this.#root = root;
   }
 
   async start(): Promise<void> {
+    if (this.#stopped) {
+      return;
+    }
     const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
+    if (this.#stopped) {
+      return;
+    }
     if (result) {
       deferred.resolve(result);
       return;
@@ -135,7 +144,10 @@ export class MutationPoller<T> implements Poller<T> {
   }
 
   async stop(): Promise<void> {
-    assert(this.#deferred, 'Polling never started.');
+    this.#stopped = true;
+    if (!this.#deferred) {
+      return;
+    }
     if (!this.#deferred.finished()) {
       this.#deferred.reject(new Error('Polling stopped'));
     }
@@ -157,13 +169,20 @@ export class MutationPoller<T> implements Poller<T> {
 export class RAFPoller<T> implements Poller<T> {
   #fn: () => Promise<T>;
   #deferred?: Deferred<T>;
+  #stopped = false;
   constructor(fn: () => Promise<T>) {
     this.#fn = fn;
   }
 
   async start(): Promise<void> {
+    if (this.#stopped) {
+      return;
+    }
     const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
+    if (this.#stopped) {
+      return;
+    }
     if (result) {
       deferred.resolve(result);
       return;
@@ -185,7 +204,10 @@ export class RAFPoller<T> implements Poller<T> {
   }
 
   async stop(): Promise<void> {
-    assert(this.#deferred, 'Polling never started.');
+    this.#stopped = true;
+    if (!this.#deferred) {
+      return;
+    }
     if (!this.#deferred.finished()) {
       this.#deferred.reject(new Error('Polling stopped'));
     }
@@ -207,14 +229,21 @@ export class IntervalPoller<T> implements Poller<T> {
 
   #interval?: NodeJS.Timeout;
   #deferred?: Deferred<T>;
+  #stopped = false;
   constructor(fn: () => Promise<T>, ms: number) {
     this.#fn = fn;
     this.#ms = ms;
   }
 
   async start(): Promise<void> {
+    if (this.#stopped) {
+      return;
+    }
     const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
+    if (this.#stopped) {
+      return;
+    }
     if (result) {
       deferred.resolve(result);
       return;
@@ -231,7 +260,10 @@ export class IntervalPoller<T> implements Poller<T> {
   }
 
   async stop(): Promise<void> {
-    assert(this.#deferred, 'Polling never started.');
+    this.#stopped = true;
+    if (!this.#deferred) {
+      return;
+    }
     if (!this.#deferred.finished()) {
       this.#deferred.reject(new Error('Polling stopped'));
     }
