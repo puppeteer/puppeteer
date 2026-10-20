@@ -283,6 +283,9 @@ export class CdpHTTPRequest extends HTTPRequest {
     const responseHeaders: Record<string, string | string[]> = {};
     if (response.headers) {
       for (const [header, value] of Object.entries(response.headers)) {
+        if (value === undefined) {
+          continue;
+        }
         responseHeaders[header.toLowerCase()] = Array.isArray(value)
           ? value.map(item => {
               return String(item);
