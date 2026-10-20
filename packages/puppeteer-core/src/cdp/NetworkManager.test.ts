@@ -579,6 +579,235 @@ describe('NetworkManager', () => {
 
     expect(requests).toHaveLength(1);
   });
+  it(`should intercept the request on the session that paused it (github.com/puppeteer/puppeteer/issues/15509)`, async () => {
+    const pageSession = new MockCDPSession();
+    const workerSession = new MockCDPSession();
+    const pageCommands: string[] = [];
+    const workerCommands: string[] = [];
+    pageSession.send = (async (method: string) => {
+      pageCommands.push(method);
+    }) as any;
+    workerSession.send = (async (method: string) => {
+      workerCommands.push(method);
+    }) as any;
+    const manager = createNetworkManager();
+    await manager.addClient(pageSession);
+    await manager.addClient(workerSession);
+    await manager.setRequestInterception(true);
+
+    let aborted!: Promise<void>;
+    let postData!: Promise<string | undefined>;
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+      aborted = request.abort();
+      postData = request.fetchPostData();
+    });
+    pageCommands.length = 0;
+    workerCommands.length = 0;
+
+    pageSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-1.0',
+      request: {
+        url: 'http://localhost:8907/post-1',
+        method: 'POST',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Fetch',
+      networkId: '58462.1',
+    });
+    workerSession.emit('Network.requestWillBeSent', {
+      requestId: '58462.1',
+      loaderId: '',
+      documentURL: 'http://localhost:8907/worker.js',
+      request: {
+        url: 'http://localhost:8907/post-1',
+        method: 'POST',
+        headers: {},
+        mixedContentType: 'none',
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 224604.980827,
+      wallTime: 1637955746.786191,
+      initiator: {type: 'script'},
+      redirectHasExtraInfo: false,
+      type: 'Fetch',
+      hasUserGesture: false,
+    });
+    await Promise.all([aborted, postData]);
+
+    expect(pageCommands).toEqual(['Fetch.failRequest']);
+    expect(workerCommands).toEqual(['Network.getRequestPostData']);
+  });
+  it(`should send Fetch commands to the pausing session and Network commands to the request session`, async () => {
+    const pageSession = new MockCDPSession();
+    const workerSession = new MockCDPSession();
+    const pageCommands: string[] = [];
+    const workerCommands: string[] = [];
+    pageSession.send = (async (method: string) => {
+      pageCommands.push(method);
+    }) as any;
+    workerSession.send = (async (method: string) => {
+      workerCommands.push(method);
+    }) as any;
+    const manager = createNetworkManager();
+    await manager.addClient(pageSession);
+    await manager.addClient(workerSession);
+    await manager.setRequestInterception(true);
+
+    let continued!: Promise<void>;
+    let postData!: Promise<string | undefined>;
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+      continued = request.continue();
+      postData = request.fetchPostData();
+    });
+    pageCommands.length = 0;
+    workerCommands.length = 0;
+
+    workerSession.emit('Network.requestWillBeSent', {
+      requestId: '58462.1',
+      loaderId: '',
+      documentURL: 'http://localhost:8907/worker.js',
+      request: {
+        url: 'http://localhost:8907/post-1',
+        method: 'POST',
+        headers: {},
+        mixedContentType: 'none',
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 224604.980827,
+      wallTime: 1637955746.786191,
+      initiator: {type: 'script'},
+      redirectHasExtraInfo: false,
+      type: 'Fetch',
+      hasUserGesture: false,
+    });
+    pageSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-1.0',
+      request: {
+        url: 'http://localhost:8907/post-1',
+        method: 'POST',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Fetch',
+      networkId: '58462.1',
+    });
+    await Promise.all([continued, postData]);
+
+    expect(pageCommands).toEqual(['Fetch.continueRequest']);
+    expect(workerCommands).toEqual(['Network.getRequestPostData']);
+  });
+  it(`should intercept a redirect on the session that paused it when its extra info arrives late`, async () => {
+    const pageSession = new MockCDPSession();
+    const workerSession = new MockCDPSession();
+    const pageCommands: string[] = [];
+    const workerCommands: string[] = [];
+    pageSession.send = (async (method: string) => {
+      pageCommands.push(method);
+    }) as any;
+    workerSession.send = (async (method: string) => {
+      workerCommands.push(method);
+    }) as any;
+    const manager = createNetworkManager();
+    await manager.addClient(pageSession);
+    await manager.addClient(workerSession);
+    await manager.setRequestInterception(true);
+
+    const continued: Array<Promise<void>> = [];
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+      continued.push(request.continue());
+    });
+
+    const requestWillBeSent = {
+      requestId: '58462.1',
+      loaderId: '',
+      documentURL: 'http://localhost:8907/worker.js',
+      timestamp: 224604.980827,
+      wallTime: 1637955746.786191,
+      initiator: {type: 'script'},
+      type: 'Fetch',
+      hasUserGesture: false,
+    } as const;
+    const request = {
+      method: 'GET',
+      headers: {},
+      initialPriority: 'High',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+    } as const;
+
+    workerSession.emit('Network.requestWillBeSent', {
+      ...requestWillBeSent,
+      request: {
+        ...request,
+        url: 'http://localhost:8907/redirect',
+        mixedContentType: 'none',
+        isSameSite: true,
+      },
+      redirectHasExtraInfo: false,
+    });
+    pageSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-1.0',
+      request: {...request, url: 'http://localhost:8907/redirect'},
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Fetch',
+      networkId: '58462.1',
+    });
+    pageSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-2.0',
+      request: {...request, url: 'http://localhost:8907/empty.html'},
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Fetch',
+      networkId: '58462.1',
+    });
+    workerSession.emit('Network.requestWillBeSent', {
+      ...requestWillBeSent,
+      request: {
+        ...request,
+        url: 'http://localhost:8907/empty.html',
+        mixedContentType: 'none',
+        isSameSite: true,
+      },
+      redirectHasExtraInfo: true,
+      redirectResponse: {
+        url: 'http://localhost:8907/redirect',
+        status: 302,
+        statusText: 'Found',
+        headers: {location: '/empty.html'},
+        mimeType: '',
+        charset: '',
+        connectionReused: false,
+        connectionId: 1,
+        encodedDataLength: 100,
+        securityState: 'secure',
+      },
+    });
+    workerSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: '58462.1',
+      blockedCookies: [],
+      headers: {location: '/empty.html'},
+      resourceIPAddressSpace: 'Local',
+      statusCode: 302,
+      cookiePartitionKeyOpaque: false,
+      exemptedCookies: [],
+    });
+    await Promise.all(continued);
+
+    expect(continued).toHaveLength(2);
+    expect(
+      pageCommands.filter(method => {
+        return method === 'Fetch.continueRequest';
+      }),
+    ).toHaveLength(2);
+    expect(workerCommands).not.toContain('Fetch.continueRequest');
+  });
   describe('restarted requests (crbug.com/1196004)', () => {
     const networkId = '3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50';
     const frameId = '84AC261A351B86932B775B76D1DD79F8';
@@ -683,6 +912,7 @@ describe('NetworkManager', () => {
       );
 
       return {
+        manager,
         mockCDPSession,
         requests,
         finished,
@@ -908,6 +1138,39 @@ describe('NetworkManager', () => {
         {requestId: 'interception-job-2.0', errorReason: 'BlockedByClient'},
       ]);
       expect(sent('Fetch.continueRequest')).toEqual([]);
+    });
+
+    it('should replay the restarted request on the session that paused it again', async () => {
+      const {manager, mockCDPSession, requests, sent} = await setup(
+        async request => {
+          await request.abort('blockedbyclient');
+        },
+      );
+      const otherSession = new MockCDPSession();
+      const otherCommands: Array<{method: string; params: unknown}> = [];
+      otherSession.send = (async (method: string, params: unknown) => {
+        otherCommands.push({method, params});
+      }) as any;
+      await manager.addClient(otherSession);
+      otherCommands.length = 0;
+
+      emitRequestWillBeSent(mockCDPSession);
+      emitRequestPaused(mockCDPSession, 'interception-job-1.0');
+      emitRequestPaused(otherSession, 'interception-job-2.0');
+
+      expect(requests).toHaveLength(1);
+      expect(sent('Fetch.failRequest')).toEqual([
+        {requestId: 'interception-job-1.0', errorReason: 'BlockedByClient'},
+      ]);
+      expect(otherCommands).toEqual([
+        {
+          method: 'Fetch.failRequest',
+          params: {
+            requestId: 'interception-job-2.0',
+            errorReason: 'BlockedByClient',
+          },
+        },
+      ]);
     });
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
