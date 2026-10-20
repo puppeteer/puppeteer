@@ -248,8 +248,13 @@ describe('BrowserContext cookies', () => {
       },
     ];
     for (const filter of filters) {
-      it(`should delete cookies matching ${JSON.stringify(filter)}`, async () => {
+      it(`should delete cookies matching ${JSON.stringify(filter)}`, async function () {
         const {page, context, server, isChrome} = state;
+        if (filter.partitionKey !== undefined && !isChrome) {
+          // In Firefox with WebDriver BiDi, we do not know the actual
+          // partition.
+          this.skip();
+        }
         await page.goto(server.EMPTY_PAGE);
         expect(await context.cookies()).toHaveLength(0);
         const topLevelSite = 'https://example.test';
@@ -292,5 +297,179 @@ describe('BrowserContext cookies', () => {
         expect(cookies[0]!.name).toBe('cookie2');
       });
     }
+
+    const narrowingFilters: DeleteCookiesRequest[] = [
+      {
+        url: 'https://example.test/test',
+        name: 'cookie1',
+      },
+      {
+        domain: 'example.test',
+        name: 'cookie1',
+      },
+      {
+        path: '/test',
+        name: 'cookie1',
+      },
+    ];
+    for (const filter of narrowingFilters) {
+      it(`should only delete cookies matching ${JSON.stringify(filter)}`, async () => {
+        const {page, context, server} = state;
+        await page.goto(server.EMPTY_PAGE);
+        await context.setCookie(
+          {
+            name: 'cookie1',
+            value: 'secret',
+            domain: 'example.test',
+            path: '/test',
+            expires: -1,
+            httpOnly: false,
+            secure: true,
+          },
+          {
+            name: 'cookie1',
+            value: 'secret',
+            domain: 'other.test',
+            path: '/other',
+            expires: -1,
+            httpOnly: false,
+            secure: true,
+          },
+        );
+        expect(await context.cookies()).toHaveLength(2);
+        await context.deleteMatchingCookies(filter);
+        const cookies = await context.cookies();
+        expect(cookies).toHaveLength(1);
+        expect(cookies[0]!.domain).toBe('other.test');
+      });
+    }
+
+    it('should only delete cookies in the matching partition', async function () {
+      const {context, isChrome} = state;
+      if (!isChrome) {
+        // In Firefox with WebDriver BiDi, we do not know the actual
+        // partition.
+        this.skip();
+      }
+      await context.setCookie(
+        {
+          name: 'cookie1',
+          value: 'secret',
+          domain: 'example.test',
+          path: '/',
+          expires: -1,
+          httpOnly: false,
+          secure: true,
+          partitionKey: {
+            sourceOrigin: 'https://example.test',
+            hasCrossSiteAncestor: false,
+          },
+        },
+        {
+          name: 'cookie1',
+          value: 'secret',
+          domain: 'other.test',
+          path: '/',
+          expires: -1,
+          httpOnly: false,
+          secure: true,
+          partitionKey: {
+            sourceOrigin: 'https://other.test',
+            hasCrossSiteAncestor: false,
+          },
+        },
+      );
+      expect(await context.cookies()).toHaveLength(2);
+      await context.deleteMatchingCookies({
+        name: 'cookie1',
+        partitionKey: {
+          sourceOrigin: 'https://example.test',
+        },
+      });
+      const cookies = await context.cookies();
+      expect(cookies).toHaveLength(1);
+      expect(cookies[0]!.domain).toBe('other.test');
+    });
+
+    it('should not delete unpartitioned cookies when partitionKey is given', async function () {
+      const {context, isChrome} = state;
+      if (!isChrome) {
+        // In Firefox with WebDriver BiDi, we do not know the actual
+        // partition.
+        this.skip();
+      }
+      await context.setCookie(
+        {
+          name: 'cookie1',
+          value: 'secret',
+          domain: 'example.test',
+          path: '/',
+          expires: -1,
+          httpOnly: false,
+          secure: true,
+          partitionKey: {
+            sourceOrigin: 'https://example.test',
+            hasCrossSiteAncestor: false,
+          },
+        },
+        {
+          name: 'cookie1',
+          value: 'secret',
+          domain: 'other.test',
+          path: '/',
+          expires: -1,
+          httpOnly: false,
+          secure: true,
+        },
+      );
+      expect(await context.cookies()).toHaveLength(2);
+      await context.deleteMatchingCookies({
+        name: 'cookie1',
+        partitionKey: {
+          sourceOrigin: 'https://example.test',
+        },
+      });
+      const cookies = await context.cookies();
+      expect(cookies).toHaveLength(1);
+      expect(cookies[0]!.domain).toBe('other.test');
+    });
+
+    it('should match hasCrossSiteAncestor in partitionKey', async function () {
+      const {context, isChrome} = state;
+      if (!isChrome) {
+        // In Firefox with WebDriver BiDi, we do not know the actual
+        // partition.
+        this.skip();
+      }
+      await context.setCookie({
+        name: 'cookie1',
+        value: 'secret',
+        domain: 'example.test',
+        path: '/',
+        expires: -1,
+        httpOnly: false,
+        secure: true,
+        partitionKey: {
+          sourceOrigin: 'https://example.test',
+          hasCrossSiteAncestor: false,
+        },
+      });
+      await context.deleteMatchingCookies({
+        name: 'cookie1',
+        partitionKey: {
+          sourceOrigin: 'https://example.test',
+          hasCrossSiteAncestor: true,
+        },
+      });
+      expect(await context.cookies()).toHaveLength(1);
+      await context.deleteMatchingCookies({
+        name: 'cookie1',
+        partitionKey: {
+          sourceOrigin: 'https://example.test',
+          hasCrossSiteAncestor: false,
+        },
+      });
+      expect(await context.cookies()).toHaveLength(0);
+    });
   });
 });
