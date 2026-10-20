@@ -8,10 +8,10 @@ import type {ServerResponse} from 'node:http';
 
 import expect from 'expect';
 import {type Frame, TimeoutError} from 'puppeteer';
-import sinon from 'sinon';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
+import sinon from 'sinon';
 
 import {
   getTestState,
