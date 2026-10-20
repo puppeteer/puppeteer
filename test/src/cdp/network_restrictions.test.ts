@@ -1089,6 +1089,42 @@ describe('Network Restrictions', function () {
       await browser.restrictNetwork(null);
       expect(await canFetch()).toBe(true);
     });
+
+    it('applies and clears restrictions on fetches forwarded by an already-running controlling service worker', async () => {
+      const {page, server, browser} = await getTestState();
+      const blockedUrl = server.PREFIX + '/serviceworkers/fetch/style.css';
+
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html');
+      await page.evaluate(() => {
+        return (window as any).activationPromise;
+      });
+
+      const canFetch = async () => {
+        return await page.evaluate(async url => {
+          try {
+            await fetch(url);
+            return true;
+          } catch {
+            return false;
+          }
+        }, blockedUrl);
+      };
+
+      expect(await canFetch()).toBe(true);
+
+      await browser.restrictNetwork({
+        blocklist: ['*://*:*/serviceworkers/fetch/style.css'],
+      });
+      expect(await canFetch()).toBe(false);
+
+      await browser.restrictNetwork(null);
+      expect(await canFetch()).toBe(true);
+
+      await browser.restrictNetwork({
+        blocklist: ['*://*:*/serviceworkers/fetch/style.css'],
+      });
+      expect(await canFetch()).toBe(false);
+    });
   });
 
   describe('clearing launch-time lists', () => {

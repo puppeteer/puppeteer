@@ -101,6 +101,11 @@ export class CdpTarget extends Target {
     return this.#session;
   }
 
+  _setSession(session: CdpCDPSession): void {
+    this.#session = session;
+    this.#session.setTarget(this);
+  }
+
   _addChildTarget(target: CdpTarget): void {
     this.#childTargets.add(target);
   }
