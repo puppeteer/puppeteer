@@ -579,7 +579,7 @@ describe('NetworkManager', () => {
 
     expect(requests).toHaveLength(1);
   });
-  it(`should intercept the request on the session that paused it (github.com/puppeteer/puppeteer/issues/15604)`, async () => {
+  it(`should intercept the request on the session that paused it (github.com/puppeteer/puppeteer/issues/15509)`, async () => {
     const pageSession = new MockCDPSession();
     const workerSession = new MockCDPSession();
     const pageCommands: string[] = [];
@@ -912,6 +912,7 @@ describe('NetworkManager', () => {
       );
 
       return {
+        manager,
         mockCDPSession,
         requests,
         finished,
@@ -1137,6 +1138,39 @@ describe('NetworkManager', () => {
         {requestId: 'interception-job-2.0', errorReason: 'BlockedByClient'},
       ]);
       expect(sent('Fetch.continueRequest')).toEqual([]);
+    });
+
+    it('should replay the restarted request on the session that paused it again', async () => {
+      const {manager, mockCDPSession, requests, sent} = await setup(
+        async request => {
+          await request.abort('blockedbyclient');
+        },
+      );
+      const otherSession = new MockCDPSession();
+      const otherCommands: Array<{method: string; params: unknown}> = [];
+      otherSession.send = (async (method: string, params: unknown) => {
+        otherCommands.push({method, params});
+      }) as any;
+      await manager.addClient(otherSession);
+      otherCommands.length = 0;
+
+      emitRequestWillBeSent(mockCDPSession);
+      emitRequestPaused(mockCDPSession, 'interception-job-1.0');
+      emitRequestPaused(otherSession, 'interception-job-2.0');
+
+      expect(requests).toHaveLength(1);
+      expect(sent('Fetch.failRequest')).toEqual([
+        {requestId: 'interception-job-1.0', errorReason: 'BlockedByClient'},
+      ]);
+      expect(otherCommands).toEqual([
+        {
+          method: 'Fetch.failRequest',
+          params: {
+            requestId: 'interception-job-2.0',
+            errorReason: 'BlockedByClient',
+          },
+        },
+      ]);
     });
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {

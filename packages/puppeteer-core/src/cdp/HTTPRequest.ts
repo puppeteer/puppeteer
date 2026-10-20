@@ -72,6 +72,17 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.#client = newClient;
   }
 
+  /**
+   * @internal
+   */
+  get _fetchClient(): CDPSession {
+    return this.#fetchClient;
+  }
+
+  set _fetchClient(fetchClient: CDPSession) {
+    this.#fetchClient = fetchClient;
+  }
+
   constructor(
     client: CDPSession,
     frame: Frame | null,

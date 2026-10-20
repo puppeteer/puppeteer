@@ -513,7 +513,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       // that request instead of emitting a duplicate that never finishes.
       const request = this.#networkEventManager.getRequest(networkRequestId);
       if (request && this.#isRestartedRequest(request, event)) {
-        this.#onRequestRestarted(request, fetchRequestId);
+        this.#onRequestRestarted(client, request, fetchRequestId);
         return;
       }
       this.#networkEventManager.storeRequestPaused(
@@ -575,10 +575,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   #onRequestRestarted(
+    client: CDPSession,
     request: CdpHTTPRequest,
     fetchRequestId: FetchRequestId,
   ): void {
     request._interceptionId = fetchRequestId;
+    request._fetchClient = client;
     if (this.#userRequestInterceptionEnabled) {
       // If the user already resolved the interception, the restarted job needs
       // the same resolution or the request hangs.
