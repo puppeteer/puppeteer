@@ -13,6 +13,7 @@ import {
 import type {
   Cookie,
   CookieData,
+  CookiePartitionKey,
   DeleteCookiesRequest,
 } from '../common/Cookie.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
@@ -326,24 +327,26 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
           if (filter.path !== undefined && filter.path !== cookie.path) {
             return false;
           }
-          if (
-            filter.partitionKey !== undefined &&
-            cookie.partitionKey !== undefined
-          ) {
+          if (filter.partitionKey !== undefined) {
+            if (cookie.partitionKey === undefined) {
+              return false;
+            }
             if (typeof cookie.partitionKey !== 'object') {
               throw new Error('Unexpected string partition key');
             }
-            if (typeof filter.partitionKey === 'string') {
-              if (filter.partitionKey !== cookie.partitionKey?.sourceOrigin) {
-                return false;
-              }
-            } else {
-              if (
-                filter.partitionKey.sourceOrigin !==
-                cookie.partitionKey?.sourceOrigin
-              ) {
-                return false;
-              }
+            const filterKey: CookiePartitionKey =
+              typeof filter.partitionKey === 'string'
+                ? {sourceOrigin: filter.partitionKey}
+                : filter.partitionKey;
+            if (filterKey.sourceOrigin !== cookie.partitionKey.sourceOrigin) {
+              return false;
+            }
+            if (
+              filterKey.hasCrossSiteAncestor !== undefined &&
+              filterKey.hasCrossSiteAncestor !==
+                cookie.partitionKey.hasCrossSiteAncestor
+            ) {
+              return false;
             }
           }
           if (filter.url !== undefined) {
