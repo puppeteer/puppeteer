@@ -49,6 +49,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   declare _response: CdpHTTPResponse | null;
 
   #client: CDPSession;
+  #fetchClient: CDPSession;
   #isNavigationRequest: boolean;
 
   #url: string;
@@ -69,6 +70,17 @@ export class CdpHTTPRequest extends HTTPRequest {
 
   override set client(newClient: CDPSession) {
     this.#client = newClient;
+  }
+
+  /**
+   * @internal
+   */
+  get _fetchClient(): CDPSession {
+    return this.#fetchClient;
+  }
+
+  set _fetchClient(fetchClient: CDPSession) {
+    this.#fetchClient = fetchClient;
   }
 
   constructor(
@@ -104,10 +116,12 @@ export class CdpHTTPRequest extends HTTPRequest {
     },
     redirectChain: CdpHTTPRequest[],
     logger: Logger,
+    fetchClient: CDPSession = client,
   ) {
     super();
     this.#logger = logger;
     this.#client = client;
+    this.#fetchClient = fetchClient;
     this.id = data.requestId;
     this.#isNavigationRequest =
       data.requestId === data.loaderId && data.type === 'Document';
@@ -246,7 +260,7 @@ export class CdpHTTPRequest extends HTTPRequest {
         'HTTPRequest is missing _interceptionId needed for Fetch.continueRequest',
       );
     }
-    await this.#client
+    await this.#fetchClient
       .send('Fetch.continueRequest', {
         requestId: this._interceptionId,
         url,
@@ -277,6 +291,9 @@ export class CdpHTTPRequest extends HTTPRequest {
     const responseHeaders: Record<string, string | string[]> = {};
     if (response.headers) {
       for (const [header, value] of Object.entries(response.headers)) {
+        if (value === undefined) {
+          continue;
+        }
         responseHeaders[header.toLowerCase()] = Array.isArray(value)
           ? value.map(item => {
               return String(item);
@@ -297,7 +314,7 @@ export class CdpHTTPRequest extends HTTPRequest {
         'HTTPRequest is missing _interceptionId needed for Fetch.fulfillRequest',
       );
     }
-    await this.#client
+    await this.#fetchClient
       .send('Fetch.fulfillRequest', {
         requestId: this._interceptionId,
         responseCode: status,
@@ -321,7 +338,7 @@ export class CdpHTTPRequest extends HTTPRequest {
         'HTTPRequest is missing _interceptionId needed for Fetch.failRequest',
       );
     }
-    await this.#client
+    await this.#fetchClient
       .send('Fetch.failRequest', {
         requestId: this._interceptionId,
         errorReason: errorReason || 'Failed',

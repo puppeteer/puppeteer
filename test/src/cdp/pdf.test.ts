@@ -53,4 +53,26 @@ describe('Page.pdf', () => {
       await Promise.all([unlink(outputFile), unlink(outputFileOutlined)]);
     }
   });
+
+  it('can print to PDF with custom mm and pt dimensions', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/pdf.html');
+    const mmPdf = await page.pdf({
+      width: '556.27mm',
+      height: '145.27mm',
+    });
+    const mmText = new TextDecoder('latin1').decode(mmPdf);
+    const mediaBoxMatch = mmText.match(/\/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]/);
+    expect(mediaBoxMatch).toBeTruthy();
+    expect(Math.round(Number(mediaBoxMatch![1]))).toBe(1577);
+    expect(Math.round(Number(mediaBoxMatch![2]))).toBe(412);
+
+    const ptPdf = await page.pdf({
+      width: '72pt',
+      height: '6pc',
+    });
+    const ptText = new TextDecoder('latin1').decode(ptPdf);
+    expect(ptText).toContain('/MediaBox [0 0 72 72]');
+  });
 });

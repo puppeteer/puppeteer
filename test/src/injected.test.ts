@@ -27,6 +27,94 @@ describe('PuppeteerUtil tests', function () {
     expect(value).toBeTruthy();
   });
 
+  for (const kind of ['mutation', 'raf', 'interval'] as const) {
+    it(`should not start a stopped ${kind} poller`, async () => {
+      const {page} = await getTestState();
+      const calls = await page
+        .mainFrame()
+        .isolatedRealm()
+        .evaluate(
+          async ({MutationPoller, RAFPoller, IntervalPoller}, kind) => {
+            let calls = 0;
+            const predicate = async () => {
+              ++calls;
+              return false;
+            };
+            const createPoller = () => {
+              switch (kind) {
+                case 'mutation':
+                  return new MutationPoller(predicate, document);
+                case 'raf':
+                  return new RAFPoller(predicate);
+                case 'interval':
+                  return new IntervalPoller(predicate, 1);
+              }
+            };
+            const poller = createPoller();
+            await poller.stop();
+            await poller.start();
+            return calls;
+          },
+          LazyArg.create(context => {
+            return context.puppeteerUtil;
+          }),
+          kind,
+        );
+      expect(calls).toBe(0);
+    });
+
+    it(`should not restart a stopped ${kind} poller after its first predicate await`, async () => {
+      const {page} = await getTestState();
+      const calls = await page
+        .mainFrame()
+        .isolatedRealm()
+        .evaluate(
+          async (
+            {Deferred, MutationPoller, RAFPoller, IntervalPoller},
+            kind,
+          ) => {
+            const pending = Deferred.create<boolean>();
+            let calls = 0;
+            const predicate = async () => {
+              ++calls;
+              return await pending.valueOrThrow();
+            };
+            const createPoller = () => {
+              switch (kind) {
+                case 'mutation':
+                  return new MutationPoller(predicate, document);
+                case 'raf':
+                  return new RAFPoller(predicate);
+                case 'interval':
+                  return new IntervalPoller(predicate, 1);
+              }
+            };
+            const poller = createPoller();
+            const starting = poller.start();
+            const result = poller.result().catch(() => {
+              // Stopping the poller rejects its pending result.
+            });
+            await poller.stop();
+            pending.resolve(false);
+            await starting;
+            await result;
+            document.body.append(document.createElement('div'));
+            await new Promise(resolve => {
+              setTimeout(resolve, 50);
+            });
+            // Also clean up if the regression recreates a polling resource.
+            await poller.stop();
+            return calls;
+          },
+          LazyArg.create(context => {
+            return context.puppeteerUtil;
+          }),
+          kind,
+        );
+      expect(calls).toBe(1);
+    });
+  }
+
   describe('createFunction tests', function () {
     it('should work', async () => {
       const {page} = await getTestState();

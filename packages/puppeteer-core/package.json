@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "25.14.0",
+  "version": "25.15.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -156,7 +156,7 @@
     "ws": "^8.22.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.3.4",
+    "@types/chrome": "0.3.5",
     "@types/node": "^18.17.15",
     "@types/ws": "8.18.2",
     "mitt": "3.0.1",
