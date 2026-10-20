@@ -47,7 +47,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="accept">[accept](./puppeteer.filechooser.accept.md)</span>
+<span id="accept">[accept(paths)](./puppeteer.filechooser.accept.md)</span>
 
 </td><td>
 
@@ -62,7 +62,7 @@ This will not validate whether the file paths exists. Also, if a path is relativ
 </td></tr>
 <tr><td>
 
-<span id="cancel">[cancel](./puppeteer.filechooser.cancel.md)</span>
+<span id="cancel">[cancel()](./puppeteer.filechooser.cancel.md)</span>
 
 </td><td>
 
@@ -73,7 +73,7 @@ Closes the file chooser without selecting any files.
 </td></tr>
 <tr><td>
 
-<span id="ismultiple">[isMultiple](./puppeteer.filechooser.ismultiple.md)</span>
+<span id="ismultiple">[isMultiple()](./puppeteer.filechooser.ismultiple.md)</span>
 
 </td><td>
 

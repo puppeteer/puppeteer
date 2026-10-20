@@ -83,7 +83,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="cancel">[cancel](./puppeteer.devicerequestprompt.cancel.md)</span>
+<span id="cancel">[cancel()](./puppeteer.devicerequestprompt.cancel.md)</span>
 
 </td><td>
 
@@ -94,7 +94,7 @@ Cancel the prompt.
 </td></tr>
 <tr><td>
 
-<span id="select">[select](./puppeteer.devicerequestprompt.select.md)</span>
+<span id="select">[select(device)](./puppeteer.devicerequestprompt.select.md)</span>
 
 </td><td>
 
@@ -105,7 +105,7 @@ Select a device in the prompt's list.
 </td></tr>
 <tr><td>
 
-<span id="waitfordevice">[waitForDevice](./puppeteer.devicerequestprompt.waitfordevice.md)</span>
+<span id="waitfordevice">[waitForDevice(filter, options)](./puppeteer.devicerequestprompt.waitfordevice.md)</span>
 
 </td><td>
 

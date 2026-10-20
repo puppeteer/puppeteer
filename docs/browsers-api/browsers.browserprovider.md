@@ -56,7 +56,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="getdownloadurl">[getDownloadUrl](./browsers.browserprovider.getdownloadurl.md)</span>
+<span id="getdownloadurl">[getDownloadUrl(options)](./browsers.browserprovider.getdownloadurl.md)</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ Can be synchronous for simple URL construction or asynchronous if version resolu
 </td></tr>
 <tr><td>
 
-<span id="getexecutablepath">[getExecutablePath](./browsers.browserprovider.getexecutablepath.md)</span>
+<span id="getexecutablepath">[getExecutablePath(options)](./browsers.browserprovider.getexecutablepath.md)</span>
 
 </td><td>
 
@@ -80,7 +80,7 @@ Get the relative path to the executable within the extracted archive.
 </td></tr>
 <tr><td>
 
-<span id="getname">[getName](./browsers.browserprovider.getname.md)</span>
+<span id="getname">[getName()](./browsers.browserprovider.getname.md)</span>
 
 </td><td>
 
@@ -93,7 +93,7 @@ This method is used instead of `constructor.name` to avoid issues with minificat
 </td></tr>
 <tr><td>
 
-<span id="supports">[supports](./browsers.browserprovider.supports.md)</span>
+<span id="supports">[supports(options)](./browsers.browserprovider.supports.md)</span>
 
 </td><td>
 

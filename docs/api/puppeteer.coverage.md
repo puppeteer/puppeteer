@@ -62,7 +62,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="startcsscoverage">[startCSSCoverage](./puppeteer.coverage.startcsscoverage.md)</span>
+<span id="startcsscoverage">[startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md)</span>
 
 </td><td>
 
@@ -71,7 +71,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="startjscoverage">[startJSCoverage](./puppeteer.coverage.startjscoverage.md)</span>
+<span id="startjscoverage">[startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)</span>
 
 </td><td>
 
@@ -84,7 +84,7 @@ Anonymous scripts are ones that don't have an associated url. These are scripts 
 </td></tr>
 <tr><td>
 
-<span id="stopcsscoverage">[stopCSSCoverage](./puppeteer.coverage.stopcsscoverage.md)</span>
+<span id="stopcsscoverage">[stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)</span>
 
 </td><td>
 
@@ -99,7 +99,7 @@ CSS Coverage doesn't include dynamically injected style tags without sourceURLs.
 </td></tr>
 <tr><td>
 
-<span id="stopjscoverage">[stopJSCoverage](./puppeteer.coverage.stopjscoverage.md)</span>
+<span id="stopjscoverage">[stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)</span>
 
 </td><td>
 

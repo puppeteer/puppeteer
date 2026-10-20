@@ -123,7 +123,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="readmetadata">[readMetadata](./browsers.installedbrowser.readmetadata.md)</span>
+<span id="readmetadata">[readMetadata()](./browsers.installedbrowser.readmetadata.md)</span>
 
 </td><td>
 
@@ -132,7 +132,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="writemetadata">[writeMetadata](./browsers.installedbrowser.writemetadata.md)</span>
+<span id="writemetadata">[writeMetadata(metadata)](./browsers.installedbrowser.writemetadata.md)</span>
 
 </td><td>
 

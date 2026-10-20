@@ -33,7 +33,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]](./puppeteer.screenrecorder._asyncdisposesymbol_.md)</span>
+<span id="_asyncdisposesymbol_">[\[asyncDisposeSymbol\]()](./puppeteer.screenrecorder._asyncdisposesymbol_.md)</span>
 
 </td><td>
 
@@ -42,7 +42,7 @@ Description
 </td></tr>
 <tr><td>
 
-<span id="stop">[stop](./puppeteer.screenrecorder.stop.md)</span>
+<span id="stop">[stop()](./puppeteer.screenrecorder.stop.md)</span>
 
 </td><td>
 
