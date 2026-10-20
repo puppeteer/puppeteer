@@ -18,18 +18,22 @@ interface Version {
 }
 
 function parseChangelog(content: string) {
-  const log = content.split('\n');
+  // Release Please writes `\n` line endings, so lone carriage returns can only
+  // come from commit or pull request metadata, which is untrusted. Treat them
+  // as spaces rather than line breaks so that they cannot start new Markdown
+  // blocks, such as headings.
+  const log = content
+    .replaceAll('\r\n', '\n')
+    .replaceAll('\r', ' ')
+    .split('\n');
 
   const parsed: Version[] = [];
   let version: Version | undefined = undefined;
   for (const line of log) {
-    if (line.startsWith('## ')) {
+    const matches = line.match(/^## \[(\d+\.\d+\.\d+)\]/);
+    if (matches) {
       if (version) {
         parsed.push(version);
-      }
-      const matches = line.match(/## \[(\d+\.\d+\.\d+)\]/);
-      if (!matches) {
-        throw new Error('Cannot parse the version');
       }
       version = {
         version: matches[1],
@@ -37,11 +41,17 @@ function parseChangelog(content: string) {
         header: line,
       };
     } else if (version && line.trim() !== '') {
+      // Any other line, including an unexpected `## ` heading, is regular
+      // content. Throwing here would let a single changelog entry break the
+      // docs build.
       version.lines.push(line);
     }
   }
   if (version) {
     parsed.push(version);
+  }
+  if (parsed.length === 0) {
+    throw new Error('Cannot parse any versions from the changelog');
   }
   return parsed;
 }

@@ -1,5 +1,80 @@
 # Changelog
 
+## [25.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.14.0...puppeteer-core-v25.15.0) (2026-10-20)
+
+
+### 🎉 Features
+
+* add handshakeTimeout to wsOptions ([#15587](https://github.com/puppeteer/puppeteer/issues/15587)) ([78a9baf](https://github.com/puppeteer/puppeteer/commit/78a9baffe31ad9aa96bf28237c0185e6d50118bd))
+* add page.tabInfo() ([#15594](https://github.com/puppeteer/puppeteer/issues/15594)) ([9f15c77](https://github.com/puppeteer/puppeteer/commit/9f15c77723e4d065e349a85efed921b6ecd7288c))
+* allow page.setGeolocation(null) to remove the geolocation override ([#15590](https://github.com/puppeteer/puppeteer/issues/15590)) ([7883246](https://github.com/puppeteer/puppeteer/commit/78832469c7d0fce5513ed651354f8d46d9d70ba3))
+* support setting allow/block lists as an API ([#15510](https://github.com/puppeteer/puppeteer/issues/15510)) ([07d2e71](https://github.com/puppeteer/puppeteer/commit/07d2e71b1de1a402f6e4d4696600d1ae63761831))
+
+
+### 🛠️ Fixes
+
+* apply dynamic network restrictions to already-running service workers ([#15602](https://github.com/puppeteer/puppeteer/issues/15602)) ([edb2fab](https://github.com/puppeteer/puppeteer/commit/edb2fabad3f310abdc305ee9b50144250c61cb83))
+* **core:** stop in-page pollers created after WaitTask termination ([#15557](https://github.com/puppeteer/puppeteer/issues/15557)) ([4c10b9d](https://github.com/puppeteer/puppeteer/commit/4c10b9d4256d957b09b3b8f2dc5ffc34726812db))
+* handle stop() rejection when page.record() fails to start ([#15593](https://github.com/puppeteer/puppeteer/issues/15593)) ([ff3103c](https://github.com/puppeteer/puppeteer/commit/ff3103c8e46f1b97e00a6a4a72f8e2509cbc796f))
+* **network:** do not emit duplicate request on Fetch.requestPaused restart ([#15416](https://github.com/puppeteer/puppeteer/issues/15416)) ([baed95c](https://github.com/puppeteer/puppeteer/commit/baed95c0da0001ecef39e3044a2cf2b33501d805))
+* roll to Chrome 155.0.8059.84 ([#15589](https://github.com/puppeteer/puppeteer/issues/15589)) ([2bf492b](https://github.com/puppeteer/puppeteer/commit/2bf492ba747f101899fc73dd5f104fb6878901ad))
+* **webdriver:** handle continueWithAuth rejections ([#15460](https://github.com/puppeteer/puppeteer/issues/15460)) ([10c43c1](https://github.com/puppeteer/puppeteer/commit/10c43c1b9101ab62835332393f49e3fb426dde88))
+
+## [25.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.13.0...puppeteer-core-v25.14.0) (2026-10-14)
+
+
+### 🎉 Features
+
+* migrate network emulation to Network.emulateNetworkConditionsByRule ([#15508](https://github.com/puppeteer/puppeteer/issues/15508)) ([2952199](https://github.com/puppeteer/puppeteer/commit/29521992a24f0b6185f5049bb03a9e8c87cd3369))
+* **network:** accept Headers instances for request interception and extra headers ([#15530](https://github.com/puppeteer/puppeteer/issues/15530)) ([b20d03b](https://github.com/puppeteer/puppeteer/commit/b20d03b4d5df7f08c2b3be3a754578534039ba1d))
+* roll to Firefox 158.0 ([#15582](https://github.com/puppeteer/puppeteer/issues/15582)) ([3902129](https://github.com/puppeteer/puppeteer/commit/3902129f2bb11d9b54767e619df1ec6c03317847))
+
+
+### 🛠️ Fixes
+
+* enforce blocklist/allowlist for service worker requests ([#15586](https://github.com/puppeteer/puppeteer/issues/15586)) ([414231a](https://github.com/puppeteer/puppeteer/commit/414231a716973ff99daa82eed0998dc4f263df4a))
+* roll to Chrome 155.0.8059.79 ([#15584](https://github.com/puppeteer/puppeteer/issues/15584)) ([9ea69c1](https://github.com/puppeteer/puppeteer/commit/9ea69c154d66ce7d6210264e272cc6c1258d0796))
+* **screencast:** round the frame size to whole pixels ([#15574](https://github.com/puppeteer/puppeteer/issues/15574)) ([565e584](https://github.com/puppeteer/puppeteer/commit/565e5840ca72160ec70f2e748a63bdbc87c63cc5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.4 to 3.2.5
+
+## [25.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.12.0...puppeteer-core-v25.13.0) (2026-10-08)
+
+
+### 🎉 Features
+
+* add page, frame and worker methods on ConsoleMessage ([#15515](https://github.com/puppeteer/puppeteer/issues/15515)) ([82e1fee](https://github.com/puppeteer/puppeteer/commit/82e1fee0b740358194ee2d769bc987e40830dac6))
+* allow configuring the WebSocket max payload ([#15532](https://github.com/puppeteer/puppeteer/issues/15532)) ([c91da4f](https://github.com/puppeteer/puppeteer/commit/c91da4f32ceffed3696334376aabcd1a1c19d41e))
+* **network:** add asFetchRequest method to HTTPRequest ([#15518](https://github.com/puppeteer/puppeteer/issues/15518)) ([f891aaa](https://github.com/puppeteer/puppeteer/commit/f891aaa1f64f9ea72a56ee4b5daf39d8516ecb20))
+* **network:** add asFetchResponse method to HTTPResponse ([#15446](https://github.com/puppeteer/puppeteer/issues/15446)) ([6ab0419](https://github.com/puppeteer/puppeteer/commit/6ab04192ac35d81609da29c6fe4769a3f72ba510))
+* roll to Chrome 155.0.8059.39 ([#15517](https://github.com/puppeteer/puppeteer/issues/15517)) ([43dc2a1](https://github.com/puppeteer/puppeteer/commit/43dc2a1fbaa20e83814e711636b2be3f51e162f0))
+* roll to Firefox 157.0.1 ([#15516](https://github.com/puppeteer/puppeteer/issues/15516)) ([ba92fc7](https://github.com/puppeteer/puppeteer/commit/ba92fc7bd48d7e70d5adaad96e9a0628801dda58))
+
+
+### 🛠️ Fixes
+
+* await browser process termination and run exit hooks after kill ([#15522](https://github.com/puppeteer/puppeteer/issues/15522)) ([a281197](https://github.com/puppeteer/puppeteer/commit/a2811971b59a52233391c5d837b116dc425fb7c0))
+* **cdp:** disconnect the browser when the close callback fails ([#15496](https://github.com/puppeteer/puppeteer/issues/15496)) ([e015f22](https://github.com/puppeteer/puppeteer/commit/e015f22c18b04fe1f026dd61f940b4d4ab0f1fd2))
+* **cdp:** extend emulateMediaFeatures to media features Chrome honors ([#15495](https://github.com/puppeteer/puppeteer/issues/15495)) ([4758830](https://github.com/puppeteer/puppeteer/commit/47588308b962bc10a5b7979fb2402536186d2fd9))
+* **cdp:** settle worker evaluate and close when the script fails to load ([#15501](https://github.com/puppeteer/puppeteer/issues/15501)) ([02c2a3d](https://github.com/puppeteer/puppeteer/commit/02c2a3d57550eef82c33a9d45236823ab499b885))
+* **connect:** preserve browserURL path prefixes ([#15435](https://github.com/puppeteer/puppeteer/issues/15435)) ([8d816de](https://github.com/puppeteer/puppeteer/commit/8d816dedc1ce0ac8a79abc8cdf96a37f4bd30ebd))
+* **launcher:** remove the temporary profile when Firefox rejects pipes ([#15499](https://github.com/puppeteer/puppeteer/issues/15499)) ([889a6b7](https://github.com/puppeteer/puppeteer/commit/889a6b70635cf393adf3c0515a9818e326b7cb22))
+* remove injected scripts when clearing custom query handlers ([#15507](https://github.com/puppeteer/puppeteer/issues/15507)) ([909853c](https://github.com/puppeteer/puppeteer/commit/909853c03ccd876ef8dd35006c93840fddb5fd59))
+* use the shadow host when checking visibility of a text node in a shadow root ([#15466](https://github.com/puppeteer/puppeteer/issues/15466)) ([d08c868](https://github.com/puppeteer/puppeteer/commit/d08c86803e83af08eff4da426535845d1a070433))
+* **webdriver:** close the browser process when the BiDi close command fails ([#15469](https://github.com/puppeteer/puppeteer/issues/15469)) ([9e5fefa](https://github.com/puppeteer/puppeteer/commit/9e5fefac4fdd7bb1476441598bca078de608fc71))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.3 to 3.2.4
+
 ## [25.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.11.0...puppeteer-core-v25.12.0) (2026-09-23)
 
 

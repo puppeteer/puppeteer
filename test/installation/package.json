@@ -53,10 +53,11 @@
   ],
   "devDependencies": {
     "glob": "13.0.6",
-    "mocha": "12.0.0"
+    "mocha": "12.0.3"
   },
   "dependencies": {
     "diff": "^9.0.0",
+    "pixelmatch": "^8.0.0",
     "webmcp-types": "^0.1.9"
   }
 }

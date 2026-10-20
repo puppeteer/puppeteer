@@ -748,6 +748,39 @@ describe('request interception', function () {
       await page.goto(server.PREFIX + '/cached/one-style-font.html');
       await responsePromise;
     });
+    // @see https://crbug.com/1196004
+    it('should emit a single request for a font Chrome restarts', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(true);
+      const isFont = (request: HTTPRequest) => {
+        return request.url().endsWith('.ttf');
+      };
+      const events: string[] = [];
+      page.on('request', request => {
+        if (isFont(request)) {
+          events.push('request');
+        }
+        void request.continue();
+      });
+      page.on('requestfinished', request => {
+        if (isFont(request)) {
+          events.push('requestfinished');
+        }
+      });
+      page.on('requestfailed', request => {
+        if (isFont(request)) {
+          events.push('requestfailed');
+        }
+      });
+
+      const fontLoaded = waitEvent(page, 'requestfinished', isFont);
+      await page.goto(server.PREFIX + '/font-face.html');
+      await fontLoaded;
+
+      expect(events).toEqual(['request', 'requestfinished']);
+    });
     it('should work with worker', async () => {
       const {page, server} = await getTestState();
 
@@ -757,6 +790,41 @@ describe('request interception', function () {
       ]);
 
       await page.setRequestInterception(true);
+    });
+    it('should intercept parallel fetches from a dedicated worker', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        if (request.url().includes('abort')) {
+          void request.abort();
+        } else {
+          void request.continue();
+        }
+      });
+
+      const settled = await page.evaluate(() => {
+        const source = `onmessage = async ({data: url}) => {
+          const results = await Promise.allSettled(
+            Array.from({length: 20}, (_, i) => {
+              return fetch(url + (i % 2 ? '?abort=' : '?continue=') + i);
+            }),
+          );
+          postMessage(results.length);
+        };`;
+        const worker = new Worker(
+          URL.createObjectURL(new Blob([source], {type: 'text/javascript'})),
+        );
+        return new Promise(resolve => {
+          worker.onmessage = event => {
+            resolve(event.data);
+          };
+          worker.postMessage(location.href);
+        });
+      });
+
+      expect(settled).toBe(20);
     });
   });
 
@@ -778,6 +846,26 @@ describe('request interception', function () {
         const headers = Object.assign({}, request.headers());
         headers['FOO'] = 'bar';
         void request.continue({headers});
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => {
+          return fetch('/sleep.zzz');
+        }),
+      ]);
+      expect(request.headers['foo']).toBe('bar');
+    });
+    it('should amend HTTP headers given as a Headers instance', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        const headers = new Headers(request.headers());
+        headers.set('foo', 'bar');
+        void request.continue({
+          headers,
+        });
       });
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
@@ -899,6 +987,23 @@ describe('request interception', function () {
           return document.body.textContent;
         }),
       ).toBe('Yo, page!');
+    });
+    it('should work with headers given as a Headers instance', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({
+          status: 201,
+          headers: new Headers({
+            foo: 'bar',
+          }),
+          body: 'Yo, page!',
+        });
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.status()).toBe(201);
+      expect(response.headers()['foo']).toBe('bar');
     });
     it('should work with status code 422', async () => {
       const {page, server} = await getTestState();

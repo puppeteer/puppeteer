@@ -1,5 +1,49 @@
 # Changelog
 
+## [25.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.14.0...puppeteer-v25.15.0) (2026-10-20)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 25.14.0 to 25.15.0
+
+## [25.14.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.13.0...puppeteer-v25.14.0) (2026-10-14)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.4 to 3.2.5
+    * puppeteer-core bumped from 25.13.0 to 25.14.0
+
+## [25.13.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.12.0...puppeteer-v25.13.0) (2026-10-08)
+
+
+### 🎉 Features
+
+* roll to Chrome 155.0.8059.39 ([#15517](https://github.com/puppeteer/puppeteer/issues/15517)) ([43dc2a1](https://github.com/puppeteer/puppeteer/commit/43dc2a1fbaa20e83814e711636b2be3f51e162f0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.3 to 3.2.4
+    * puppeteer-core bumped from 25.12.0 to 25.13.0
+
 ## [25.12.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.11.0...puppeteer-v25.12.0) (2026-09-23)
 
 

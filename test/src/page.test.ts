@@ -450,6 +450,34 @@ describe('Page', function () {
         longitude: 10,
       });
     });
+    it('should remove the override when called with null', async () => {
+      const {page, server, context} = await getTestState();
+
+      await context.overridePermissions(server.PREFIX, ['geolocation']);
+      await page.goto(server.EMPTY_PAGE);
+      await page.setGeolocation({longitude: 10, latitude: 10});
+      await page.setGeolocation(null);
+      const geolocation = await page.evaluate(() => {
+        return new Promise(resolve => {
+          return navigator.geolocation.getCurrentPosition(
+            position => {
+              resolve({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              });
+            },
+            () => {
+              resolve('no position');
+            },
+            {timeout: 1000},
+          );
+        });
+      });
+      expect(geolocation).not.toEqual({
+        latitude: 10,
+        longitude: 10,
+      });
+    });
     it('should throw when invalid longitude', async () => {
       const {page} = await getTestState();
 
@@ -2620,6 +2648,30 @@ describe('Page', function () {
           return document.visibilityState;
         }),
       ).toBe('visible');
+
+      await page1.close();
+      await page2.close();
+    });
+  });
+
+  describe('Page.tabInfo', function () {
+    it('should return the tab index and active state', async () => {
+      const {context} = await getTestState();
+      const page1 = await context.newPage();
+      const page2 = await context.newPage();
+
+      await page1.bringToFront();
+      const tabInfo1 = await page1.tabInfo();
+      const tabInfo2 = await page2.tabInfo();
+      expect(tabInfo1).toMatchObject({active: true, pinned: false});
+      expect(tabInfo2).toMatchObject({active: false, pinned: false});
+      expect(tabInfo2!.index).toBe(tabInfo1!.index + 1);
+      expect(tabInfo1!.groupId).toBeUndefined();
+      expect(tabInfo2!.groupId).toBeUndefined();
+
+      await page2.bringToFront();
+      expect(await page1.tabInfo()).toMatchObject({active: false});
+      expect(await page2.tabInfo()).toMatchObject({active: true});
 
       await page1.close();
       await page2.close();

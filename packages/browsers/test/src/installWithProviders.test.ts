@@ -20,6 +20,7 @@ import {
 
 import {getServerUrl, setupTestServer} from './utils.js';
 import {testChromeBuildId} from './versions.js';
+import {createTestZipBuffer, testZipEntries} from './zip.js';
 
 /**
  * Simple inline mock provider for testing.
@@ -159,9 +160,7 @@ describe('Install with providers', () => {
 
       const buildId = '123';
       const customExecutablePath = path.join('browser', 'chrome');
-      const archive = fs.readFileSync(
-        path.join(import.meta.dirname, '..', 'fixtures', 'test.zip'),
-      );
+      const archive = createTestZipBuffer(testZipEntries);
       serverState.server.setRoute(
         '/provider-chain.zip',
         (_request, response) => {
@@ -270,9 +269,7 @@ describe('Install with providers', () => {
         `${BrowserPlatform.LINUX}-${buildId}`,
         customExecutablePath,
       );
-      const archive = fs.readFileSync(
-        path.join(import.meta.dirname, '..', 'fixtures', 'test.zip'),
-      );
+      const archive = createTestZipBuffer(testZipEntries);
       serverState.server.setRoute(
         '/custom-provider.zip',
         (_request, response) => {
@@ -436,9 +433,7 @@ describe('Install with providers', () => {
       const buildId = '123';
       const customExecutablePath = path.join('browser', 'chrome');
       // This fixture models extraction and registration, not binary compatibility.
-      const archive = fs.readFileSync(
-        path.join(import.meta.dirname, '..', 'fixtures', 'test.zip'),
-      );
+      const archive = createTestZipBuffer(testZipEntries);
       serverState.server.setRoute(
         '/platform-provider.zip',
         (_request, response) => {

@@ -74,6 +74,112 @@ describe('downloadFile', function () {
     assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
   });
 
+  for (const [name, getLocation, expectedPath] of [
+    [
+      'root-relative',
+      () => {
+        return '/file.bin';
+      },
+      '/file.bin',
+    ],
+    [
+      'path-relative',
+      () => {
+        return 'file.bin';
+      },
+      '/downloads/file.bin',
+    ],
+    [
+      'parent-relative',
+      () => {
+        return '../file.bin';
+      },
+      '/file.bin',
+    ],
+    [
+      'query-relative',
+      () => {
+        return '?download=1';
+      },
+      '/downloads/start?download=1',
+    ],
+    [
+      'absolute',
+      (url: URL) => {
+        return new URL('/file.bin', url).href;
+      },
+      '/file.bin',
+    ],
+    [
+      'scheme-relative',
+      (url: URL) => {
+        return `//${url.host}/file.bin`;
+      },
+      '/file.bin',
+    ],
+  ] as const) {
+    it(`downloads a file through ${name} redirects`, async () => {
+      serverUrl = new URL('/downloads/start', serverUrl);
+      const requests: string[] = [];
+      server.removeAllListeners('request');
+      server.on('request', (req, res) => {
+        requests.push(req.url!);
+        if (requests.length === 1) {
+          res.writeHead(302, {Location: getLocation(serverUrl)});
+          res.end();
+          return;
+        }
+        res.writeHead(200, {'Content-Length': String(testContent.length)});
+        res.end(testContent);
+      });
+
+      const destPath = path.join(tmpDir, 'download.bin');
+      await downloadFile(serverUrl, destPath);
+      assert.deepStrictEqual(requests, ['/downloads/start', expectedPath]);
+      assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+    });
+  }
+
+  it('resolves each redirect against the current request URL', async () => {
+    const requests: string[] = [];
+    server.removeAllListeners('request');
+    server.on('request', (req, res) => {
+      requests.push(req.url!);
+      if (req.url === '/test') {
+        res.writeHead(301, {Location: '/downloads/start'});
+      } else if (req.url === '/downloads/start') {
+        res.writeHead(307, {Location: 'file.bin?download=1'});
+      } else {
+        res.writeHead(200);
+        res.end(testContent);
+        return;
+      }
+      res.end();
+    });
+
+    assert.strictEqual(await getText(serverUrl), testContent.toString());
+    assert.deepStrictEqual(requests, [
+      '/test',
+      '/downloads/start',
+      '/downloads/file.bin?download=1',
+    ]);
+  });
+
+  it('preserves the HEAD method through a relative redirect', async () => {
+    const methods: string[] = [];
+    server.removeAllListeners('request');
+    server.on('request', (req, res) => {
+      methods.push(req.method!);
+      res.writeHead(req.url === '/test' ? 308 : 200, {
+        Location: '/file.bin',
+      });
+      res.end();
+    });
+
+    assert.strictEqual(await headHttpRequest(serverUrl), true);
+    assert.deepStrictEqual(methods, ['HEAD', 'HEAD']);
+  });
+
   it('rejects when the response ends before the content length is reached', async () => {
     await new Promise<void>(resolve => {
       server.close(() => {
@@ -256,7 +362,7 @@ describe('HTTP request errors', () => {
     server = http.createServer((req, res) => {
       if (req.url === '/redirect') {
         res.writeHead(302, {
-          Location: new URL('/reset', redirectUrl).toString(),
+          Location: '/reset',
         });
         res.end();
         return;
@@ -280,11 +386,11 @@ describe('HTTP request errors', () => {
     });
   });
 
-  it('rejects getText when a redirected request fails', async () => {
+  it('rejects getText when a relatively redirected request fails', async () => {
     await assert.rejects(getText(redirectUrl), {code: 'ECONNRESET'});
   });
 
-  it('resolves HEAD as false when a redirected request fails', async () => {
+  it('resolves HEAD as false when a relatively redirected request fails', async () => {
     assert.strictEqual(await headHttpRequest(redirectUrl), false);
   });
 });

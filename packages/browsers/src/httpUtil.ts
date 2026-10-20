@@ -66,7 +66,7 @@ export async function httpRequest(
       res.headers.location
     ) {
       void httpRequest(
-        new URL(res.headers.location),
+        new URL(res.headers.location, url),
         method,
         response,
         keepAlive,

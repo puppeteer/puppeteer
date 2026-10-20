@@ -416,7 +416,19 @@ async function installUrl(
   assert(fileName, `A malformed download URL was found: ${url}.`);
   const cache = new Cache(options.cacheDir, options.logger);
   const browserRoot = cache.browserRoot(options.browser);
-  const archivePath = path.join(browserRoot, `${options.buildId}-${fileName}`);
+  const outputPath = cache.installationDir(
+    options.browser,
+    options.platform,
+    options.buildId,
+  );
+  const archiveName = `${options.buildId}-${fileName}`;
+  const archivePath = path.join(browserRoot, archiveName);
+  if (
+    path.dirname(path.resolve(archivePath)) !== path.resolve(browserRoot) ||
+    path.basename(path.resolve(archivePath)) !== archiveName
+  ) {
+    throw new Error(`Invalid archive path: ${archiveName}`);
+  }
   if (!existsSync(browserRoot)) {
     await mkdir(browserRoot, {recursive: true});
   }
@@ -467,12 +479,6 @@ async function installUrl(
       await cleanupInstallAttempt(attempt.path, canCleanup, logger);
     }
   }
-
-  const outputPath = cache.installationDir(
-    options.browser,
-    options.platform,
-    options.buildId,
-  );
 
   const existingInstallation = inspectExistingInstall(
     cache,

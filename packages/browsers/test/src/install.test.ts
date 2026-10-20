@@ -28,6 +28,8 @@ import {
   type DownloadOptions,
 } from '../../lib/main.js';
 
+import {createTestZipBuffer, testZipEntries} from './zip.js';
+
 describe('install', () => {
   let tmpDir: string;
   let archive: Buffer;
@@ -35,9 +37,7 @@ describe('install', () => {
   let serverUrl: URL;
 
   before(async () => {
-    archive = fs.readFileSync(
-      path.join(import.meta.dirname, '..', 'fixtures', 'test.zip'),
-    );
+    archive = createTestZipBuffer(testZipEntries);
     server = http.createServer((request, response) => {
       if (request.url === '/invalid.zip') {
         response.writeHead(200, {'content-length': 7});
@@ -169,6 +169,29 @@ describe('install', () => {
       fs.readdirSync(path.join(tmpDir, Browser.CHROME, '.staging')),
       [],
     );
+  });
+
+  it('rejects an invalid build ID before creating an archive download attempt', async () => {
+    const provider = new TestProvider(serverUrl);
+
+    await assert.rejects(
+      install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: '../outside',
+        providers: [provider],
+        baseUrl: serverUrl.origin,
+        unpack: false,
+      }),
+      /Invalid buildId/,
+    );
+
+    assert.deepStrictEqual(
+      fs.readdirSync(path.join(tmpDir, Browser.CHROME)),
+      [],
+    );
+    assert.strictEqual(provider.executablePathCalls, 0);
   });
 
   it('publishes an archive without exposing the private download path', async () => {

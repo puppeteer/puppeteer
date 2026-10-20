@@ -39,13 +39,15 @@ Default
 
 </td><td>
 
+`optional`
+
 </td><td>
 
 number
 
 </td><td>
 
-Download speed (bytes/s)
+Download speed (bytes/s). If not provided, download throttling is disabled and only the offline mode is emulated.
 
 </td><td>
 
@@ -56,13 +58,15 @@ Download speed (bytes/s)
 
 </td><td>
 
+`optional`
+
 </td><td>
 
 number
 
 </td><td>
 
-Latency (ms)
+Latency (ms). If not provided, no latency is emulated.
 
 </td><td>
 
@@ -96,13 +100,15 @@ Shortcut for [Page.setOfflineMode()](./puppeteer.page.setofflinemode.md).
 
 </td><td>
 
+`optional`
+
 </td><td>
 
 number
 
 </td><td>
 
-Upload speed (bytes/s)
+Upload speed (bytes/s). If not provided, upload throttling is disabled and only the offline mode is emulated.
 
 </td><td>
 

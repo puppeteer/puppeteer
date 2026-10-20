@@ -1272,6 +1272,8 @@ Sets the page's geolocation.
 
 Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext.overridepermissions.md) to grant permissions for the page to read its geolocation.
 
+Pass `null` to remove the geolocation override.
+
 </td></tr>
 <tr><td>
 
@@ -1353,6 +1355,17 @@ In the case of multiple pages in a single browser, each page can have its own vi
 **Remarks:**
 
 NOTE: in certain cases, setting viewport will reload the page in order to set the isMobile or hasTouch properties.
+
+</td></tr>
+<tr><td>
+
+<span id="tabinfo">[tabInfo()](./puppeteer.page.tabinfo.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns information about the browser tab of this page. The result is a snapshot and is not updated when the tab changes.
 
 </td></tr>
 <tr><td>

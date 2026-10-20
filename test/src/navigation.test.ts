@@ -11,6 +11,7 @@ import {type Frame, TimeoutError} from 'puppeteer';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
+import sinon from 'sinon';
 
 import {
   getTestState,
@@ -273,6 +274,50 @@ describe('navigation', function () {
         });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should settle when the page navigates again while loading', async () => {
+      const {page, server} = await getTestState();
+
+      // The document loads, then navigates again from its own load handler.
+      server.setRoute('/navigate-on-load.html', (_, res) => {
+        res.end(
+          `<html><body onload="location.href='/hang.html'">ok</body></html>`,
+        );
+      });
+      // Hang for the request the page navigates to.
+      server.setRoute('/hang.html', () => {});
+
+      const loaded = new Promise<void>(resolve => {
+        page.once('load', () => {
+          return resolve();
+        });
+      });
+      const hangRequested = server.waitForRequest('/hang.html');
+
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
+      });
+      try {
+        // Resolving and timing out are both fine; never settling is not.
+        let settled = false;
+        const goto = page
+          .goto(server.PREFIX + '/navigate-on-load.html', {timeout: 10000})
+          .catch(() => {})
+          .then(() => {
+            settled = true;
+          });
+
+        // Only once the first document is done and the second navigation is in
+        // flight is the deadline the thing goto is waiting on.
+        await Promise.all([loaded, hangRequested]);
+        await clock.tickAsync(10000);
+        await Promise.race([goto, clock.tickAsync(5000)]);
+
+        expect(settled).toBe(true);
+      } finally {
+        clock.restore();
+      }
     });
     it('should fail when exceeding default maximum navigation timeout', async () => {
       const {page, server} = await getTestState();

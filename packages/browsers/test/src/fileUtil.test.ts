@@ -21,6 +21,8 @@ import {
   unpackArchiveWithCleanupState,
 } from '../../lib/fileUtil.js';
 
+import {createTestZip, testZipEntries, type TestZipEntry} from './zip.js';
+
 describe('fileUtil', function () {
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -81,9 +83,9 @@ describe('fileUtil', function () {
     assert.deepStrictEqual(dir, []);
   }
 
-  function assertTestZipUnpacked(): void {
+  function assertTestZipUnpacked(targetDir: string): void {
     const entries = fs
-      .readdirSync(tmpDir, {recursive: true})
+      .readdirSync(targetDir, {recursive: true})
       .filter(item => {
         return !(item as string).startsWith('._');
       })
@@ -96,26 +98,29 @@ describe('fileUtil', function () {
       path.join('browser', 'product_logo.png'),
     ]);
     assert.strictEqual(
-      fs.readFileSync(path.join(tmpDir, 'browser/locales/en-US.pak'), 'utf8'),
+      fs.readFileSync(
+        path.join(targetDir, 'browser/locales/en-US.pak'),
+        'utf8',
+      ),
       'resource',
     );
     assert.strictEqual(
-      fs.readFileSync(path.join(tmpDir, 'browser/product_logo.png'), 'utf8'),
+      fs.readFileSync(path.join(targetDir, 'browser/product_logo.png'), 'utf8'),
       'logo',
     );
   }
 
-  function assertOwnerPermissions(): void {
-    const executable = fs.statSync(path.join(tmpDir, 'browser/chrome')).mode;
+  function assertOwnerPermissions(targetDir: string): void {
+    const executable = fs.statSync(path.join(targetDir, 'browser/chrome')).mode;
     assert.strictEqual(executable & 0o700, 0o700);
     const regular = fs.statSync(
-      path.join(tmpDir, 'browser/product_logo.png'),
+      path.join(targetDir, 'browser/product_logo.png'),
     ).mode;
     assert.strictEqual(regular & 0o700, 0o600);
   }
 
-  function assertSymlink(): void {
-    const link = path.join(tmpDir, 'browser/Current');
+  function assertSymlink(targetDir: string): void {
+    const link = path.join(targetDir, 'browser/Current');
     assert.ok(fs.lstatSync(link).isSymbolicLink());
     assert.strictEqual(fs.readlinkSync(link), 'chrome');
   }
@@ -131,8 +136,13 @@ describe('fileUtil', function () {
   });
 
   it('unpacks zip extracting every entry with its structure and contents', async () => {
-    await unpackArchive(path.join(fixturesPath, 'test.zip'), tmpDir);
-    assertTestZipUnpacked();
+    const archivePath = createTestZip(
+      path.join(tmpDir, 'test.zip'),
+      testZipEntries,
+    );
+    const targetDir = path.join(tmpDir, 'target');
+    await unpackArchive(archivePath, targetDir);
+    assertTestZipUnpacked(targetDir);
   });
 
   describe('extractZipWithYauzl', () => {
@@ -141,8 +151,13 @@ describe('fileUtil', function () {
     });
 
     it('extracts every entry with its structure and contents', async () => {
-      await extractZipWithYauzl(path.join(fixturesPath, 'test.zip'), tmpDir);
-      assertTestZipUnpacked();
+      const archivePath = createTestZip(
+        path.join(tmpDir, 'test.zip'),
+        testZipEntries,
+      );
+      const targetDir = path.join(tmpDir, 'target');
+      await extractZipWithYauzl(archivePath, targetDir);
+      assertTestZipUnpacked(targetDir);
     });
 
     it('resolves after closing the archive', async () => {
@@ -150,7 +165,7 @@ describe('fileUtil', function () {
       const archivePath = path.join(tmpDir, 'archive.zip');
       const renamedPath = path.join(tmpDir, 'closed.zip');
       const outputPath = path.join(tmpDir, 'output');
-      fs.copyFileSync(path.join(fixturesPath, 'test.zip'), archivePath);
+      createTestZip(archivePath, testZipEntries);
 
       await extractZipWithYauzl(archivePath, outputPath);
       assert.ok(events.calledWith('close'), 'archive was not closed');
@@ -164,7 +179,10 @@ describe('fileUtil', function () {
       fs.mkdirSync(blockedFile, {recursive: true});
 
       await assert.rejects(
-        extractZipWithYauzl(path.join(fixturesPath, 'test.zip'), outputPath),
+        extractZipWithYauzl(
+          createTestZip(path.join(tmpDir, 'archive.zip'), testZipEntries),
+          outputPath,
+        ),
         (error: unknown) => {
           const {cause} = error as {cause?: NodeJS.ErrnoException};
           assert.strictEqual(cause?.code, 'EISDIR');
@@ -179,8 +197,13 @@ describe('fileUtil', function () {
     (os.platform() === 'win32' ? it.skip : it)(
       'preserves owner permissions',
       async () => {
-        await extractZipWithYauzl(path.join(fixturesPath, 'test.zip'), tmpDir);
-        assertOwnerPermissions();
+        const archivePath = createTestZip(
+          path.join(tmpDir, 'test.zip'),
+          testZipEntries,
+        );
+        const targetDir = path.join(tmpDir, 'target');
+        await extractZipWithYauzl(archivePath, targetDir);
+        assertOwnerPermissions(targetDir);
       },
     );
 
@@ -188,11 +211,21 @@ describe('fileUtil', function () {
     (os.platform() === 'win32' ? it.skip : it)(
       'preserves symlinks',
       async () => {
-        await extractZipWithYauzl(
-          path.join(fixturesPath, 'test-symlink.zip'),
-          tmpDir,
+        const archivePath = createTestZip(
+          path.join(tmpDir, 'test-symlink.zip'),
+          [
+            {name: 'browser/', type: 'dir'},
+            {
+              name: 'browser/chrome',
+              content: '#!/bin/sh\necho chrome\n',
+              mode: 0o755,
+            },
+            {name: 'browser/Current', type: 'symlink', content: 'chrome'},
+          ],
         );
-        assertSymlink();
+        const targetDir = path.join(tmpDir, 'target');
+        await extractZipWithYauzl(archivePath, targetDir);
+        assertSymlink(targetDir);
       },
     );
 
@@ -200,15 +233,21 @@ describe('fileUtil', function () {
     // preceding symlink test the rejection can be checked on Windows too.
     it('rejects symlinks that point outside the target directory', async () => {
       const events = sinon.spy(yauzl.ZipFile.prototype, 'emit');
-      const archivePath = path.join(tmpDir, 'escape.zip');
       const renamedPath = path.join(tmpDir, 'closed-escape.zip');
-      fs.copyFileSync(
-        path.join(fixturesPath, 'test-symlink-escape.zip'),
-        archivePath,
+      const archivePath = createTestZip(
+        path.join(tmpDir, 'test-symlink-escape.zip'),
+        [
+          {
+            name: 'browser/evil-link',
+            type: 'symlink',
+            content: '../../../../../../../../../../etc/passwd',
+          },
+        ],
       );
+      const targetDir = path.join(tmpDir, 'target');
       await assert.rejects(
         () => {
-          return extractZipWithYauzl(archivePath, tmpDir);
+          return extractZipWithYauzl(archivePath, targetDir);
         },
         (error: unknown) => {
           const {cause} = error as {cause?: Error};
@@ -218,11 +257,201 @@ describe('fileUtil', function () {
       );
       assert.ok(events.calledWith('close'), 'archive was not closed');
       assert.ok(
-        !fs.existsSync(path.join(tmpDir, 'browser', 'evil-link')),
+        !fs.existsSync(path.join(targetDir, 'browser', 'evil-link')),
         'symlink pointing outside the target directory was created',
       );
       fs.renameSync(archivePath, renamedPath);
     });
+
+    const frameworkEntries: TestZipEntry[] = [
+      {
+        name: 'Fw.framework/Resources',
+        type: 'symlink',
+        content: 'Versions/Current/Resources',
+      },
+      {
+        name: 'Fw.framework/Versions/A/Libraries/lib.txt',
+        content: 'lib',
+      },
+      {
+        name: 'Fw.framework/Versions/A/Resources/r.txt',
+        content: 'res',
+      },
+      {
+        name: 'Fw.framework/Versions/A/Helpers/res',
+        type: 'symlink',
+        content: '../Resources',
+      },
+      {
+        name: 'Fw.framework/Versions/Current',
+        type: 'symlink',
+        content: 'A',
+      },
+      {
+        name: 'Fw.framework/Libraries',
+        type: 'symlink',
+        content: 'Versions/Current/Libraries',
+      },
+    ];
+
+    (os.platform() === 'win32' ? it.skip : it)(
+      'extracts symlink chains inside the target directory',
+      async () => {
+        const archivePath = createTestZip(
+          path.join(tmpDir, 'framework.zip'),
+          frameworkEntries,
+        );
+        const target = path.join(tmpDir, 'target');
+        fs.mkdirSync(target, {recursive: true});
+        await extractZipWithYauzl(archivePath, target);
+
+        const framework = path.join(target, 'Fw.framework');
+        const read = (...parts: string[]) => {
+          return fs.readFileSync(path.join(framework, ...parts), 'utf8');
+        };
+        assert.strictEqual(read('Libraries', 'lib.txt'), 'lib');
+        assert.strictEqual(read('Resources', 'r.txt'), 'res');
+        assert.strictEqual(
+          read('Versions', 'A', 'Helpers', 'res', 'r.txt'),
+          'res',
+        );
+      },
+    );
+
+    const rejectedArchives: Array<{
+      name: string;
+      entries: TestZipEntry[];
+      artifact?: string[];
+      message: RegExp;
+    }> = [
+      {
+        name: 'symlink chains routed through an earlier symlink',
+        entries: [
+          {name: 'browser', type: 'symlink', content: '.'},
+          {name: 'browser/browser/link', type: 'symlink', content: '../..'},
+          {name: 'link/escape.txt', content: 'escaped'},
+        ],
+        artifact: ['..', '..', 'escape.txt'],
+        message: /through a symlink/,
+      },
+      {
+        name: 'symlink targets that "../" out through an earlier symlink',
+        entries: [
+          {name: 'a', type: 'symlink', content: '.'},
+          {name: 'f', type: 'symlink', content: 'a/../outside.txt'},
+          {name: 'a/f', content: 'escaped'},
+        ],
+        artifact: ['..', 'outside.txt'],
+        message: /point outside/,
+      },
+      {
+        name: 'symlinks that would route a later directory entry outside',
+        entries: [
+          {name: 'a', type: 'symlink', content: '.'},
+          {name: 'b', type: 'symlink', content: 'a/..'},
+          {name: 'b/created-outside/', type: 'dir'},
+        ],
+        artifact: ['..', 'created-outside'],
+        message: /point outside/,
+      },
+      {
+        name: 'symlink targets routed outside by a later entry',
+        entries: [
+          {name: 'a', type: 'symlink', content: '.'},
+          {name: 'esc', type: 'symlink', content: 'x/../a/..'},
+          {name: 'x/', type: 'dir'},
+        ],
+        artifact: ['esc'],
+        message: /point outside/,
+      },
+      {
+        name: 'directory entries created through a symlink',
+        entries: [
+          {name: 'sub/', type: 'dir'},
+          {name: 'a', type: 'symlink', content: 'sub'},
+          {name: 'a/x/', type: 'dir'},
+        ],
+        artifact: ['sub', 'x'],
+        message: /through a symlink/,
+      },
+      {
+        name: 'files written through a symlink',
+        entries: [
+          {name: 'sub/', type: 'dir'},
+          {name: 'n', type: 'symlink', content: 'sub/f'},
+          {name: 'n', content: 'inside'},
+        ],
+        artifact: ['sub', 'f'],
+        message: /through a symlink/,
+      },
+      {
+        name: 'directory entries in symlink mode created through a symlink',
+        entries: [
+          {name: 'd/', type: 'dir'},
+          {name: 's', type: 'symlink', content: 'd'},
+          {name: 's/', type: 'symlink', content: 'd'},
+        ],
+        message: /through a symlink/,
+      },
+      {
+        name: 'symlinks named "."',
+        entries: [{name: '.', type: 'symlink', content: 'target/q'}],
+        message: /empty path/,
+      },
+      {
+        name: 'symlinks with an empty name',
+        entries: [{name: '', type: 'symlink', content: 'target/q'}],
+        message: /empty path/,
+      },
+      {
+        name: 'files named "."',
+        entries: [{name: '.', content: 'dot'}],
+        message: /empty path/,
+      },
+      {
+        name: 'absolute symlink targets',
+        entries: [{name: 'l', type: 'symlink', content: '/tmp/chrome'}],
+        artifact: ['l'],
+        message: /point outside/,
+      },
+      {
+        name: 'drive-letter symlink targets',
+        entries: [{name: 'l', type: 'symlink', content: 'C:\\chrome'}],
+        artifact: ['l'],
+        message: /point outside/,
+      },
+    ];
+
+    for (const {name, entries, artifact, message} of rejectedArchives) {
+      (os.platform() === 'win32' ? it.skip : it)(
+        `rejects ${name}`,
+        async () => {
+          const archivePath = createTestZip(
+            path.join(tmpDir, 'test-rejected.zip'),
+            entries,
+          );
+          const target = path.join(tmpDir, 'nested', 'target');
+          fs.mkdirSync(target, {recursive: true});
+          await assert.rejects(
+            () => {
+              return extractZipWithYauzl(archivePath, target);
+            },
+            (error: unknown) => {
+              const {cause} = error as {cause?: Error};
+              assert.match(cause?.message ?? '', message);
+              return true;
+            },
+          );
+          if (artifact) {
+            const forbidden = path.join(target, ...artifact);
+            assert.ok(
+              !fs.lstatSync(forbidden, {throwIfNoEntry: false}),
+              `${forbidden} was created`,
+            );
+          }
+        },
+      );
+    }
   });
 
   describe('DMG cleanup', () => {

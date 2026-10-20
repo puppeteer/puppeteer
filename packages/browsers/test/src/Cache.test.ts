@@ -403,4 +403,49 @@ describe('Cache', () => {
       }
     });
   }
+  it('prevents path traversal in installationDir and uninstall', () => {
+    const siblingDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'puppeteer-browsers-sibling'),
+    );
+    try {
+      const traversalBuildId = `../../../../${path.relative('/', siblingDir)}`;
+      cache.writeMetadata(Browser.CHROME, {
+        aliases: {stable: traversalBuildId},
+      });
+      const metadataBefore = fs.readFileSync(
+        cache.metadataFile(Browser.CHROME),
+      );
+      assert.throws(() => {
+        cache.installationDir(
+          Browser.CHROME,
+          BrowserPlatform.LINUX,
+          traversalBuildId,
+        );
+      }, /Invalid buildId/);
+
+      assert.throws(() => {
+        cache.installationDir(
+          Browser.CHROME,
+          BrowserPlatform.LINUX,
+          '../.metadata',
+        );
+      }, /Invalid buildId/);
+
+      assert.throws(() => {
+        cache.uninstall(
+          Browser.CHROME,
+          BrowserPlatform.LINUX,
+          traversalBuildId,
+        );
+      }, /Invalid buildId/);
+
+      assert.strictEqual(fs.existsSync(siblingDir), true);
+      assert.deepStrictEqual(
+        fs.readFileSync(cache.metadataFile(Browser.CHROME)),
+        metadataBefore,
+      );
+    } finally {
+      fs.rmSync(siblingDir, {recursive: true, force: true});
+    }
+  });
 });
