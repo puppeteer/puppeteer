@@ -10,13 +10,13 @@ Fetches the POST data for the request from the browser as a `Uint8Array`.
 
 ```typescript
 class HTTPRequest {
-  abstract content(): Promise<Uint8Array<ArrayBuffer> | undefined>;
+  abstract content(): Promise<Uint8Array | undefined>;
 }
 ```
 
 **Returns:**
 
-Promise&lt;Uint8Array&lt;ArrayBuffer&gt; \| undefined&gt;
+Promise&lt;Uint8Array \| undefined&gt;
 
 A promise that resolves to the raw POST data bytes, or `undefined` when the request has no POST data or fetching it fails.
 

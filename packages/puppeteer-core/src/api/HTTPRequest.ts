@@ -392,7 +392,7 @@ export abstract class HTTPRequest {
    * @returns A promise that resolves to the raw POST data bytes, or
    * `undefined` when the request has no POST data or fetching it fails.
    */
-  abstract content(): Promise<Uint8Array<ArrayBuffer> | undefined>;
+  abstract content(): Promise<Uint8Array | undefined>;
 
   /**
    * An object with HTTP headers associated with the request. All
@@ -420,7 +420,7 @@ export abstract class HTTPRequest {
 
     let body: BodyInit | null = null;
     if (method !== 'GET' && method !== 'HEAD' && this.hasPostData()) {
-      body = (await this.content()) ?? null;
+      body = ((await this.content()) as unknown as BodyInit) ?? null;
     }
 
     return new Request(this.url(), {

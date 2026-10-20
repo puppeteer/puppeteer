@@ -115,7 +115,7 @@ describe('HTTPRequest', () => {
         return this._hasPostData;
       }
 
-      override content(): Promise<Uint8Array<ArrayBuffer> | undefined> {
+      override content(): Promise<Uint8Array | undefined> {
         this._contentCalls++;
         return Promise.resolve(
           this._postData !== undefined

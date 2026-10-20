@@ -177,7 +177,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     return new TextDecoder().decode(content);
   }
 
-  override async content(): Promise<Uint8Array<ArrayBuffer> | undefined> {
+  override async content(): Promise<Uint8Array | undefined> {
     try {
       const result = await this.#client.send('Network.getRequestPostData', {
         requestId: this.id,

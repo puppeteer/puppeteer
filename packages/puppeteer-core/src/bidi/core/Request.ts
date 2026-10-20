@@ -259,7 +259,7 @@ export class Request extends EventEmitter<{
     });
   }
 
-  async getRequestContent(): Promise<Uint8Array<ArrayBuffer> | undefined> {
+  async getRequestContent(): Promise<Uint8Array | undefined> {
     if (!this.hasPostData) {
       return undefined;
     }
