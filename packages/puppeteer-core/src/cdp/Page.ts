@@ -8,7 +8,11 @@ import type {Protocol} from 'devtools-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
-import type {Browser, WindowId} from '../api/Browser.js';
+import type {
+  Browser,
+  InputVisualizationOptions,
+  WindowId,
+} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
@@ -498,6 +502,20 @@ export class CdpPage extends Page {
 
   _isUrlAllowed(url: string): boolean {
     return this.#targetManager.isUrlAllowed(url);
+  }
+
+  /**
+   * The initial input visualization configuration inherited from the browser.
+   * See {@link Browser.visualizeInput}.
+   */
+  _inputVisualization(): Required<InputVisualizationOptions> {
+    return (this.browser() as CdpBrowser)._inputVisualization();
+  }
+
+  override async visualizeInput(
+    options: InputVisualizationOptions | null,
+  ): Promise<void> {
+    await this.#frameManager.setInputVisualization(options);
   }
 
   override isServiceWorkerBypassed(): boolean {

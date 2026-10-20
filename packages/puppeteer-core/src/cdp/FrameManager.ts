@@ -6,6 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {InputVisualizationOptions} from '../api/Browser.js';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
@@ -49,6 +50,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   #client: CdpCDPSession;
   #scriptsToEvaluateOnNewDocument = new Map<string, CdpPreloadScript>();
   #bindings = new Set<Binding>();
+  #inputVisualization: Required<InputVisualizationOptions>;
 
   _frameTree = new FrameTree<CdpFrame>();
 
@@ -88,6 +90,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     super(undefined, logger);
     this.#client = client;
     this.#page = page;
+    this.#inputVisualization = {...page._inputVisualization()};
     this.#networkManager = new NetworkManager(
       this,
       page.browser().isNetworkEnabled(),
@@ -255,6 +258,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
           return frame?.addExposedFunctionBinding(binding);
         }),
         this.#page.browser().isIssuesEnabled() && client.send('Audits.enable'),
+        this.#inputVisualization.clicks &&
+          // @ts-expect-error Page.setInputVisualization is not in stable yet.
+          client.send('Page.setInputVisualization', this.#inputVisualization),
       ]);
     } catch (error) {
       this.#frameTreeHandled?.resolve();
@@ -296,6 +302,42 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
           // Only an out-of-process frame has a session of its own to lose.
           if (
             frame._client() === this.#client ||
+            !isErrorLike(error) ||
+            !isTargetClosedError(error)
+          ) {
+            throw error;
+          }
+        }
+      }),
+    );
+  }
+
+  /**
+   * Sends the input visualization configuration to the session of the main
+   * frame and to the session of each out-of-process frame, and stores it for
+   * frames of this page that attach later.
+   */
+  async setInputVisualization(
+    options: InputVisualizationOptions | null,
+  ): Promise<void> {
+    this.#inputVisualization = {clicks: options?.clicks ?? false};
+    const clients = new Set(
+      this.frames().map(frame => {
+        return frame._client();
+      }),
+    );
+    await Promise.all(
+      Array.from(clients).map(async client => {
+        try {
+          await client.send(
+            // @ts-expect-error Page.setInputVisualization is not in stable yet.
+            'Page.setInputVisualization',
+            this.#inputVisualization,
+          );
+        } catch (error) {
+          // Only an out-of-process frame has a session of its own to lose.
+          if (
+            client === this.#client ||
             !isErrorLike(error) ||
             !isTargetClosedError(error)
           ) {

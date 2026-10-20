@@ -1469,6 +1469,23 @@ This is either the viewport set with the previous [Page.setViewport()](./puppete
 </td></tr>
 <tr><td>
 
+<span id="visualizeinput">[visualizeInput(options)](./puppeteer.page.visualizeinput.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Configures input visualization for all frames of this page, including frames that attach after this call. When click visualization is enabled, the browser draws a marker at the position of each click. The marker does not change the DOM, and it shows in screenshots and screencasts.
+
+Each call replaces the previous configuration for this page. To disable input visualization, pass `null`. Disconnecting from the browser also disables the visualization.
+
+**Remarks:**
+
+Only supported in Chrome with the CDP protocol. Requires a Chrome version that supports `Page.setInputVisualization`.
+
+</td></tr>
+<tr><td>
+
 <span id="waitfordeviceprompt">[waitForDevicePrompt(options)](./puppeteer.page.waitfordeviceprompt.md)</span>
 
 </td><td>

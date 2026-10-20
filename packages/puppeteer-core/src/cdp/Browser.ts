@@ -30,6 +30,7 @@ import {
   type GetPWAStateOptions,
   type PWAState,
   type NetworkRestrictions,
+  type InputVisualizationOptions,
 } from '../api/Browser.js';
 import {BrowserContextEvent} from '../api/BrowserContext.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
@@ -130,6 +131,9 @@ export class CdpBrowser extends BrowserBase {
   #extensions = new Map<string, Extension>();
   #version?: Deferred<Protocol.Browser.GetVersionResponse>;
   #hasNetworkRestrictions = false;
+  #inputVisualization: Required<InputVisualizationOptions> = {
+    clicks: false,
+  };
   #subscriptions = new DisposableStack();
 
   constructor(
@@ -250,6 +254,28 @@ export class CdpBrowser extends BrowserBase {
     );
     this.#connection.rejectEmulateNetworkConditionsCalls =
       this.#hasNetworkRestrictions;
+  }
+
+  override async visualizeInput(
+    options: InputVisualizationOptions | null,
+  ): Promise<void> {
+    this.#inputVisualization = {clicks: options?.clicks ?? false};
+    const pages = await this.pages();
+    await Promise.all(
+      pages.map(page => {
+        return page.visualizeInput(options);
+      }),
+    );
+  }
+
+  /**
+   * The input visualization configuration for all pages of the browser. See
+   * {@link CdpBrowser.visualizeInput}.
+   *
+   * @internal
+   */
+  _inputVisualization(): Required<InputVisualizationOptions> {
+    return this.#inputVisualization;
   }
 
   #setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
