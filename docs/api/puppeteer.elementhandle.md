@@ -198,7 +198,7 @@ When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId fo
 
 </td><td>
 
-This method returns the bounding box of the element (relative to the main frame), or `null` if the element is [not part of the layout](https://drafts.csswg.org/css-display-4/#box-generation) (example: `display: none`).
+This method returns the bounding box of the element (relative to the main frame's viewport), or `null` if the element is [not part of the layout](https://drafts.csswg.org/css-display-4/#box-generation) (example: `display: none`).
 
 </td></tr>
 <tr><td>
