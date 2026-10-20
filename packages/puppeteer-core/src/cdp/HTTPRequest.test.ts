@@ -5,6 +5,7 @@
  */
 import {describe, it} from 'node:test';
 
+import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 
 import type {CDPSession} from '../api/CDPSession.js';
@@ -62,13 +63,17 @@ describe('CdpHTTPRequest', () => {
     );
     expect(request.postData()).toBe('originalData');
   });
-});
 
-describe('CdpHTTPRequest respond', () => {
-  it('should not send headers whose value is undefined', async () => {
-    const sent: Array<{method: string; params: any}> = [];
+  it('should not send response headers whose value is undefined', async () => {
+    const sent: Array<{
+      method: string;
+      params?: Protocol.Fetch.FulfillRequestRequest;
+    }> = [];
     const client = {
-      async send(method: string, params: any) {
+      async send(
+        method: string,
+        params?: Protocol.Fetch.FulfillRequestRequest,
+      ) {
         sent.push({method, params});
         return {};
       },
@@ -98,8 +103,9 @@ describe('CdpHTTPRequest respond', () => {
       body: 'ok',
     });
     expect(sent).toHaveLength(1);
-    expect(sent[0]!.method).toBe('Fetch.fulfillRequest');
-    expect(sent[0]!.params.responseHeaders).toEqual([
+    const call = sent[0];
+    expect(call?.method).toBe('Fetch.fulfillRequest');
+    expect(call?.params?.responseHeaders).toEqual([
       {name: 'x-keep', value: 'yes'},
       {name: 'content-length', value: '2'},
     ]);
