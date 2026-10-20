@@ -8,6 +8,8 @@ import {describe, it, mock, afterEach} from 'node:test';
 
 import expect from 'expect';
 
+import {environment} from '../environment.js';
+
 import {_connectToBrowser, getWSEndpointURL} from './BrowserConnector.js';
 
 describe('BrowserConnector', () => {
@@ -62,6 +64,10 @@ describe('BrowserConnector', () => {
   });
 
   describe('_connectToBrowser', () => {
+    afterEach(() => {
+      mock.restoreAll();
+    });
+
     it('should throw an error when both blocklist and allowlist are specified', async () => {
       await expect(
         _connectToBrowser({
@@ -103,6 +109,65 @@ describe('BrowserConnector', () => {
       ).rejects.toThrow(
         'blocklist and allowlist are only supported with the CDP protocol',
       );
+    });
+
+    it('reports permission denied when reading DevToolsActivePort fails with EPERM or EACCES', async () => {
+      for (const code of ['EPERM', 'EACCES'] as const) {
+        const fsError = Object.assign(
+          new Error(`${code}: operation not permitted`),
+          {code},
+        );
+        mock.method(environment.value, 'readFile', async () => {
+          throw fsError;
+        });
+
+        let caught: Error | undefined;
+        try {
+          await _connectToBrowser({
+            channel: 'chrome',
+            logger: () => {
+              return undefined;
+            },
+          });
+        } catch (err) {
+          caught = err as Error;
+        }
+
+        expect(caught).toBeDefined();
+        expect(caught!.message).toMatch(
+          /^Could not read DevToolsActivePort for chrome at .*DevToolsActivePort: permission denied$/,
+        );
+        expect(caught!.cause).toBe(fsError);
+        mock.restoreAll();
+      }
+    });
+
+    it('reports Could not find DevToolsActivePort when reading fails with ENOENT', async () => {
+      const enoentError = Object.assign(
+        new Error('ENOENT: no such file or directory'),
+        {code: 'ENOENT'},
+      );
+      mock.method(environment.value, 'readFile', async () => {
+        throw enoentError;
+      });
+
+      let caught: Error | undefined;
+      try {
+        await _connectToBrowser({
+          channel: 'chrome',
+          logger: () => {
+            return undefined;
+          },
+        });
+      } catch (err) {
+        caught = err as Error;
+      }
+
+      expect(caught).toBeDefined();
+      expect(caught!.message).toMatch(
+        /^Could not find DevToolsActivePort for chrome at .*DevToolsActivePort$/,
+      );
+      expect(caught!.cause).toBe(enoentError);
     });
   });
 });
