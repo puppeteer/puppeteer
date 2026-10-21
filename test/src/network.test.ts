@@ -465,6 +465,69 @@ describe('network', function () {
       expect(request.hasPostData()).toBe(true);
       expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
     });
+
+    it('should work with binary post data', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'request', r => {
+          return !isFavicon(r);
+        }),
+        page.evaluate(() => {
+          return fetch('./post', {
+            method: 'POST',
+            body: new Uint8Array([104, 101, 108, 108, 111, 0, 255]),
+          });
+        }),
+      ]);
+
+      expect(request).toBeTruthy();
+      expect(request.hasPostData()).toBe(true);
+      expect(await request.fetchPostData()).toBe('hello\x00\uFFFD');
+    });
+  });
+
+  describe('Request.content', function () {
+    it('should work with binary post data', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'request', r => {
+          return !isFavicon(r);
+        }),
+        page.evaluate(() => {
+          return fetch('./post', {
+            method: 'POST',
+            body: new Uint8Array([0, 255, 128, 10, 200, 1]),
+          });
+        }),
+      ]);
+
+      expect(request).toBeTruthy();
+      expect(request.hasPostData()).toBe(true);
+      expect(await request.content()).toEqual(
+        new Uint8Array([0, 255, 128, 10, 200, 1]),
+      );
+    });
+
+    it('should be |undefined| when there is no post data', async () => {
+      const {page, server} = await getTestState();
+
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.request().hasPostData()).toBeFalsy();
+
+      expect(await response.request().content()).toBe(undefined);
+    });
   });
 
   describe('Response.text', function () {

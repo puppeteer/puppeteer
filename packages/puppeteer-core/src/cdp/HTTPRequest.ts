@@ -58,6 +58,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #method: string;
   #hasPostData = false;
   #postData?: string;
+  #postDataBytes?: Uint8Array;
   #hasCompletePostData = false;
   #headers: Record<string, string> = {};
   #frame: Frame | null;
@@ -137,17 +138,16 @@ export class CdpHTTPRequest extends HTTPRequest {
       this.#hasCompletePostData = data.request.postDataEntries.every(entry => {
         return !!entry.bytes;
       });
-      this.#postData = new TextDecoder().decode(
-        mergeUint8Arrays(
-          data.request.postDataEntries
-            .map(entry => {
-              return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
-            })
-            .filter((entry): entry is Uint8Array => {
-              return entry !== null;
-            }),
-        ),
+      this.#postDataBytes = mergeUint8Arrays(
+        data.request.postDataEntries
+          .map(entry => {
+            return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
+          })
+          .filter(entry => {
+            return entry !== null;
+          }),
       );
+      this.#postData = new TextDecoder().decode(this.#postDataBytes);
     } else {
       this.#postData = data.request.postData;
     }
@@ -188,6 +188,14 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   override async fetchPostData(): Promise<string | undefined> {
+    const content = await this.content();
+    if (content === undefined) {
+      return undefined;
+    }
+    return new TextDecoder().decode(content);
+  }
+
+  override async content(): Promise<Uint8Array | undefined> {
     if (
       this._interceptionId !== undefined &&
       this.interception.enabled &&
@@ -195,13 +203,13 @@ export class CdpHTTPRequest extends HTTPRequest {
       this.#hasCompletePostData
     ) {
       // Chrome may wait for the paused request to continue before returning data.
-      return this.#postData;
+      return this.#postDataBytes;
     }
     try {
       const result = await this.#client.send('Network.getRequestPostData', {
         requestId: this.id,
       });
-      return result.postData;
+      return stringToTypedArray(result.postData, result.base64Encoded);
     } catch (err) {
       this.#logger?.(DEBUG_PREFIXES.error)?.(err);
       return;

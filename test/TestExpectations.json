@@ -1624,6 +1624,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network.test] network Request.content should work with binary post data",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "chromium-bidi returns base64-encoded binary postData with type 'string' instead of 'base64'"
+  },
+  {
+    "testIdPattern": "[network.test] network Request.fetchPostData should work with binary post data",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "chromium-bidi returns base64-encoded binary postData with type 'string' instead of 'base64'"
+  },
+  {
     "testIdPattern": "[network.test] network Request.headers cookie header should show Cookie header for redirect",
     "platforms": ["darwin"],
     "parameters": ["chrome", "webDriverBiDi"],

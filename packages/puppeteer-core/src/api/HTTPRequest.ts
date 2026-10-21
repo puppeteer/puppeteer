@@ -383,6 +383,18 @@ export abstract class HTTPRequest {
   abstract fetchPostData(): Promise<string | undefined>;
 
   /**
+   * Fetches the POST data for the request from the browser as a `Uint8Array`.
+   *
+   * @remarks
+   * If the request has no POST data or fetching the POST data from the browser
+   * fails, this method resolves to `undefined`.
+   *
+   * @returns A promise that resolves to the raw POST data bytes, or
+   * `undefined` when the request has no POST data or fetching it fails.
+   */
+  abstract content(): Promise<Uint8Array | undefined>;
+
+  /**
    * An object with HTTP headers associated with the request. All
    * header names are lower-case.
    *
@@ -403,7 +415,7 @@ export abstract class HTTPRequest {
    *
    * Headers are copied to the new Request instance. The request URL and
    * method are preserved. The body is built from
-   * {@link HTTPRequest.fetchPostData} when the request has post data,
+   * {@link HTTPRequest.content} when the request has post data,
    * otherwise the Request is created without a body. For `GET` and
    * `HEAD` requests the body is always omitted, as required by the
    * Fetch API.
@@ -416,7 +428,7 @@ export abstract class HTTPRequest {
 
     let body: BodyInit | null = null;
     if (method !== 'GET' && method !== 'HEAD' && this.hasPostData()) {
-      body = ((await this.fetchPostData()) ?? null) as BodyInit | null;
+      body = ((await this.content()) as unknown as BodyInit) ?? null;
     }
 
     return new Request(this.url(), {
