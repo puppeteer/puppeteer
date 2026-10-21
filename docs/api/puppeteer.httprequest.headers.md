@@ -17,3 +17,7 @@ class HTTPRequest {
 **Returns:**
 
 Record&lt;string, string&gt;
+
+## Remarks
+
+Under CDP, `page.on('request')` fires before the browser's network stack attaches all headers (such as `accept`, `accept-encoding`, `cookie`, `host`, and `sec-fetch-*`). The full set of headers is populated asynchronously and is available by the time `page.on('response')` or `page.on('requestfinished')` fires.
