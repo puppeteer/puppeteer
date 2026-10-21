@@ -55,6 +55,8 @@ describe('request proxy', () => {
 
     proxyServer = http
       .createServer((originalRequest, originalResponse) => {
+        // Ignore component update requests triggered on startup.
+        // See https://crbug.com/576202737.
         if (
           originalRequest.url &&
           new URL(originalRequest.url).hostname === 'update.googleapis.com'
