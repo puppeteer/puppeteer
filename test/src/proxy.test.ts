@@ -56,8 +56,8 @@ describe('request proxy', () => {
     proxyServer = http
       .createServer((originalRequest, originalResponse) => {
         if (
-          originalRequest.url?.startsWith('http://update.googleapis.com') ||
-          originalRequest.url?.startsWith('https://update.googleapis.com')
+          originalRequest.url &&
+          new URL(originalRequest.url).hostname === 'update.googleapis.com'
         ) {
           originalResponse.writeHead(404);
           originalResponse.end();
