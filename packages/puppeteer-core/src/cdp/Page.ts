@@ -474,6 +474,10 @@ export class CdpPage extends Page {
       return;
     }
 
+    if (!event.backendNodeId) {
+      return;
+    }
+
     const frame = this.#frameManager.frame(event.frameId);
     assert(frame, 'This should never happen.');
 
