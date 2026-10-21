@@ -49,6 +49,48 @@ describe('extensions', function () {
     assertNoServiceWorkerReported(targets, extensionId);
   });
 
+  it('should drop the previous service_worker target when re-installing an extension', async function () {
+    const {browser} = state;
+    const extensionId = await browser.installExtension(extensionPath);
+    const firstWorkerTarget = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+    expect(firstWorkerTarget).toBeTruthy();
+
+    const destroyedPromise = new Promise<Target>(resolve => {
+      browser.once('targetdestroyed', target => {
+        resolve(target);
+      });
+    });
+
+    const reinstalledId = await browser.installExtension(extensionPath);
+    expect(reinstalledId).toBe(extensionId);
+
+    const destroyedTarget = await destroyedPromise;
+    expect(destroyedTarget).toBe(firstWorkerTarget);
+
+    const secondWorkerTarget = await browser.waitForTarget(target => {
+      return (
+        target.url().includes(extensionId) &&
+        target.type() === 'service_worker' &&
+        target !== firstWorkerTarget
+      );
+    });
+    expect(secondWorkerTarget).toBeTruthy();
+
+    const serviceWorkerTargets = browser.targets().filter(target => {
+      return (
+        target.url().includes(extensionId) && target.type() === 'service_worker'
+      );
+    });
+    expect(serviceWorkerTargets).toEqual([secondWorkerTarget]);
+
+    await browser.uninstallExtension(extensionId);
+    assertNoServiceWorkerReported(browser.targets(), extensionId);
+  });
+
   it('can evaluate in the service worker', async function () {
     const {browser} = state;
     const extensionId = await browser.installExtension(extensionPath);
