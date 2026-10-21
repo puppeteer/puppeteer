@@ -682,6 +682,13 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[network.test] network Network Events Page.Events.RequestFailed for blocked requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "WebDriver BiDi does not populate blockedReason in network.fetchError errorText"
+  },
+  {
     "testIdPattern": "[network.test] network Network Events should support redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
