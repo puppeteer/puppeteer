@@ -186,6 +186,34 @@ describe('input tests', function () {
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
     });
+
+    it('should not throw unhandled rejection when file picker is opened without an input element', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(
+        html`<button
+          onclick="window.showOpenFilePicker?.().catch(() => {})"
+        ></button>`,
+      );
+
+      const unhandledRejections: unknown[] = [];
+      const onUnhandledRejection = (reason: unknown) => {
+        unhandledRejections.push(reason);
+      };
+      process.on('unhandledRejection', onUnhandledRejection);
+      try {
+        await expect(
+          Promise.all([
+            page.waitForFileChooser({timeout: 200}),
+            page.click('button'),
+          ]),
+        ).rejects.toThrow(TimeoutError);
+        expect(unhandledRejections).toEqual([]);
+      } finally {
+        process.off('unhandledRejection', onUnhandledRejection);
+      }
+    });
   });
 
   describe('FileChooser.accept', function () {
