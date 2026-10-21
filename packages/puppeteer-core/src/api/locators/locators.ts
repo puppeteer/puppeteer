@@ -450,44 +450,89 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
       }),
       mergeMap(handle => {
         return from(
-          (handle as unknown as ElementHandle<HTMLElement>).evaluate(el => {
-            if (el instanceof HTMLSelectElement) {
-              return 'select';
-            }
-            if (el instanceof HTMLTextAreaElement) {
-              return 'typeable-input';
-            }
-            if (el instanceof HTMLInputElement) {
-              switch (el.type) {
+          (handle as unknown as ElementHandle<HTMLElement>).evaluate(
+            (el, newValue) => {
+              if (el instanceof HTMLSelectElement) {
+                if (
+                  !Array.from(el.options).some(option => {
+                    return option.value === newValue;
+                  })
+                ) {
+                  throw new Error(
+                    `Element has no option with the value "${newValue}".`,
+                  );
+                }
+                return 'select';
+              }
+              if (el instanceof HTMLTextAreaElement) {
+                if (el.readOnly) {
+                  throw new Error('Element is read-only.');
+                }
+                return 'typeable-input';
+              }
+              if (el instanceof HTMLInputElement) {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                  return 'checkable-input';
+                }
+                if (
+                  el.readOnly &&
+                  [
+                    'text',
+                    'search',
+                    'url',
+                    'tel',
+                    'email',
+                    'password',
+                    'number',
+                    'date',
+                    'month',
+                    'week',
+                    'time',
+                    'datetime-local',
+                  ].includes(el.type)
+                ) {
+                  throw new Error('Element is read-only.');
+                }
+                if (el.type !== 'file' && String(newValue) !== '') {
+                  // Validate without modifying the element before a possible retry.
+                  const probe = document.createElement('input');
+                  probe.type = el.type;
+                  probe.value = String(newValue);
+                  if (probe.value === '') {
+                    throw new Error(
+                      `Element did not accept the value "${newValue}".`,
+                    );
+                  }
+                }
+                switch (el.type) {
+                  case 'text':
+                  case 'url':
+                  case 'tel':
+                  case 'search':
+                  case 'password':
+                  case 'number':
+                  case 'email':
+                    return 'typeable-input';
+                  default:
+                    return 'other-input';
+                }
+              }
+
+              switch (el.getAttribute('role')) {
                 case 'checkbox':
                 case 'radio':
+                case 'switch':
                   return 'checkable-input';
-                case 'text':
-                case 'url':
-                case 'tel':
-                case 'search':
-                case 'password':
-                case 'number':
-                case 'email':
-                  return 'typeable-input';
-                default:
-                  return 'other-input';
               }
-            }
 
-            switch (el.getAttribute('role')) {
-              case 'checkbox':
-              case 'radio':
-              case 'switch':
-                return 'checkable-input';
-            }
+              if (el.isContentEditable) {
+                return 'contenteditable';
+              }
 
-            if (el.isContentEditable) {
-              return 'contenteditable';
-            }
-
-            return 'unknown';
-          }),
+              return 'unknown';
+            },
+            value,
+          ),
         )
           .pipe(
             mergeMap(inputType => {
@@ -811,6 +856,8 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
    * method is chosen based on the type. `contenteditable`, select, textarea and
    * input elements are supported. For checkboxes, radio buttons and switches
    * specify a boolean value.
+   * Read-only elements and values the element does not accept are rejected without
+   * modifying the element.
    */
   fill<ElementType extends Element>(
     this: Locator<ElementType>,
