@@ -1133,6 +1133,15 @@ Options for [Page.captureHeapSnapshot()](./puppeteer.page.captureheapsnapshot.md
 </td></tr>
 <tr><td>
 
+<span id="inputvisualizationoptions">[InputVisualizationOptions](./puppeteer.inputvisualizationoptions.md)</span>
+
+</td><td>
+
+**_(Experimental)_** Options for [Browser.visualizeInput()](./puppeteer.browser.visualizeinput.md) and [Page.visualizeInput()](./puppeteer.page.visualizeinput.md).
+
+</td></tr>
+<tr><td>
+
 <span id="installpwaoptions">[InstallPWAOptions](./puppeteer.installpwaoptions.md)</span>
 
 </td><td>

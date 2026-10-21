@@ -554,6 +554,25 @@ The format of [Browser.version()](./puppeteer.browser.version.md) might change w
 </td></tr>
 <tr><td>
 
+<span id="visualizeinput">[visualizeInput(options)](./puppeteer.browser.visualizeinput.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Configures input visualization for all pages and frames of the browser, including the pages and frames that open after this call. When click visualization is enabled, the browser draws a marker at the position of each click. The marker does not change the DOM, and it shows in screenshots and screencasts.
+
+Each call replaces the previous configuration. To disable input visualization, pass `null`. Disconnecting from the browser also disables the visualization.
+
+**Remarks:**
+
+Only supported in Chrome with the CDP protocol. Requires a Chrome version that supports `Page.setInputVisualization`.
+
+Pages that open after this call only apply the configuration once Puppeteer creates their [Page](./puppeteer.page.md) object (for example with [Browser.newPage()](./puppeteer.browser.newpage.md), [Browser.pages()](./puppeteer.browser.pages.md) or [Target.page()](./puppeteer.target.page.md)).
+
+</td></tr>
+<tr><td>
+
 <span id="waitfortarget">[waitForTarget(predicate, options)](./puppeteer.browser.waitfortarget.md)</span>
 
 </td><td>

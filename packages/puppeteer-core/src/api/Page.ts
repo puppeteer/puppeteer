@@ -44,7 +44,7 @@ import type {
 import type {Logger} from '../common/Debug.js';
 import {DEBUG_PREFIXES} from '../common/Debug.js';
 import type {Device} from '../common/Device.js';
-import {TargetCloseError} from '../common/Errors.js';
+import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import {
   EventEmitter,
   type EventsWithWildcard,
@@ -84,7 +84,7 @@ import {
 import {stringToTypedArray} from '../util/encoding.js';
 
 import type {BluetoothEmulation} from './BluetoothEmulation.js';
-import type {Browser, WindowId} from './Browser.js';
+import type {Browser, InputVisualizationOptions, WindowId} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {CDPSession} from './CDPSession.js';
 import type {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
@@ -3501,6 +3501,39 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * @experimental
    */
   abstract tabInfo(): Promise<TabInfo | null>;
+
+  /**
+   * Configures input visualization for all frames of this page, including
+   * frames that attach after this call. When click visualization is enabled,
+   * the browser draws a marker at the position of each click. The marker does
+   * not change the DOM, and it shows in screenshots and screencasts.
+   *
+   * Each call replaces the previous configuration for this page. To disable
+   * input visualization, pass `null`. Disconnecting from the browser also
+   * disables the visualization.
+   *
+   * @example
+   *
+   * ```ts
+   * // Enable click visualization on this page.
+   * await page.visualizeInput({clicks: true});
+   * // Disable input visualization on this page.
+   * await page.visualizeInput(null);
+   * ```
+   *
+   * @param options - The input visualization options to apply, or `null` to
+   * disable input visualization.
+   *
+   * @remarks
+   * Only supported in Chrome with the CDP protocol. Requires a Chrome version
+   * that supports `Page.setInputVisualization`.
+   *
+   * @experimental
+   */
+  visualizeInput(options: InputVisualizationOptions | null): Promise<void> {
+    void options;
+    throw new UnsupportedOperation();
+  }
 
   override [disposeSymbol](): void {
     return void this[asyncDisposeSymbol]().catch(error => {

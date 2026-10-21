@@ -457,6 +457,21 @@ export interface NetworkRestrictions {
 }
 
 /**
+ * Options for {@link Browser.visualizeInput} and {@link Page.visualizeInput}.
+ *
+ * @experimental
+ * @public
+ */
+export interface InputVisualizationOptions {
+  /**
+   * Whether to visualize mouse clicks.
+   *
+   * @defaultValue `false`
+   */
+  clicks?: boolean;
+}
+
+/**
  * {@link Browser} represents a browser instance that is either:
  *
  * - connected to via {@link Puppeteer.connect} or
@@ -629,6 +644,44 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    */
   restrictNetwork(conditions?: NetworkRestrictions | null): Promise<void> {
     void conditions;
+    throw new UnsupportedOperation();
+  }
+
+  /**
+   * Configures input visualization for all pages and frames of the browser,
+   * including the pages and frames that open after this call. When click
+   * visualization is enabled, the browser draws a marker at the position of
+   * each click. The marker does not change the DOM, and it shows in
+   * screenshots and screencasts.
+   *
+   * Each call replaces the previous configuration. To disable input
+   * visualization, pass `null`. Disconnecting from the browser also disables
+   * the visualization.
+   *
+   * @example
+   *
+   * ```ts
+   * // Enable click visualization.
+   * await browser.visualizeInput({clicks: true});
+   * // Disable input visualization.
+   * await browser.visualizeInput(null);
+   * ```
+   *
+   * @param options - The input visualization options to apply, or `null` to
+   * disable input visualization.
+   *
+   * @remarks
+   * Only supported in Chrome with the CDP protocol. Requires a Chrome version
+   * that supports `Page.setInputVisualization`.
+   *
+   * Pages that open after this call only apply the configuration once Puppeteer
+   * creates their {@link Page} object (for example with {@link Browser.newPage},
+   * {@link Browser.pages} or {@link Target.page}).
+   *
+   * @experimental
+   */
+  visualizeInput(options: InputVisualizationOptions | null): Promise<void> {
+    void options;
     throw new UnsupportedOperation();
   }
 
