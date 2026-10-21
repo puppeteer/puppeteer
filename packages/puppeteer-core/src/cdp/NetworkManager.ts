@@ -950,7 +950,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       return;
     }
     this.#adoptCdpSessionIfNeeded(client, request);
-    request._failureText = event.errorText;
+    request._failureText = event.errorText || event.blockedReason || null;
     const response = request.response();
     if (response) {
       response._resolveBody();

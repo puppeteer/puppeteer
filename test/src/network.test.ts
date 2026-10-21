@@ -745,6 +745,23 @@ describe('network', function () {
         expect(failedRequest.failure()!.errorText).toBe('NS_ERROR_ABORT');
       }
     });
+    it('Page.Events.RequestFailed for blocked requests', async () => {
+      const {page, server} = await getTestState();
+
+      server.setCSP('/empty.html', "default-src 'none'");
+      const failedRequests: HTTPRequest[] = [];
+      page.on('requestfailed', request => {
+        if (!isFavicon(request)) {
+          failedRequests.push(request);
+        }
+      });
+      await page.goto(server.EMPTY_PAGE);
+      await page
+        .addScriptTag({url: server.PREFIX + '/one-script.js'})
+        .catch(() => {});
+      expect(failedRequests).toHaveLength(1);
+      expect(failedRequests[0]!.failure()?.errorText).toBe('csp');
+    });
     it('Page.Events.RequestFinished', async () => {
       const {page, server} = await getTestState();
 

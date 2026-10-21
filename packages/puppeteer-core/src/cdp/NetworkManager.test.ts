@@ -2186,6 +2186,51 @@ describe('NetworkManager', () => {
     ).toHaveLength(2);
   });
 
+  it('should fall back to blockedReason when loadingFailed errorText is empty', async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = createNetworkManager();
+    await manager.addClient(mockCDPSession);
+
+    const failedRequests: HTTPRequest[] = [];
+    manager.on(NetworkManagerEvent.RequestFailed, (request: HTTPRequest) => {
+      failedRequests.push(request);
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: 'BLOCKED_REQ_1',
+      loaderId: 'LOADER_1',
+      documentURL: 'https://localhost:3000/',
+      request: {
+        url: 'http://example.com/mixed-script.js',
+        method: 'GET',
+        headers: {},
+        mixedContentType: 'blockable',
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      timestamp: 100,
+      wallTime: 100,
+      initiator: {type: 'parser'},
+      redirectHasExtraInfo: false,
+      type: 'Script',
+      frameId: 'FRAME_1',
+    });
+
+    mockCDPSession.emit('Network.loadingFailed', {
+      requestId: 'BLOCKED_REQ_1',
+      timestamp: 101,
+      type: 'Script',
+      errorText: '',
+      canceled: false,
+      blockedReason: 'mixed-content',
+    });
+
+    expect(failedRequests).toHaveLength(1);
+    expect(failedRequests[0]!.failure()).toEqual({
+      errorText: 'mixed-content',
+    });
+  });
+
   describe('error handling', () => {
     function createMockSession<E extends ErrorConstructor>(
       ErrorCls: E,
