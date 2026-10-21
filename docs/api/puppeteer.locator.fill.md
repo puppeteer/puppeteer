@@ -4,7 +4,7 @@ sidebar_label: Locator.fill
 
 # Locator.fill() method
 
-Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. `contenteditable`, select, textarea and input elements are supported. For checkboxes, radio buttons and switches specify a boolean value.
+Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. `contenteditable`, select, textarea and input elements are supported. For checkboxes, radio buttons and switches specify a boolean value. Read-only elements and values the element does not accept are rejected without modifying the element.
 
 ### Signature
 
