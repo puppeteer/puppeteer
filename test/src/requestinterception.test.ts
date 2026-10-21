@@ -638,6 +638,60 @@ describe('request interception', function () {
       });
       expect(error).toBeUndefined();
     });
+    // @see https://github.com/puppeteer/puppeteer/issues/15575
+    it('should emit requestfailed for requests aborted right after they start', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      const pending = new Set<HTTPRequest>();
+      page.on('request', request => {
+        if (!isFavicon(request)) {
+          pending.add(request);
+        }
+        void request.continue().catch(() => {});
+      });
+      page.on('requestfinished', request => {
+        pending.delete(request);
+      });
+      page.on('requestfailed', request => {
+        pending.delete(request);
+      });
+
+      // Chrome sometimes delivers Network.loadingFailed before
+      // Fetch.requestPaused for such requests. The order is racy, so the
+      // scenario is repeated to make it likely to show up at least once.
+      // The fetch is cross-origin (about:blank to the test server); with a
+      // same-origin fetch the abort usually wins before the request is paused.
+      for (let i = 0; i < 50; i++) {
+        await page.setContent(html`<div>${i}</div>`);
+        await page.evaluate(
+          async (url, abortSync) => {
+            const controller = new AbortController();
+            const promise = fetch(url, {signal: controller.signal});
+            if (abortSync) {
+              controller.abort();
+            } else {
+              setTimeout(() => {
+                controller.abort();
+              }, 0);
+            }
+            await promise.catch(() => {});
+          },
+          `${server.PREFIX}/abort-${i}`,
+          i % 2 === 0,
+        );
+      }
+      // Give the remaining terminal events a chance to arrive.
+      await page
+        .waitForNetworkIdle({idleTime: 100, timeout: 2000})
+        .catch(() => {});
+
+      expect(
+        [...pending].map(request => {
+          return request.url();
+        }),
+      ).toEqual([]);
+    });
     it('should throw if interception is not enabled', async () => {
       const {page, server} = await getTestState();
 
