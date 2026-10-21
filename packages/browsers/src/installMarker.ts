@@ -80,7 +80,6 @@ export function readInstallMarker(
   const executablePath = validateExecutablePath(
     installationDir,
     relativeExecutablePath,
-    markerPath,
   );
   return {
     version: 1,
@@ -100,7 +99,7 @@ export function writeInstallMarker(
   relativeExecutablePath: string,
 ): void {
   const markerPath = path.join(installationDir, INSTALL_MARKER_FILE);
-  validateExecutablePath(installationDir, relativeExecutablePath, markerPath);
+  validateExecutablePath(installationDir, relativeExecutablePath);
   const marker: InstallMarker = {
     version: 1,
     relativeExecutablePath,
@@ -108,11 +107,16 @@ export function writeInstallMarker(
   fs.writeFileSync(markerPath, JSON.stringify(marker), {flag: 'wx'});
 }
 
-function validateExecutablePath(
+/**
+ * Validates an executable without writing a completion marker.
+ *
+ * @internal
+ */
+export function validateExecutablePath(
   installationDir: string,
   relativeExecutablePath: string,
-  markerPath: string,
 ): string {
+  const markerPath = path.join(installationDir, INSTALL_MARKER_FILE);
   if (path.isAbsolute(relativeExecutablePath)) {
     throw invalidMarker(markerPath, 'the executable path is absolute');
   }

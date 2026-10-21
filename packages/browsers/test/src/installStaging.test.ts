@@ -19,6 +19,7 @@ import {
   createInstallAttempt,
   InstallArchivePublicationError,
   internalConstantsForTesting,
+  InvalidInstallTreeError,
   publishInstallArchive,
   publishInstallTree,
   removeInstallAttempt,
@@ -132,6 +133,41 @@ describe('install staging', () => {
     }
   });
 
+  it('rejects an installation junction discovered after rename fails', async () => {
+    const attempt = await createInstallAttempt(browserRoot);
+    const executablePath = prepareOutput(attempt.outputPath, 'candidate');
+    const installationDir = path.join(browserRoot, 'linux-123');
+    const target = path.join(tmpDir, 'external');
+    prepareOutput(target, 'existing');
+    const rename = sinon.stub(fsPromises, 'rename').callsFake(async () => {
+      fs.symlinkSync(target, installationDir, 'junction');
+      throw new Error('rename failed');
+    });
+    syncBuiltinESMExports();
+
+    try {
+      await assert.rejects(
+        publishInstallTree(attempt.outputPath, installationDir),
+        InvalidInstallTreeError,
+      );
+      assert.ok(
+        rename.calledOnceWithExactly(attempt.outputPath, installationDir),
+      );
+      assert.strictEqual(fs.lstatSync(installationDir).isSymbolicLink(), true);
+      assert.strictEqual(
+        fs.readFileSync(path.join(target, executablePath), 'utf8'),
+        'existing',
+      );
+      assert.strictEqual(
+        fs.readFileSync(path.join(attempt.outputPath, executablePath), 'utf8'),
+        'candidate',
+      );
+    } finally {
+      rename.restore();
+      syncBuiltinESMExports();
+    }
+  });
+
   it('rejects a marker-less directory that appears during publication', async () => {
     const attempt = await createInstallAttempt(browserRoot);
     prepareOutput(attempt.outputPath, 'candidate');
@@ -190,6 +226,22 @@ describe('install staging', () => {
     } finally {
       internalConstantsForTesting.rm = originalRm;
     }
+  });
+
+  it('removes an attempt containing a junction without removing its target', async () => {
+    const attempt = await createInstallAttempt(browserRoot);
+    prepareOutput(attempt.outputPath, 'candidate');
+    const target = path.join(tmpDir, 'external');
+    const executablePath = prepareOutput(target, 'existing');
+    fs.symlinkSync(target, path.join(attempt.outputPath, 'linked'), 'junction');
+
+    await removeInstallAttempt(attempt.path);
+
+    assert.strictEqual(fs.existsSync(attempt.path), false);
+    assert.strictEqual(
+      fs.readFileSync(path.join(target, executablePath), 'utf8'),
+      'existing',
+    );
   });
 
   it('does not replace an archive that appears during publication', async () => {

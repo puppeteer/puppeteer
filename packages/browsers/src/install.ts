@@ -26,6 +26,7 @@ import {downloadFile, headHttpRequest} from './httpUtil.js';
 import {
   InvalidInstallMarkerError,
   readInstallMarker,
+  validateExecutablePath,
   writeInstallMarker,
 } from './installMarker.js';
 import {
@@ -576,7 +577,11 @@ async function installUrl(
     const stagedBrowser = {
       browser: options.browser,
       platform: options.platform,
-      executablePath: path.join(attempt.outputPath, relativeExecutablePath),
+      path: attempt.outputPath,
+      executablePath: validateExecutablePath(
+        attempt.outputPath,
+        relativeExecutablePath,
+      ),
     };
     try {
       await runSetup(stagedBrowser, logger);
@@ -621,7 +626,7 @@ async function installUrl(
 async function runSetup(
   installedBrowser: Pick<
     InstalledBrowser,
-    'browser' | 'platform' | 'executablePath'
+    'browser' | 'platform' | 'executablePath' | 'path'
   >,
   logger?: Logger,
 ): Promise<void> {
@@ -639,8 +644,12 @@ async function runSetup(
       if (!existsSync(setupExePath)) {
         return;
       }
+      const validatedSetupPath = validateExecutablePath(
+        installedBrowser.path,
+        path.relative(installedBrowser.path, setupExePath),
+      );
       spawnSync(
-        path.join(browserDir, 'setup.exe'),
+        validatedSetupPath,
         [`--configure-browser-in-directory=` + browserDir],
         {
           shell: false,
@@ -661,6 +670,8 @@ function inspectExistingInstall(
   buildId: string,
 ): {browser: InstalledBrowser; kind: 'new' | 'legacy'} | undefined {
   const outputPath = cache.installationDir(browser, platform, buildId);
+  // Preserve directory links in an existing, trusted cache. Publication
+  // separately requires a regular directory before adopting a winner.
   if (!existsSync(outputPath)) {
     return;
   }

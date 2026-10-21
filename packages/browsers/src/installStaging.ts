@@ -178,6 +178,8 @@ function inspectPublicationWinner(
     }
     throw error;
   }
+  // Unlike an initial cache hit, a winner encountered during publication
+  // must be a regular directory, even when a link has a valid marker.
   if (!stat.isDirectory() || stat.isSymbolicLink()) {
     throw new InvalidInstallTreeError(
       `Installation path is not a regular directory: ${installationDir}`,
