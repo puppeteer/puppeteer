@@ -105,4 +105,32 @@ describe('Cache', () => {
       fs.rmSync(siblingDir, {recursive: true, force: true});
     }
   });
+
+  it('prevents path traversal in browserRoot', () => {
+    for (const browser of ['', '.', '..', '../sibling', '..\\sibling']) {
+      assert.throws(() => {
+        cache.browserRoot(browser as Browser);
+      }, /Invalid browser/);
+    }
+    assert.strictEqual(
+      cache.browserRoot(Browser.CHROME),
+      path.join(tmpDir, Browser.CHROME),
+    );
+  });
+
+  it('prevents path traversal in installationDir platform', () => {
+    for (const platform of ['', '.', '..', '../sibling', '..\\sibling']) {
+      assert.throws(() => {
+        cache.installationDir(
+          Browser.CHROME,
+          platform as BrowserPlatform,
+          '123.0.0.0',
+        );
+      }, /Invalid platform/);
+    }
+    assert.strictEqual(
+      cache.installationDir(Browser.CHROME, BrowserPlatform.LINUX, '123.0.0.0'),
+      path.join(tmpDir, Browser.CHROME, `${BrowserPlatform.LINUX}-123.0.0.0`),
+    );
+  });
 });

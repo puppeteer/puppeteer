@@ -16,6 +16,7 @@ import {
 } from './browser-data/browser-data.js';
 import {DEBUG_PREFIXES, type Logger} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
+import {assertPathSegment} from './pathUtil.js';
 
 /**
  * @public
@@ -131,15 +132,8 @@ export class Cache {
   }
 
   browserRoot(browser: Browser): string {
-    const browserRoot = path.join(this.#rootDir, browser);
-    if (
-      !browser ||
-      path.dirname(path.resolve(browserRoot)) !== path.resolve(this.#rootDir) ||
-      path.basename(path.resolve(browserRoot)) !== browser
-    ) {
-      throw new Error(`Invalid browser: ${browser}`);
-    }
-    return browserRoot;
+    assertPathSegment(browser, `Invalid browser: ${browser}`);
+    return path.join(this.#rootDir, browser);
   }
 
   metadataFile(browser: Browser): string {
@@ -206,18 +200,9 @@ export class Cache {
     buildId: string,
   ): string {
     const browserRoot = this.browserRoot(browser);
-    const folderName = `${platform}-${buildId}`;
-    const installationDir = path.join(browserRoot, folderName);
-    if (
-      !buildId ||
-      !platform ||
-      path.dirname(path.resolve(installationDir)) !==
-        path.resolve(browserRoot) ||
-      path.basename(path.resolve(installationDir)) !== folderName
-    ) {
-      throw new Error(`Invalid buildId: ${buildId}`);
-    }
-    return installationDir;
+    assertPathSegment(platform, `Invalid platform: ${platform}`);
+    assertPathSegment(buildId, `Invalid buildId: ${buildId}`);
+    return path.join(browserRoot, `${platform}-${buildId}`);
   }
 
   clear(): void {
