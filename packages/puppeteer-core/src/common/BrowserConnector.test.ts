@@ -142,7 +142,7 @@ describe('BrowserConnector', () => {
       }
     });
 
-    it('reports Could not find DevToolsActivePort when reading fails with ENOENT', async () => {
+    it('reports not found DevToolsActivePort when reading fails with ENOENT', async () => {
       const enoentError = Object.assign(
         new Error('ENOENT: no such file or directory'),
         {code: 'ENOENT'},
