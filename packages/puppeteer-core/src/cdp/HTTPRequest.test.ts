@@ -3,7 +3,7 @@
  * Copyright 2024 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import {describe, it} from 'node:test';
+import {describe, it, mock} from 'node:test';
 
 import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
@@ -111,6 +111,112 @@ describe('CdpHTTPRequest', () => {
     ]);
   });
 
+  it('should fetch complete postDataEntries without a CDP call while intercepted', async () => {
+    const send = mock.fn(async () => {
+      return {postData: 'fallbackData'};
+    });
+    const client = {send} as unknown as CDPSession;
+    const frame = {} as Frame;
+    const request = new CdpHTTPRequest(
+      client,
+      frame,
+      'interceptionId',
+      true,
+      {
+        requestId: 'requestId',
+        request: {
+          url: 'http://example.com',
+          method: 'POST',
+          headers: {},
+          postDataEntries: [{bytes: btoa('part1')}, {bytes: btoa('part2')}],
+        } as any,
+      } as any,
+      [],
+      () => {
+        return undefined;
+      },
+    );
+
+    expect(await request.fetchPostData()).toBe(request.postData());
+    expect(send.mock.callCount()).toBe(0);
+  });
+
+  it('should fetch incomplete postDataEntries with a CDP call', async () => {
+    const send = mock.fn(async () => {
+      return {postData: 'fallbackData'};
+    });
+    const client = {send} as unknown as CDPSession;
+    const frame = {} as Frame;
+    const request = new CdpHTTPRequest(
+      client,
+      frame,
+      'interceptionId',
+      true,
+      {
+        requestId: 'requestId',
+        request: {
+          url: 'http://example.com',
+          method: 'POST',
+          headers: {},
+          postDataEntries: [{bytes: btoa('part1')}, {}],
+        } as any,
+      } as any,
+      [],
+      () => {
+        return undefined;
+      },
+    );
+
+    expect(await request.fetchPostData()).toBe('fallbackData');
+    expect(send.mock.callCount()).toBe(1);
+    expect(send.mock.calls[0]!.arguments).toEqual([
+      'Network.getRequestPostData',
+      {requestId: 'requestId'},
+    ]);
+  });
+
+  it('should fetch postData with a CDP call after interception is handled', async () => {
+    const send = mock.fn(async () => {
+      return {postData: 'fallbackData'};
+    });
+    const client = {send} as unknown as CDPSession;
+    const frame = {} as Frame;
+    const request = new CdpHTTPRequest(
+      client,
+      frame,
+      'interceptionId',
+      true,
+      {
+        requestId: 'requestId',
+        request: {
+          url: 'http://example.com',
+          method: 'POST',
+          headers: {},
+          postDataEntries: [{bytes: btoa('part1')}, {bytes: btoa('part2')}],
+        } as any,
+      } as any,
+      [],
+      () => {
+        return undefined;
+      },
+    );
+
+    await request.continue();
+    expect(request.isInterceptResolutionHandled()).toBe(true);
+    expect(send.mock.callCount()).toBe(1);
+    expect(send.mock.calls[0]!.arguments).toEqual([
+      'Fetch.continueRequest',
+      expect.objectContaining({requestId: 'interceptionId'}),
+    ]);
+
+    expect(await request.fetchPostData()).toBe('fallbackData');
+    expect(send.mock.callCount()).toBe(2);
+    expect(send.mock.calls[1]!.arguments).toEqual([
+      'Network.getRequestPostData',
+      {requestId: 'requestId'},
+    ]);
+  });
+
   it('should decode base64Encoded postData in fetchPostData', async () => {
     const encoded = Buffer.from('{"hello":"world"}', 'utf-8').toString(
       'base64',
@@ -161,8 +267,8 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
-      'interceptionId',
-      true,
+      undefined,
+      false,
       {
         requestId: 'requestId',
         request: {
@@ -199,8 +305,8 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
-      'interceptionId',
-      true,
+      undefined,
+      false,
       {
         requestId: 'requestId',
         request: {

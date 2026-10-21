@@ -689,6 +689,13 @@
     "comment": "Flaky with both CDP and WebDriver BiDi. Needs investigation."
   },
   {
+    "testIdPattern": "[network.test] network Request.fetchPostData should work for intercepted form submissions*",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "network.getData on a paused request does not resolve in Chrome over WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[network.test] network Request.resourceType *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

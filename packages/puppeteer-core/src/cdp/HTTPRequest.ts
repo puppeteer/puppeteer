@@ -58,6 +58,8 @@ export class CdpHTTPRequest extends HTTPRequest {
   #method: string;
   #hasPostData = false;
   #postData?: string;
+  #postDataBytes?: Uint8Array;
+  #hasCompletePostData = false;
   #headers: Record<string, string> = {};
   #frame: Frame | null;
   #initiator?: Protocol.Network.Initiator;
@@ -133,17 +135,19 @@ export class CdpHTTPRequest extends HTTPRequest {
       data.request.postDataEntries &&
       data.request.postDataEntries.length > 0
     ) {
-      this.#postData = new TextDecoder().decode(
-        mergeUint8Arrays(
-          data.request.postDataEntries
-            .map(entry => {
-              return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
-            })
-            .filter(entry => {
-              return entry !== null;
-            }),
-        ),
+      this.#hasCompletePostData = data.request.postDataEntries.every(entry => {
+        return !!entry.bytes;
+      });
+      this.#postDataBytes = mergeUint8Arrays(
+        data.request.postDataEntries
+          .map(entry => {
+            return entry.bytes ? stringToTypedArray(entry.bytes, true) : null;
+          })
+          .filter(entry => {
+            return entry !== null;
+          }),
       );
+      this.#postData = new TextDecoder().decode(this.#postDataBytes);
     } else {
       this.#postData = data.request.postData;
     }
@@ -192,6 +196,15 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   override async content(): Promise<Uint8Array | undefined> {
+    if (
+      this._interceptionId !== undefined &&
+      this.interception.enabled &&
+      !this.isInterceptResolutionHandled() &&
+      this.#hasCompletePostData
+    ) {
+      // Chrome may wait for the paused request to continue before returning data.
+      return this.#postDataBytes;
+    }
     try {
       const result = await this.#client.send('Network.getRequestPostData', {
         requestId: this.id,

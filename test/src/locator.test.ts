@@ -747,6 +747,180 @@ describe('Locator', function () {
         }),
       ).toBe(true);
     });
+    for (const {type, value, newValue} of [
+      {type: 'color', value: '#000000', newValue: '#ff0000'},
+      {type: 'range', value: '25', newValue: '75'},
+    ]) {
+      it(`should fill readonly ${type} inputs`, async () => {
+        const {page} = await getTestState();
+        await page.setContent(
+          html`<input
+            type="${type}"
+            readonly
+            value="${value}"
+          />`,
+        );
+
+        await page.locator('input').setTimeout(500).fill(newValue);
+        expect(
+          await page.$eval('input', el => {
+            return el.value;
+          }),
+        ).toBe(newValue);
+      });
+    }
+
+    for (const {
+      markup,
+      selector,
+      value,
+      newValue,
+      typingThresholds = [100, 0],
+    } of [
+      {
+        markup: '<input readonly value="fixed" />',
+        selector: 'input',
+        value: 'fixed',
+        newValue: 'changed',
+      },
+      {
+        markup: '<textarea readonly>fixed</textarea>',
+        selector: 'textarea',
+        value: 'fixed',
+        newValue: 'changed',
+      },
+      {
+        markup: '<input type="number" readonly value="7" />',
+        selector: 'input',
+        value: '7',
+        newValue: '9',
+      },
+      {
+        markup: '<input type="date" readonly value="2020-01-01" />',
+        selector: 'input',
+        value: '2020-01-01',
+        newValue: '2021-02-03',
+        typingThresholds: [100],
+      },
+    ]) {
+      for (const typingThreshold of typingThresholds) {
+        it(`should reject ${markup} with typing threshold ${typingThreshold}`, async () => {
+          const {page} = await getTestState();
+          await page.setContent(html`${markup}`);
+
+          await expect(
+            page.locator(selector).setTimeout(500).fill(newValue, {
+              typingThreshold,
+            }),
+          ).rejects.toEqual(new TimeoutError('Timed out after waiting 500ms'));
+          expect(
+            await page.$eval(selector, el => {
+              return (el as HTMLInputElement | HTMLTextAreaElement).value;
+            }),
+          ).toBe(value);
+        });
+      }
+    }
+
+    for (const {type, value, newValue, acceptedValue} of [
+      {
+        type: 'number',
+        value: '7',
+        newValue: 'abc',
+        acceptedValue: '12',
+      },
+      {
+        type: 'date',
+        value: '2020-01-01',
+        newValue: 'next tuesday',
+        acceptedValue: '2021-02-03',
+      },
+      {
+        type: 'time',
+        value: '10:30',
+        newValue: 'noon',
+        acceptedValue: '12:30',
+      },
+    ]) {
+      for (const typingThreshold of type === 'number' ? [100, 0] : [100]) {
+        it(`should preserve ${type} inputs on rejected values with typing threshold ${typingThreshold}`, async () => {
+          const {page} = await getTestState();
+          await page.setContent(
+            html`<input
+              type="${type}"
+              value="${value}"
+            />`,
+          );
+
+          await expect(
+            page.locator('input').setTimeout(500).fill(newValue, {
+              typingThreshold,
+            }),
+          ).rejects.toEqual(new TimeoutError('Timed out after waiting 500ms'));
+          expect(
+            await page.$eval('input', el => {
+              return el.value;
+            }),
+          ).toBe(value);
+
+          await page.locator('input').fill(acceptedValue, {typingThreshold});
+          expect(
+            await page.$eval('input', el => {
+              return el.value;
+            }),
+          ).toBe(acceptedValue);
+        });
+      }
+    }
+
+    it('should work if the input becomes writable later', async () => {
+      const {page} = await getTestState();
+      await page.setContent(
+        html`<input
+          readonly
+          value="fixed"
+        />`,
+      );
+      using input = await page.$('input');
+      const result = page.locator('input').fill('test');
+      expect(
+        await input?.evaluate(el => {
+          return el.value;
+        }),
+      ).toBe('fixed');
+      await input?.evaluate(el => {
+        el.readOnly = false;
+      });
+      await result;
+      expect(
+        await input?.evaluate(el => {
+          return el.value;
+        }),
+      ).toBe('test');
+    });
+
+    it('should preserve the selection if no option matches the value', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`
+        <select>
+          <option value="a">Option A</option>
+          <option
+            value="b"
+            selected
+            >Option B</option
+          >
+        </select>
+      `);
+
+      await expect(
+        page.locator('select').setTimeout(500).fill('zzz'),
+      ).rejects.toEqual(new TimeoutError('Timed out after waiting 500ms'));
+      expect(
+        await page.$eval('select', el => {
+          return el.value;
+        }),
+      ).toBe('b');
+    });
   });
 
   describe('Locator.race', () => {

@@ -297,6 +297,78 @@ describe('network', function () {
   });
 
   describe('Request.fetchPostData', function () {
+    it('should work for intercepted form submissions', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+      await page.setRequestInterception(true);
+      let postData: string | undefined;
+      page.on('request', async request => {
+        if (!isFavicon(request) && request.method() === 'POST') {
+          postData = await request.fetchPostData();
+        }
+        await request.continue();
+      });
+
+      await Promise.all([
+        page.waitForNavigation(),
+        page.evaluate(() => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/post';
+          const input = document.createElement('input');
+          input.name = 'foo';
+          input.value = 'bar';
+          form.append(input);
+          document.body.append(form);
+          form.submit();
+        }),
+      ]);
+
+      expect(postData).toBe('foo=bar');
+    });
+
+    it('should work for intercepted form submissions in cooperative mode', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+      await page.setRequestInterception(true);
+      let postData: string | undefined;
+      page.on('request', async request => {
+        if (!isFavicon(request)) {
+          await request.continue({}, 0);
+        }
+      });
+      page.on('request', async request => {
+        if (request.method() === 'POST') {
+          postData = await request.fetchPostData();
+        }
+      });
+
+      await Promise.all([
+        page.waitForNavigation(),
+        page.evaluate(() => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/post';
+          const input = document.createElement('input');
+          input.name = 'foo';
+          input.value = 'bar';
+          form.append(input);
+          document.body.append(form);
+          form.submit();
+        }),
+      ]);
+
+      expect(postData).toBe('foo=bar');
+    });
+
     it('should work', async () => {
       const {page, server} = await getTestState();
 
