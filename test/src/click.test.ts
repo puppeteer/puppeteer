@@ -8,7 +8,7 @@ import expect from 'expect';
 import {KnownDevices} from 'puppeteer';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, html} from './utils.js';
+import {attachFrame, html, waitEvent} from './utils.js';
 
 describe('Page.click', function () {
   setupTestBrowserHooks();
@@ -192,7 +192,13 @@ describe('Page.click', function () {
       await page.evaluate(() => {
         return window.scrollTo(0, 0);
       });
-      await page.click(`#btn${i}`);
+      // The console event can arrive after the click resolves.
+      await Promise.all([
+        waitEvent(page, 'console', msg => {
+          return msg.text() === `button #${i} clicked`;
+        }),
+        page.click(`#btn${i}`),
+      ]);
     }
     expect(messages).toEqual([
       'button #0 clicked',

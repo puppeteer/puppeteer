@@ -8,7 +8,14 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {parsePDFOptions, unitToPixels} from './util.js';
+import type {CDPSession} from '../api/CDPSession.js';
+
+import {
+  getReadableAsTypedArray,
+  getReadableFromProtocolStream,
+  parsePDFOptions,
+  unitToPixels,
+} from './util.js';
 
 describe('util', () => {
   describe('parsePDFOptions', () => {
@@ -154,6 +161,30 @@ describe('util', () => {
       expect(() => {
         return parsePDFOptions({format: 'unknown' as never});
       }).toThrow('Unknown paper format: unknown');
+    });
+  });
+
+  describe('getReadableAsTypedArray', () => {
+    it('closes the protocol stream if the output file cannot be opened', async () => {
+      const commands: string[] = [];
+      const client = {
+        send: async (method: string) => {
+          commands.push(method);
+          if (method === 'IO.read') {
+            return {data: 'abc', base64Encoded: false, eof: false};
+          }
+          return {};
+        },
+      } as unknown as CDPSession;
+
+      const readable = await getReadableFromProtocolStream(client, 'handle');
+      // The default environment cannot open files for writing.
+      await expect(
+        getReadableAsTypedArray(readable, 'some-path', () => {
+          return undefined;
+        }),
+      ).rejects.toThrow('openFileForWriting is not available');
+      expect(commands).toContain('IO.close');
     });
   });
 });

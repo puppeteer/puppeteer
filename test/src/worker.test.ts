@@ -20,6 +20,12 @@ describe('Workers', function () {
 
     await Promise.all([
       waitEvent(page, 'workercreated'),
+      // The worker realm can exist before the worker script runs. The page
+      // logs the messages that the worker posts after `workerFunction` is
+      // defined.
+      waitEvent<ConsoleMessage>(page, 'console', message => {
+        return message.text().includes('workerFunction');
+      }),
       page.goto(server.PREFIX + '/worker/worker.html'),
     ]);
     const worker = page.workers()[0]!;

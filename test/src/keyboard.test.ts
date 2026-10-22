@@ -178,8 +178,6 @@ describe('Keyboard', function () {
     ).toMatchObject({value: '嗨a', inputs: 2, keyDowns: 0});
   });
   it('should send a character with sendCharacter in iframe', async () => {
-    this.timeout(2000);
-
     const {page} = await getTestState();
 
     await page.setContent(html`

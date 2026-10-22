@@ -193,12 +193,14 @@ async function main() {
         !reporter ? path.join(import.meta.dirname, 'reporter.js') : reporter,
         '-O',
         `output=${tmpFilename}`,
-        '-n',
-        'trace-warnings',
       ];
 
+      // Give Node.js flags to Node.js directly. If Mocha gets Node.js flags
+      // (`-n`), it starts the tests in a second child process and reports
+      // exit codes larger than 255 (e.g. native crashes on Windows) as 255.
+      const nodeFlags = ['--trace-warnings'];
       if (printMemory) {
-        args.push('-n', 'expose-gc');
+        nodeFlags.push('--expose-gc');
       }
 
       const specPattern = 'test/build/**/*.test.js';
@@ -242,6 +244,7 @@ async function main() {
         ...(useCoverage
           ? ['c8', '--check-coverage', '--lines', '90', process.execPath]
           : []),
+        ...nodeFlags,
         mochaBinary,
         ...mochaArgs.map(String),
         ...args,
@@ -273,7 +276,7 @@ async function main() {
             const terminationReason = exitSignal
               ? `terminated with signal ${exitSignal}`
               : exitCode !== 0
-                ? `exited with code ${exitCode}`
+                ? `exited with code ${exitCode} (0x${(exitCode! >>> 0).toString(16)})`
                 : 'did not produce results';
             throw new Error(
               `Test results are not found because Mocha process ${terminationReason}`,

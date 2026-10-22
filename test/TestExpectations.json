@@ -1639,11 +1639,12 @@
   },
   {
     "testIdPattern": "[network.test] network Request.headers cookie header should show Cookie header for redirect",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS"],
     "comment": [
-      "Test is flaky for MacOS BiDi as event order is we don't repopulate the request data from the response."
+      "CDP can emit Network.requestWillBeSentExtraInfo for the redirected request after Network.requestWillBeSent for the redirect target.",
+      "chromium-bidi then emits all events of the redirected request without the Cookie header (NetworkRequest.handleRedirect) and applies the late ExtraInfo to the next request in the chain."
     ]
   },
   {

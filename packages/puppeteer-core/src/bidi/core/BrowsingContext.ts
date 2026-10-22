@@ -114,6 +114,8 @@ export class BrowsingContext extends EventEmitter<{
   userprompt: UserPrompt;
   /** Emitted whenever the frame history is updated. */
   historyUpdated: void;
+  /** Emitted whenever a cross-document navigation commits. */
+  navigationCommitted: void;
   /** Emitted whenever the frame emits `DOMContentLoaded` */
   DOMContentLoaded: void;
   /** Emitted whenever the frame emits `load` */
@@ -245,6 +247,13 @@ export class BrowsingContext extends EventEmitter<{
       }
       this.#url = info.url;
       this.emit('historyUpdated', undefined);
+    });
+
+    sessionEmitter.on('browsingContext.navigationCommitted', info => {
+      if (info.context !== this.id) {
+        return;
+      }
+      this.emit('navigationCommitted', undefined);
     });
 
     sessionEmitter.on('browsingContext.domContentLoaded', info => {
