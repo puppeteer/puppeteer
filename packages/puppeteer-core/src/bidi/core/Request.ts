@@ -157,9 +157,16 @@ export class Request extends EventEmitter<{
       this.#event.request.timings = event.request.timings;
       this.emit('success', this.#response);
       // A redirect continues as a new `network.beforeRequestSent` event with
-      // the next redirect count, so the request is kept until then. Any other
+      // the next redirect count, so the request is kept until then. A
+      // redirect status without a `Location` header is a final response
+      // (https://fetch.spec.whatwg.org/#http-redirect-fetch), and any other
       // status, including 304 Not Modified, completes the request.
-      if (REDIRECT_STATUSES.has(this.#response.status)) {
+      if (
+        REDIRECT_STATUSES.has(this.#response.status) &&
+        this.#response.headers.some(header => {
+          return header.name.toLowerCase() === 'location';
+        })
+      ) {
         return;
       }
       this.dispose();

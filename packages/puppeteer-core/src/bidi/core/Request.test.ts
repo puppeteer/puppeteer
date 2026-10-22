@@ -52,9 +52,14 @@ function requestEvent(
   };
 }
 
+function locationHeader(name = 'Location'): Bidi.Network.Header {
+  return {name, value: {type: 'string', value: '/next'}};
+}
+
 function responseCompletedEvent(
   redirectCount: number,
   status: number,
+  headers: Bidi.Network.Header[] = [],
 ): Bidi.Network.ResponseCompletedParameters {
   return {
     ...requestEvent(redirectCount),
@@ -64,7 +69,7 @@ function responseCompletedEvent(
       status,
       statusText: '',
       fromCache: false,
-      headers: [],
+      headers,
       mimeType: 'text/html',
       bytesReceived: 0,
       headersSize: 0,
@@ -82,7 +87,7 @@ describe('Request', () => {
 
       session.emit(
         'network.responseCompleted',
-        responseCompletedEvent(0, status),
+        responseCompletedEvent(0, status, [locationHeader()]),
       );
 
       expect(request.disposed).toBe(true);
@@ -92,13 +97,27 @@ describe('Request', () => {
   }
 
   for (const status of [301, 302, 303, 307, 308]) {
-    it(`should keep the request until a redirect with status ${status} continues`, () => {
+    it(`should dispose the request when it completes with status ${status} without a Location header`, () => {
       const {browsingContext, session} = createBrowsingContext();
       const request = Request.from(browsingContext, requestEvent(0));
 
       session.emit(
         'network.responseCompleted',
         responseCompletedEvent(0, status),
+      );
+
+      expect(request.disposed).toBe(true);
+      expect(request.response?.status).toBe(status);
+      expect(session.listenerCount('network.responseCompleted')).toBe(0);
+    });
+
+    it(`should keep the request until a redirect with status ${status} continues`, () => {
+      const {browsingContext, session} = createBrowsingContext();
+      const request = Request.from(browsingContext, requestEvent(0));
+
+      session.emit(
+        'network.responseCompleted',
+        responseCompletedEvent(0, status, [locationHeader()]),
       );
       expect(request.disposed).toBe(false);
 
@@ -107,4 +126,16 @@ describe('Request', () => {
       expect(request.redirect?.disposed).toBe(false);
     });
   }
+
+  it('should match the Location header name case-insensitively', () => {
+    const {browsingContext, session} = createBrowsingContext();
+    const request = Request.from(browsingContext, requestEvent(0));
+
+    session.emit(
+      'network.responseCompleted',
+      responseCompletedEvent(0, 302, [locationHeader('location')]),
+    );
+
+    expect(request.disposed).toBe(false);
+  });
 });
