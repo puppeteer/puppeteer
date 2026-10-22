@@ -202,7 +202,7 @@ export function bubble<T extends EventType[]>(events?: T) {
         bubbleInitializer.apply(this, [events]);
 
         const handler = bubbleHandlers.get(this)!.get(events)!;
-        emitter.on('*', handler as any);
+        emitter.on('*', handler);
         return emitter;
       },
     };

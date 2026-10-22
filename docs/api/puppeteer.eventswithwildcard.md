@@ -9,7 +9,7 @@ sidebar_label: EventsWithWildcard
 ```typescript
 export type EventsWithWildcard<Events extends Record<EventType, unknown>> =
   Events & {
-    '*': Events[keyof Events];
+    '*': keyof Events;
   };
 ```
 

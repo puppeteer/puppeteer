@@ -12,7 +12,10 @@ Remove an event listener from firing.
 class EventEmitter {
   off<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    handler?: Handler<EventsWithWildcard<Events>[Key]>,
+    handler?: (
+      event: EventsWithWildcard<Events>[Key],
+      eventData: Key extends '*' ? Events[keyof Events] : never,
+    ) => void,
   ): this;
 }
 ```
@@ -51,7 +54,7 @@ handler
 
 </td><td>
 
-[Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt;
+(event: [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\], eventData: Key extends '\*' ? Events\[keyof Events\] : never) =&gt; void
 
 </td><td>
 

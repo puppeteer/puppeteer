@@ -43,7 +43,7 @@ export interface CommonEventEmitter<Events extends Record<EventType, unknown>> {
  */
 export type EventsWithWildcard<Events extends Record<EventType, unknown>> =
   Events & {
-    '*': Events[keyof Events];
+    '*': keyof Events;
   };
 
 /**
@@ -62,7 +62,7 @@ export class EventEmitter<
   Events extends Record<EventType, unknown>,
 > implements CommonEventEmitter<EventsWithWildcard<Events>> {
   #emitter: Emitter<EventsWithWildcard<Events>> | EventEmitter<Events>;
-  #handlers = new Map<keyof Events | '*', Array<Handler<any>>>();
+  #handlers = new Map<keyof Events | '*', any[]>();
   #logger?: Logger;
 
   /**
@@ -88,7 +88,10 @@ export class EventEmitter<
    */
   on<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>,
+    handler: (
+      event: EventsWithWildcard<Events>[Key],
+      eventData: Key extends '*' ? Events[keyof Events] : never,
+    ) => void,
   ): this {
     const handlers = this.#handlers.get(type);
     if (handlers === undefined) {
@@ -97,7 +100,7 @@ export class EventEmitter<
       handlers.push(handler);
     }
 
-    this.#emitter.on(type, handler);
+    this.#emitter.on(type, handler as Handler<EventsWithWildcard<Events>[Key]>);
     return this;
   }
 
@@ -109,7 +112,10 @@ export class EventEmitter<
    */
   off<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    handler?: Handler<EventsWithWildcard<Events>[Key]>,
+    handler?: (
+      event: EventsWithWildcard<Events>[Key],
+      eventData: Key extends '*' ? Events[keyof Events] : never,
+    ) => void,
   ): this {
     const handlers = this.#handlers.get(type) ?? [];
     if (handler === undefined) {
@@ -149,10 +155,13 @@ export class EventEmitter<
    */
   once<Key extends keyof EventsWithWildcard<Events>>(
     type: Key,
-    handler: Handler<EventsWithWildcard<Events>[Key]>,
+    handler: (
+      event: EventsWithWildcard<Events>[Key],
+      eventData: Key extends '*' ? Events[keyof Events] : never,
+    ) => void,
   ): this {
-    const onceHandler: Handler<EventsWithWildcard<Events>[Key]> = eventData => {
-      handler(eventData);
+    const onceHandler: any = (...args: [any, any]) => {
+      handler(...args);
       this.off(type, onceHandler);
     };
 
