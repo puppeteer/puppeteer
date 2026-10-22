@@ -1693,8 +1693,11 @@
     "testIdPattern": "[network.test] network Response.text should wait until response completes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/14017"
+    "expectations": ["FAIL", "TIMEOUT"],
+    "comment": [
+      "https://github.com/puppeteer/puppeteer/issues/14017",
+      "TIMEOUT: chromium-bidi can emit network.responseStarted before network.beforeRequestSent, so page.waitForResponse() does not resolve."
+    ]
   },
   {
     "testIdPattern": "[oopif.test] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
