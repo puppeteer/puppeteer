@@ -50,6 +50,6 @@ Promise&lt;Uint8Array&gt;
 
 ## Remarks
 
-To generate a PDF with the `screen` media type, call [\`page.emulateMediaType('screen')\`](./puppeteer.page.emulatemediatype.md) before calling `page.pdf()`.
+To generate a PDF with the `screen` media type, call [\`page.emulateMediaType('screen')\`](./puppeteer.page.emulatemediatype.md) before calling `page.pdf()`. Note that this disables `@media print` stylesheets, which may cause layout issues on pages that rely on print styles for pagination. Call [\`page.emulateMediaType(null)\`](./puppeteer.page.emulatemediatype.md) to restore the default `print` media type.
 
 By default, `page.pdf()` generates a pdf with modified colors for printing. Use the [\`-webkit-print-color-adjust\`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to force rendering of exact colors.
