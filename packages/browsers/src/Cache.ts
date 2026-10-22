@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {randomUUID} from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -16,6 +17,11 @@ import {
 } from './browser-data/browser-data.js';
 import {DEBUG_PREFIXES, type Logger} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
+import {readInstallMarker} from './installMarker.js';
+
+const METADATA_RENAME_MAX_ATTEMPTS = 5;
+const METADATA_RENAME_RETRY_DELAY = 50;
+const metadataRenameWait = new Int32Array(new SharedArrayBuffer(4));
 
 /**
  * @public
@@ -65,6 +71,7 @@ export class InstalledBrowser {
   }
 
   writeMetadata(metadata: Metadata): void {
+    // This replaces the complete snapshot; a separate read is not a transaction.
     this.#cache.writeMetadata(this.browser, metadata);
   }
 }
@@ -160,9 +167,24 @@ export class Cache {
   }
 
   writeMetadata(browser: Browser, metadata: Metadata): void {
-    const metatadaPath = this.metadataFile(browser);
-    fs.mkdirSync(path.dirname(metatadaPath), {recursive: true});
-    fs.writeFileSync(metatadaPath, JSON.stringify(metadata, null, 2));
+    const metadataPath = this.metadataFile(browser);
+    fs.mkdirSync(path.dirname(metadataPath), {recursive: true});
+    this.#writeMetadataFile(metadataPath, metadata);
+  }
+
+  updateMetadata(
+    browser: Browser,
+    mutator: (metadata: Metadata) => void,
+  ): boolean {
+    // Synchronous RMW avoids yielding, but does not serialize other processes.
+    const metadata = this.readMetadata(browser);
+    const previous = JSON.stringify(metadata);
+    mutator(metadata);
+    if (JSON.stringify(metadata) === previous) {
+      return false;
+    }
+    this.writeMetadata(browser, metadata);
+    return true;
   }
 
   readExecutablePath(
@@ -181,13 +203,30 @@ export class Cache {
     buildId: string,
     executablePath: string,
   ): void {
-    const metadata = this.readMetadata(browser);
-    if (!metadata.executablePaths) {
-      metadata.executablePaths = {};
-    }
     const key = `${platform}-${buildId}`;
-    metadata.executablePaths[key] = executablePath;
-    this.writeMetadata(browser, metadata);
+    this.updateMetadata(browser, metadata => {
+      metadata.executablePaths ??= {};
+      metadata.executablePaths[key] = executablePath;
+    });
+  }
+
+  deleteExecutablePath(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string,
+  ): void {
+    const key = `${platform}-${buildId}`;
+    this.updateMetadata(browser, metadata => {
+      if (metadata.executablePaths?.[key]) {
+        delete metadata.executablePaths[key];
+      }
+    });
+  }
+
+  writeAlias(browser: Browser, alias: string, buildId: string): void {
+    this.updateMetadata(browser, metadata => {
+      metadata.aliases[alias] = buildId;
+    });
   }
 
   resolveAlias(browser: Browser, alias: string): string | undefined {
@@ -235,25 +274,14 @@ export class Cache {
     buildId: string,
   ): void {
     const installationDir = this.installationDir(browser, platform, buildId);
-    const metadata = this.readMetadata(browser);
-    let changed = false;
-    for (const alias of Object.keys(metadata.aliases)) {
-      if (metadata.aliases[alias] === buildId) {
-        delete metadata.aliases[alias];
-        changed = true;
+    this.updateMetadata(browser, metadata => {
+      for (const alias of Object.keys(metadata.aliases)) {
+        if (metadata.aliases[alias] === buildId) {
+          delete metadata.aliases[alias];
+        }
       }
-    }
-    // Clean up executable path entry
-    const key = `${platform}-${buildId}`;
-    if (metadata.executablePaths?.[key]) {
-      delete metadata.executablePaths[key];
-      changed = true;
-    }
-    // Only touch the file if something was actually removed so that we do not
-    // create a .metadata for a browser that never had one.
-    if (changed) {
-      this.writeMetadata(browser, metadata);
-    }
+      delete metadata.executablePaths?.[`${platform}-${buildId}`];
+    });
     fs.rmSync(installationDir, {
       force: true,
       recursive: true,
@@ -312,6 +340,11 @@ export class Cache {
       options.buildId,
     );
 
+    const installMarker = readInstallMarker(installationDir);
+    if (installMarker) {
+      return installMarker.executablePath;
+    }
+
     const storedExecutablePath = this.readExecutablePath(
       options.browser,
       options.platform,
@@ -329,6 +362,51 @@ export class Cache {
         options.buildId,
       ),
     );
+  }
+
+  #writeMetadataFile(metadataPath: string, metadata: Metadata): void {
+    const temporaryPath = path.join(
+      path.dirname(metadataPath),
+      `.metadata-${process.pid}-${randomUUID()}`,
+    );
+    try {
+      fs.writeFileSync(temporaryPath, JSON.stringify(metadata, null, 2), {
+        flag: 'wx',
+      });
+      for (let attempt = 1; ; attempt++) {
+        try {
+          fs.renameSync(temporaryPath, metadataPath);
+          break;
+        } catch (error) {
+          if (
+            process.platform !== 'win32' ||
+            attempt >= METADATA_RENAME_MAX_ATTEMPTS ||
+            !(error instanceof Error) ||
+            !('code' in error) ||
+            !(
+              error.code === 'EPERM' ||
+              error.code === 'EBUSY' ||
+              error.code === 'EACCES'
+            )
+          ) {
+            throw error;
+          }
+          // Bound the wait while preserving the synchronous metadata API.
+          Atomics.wait(
+            metadataRenameWait,
+            0,
+            0,
+            attempt * METADATA_RENAME_RETRY_DELAY,
+          );
+        }
+      }
+    } finally {
+      try {
+        fs.rmSync(temporaryPath, {force: true});
+      } catch {
+        // A leftover uniquely named temp file is ignored by readers.
+      }
+    }
   }
 }
 

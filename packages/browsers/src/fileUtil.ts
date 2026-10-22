@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {ChildProcessByStdio} from 'node:child_process';
 import {spawnSync, spawn, execFile} from 'node:child_process';
 import {constants, createReadStream, createWriteStream} from 'node:fs';
 import {lstat, mkdir, readdir, symlink} from 'node:fs/promises';
 import * as path from 'node:path';
-import type {Readable, Transform} from 'node:stream';
-import {Stream, Writable} from 'node:stream';
+import {Writable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {promisify} from 'node:util';
 
@@ -28,88 +26,101 @@ export async function unpackArchive(
   folderPath: string,
   logger?: Logger,
 ): Promise<void> {
-  if (!path.isAbsolute(folderPath)) {
-    folderPath = path.resolve(process.cwd(), folderPath);
-  }
-  if (archivePath.endsWith('.zip')) {
-    await mkdir(folderPath, {recursive: true});
-    await extractZip(archivePath, folderPath, logger);
-  } else if (archivePath.endsWith('.tar.bz2')) {
-    await extractTar(archivePath, folderPath, 'bzip2', logger);
-  } else if (archivePath.endsWith('.dmg')) {
-    await mkdir(folderPath);
-    await installDMG(archivePath, folderPath);
-  } else if (archivePath.endsWith('.exe')) {
-    // Firefox on Windows.
-    const result = spawnSync(archivePath, [`/ExtractDir=${folderPath}`], {
-      env: {
-        __compat_layer: 'RunAsInvoker',
-      },
-    });
-    if (result.status !== 0) {
-      throw new Error(
-        `Failed to extract ${archivePath} to ${folderPath}: ${result.output}`,
-      );
-    }
-  } else if (archivePath.endsWith('.tar.xz')) {
-    await extractTar(archivePath, folderPath, 'xz');
-  } else {
-    throw new Error(`Unsupported archive format: ${archivePath}`);
+  const outcome = await unpackArchiveWithCleanupState(
+    archivePath,
+    folderPath,
+    logger,
+  );
+  if (outcome.status === 'error') {
+    throw outcome.error;
   }
 }
 
-function createTransformStream(
-  child: ChildProcessByStdio<Writable, Readable, null>,
-): Transform {
-  const stream = new Stream.Transform({
-    transform(chunk, encoding, callback) {
-      if (!child.stdin.write(chunk, encoding)) {
-        child.stdin.once('drain', callback);
-      } else {
-        callback();
-      }
-    },
+/**
+ * `isSafeToCleanup` tracks resources that this module can observe directly,
+ * such as extractor processes and DMG mounts. Third-party extractors may still
+ * have internal filesystem operations that are not exposed through their
+ * public completion boundary, so attempt removal remains best effort.
+ *
+ * @internal
+ */
+export type ArchiveUnpackOutcome =
+  | {status: 'success'; isSafeToCleanup: boolean}
+  | {status: 'error'; error: unknown; isSafeToCleanup: boolean};
 
-    flush(callback) {
-      if (child.stdout.destroyed) {
-        callback();
-      } else {
-        child.stdin.end();
-        child.stdout.on('close', callback);
+/**
+ * @internal
+ */
+export async function unpackArchiveWithCleanupState(
+  archivePath: string,
+  folderPath: string,
+  logger?: Logger,
+): Promise<ArchiveUnpackOutcome> {
+  if (!path.isAbsolute(folderPath)) {
+    folderPath = path.resolve(process.cwd(), folderPath);
+  }
+  try {
+    if (archivePath.endsWith('.zip')) {
+      await mkdir(folderPath, {recursive: true});
+      await extractZip(archivePath, folderPath, logger);
+    } else if (archivePath.endsWith('.tar.bz2')) {
+      await extractTar(archivePath, folderPath, 'bzip2', logger);
+    } else if (archivePath.endsWith('.dmg')) {
+      await mkdir(folderPath);
+      return await installDMG(archivePath, folderPath, logger);
+    } else if (archivePath.endsWith('.exe')) {
+      // Firefox on Windows.
+      const result = spawnSync(archivePath, [`/ExtractDir=${folderPath}`], {
+        env: {
+          __compat_layer: 'RunAsInvoker',
+        },
+      });
+      if (result.status !== 0) {
+        throw new Error(
+          `Failed to extract ${archivePath} to ${folderPath}: ${result.output}`,
+        );
       }
-    },
-  });
-
-  child.stdin.on('error', e => {
-    if ('code' in e && e.code === 'EPIPE') {
-      // finished before reading the file finished (i.e. head)
-      stream.emit('end');
+    } else if (archivePath.endsWith('.tar.xz')) {
+      await extractTar(archivePath, folderPath, 'xz');
     } else {
-      stream.destroy(e);
+      throw new Error(`Unsupported archive format: ${archivePath}`);
     }
-  });
-
-  child.stdout
-    .on('data', data => {
-      return stream.push(data);
-    })
-    .on('error', e => {
-      return stream.destroy(e);
-    });
-
-  child.once('close', () => {
-    return stream.end();
-  });
-
-  return stream;
+    return {status: 'success', isSafeToCleanup: true};
+  } catch (error) {
+    return {status: 'error', error, isSafeToCleanup: true};
+  }
 }
 
 /**
  * @internal
  */
-export const internalConstantsForTesting = {
+export const internalConstantsForTesting: {
+  xz: string;
+  bzip2: string;
+  dmgDetachAttempts: number;
+  dmgDetachRetryDelay: number;
+  dmgExecFile: (
+    file: string,
+    args: readonly string[],
+  ) => Promise<{stdout: string; stderr: string}>;
+  dmgReaddir: (path: string) => Promise<string[]>;
+  delay: (milliseconds: number) => Promise<void>;
+} = {
   xz: 'xz',
   bzip2: 'bzip2',
+  dmgDetachAttempts: 3,
+  dmgDetachRetryDelay: 1000,
+  dmgExecFile: async (file, args) => {
+    return await execFileAsync(file, args);
+  },
+  dmgReaddir: async directory => {
+    return await readdir(directory);
+  },
+  delay: async (milliseconds: number): Promise<void> => {
+    await new Promise(resolve => {
+      setTimeout(resolve, milliseconds);
+    });
+  },
 };
 
 /**
@@ -118,64 +129,146 @@ export const internalConstantsForTesting = {
 async function extractTar(
   tarPath: string,
   folderPath: string,
-  decompressUtilityName: keyof typeof internalConstantsForTesting,
+  decompressUtilityName: 'xz' | 'bzip2',
   logger?: Logger,
 ): Promise<void> {
   const {unpackTar} = await import('modern-tar/fs');
-  return await new Promise<void>((fulfill, reject) => {
-    function handleError(utilityName: string) {
-      return (error: Error) => {
-        if ('code' in error && error.code === 'ENOENT') {
-          error = new Error(
-            `\`${utilityName}\` utility is required to unpack this archive`,
-            {
-              cause: error,
-            },
-          );
-        }
-        reject(error);
-      };
-    }
-    const unpack = spawn(
-      internalConstantsForTesting[decompressUtilityName],
-      ['-d'],
-      {
-        stdio: ['pipe', 'pipe', 'inherit'],
-      },
-    )
-      .once('error', handleError(decompressUtilityName))
-      .once('exit', code => {
-        logger?.(DEBUG_PREFIXES.fileUtil)?.(
-          `${decompressUtilityName} exited, code=${code}`,
-        );
-      });
+  const unpack = spawn(
+    internalConstantsForTesting[decompressUtilityName],
+    ['-d'],
+    {
+      stdio: ['pipe', 'pipe', 'inherit'],
+    },
+  );
+  const source = createReadStream(tarPath);
+  const tar = unpackTar(folderPath);
+  let firstError: Error | undefined;
+  let spawnError: Error | undefined;
 
-    const tar = unpackTar(folderPath);
-    tar.once('error', handleError('tar'));
-    tar.once('finish', fulfill);
-    createReadStream(tarPath).pipe(createTransformStream(unpack)).pipe(tar);
+  const stopProducer = (error: Error): void => {
+    firstError ??= error;
+    source.destroy();
+    unpack.stdin.destroy();
+    unpack.stdout.destroy();
+    tar.destroy();
+    if (
+      unpack.pid !== undefined &&
+      unpack.exitCode === null &&
+      unpack.signalCode === null
+    ) {
+      try {
+        unpack.kill();
+      } catch {
+        // The close event remains the process-quiescence boundary.
+      }
+    }
+  };
+
+  const childClosed = new Promise<{
+    code: number | null;
+    signal: NodeJS.Signals | null;
+  }>(resolve => {
+    unpack.once('error', error => {
+      spawnError = normalizeUtilityError(error, decompressUtilityName);
+      stopProducer(spawnError);
+    });
+    unpack.once('close', (code, signal) => {
+      logger?.(DEBUG_PREFIXES.fileUtil)?.(
+        `${decompressUtilityName} exited, code=${code}, signal=${signal}`,
+      );
+      resolve({code, signal});
+    });
   });
+
+  const input = pipeline(source, unpack.stdin).catch(error => {
+    stopProducer(error as Error);
+    throw error;
+  });
+  const output = pipeline(unpack.stdout, tar).catch(error => {
+    stopProducer(error as Error);
+    throw error;
+  });
+  const [inputResult, outputResult, childResult] = await Promise.allSettled([
+    input,
+    output,
+    childClosed,
+  ]);
+
+  if (spawnError) {
+    throw spawnError;
+  }
+  if (childResult.status === 'rejected') {
+    throw childResult.reason;
+  }
+  if (childResult.value.code !== null && childResult.value.code !== 0) {
+    throw new Error(
+      `\`${decompressUtilityName}\` exited with ` +
+        `code ${childResult.value.code}`,
+    );
+  }
+  if (firstError) {
+    throw firstError;
+  }
+  if (inputResult.status === 'rejected') {
+    throw inputResult.reason;
+  }
+  if (outputResult.status === 'rejected') {
+    throw outputResult.reason;
+  }
+  if (childResult.value.signal) {
+    throw new Error(
+      `\`${decompressUtilityName}\` exited with signal ${childResult.value.signal}`,
+    );
+  }
+}
+
+function normalizeUtilityError(error: Error, utilityName: string): Error {
+  if ('code' in error && error.code === 'ENOENT') {
+    return new Error(
+      `\`${utilityName}\` utility is required to unpack this archive`,
+      {
+        cause: error,
+      },
+    );
+  }
+  return error;
 }
 
 /**
  * @internal
  */
-async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
-  const {stdout} = await execFileAsync('hdiutil', [
-    'attach',
-    '-nobrowse',
-    '-noautoopen',
-    dmgPath,
-  ]);
+async function installDMG(
+  dmgPath: string,
+  folderPath: string,
+  logger?: Logger,
+): Promise<ArchiveUnpackOutcome> {
+  let stdout: string;
+  try {
+    ({stdout} = await internalConstantsForTesting.dmgExecFile('hdiutil', [
+      'attach',
+      '-nobrowse',
+      '-noautoopen',
+      dmgPath,
+    ]));
+  } catch (error) {
+    return {status: 'error', error, isSafeToCleanup: true};
+  }
 
   const volumes = stdout.match(/\/Volumes\/(.*)/m);
   if (!volumes) {
-    throw new Error(`Could not find volume path in ${stdout}`);
+    return {
+      status: 'error',
+      error: new Error(`Could not find volume path in ${stdout}`),
+      // hdiutil reported a successful attach, but without an identity there is
+      // no way to confirm that the mounted resource was released.
+      isSafeToCleanup: false,
+    };
   }
   const mountPath = volumes[0]!;
 
+  let primaryOutcome: ArchiveUnpackOutcome;
   try {
-    const fileNames = await readdir(mountPath);
+    const fileNames = await internalConstantsForTesting.dmgReaddir(mountPath);
     const appName = fileNames.find(item => {
       return typeof item === 'string' && item.endsWith('.app');
     });
@@ -184,10 +277,46 @@ async function installDMG(dmgPath: string, folderPath: string): Promise<void> {
     }
     const mountedPath = path.join(mountPath!, appName);
 
-    await execFileAsync('cp', ['-R', mountedPath, folderPath]);
-  } finally {
-    await execFileAsync('hdiutil', ['detach', mountPath, '-quiet']);
+    await internalConstantsForTesting.dmgExecFile('cp', [
+      '-R',
+      mountedPath,
+      folderPath,
+    ]);
+    primaryOutcome = {status: 'success', isSafeToCleanup: false};
+  } catch (error) {
+    primaryOutcome = {status: 'error', error, isSafeToCleanup: false};
   }
+
+  const isSafeToCleanup = await detachDMG(mountPath, logger);
+  return {...primaryOutcome, isSafeToCleanup};
+}
+
+async function detachDMG(mountPath: string, logger?: Logger): Promise<boolean> {
+  const attempts = internalConstantsForTesting.dmgDetachAttempts;
+  for (let attempt = 1; attempt <= attempts; ++attempt) {
+    try {
+      await internalConstantsForTesting.dmgExecFile('hdiutil', [
+        'detach',
+        mountPath,
+        '-quiet',
+      ]);
+      return true;
+    } catch (error) {
+      logger?.(DEBUG_PREFIXES.fileUtil)?.(
+        `Failed to detach DMG mount ${mountPath} ` +
+          `(attempt ${attempt}/${attempts}): ${String(error)}`,
+      );
+      if (attempt < attempts) {
+        await internalConstantsForTesting.delay(
+          internalConstantsForTesting.dmgDetachRetryDelay,
+        );
+      }
+    }
+  }
+  logger?.(DEBUG_PREFIXES.fileUtil)?.(
+    `Retaining DMG mount after ${attempts} failed detach attempts: ${mountPath}`,
+  );
+  return false;
 }
 
 /**
@@ -236,17 +365,36 @@ export async function extractZipWithYauzl(
   const open = promisify<string, Options, ZipFile>(yauzl.open);
   try {
     const zipFile = await open(archivePath, {lazyEntries: true});
-    await new Promise((resolve, reject) => {
-      zipFile
-        .on('error', reject)
-        .on('end', resolve)
-        .on('entry', entry => {
-          extractZipEntry(zipFile, entry, folderPath).then(() => {
-            zipFile.readEntry();
-          }, reject);
-        })
-        .readEntry();
+    let activeEntry: Promise<void> | undefined;
+    let failed = false;
+    const archiveClosed = new Promise<void>(resolve => {
+      zipFile.once('close', resolve);
     });
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const fail = (error: unknown): void => {
+          failed = true;
+          reject(error);
+        };
+
+        zipFile
+          .on('error', fail)
+          .on('end', resolve)
+          .on('entry', entry => {
+            activeEntry = extractZipEntry(zipFile, entry, folderPath);
+            void activeEntry.then(() => {
+              if (!failed) {
+                zipFile.readEntry();
+              }
+            }, fail);
+          })
+          .readEntry();
+      });
+    } finally {
+      zipFile.close();
+      // Archive close can precede an active entry's output completion.
+      await Promise.allSettled([activeEntry, archiveClosed]);
+    }
   } catch (error) {
     throw new Error(`Extraction failed: ${archivePath}`, {cause: error});
   }

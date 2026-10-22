@@ -5,100 +5,23 @@
  */
 
 import assert from 'node:assert';
+import childProcess from 'node:child_process';
 import fs from 'node:fs';
+import {syncBuiltinESMExports} from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
-import zlib from 'node:zlib';
+
+import sinon from 'sinon';
+import yauzl from 'yauzl';
 
 import {
   extractZipWithYauzl,
   internalConstantsForTesting,
   unpackArchive,
+  unpackArchiveWithCleanupState,
 } from '../../lib/fileUtil.js';
 
-interface TestZipEntry {
-  name: string;
-  type?: 'file' | 'dir' | 'symlink';
-  content?: string;
-  mode?: number;
-}
-
-/**
- * Writes an uncompressed (STORE) PKZIP archive with Unix external file
- * attributes for testing zip extraction on the fly.
- */
-function createTestZip(zipPath: string, entries: TestZipEntry[]): string {
-  const localParts: Buffer[] = [];
-  const centralParts: Buffer[] = [];
-  let localOffset = 0;
-
-  for (const entry of entries) {
-    const nameBuf = Buffer.from(entry.name, 'utf8');
-    const dataBuf = Buffer.from(entry.content ?? '', 'utf8');
-    const crc = zlib.crc32(dataBuf);
-    const kind = entry.type ?? (entry.name.endsWith('/') ? 'dir' : 'file');
-    const fileTypeBits =
-      kind === 'symlink'
-        ? fs.constants.S_IFLNK
-        : kind === 'dir'
-          ? fs.constants.S_IFDIR
-          : fs.constants.S_IFREG;
-    const permBits =
-      entry.mode ??
-      (kind === 'symlink' ? 0o777 : kind === 'dir' ? 0o755 : 0o644);
-    const unixMode = fileTypeBits | permBits;
-
-    const localHeader = Buffer.alloc(30);
-    localHeader.writeUInt32LE(0x04034b50, 0);
-    localHeader.writeUInt16LE(20, 4);
-    localHeader.writeUInt16LE(0x0800, 6);
-    localHeader.writeUInt16LE(0, 8);
-    localHeader.writeUInt16LE(0, 10);
-    localHeader.writeUInt16LE(0x0021, 12);
-    localHeader.writeUInt32LE(crc, 14);
-    localHeader.writeUInt32LE(dataBuf.length, 18);
-    localHeader.writeUInt32LE(dataBuf.length, 22);
-    localHeader.writeUInt16LE(nameBuf.length, 26);
-    localHeader.writeUInt16LE(0, 28);
-    localParts.push(localHeader, nameBuf, dataBuf);
-
-    const centralHeader = Buffer.alloc(46);
-    centralHeader.writeUInt32LE(0x02014b50, 0);
-    centralHeader.writeUInt16LE((3 << 8) | 20, 4);
-    centralHeader.writeUInt16LE(20, 6);
-    centralHeader.writeUInt16LE(0x0800, 8);
-    centralHeader.writeUInt16LE(0, 10);
-    centralHeader.writeUInt16LE(0, 12);
-    centralHeader.writeUInt16LE(0x0021, 14);
-    centralHeader.writeUInt32LE(crc, 16);
-    centralHeader.writeUInt32LE(dataBuf.length, 20);
-    centralHeader.writeUInt32LE(dataBuf.length, 24);
-    centralHeader.writeUInt16LE(nameBuf.length, 28);
-    centralHeader.writeUInt16LE(0, 30);
-    centralHeader.writeUInt16LE(0, 32);
-    centralHeader.writeUInt16LE(0, 34);
-    centralHeader.writeUInt16LE(0, 36);
-    centralHeader.writeUInt32LE((unixMode << 16) >>> 0, 38);
-    centralHeader.writeUInt32LE(localOffset, 42);
-    centralParts.push(centralHeader, nameBuf);
-
-    localOffset += localHeader.length + nameBuf.length + dataBuf.length;
-  }
-
-  const centralDir = Buffer.concat(centralParts);
-  const eocd = Buffer.alloc(22);
-  eocd.writeUInt32LE(0x06054b50, 0);
-  eocd.writeUInt16LE(0, 4);
-  eocd.writeUInt16LE(0, 6);
-  eocd.writeUInt16LE(entries.length, 8);
-  eocd.writeUInt16LE(entries.length, 10);
-  eocd.writeUInt32LE(centralDir.length, 12);
-  eocd.writeUInt32LE(localOffset, 16);
-  eocd.writeUInt16LE(0, 20);
-
-  fs.writeFileSync(zipPath, Buffer.concat([...localParts, centralDir, eocd]));
-  return zipPath;
-}
+import {createTestZip, testZipEntries, type TestZipEntry} from './zip.js';
 
 describe('fileUtil', function () {
   let tmpDir = '/tmp/puppeteer-browsers-test';
@@ -159,18 +82,6 @@ describe('fileUtil', function () {
     });
     assert.deepStrictEqual(dir, []);
   }
-
-  const testZipEntries: TestZipEntry[] = [
-    {name: 'browser/', type: 'dir'},
-    {name: 'browser/locales/', type: 'dir'},
-    {name: 'browser/locales/en-US.pak', content: 'resource', mode: 0o644},
-    {
-      name: 'browser/chrome',
-      content: '#!/bin/sh\necho chrome\n',
-      mode: 0o755,
-    },
-    {name: 'browser/product_logo.png', content: 'logo', mode: 0o644},
-  ];
 
   function assertTestZipUnpacked(targetDir: string): void {
     const entries = fs
@@ -235,6 +146,10 @@ describe('fileUtil', function () {
   });
 
   describe('extractZipWithYauzl', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
     it('extracts every entry with its structure and contents', async () => {
       const archivePath = createTestZip(
         path.join(tmpDir, 'test.zip'),
@@ -243,6 +158,39 @@ describe('fileUtil', function () {
       const targetDir = path.join(tmpDir, 'target');
       await extractZipWithYauzl(archivePath, targetDir);
       assertTestZipUnpacked(targetDir);
+    });
+
+    it('resolves after closing the archive', async () => {
+      const events = sinon.spy(yauzl.ZipFile.prototype, 'emit');
+      const archivePath = path.join(tmpDir, 'archive.zip');
+      const renamedPath = path.join(tmpDir, 'closed.zip');
+      const outputPath = path.join(tmpDir, 'output');
+      createTestZip(archivePath, testZipEntries);
+
+      await extractZipWithYauzl(archivePath, outputPath);
+      assert.ok(events.calledWith('close'), 'archive was not closed');
+      fs.renameSync(archivePath, renamedPath);
+    });
+
+    it('closes the archive after an entry write fails', async () => {
+      const events = sinon.spy(yauzl.ZipFile.prototype, 'emit');
+      const outputPath = path.join(tmpDir, 'output');
+      const blockedFile = path.join(outputPath, 'browser', 'chrome');
+      fs.mkdirSync(blockedFile, {recursive: true});
+
+      await assert.rejects(
+        extractZipWithYauzl(
+          createTestZip(path.join(tmpDir, 'archive.zip'), testZipEntries),
+          outputPath,
+        ),
+        (error: unknown) => {
+          const {cause} = error as {cause?: NodeJS.ErrnoException};
+          assert.strictEqual(cause?.code, 'EISDIR');
+          return true;
+        },
+      );
+      assert.ok(events.calledWith('close'), 'archive was not closed');
+      assert.ok(fs.statSync(blockedFile).isDirectory());
     });
 
     // Node.js does not honor POSIX permission bits on Windows.
@@ -284,6 +232,8 @@ describe('fileUtil', function () {
     // The target is validated before any symlink is created, so unlike the
     // preceding symlink test the rejection can be checked on Windows too.
     it('rejects symlinks that point outside the target directory', async () => {
+      const events = sinon.spy(yauzl.ZipFile.prototype, 'emit');
+      const renamedPath = path.join(tmpDir, 'closed-escape.zip');
       const archivePath = createTestZip(
         path.join(tmpDir, 'test-symlink-escape.zip'),
         [
@@ -305,10 +255,12 @@ describe('fileUtil', function () {
           return true;
         },
       );
+      assert.ok(events.calledWith('close'), 'archive was not closed');
       assert.ok(
         !fs.existsSync(path.join(targetDir, 'browser', 'evil-link')),
         'symlink pointing outside the target directory was created',
       );
+      fs.renameSync(archivePath, renamedPath);
     });
 
     const frameworkEntries: TestZipEntry[] = [
@@ -500,6 +452,222 @@ describe('fileUtil', function () {
         },
       );
     }
+  });
+
+  describe('DMG cleanup', () => {
+    const originalDmgExecFile = internalConstantsForTesting.dmgExecFile;
+    const originalDmgReaddir = internalConstantsForTesting.dmgReaddir;
+    const originalDelay = internalConstantsForTesting.delay;
+    const originalDetachAttempts =
+      internalConstantsForTesting.dmgDetachAttempts;
+    const originalDetachRetryDelay =
+      internalConstantsForTesting.dmgDetachRetryDelay;
+
+    afterEach(() => {
+      internalConstantsForTesting.dmgExecFile = originalDmgExecFile;
+      internalConstantsForTesting.dmgReaddir = originalDmgReaddir;
+      internalConstantsForTesting.delay = originalDelay;
+      internalConstantsForTesting.dmgDetachAttempts = originalDetachAttempts;
+      internalConstantsForTesting.dmgDetachRetryDelay =
+        originalDetachRetryDelay;
+    });
+
+    it('retries detach and reports a released mount after a transient failure', async () => {
+      let detachCalls = 0;
+      let delayCalls = 0;
+      internalConstantsForTesting.dmgReaddir = async () => {
+        return ['Browser.app'];
+      };
+      internalConstantsForTesting.delay = async () => {
+        ++delayCalls;
+      };
+      internalConstantsForTesting.dmgExecFile = async (file, args) => {
+        if (file === 'cp') {
+          return {stdout: '', stderr: ''};
+        }
+        if (args[0] === 'attach') {
+          return {stdout: '/dev/disk1\t/Volumes/Browser\n', stderr: ''};
+        }
+        if (args[0] === 'detach') {
+          if (++detachCalls < 3) {
+            throw new Error('resource busy');
+          }
+          return {stdout: '', stderr: ''};
+        }
+        throw new Error(`Unexpected command: ${file} ${args.join(' ')}`);
+      };
+
+      const outcome = await unpackArchiveWithCleanupState(
+        path.join(tmpDir, 'browser.dmg'),
+        path.join(tmpDir, 'output'),
+      );
+
+      assert.deepStrictEqual(outcome, {
+        status: 'success',
+        isSafeToCleanup: true,
+      });
+      assert.strictEqual(detachCalls, 3);
+      assert.strictEqual(delayCalls, 2);
+    });
+
+    it('preserves copy success when detach retries are exhausted', async () => {
+      let detachCalls = 0;
+      const messages: string[] = [];
+      internalConstantsForTesting.dmgReaddir = async () => {
+        return ['Browser.app'];
+      };
+      internalConstantsForTesting.delay = async () => {};
+      internalConstantsForTesting.dmgExecFile = async (file, args) => {
+        if (file === 'cp') {
+          return {stdout: '', stderr: ''};
+        }
+        if (args[0] === 'attach') {
+          return {stdout: '/dev/disk1\t/Volumes/Browser\n', stderr: ''};
+        }
+        if (args[0] === 'detach') {
+          ++detachCalls;
+          throw new Error('resource busy');
+        }
+        throw new Error(`Unexpected command: ${file} ${args.join(' ')}`);
+      };
+
+      const outcome = await unpackArchiveWithCleanupState(
+        path.join(tmpDir, 'browser.dmg'),
+        path.join(tmpDir, 'output'),
+        () => {
+          return (...args: unknown[]) => {
+            messages.push(args.join(' '));
+          };
+        },
+      );
+
+      assert.deepStrictEqual(outcome, {
+        status: 'success',
+        isSafeToCleanup: false,
+      });
+      assert.strictEqual(detachCalls, 3);
+      assert.ok(
+        messages.some(message => {
+          return message.includes('Retaining DMG mount');
+        }),
+      );
+    });
+
+    it('preserves the copy error when detach retries are exhausted', async () => {
+      const copyError = new Error('copy failed');
+      let detachCalls = 0;
+      internalConstantsForTesting.dmgReaddir = async () => {
+        return ['Browser.app'];
+      };
+      internalConstantsForTesting.delay = async () => {};
+      internalConstantsForTesting.dmgExecFile = async (file, args) => {
+        if (file === 'cp') {
+          throw copyError;
+        }
+        if (args[0] === 'attach') {
+          return {stdout: '/dev/disk1\t/Volumes/Browser\n', stderr: ''};
+        }
+        if (args[0] === 'detach') {
+          ++detachCalls;
+          throw new Error('resource busy');
+        }
+        throw new Error(`Unexpected command: ${file} ${args.join(' ')}`);
+      };
+
+      const outcome = await unpackArchiveWithCleanupState(
+        path.join(tmpDir, 'browser.dmg'),
+        path.join(tmpDir, 'output'),
+      );
+
+      assert.strictEqual(outcome.status, 'error');
+      if (outcome.status === 'error') {
+        assert.strictEqual(outcome.error, copyError);
+      }
+      assert.strictEqual(outcome.isSafeToCleanup, false);
+      assert.strictEqual(detachCalls, 3);
+    });
+
+    it('reports a failed copy as cleanup-safe after detach succeeds', async () => {
+      const copyError = new Error('copy failed');
+      internalConstantsForTesting.dmgReaddir = async () => {
+        return ['Browser.app'];
+      };
+      internalConstantsForTesting.dmgExecFile = async (file, args) => {
+        if (file === 'cp') {
+          throw copyError;
+        }
+        if (args[0] === 'attach') {
+          return {stdout: '/dev/disk1\t/Volumes/Browser\n', stderr: ''};
+        }
+        if (args[0] === 'detach') {
+          return {stdout: '', stderr: ''};
+        }
+        throw new Error(`Unexpected command: ${file} ${args.join(' ')}`);
+      };
+
+      const outcome = await unpackArchiveWithCleanupState(
+        path.join(tmpDir, 'browser.dmg'),
+        path.join(tmpDir, 'output'),
+      );
+
+      assert.strictEqual(outcome.status, 'error');
+      if (outcome.status === 'error') {
+        assert.strictEqual(outcome.error, copyError);
+      }
+      assert.strictEqual(outcome.isSafeToCleanup, true);
+    });
+  });
+
+  it('stops the decompressor and waits for close after a tar pipeline failure', async () => {
+    const spawn = childProcess.spawn;
+    // Keep the producer alive after emitting an invalid tar header so the
+    // output pipeline failure must stop it. The timer bounds a broken test.
+    const producer = spawn(process.execPath, [
+      '-e',
+      "process.stdin.resume(); process.stdout.write(Buffer.alloc(512, 'x')); setTimeout(() => process.exit(0), 5000);",
+    ]);
+    let closed = false;
+    const childClosed = new Promise<void>(resolve => {
+      producer.once('close', () => {
+        closed = true;
+        resolve();
+      });
+    });
+    const kill = sinon.spy(producer, 'kill');
+    const spawnStub = sinon.stub(childProcess, 'spawn').returns(producer);
+    syncBuiltinESMExports();
+    try {
+      const outcome = await unpackArchiveWithCleanupState(
+        path.join(fixturesPath, 'test.tar.xz'),
+        path.join(tmpDir, 'output'),
+      );
+
+      assert.strictEqual(outcome.status, 'error');
+      assert.ok(kill.called, 'producer was not stopped');
+      assert.ok(closed, 'extraction settled before the producer closed');
+      assert.strictEqual(outcome.isSafeToCleanup, true);
+    } finally {
+      spawnStub.restore();
+      syncBuiltinESMExports();
+      kill.restore();
+      if (!closed) {
+        producer.kill();
+      }
+      await childClosed;
+    }
+  });
+
+  it('rejects a non-zero decompressor after closing the archive', async () => {
+    const archivePath = path.join(tmpDir, 'input.tar.xz');
+    const renamedPath = path.join(tmpDir, 'closed.tar.xz');
+    const outputPath = path.join(tmpDir, 'output');
+    // xz rejects this input before producing any tar data.
+    fs.writeFileSync(archivePath, 'not an xz archive');
+    await assert.rejects(
+      unpackArchive(archivePath, outputPath),
+      /`xz` exited with code 1/,
+    );
+    fs.renameSync(archivePath, renamedPath);
   });
 
   it('throws an error if xz is not found', async () => {

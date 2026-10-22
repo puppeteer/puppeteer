@@ -108,6 +108,8 @@ export interface BrowserProvider {
 
   /**
    * Get the relative path to the executable within the extracted archive.
+   * The path must remain valid when the extracted browser tree is moved to its
+   * final installation directory.
    *
    * @param options - Browser, buildId, and platform
    * @returns Relative path to the executable
