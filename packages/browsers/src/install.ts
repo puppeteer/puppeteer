@@ -22,6 +22,7 @@ import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {assertPathSegment} from './pathUtil.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
@@ -408,13 +409,8 @@ async function installUrl(
     options.buildId,
   );
   const archiveName = `${options.buildId}-${fileName}`;
+  assertPathSegment(archiveName, `Invalid archive path: ${archiveName}`);
   const archivePath = path.join(browserRoot, archiveName);
-  if (
-    path.dirname(path.resolve(archivePath)) !== path.resolve(browserRoot) ||
-    path.basename(path.resolve(archivePath)) !== archiveName
-  ) {
-    throw new Error(`Invalid archive path: ${archiveName}`);
-  }
   if (!existsSync(browserRoot)) {
     await mkdir(browserRoot, {recursive: true});
   }
