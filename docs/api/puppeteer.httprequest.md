@@ -125,7 +125,22 @@ Converts the request to a Fetch API Request instance.
 
 **Remarks:**
 
-Headers are copied to the new Request instance. The request URL and method are preserved. The body is built from [HTTPRequest.fetchPostData()](./puppeteer.httprequest.fetchpostdata.md) when the request has post data, otherwise the Request is created without a body. For `GET` and `HEAD` requests the body is always omitted, as required by the Fetch API.
+Headers are copied to the new Request instance. The request URL and method are preserved. The body is built from [HTTPRequest.content()](./puppeteer.httprequest.content.md) when the request has post data, otherwise the Request is created without a body. For `GET` and `HEAD` requests the body is always omitted, as required by the Fetch API.
+
+</td></tr>
+<tr><td>
+
+<span id="content">[content()](./puppeteer.httprequest.content.md)</span>
+
+</td><td>
+
+</td><td>
+
+Fetches the POST data for the request from the browser as a `Uint8Array`.
+
+**Remarks:**
+
+If the request has no POST data or fetching the POST data from the browser fails, this method resolves to `undefined`.
 
 </td></tr>
 <tr><td>
@@ -233,6 +248,10 @@ True when the request has POST data. Note that [HTTPRequest.postData()](./puppet
 </td><td>
 
 An object with HTTP headers associated with the request. All header names are lower-case.
+
+**Remarks:**
+
+Under CDP, `page.on('request')` fires before the browser's network stack attaches all headers (such as `accept`, `accept-encoding`, `cookie`, `host`, and `sec-fetch-*`). The full set of headers is populated asynchronously and is available by the time `page.on('response')` or `page.on('requestfinished')` fires.
 
 </td></tr>
 <tr><td>

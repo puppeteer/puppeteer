@@ -20,6 +20,46 @@ describe('waittask specs', function () {
   setupTestBrowserHooks();
 
   describe('Frame.waitForFunction', function () {
+    for (const polling of ['raf', 'mutation', 10] as const) {
+      it(`should not poll after timing out during ${polling} poller creation`, async () => {
+        const {page} = await getTestState();
+        await page.evaluate(() => {
+          (globalThis as any).__pollCalls = 0;
+        });
+        const blocking = page.evaluate(() => {
+          const deadline = performance.now() + 300;
+          while (performance.now() < deadline) {
+            // Keep poller creation queued while the Node-side timeout fires.
+          }
+        });
+        await expect(
+          page.waitForFunction(
+            () => {
+              ++(globalThis as any).__pollCalls;
+              return false;
+            },
+            {polling, timeout: 50},
+          ),
+        ).rejects.toThrow(TimeoutError);
+        await blocking;
+        const calls = await page.evaluate(() => {
+          return (globalThis as any).__pollCalls;
+        });
+        await page.evaluate(async () => {
+          document.body.append(document.createElement('div'));
+          await new Promise(resolve => {
+            setTimeout(resolve, 100);
+          });
+        });
+        expect(
+          await page.evaluate(() => {
+            return (globalThis as any).__pollCalls;
+          }),
+        ).toBe(calls);
+        expect(calls).toBe(0);
+      });
+    }
+
     it('should accept a string', async () => {
       const {page} = await getTestState();
 

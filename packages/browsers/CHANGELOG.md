@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.6](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.5...browsers-v3.2.6) (2026-10-22)
+
+
+### 🛠️ Fixes
+
+* **browsers:** resolve redirects against the current URL ([#15540](https://github.com/puppeteer/puppeteer/issues/15540)) ([e21d806](https://github.com/puppeteer/puppeteer/commit/e21d806de04efad4b73bd18d533f245f81ed4cd9))
+
 ## [3.2.5](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.4...browsers-v3.2.5) (2026-10-14)
 
 

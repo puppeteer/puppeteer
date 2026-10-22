@@ -32,6 +32,7 @@ import {
   PageEvent,
   type NewDocumentScriptEvaluation,
   type ScreenshotOptions,
+  type TabInfo,
 } from '../api/Page.js';
 import type {Target} from '../api/Target.js';
 import {Coverage} from '../cdp/Coverage.js';
@@ -250,6 +251,10 @@ export class BidiPage extends Page {
 
   override async windowId(): Promise<WindowId> {
     return this.#frame.browsingContext.windowId;
+  }
+
+  override tabInfo(): Promise<TabInfo | null> {
+    throw new UnsupportedOperation();
   }
 
   override openDevTools(): Promise<Page> {
@@ -508,7 +513,11 @@ export class BidiPage extends Page {
       scale,
       preferCSSPageSize,
     } = parsePDFOptions(options, 'cm');
-    const pageRanges = ranges ? ranges.split(', ') : [];
+    const pageRanges = ranges
+      ? ranges.split(',').map(range => {
+          return range.trim();
+        })
+      : [];
 
     await firstValueFrom(
       from(

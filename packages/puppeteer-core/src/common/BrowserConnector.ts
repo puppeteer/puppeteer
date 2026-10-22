@@ -9,7 +9,7 @@ import {_connectToBiDiBrowser} from '../bidi/BrowserConnector.js';
 import {_connectToCdpBrowser} from '../cdp/BrowserConnector.js';
 import {environment, isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
-import {isErrorLike} from '../util/ErrorLike.js';
+import {isErrnoException, isErrorLike} from '../util/ErrorLike.js';
 
 import type {ConnectionTransport} from './ConnectionTransport.js';
 import type {ConnectOptions} from './ConnectOptions.js';
@@ -152,6 +152,17 @@ async function getConnectionTransport(
         endpointUrl: browserWSEndpoint,
       };
     } catch (error) {
+      if (
+        isErrnoException(error) &&
+        (error.code === 'EPERM' || error.code === 'EACCES')
+      ) {
+        throw new Error(
+          `Could not read DevToolsActivePort for ${options.channel} at ${portPath}: permission denied`,
+          {
+            cause: error,
+          },
+        );
+      }
       throw new Error(
         `Could not find DevToolsActivePort for ${options.channel} at ${portPath}`,
         {

@@ -110,6 +110,42 @@ describe('network', function () {
       }
     });
 
+    it('should report all headers sent to the server on response.request()', async () => {
+      const {page, server} = await getTestState();
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue();
+      });
+
+      const [serverRequest, response] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(response!.request().headers()).toEqual(serverRequest.headers);
+    });
+
+    it('should report all headers sent to the server on requestfailed', async () => {
+      const {page, server} = await getTestState();
+      server.setRoute('/fail.html', req => {
+        req.socket.destroy();
+      });
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue();
+      });
+
+      const [serverRequest, failedRequest] = await Promise.all([
+        server.waitForRequest('/fail.html'),
+        waitEvent<HTTPRequest>(page, 'requestfailed', req => {
+          return !isFavicon(req);
+        }),
+        page.goto(server.PREFIX + '/fail.html').catch(() => {}),
+      ]);
+
+      expect(failedRequest.headers()).toEqual(serverRequest.headers);
+    });
+
     // In CDP cookie header is only when the request actually
     // hits the network, verify that we populate the correctly
     describe('cookie header', () => {
@@ -297,6 +333,78 @@ describe('network', function () {
   });
 
   describe('Request.fetchPostData', function () {
+    it('should work for intercepted form submissions', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+      await page.setRequestInterception(true);
+      let postData: string | undefined;
+      page.on('request', async request => {
+        if (!isFavicon(request) && request.method() === 'POST') {
+          postData = await request.fetchPostData();
+        }
+        await request.continue();
+      });
+
+      await Promise.all([
+        page.waitForNavigation(),
+        page.evaluate(() => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/post';
+          const input = document.createElement('input');
+          input.name = 'foo';
+          input.value = 'bar';
+          form.append(input);
+          document.body.append(form);
+          form.submit();
+        }),
+      ]);
+
+      expect(postData).toBe('foo=bar');
+    });
+
+    it('should work for intercepted form submissions in cooperative mode', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+      await page.setRequestInterception(true);
+      let postData: string | undefined;
+      page.on('request', async request => {
+        if (!isFavicon(request)) {
+          await request.continue({}, 0);
+        }
+      });
+      page.on('request', async request => {
+        if (request.method() === 'POST') {
+          postData = await request.fetchPostData();
+        }
+      });
+
+      await Promise.all([
+        page.waitForNavigation(),
+        page.evaluate(() => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/post';
+          const input = document.createElement('input');
+          input.name = 'foo';
+          input.value = 'bar';
+          form.append(input);
+          document.body.append(form);
+          form.submit();
+        }),
+      ]);
+
+      expect(postData).toBe('foo=bar');
+    });
+
     it('should work', async () => {
       const {page, server} = await getTestState();
 
@@ -356,6 +464,69 @@ describe('network', function () {
       expect(request).toBeTruthy();
       expect(request.hasPostData()).toBe(true);
       expect(await request.fetchPostData()).toBe('{"foo":"bar"}');
+    });
+
+    it('should work with binary post data', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'request', r => {
+          return !isFavicon(r);
+        }),
+        page.evaluate(() => {
+          return fetch('./post', {
+            method: 'POST',
+            body: new Uint8Array([104, 101, 108, 108, 111, 0, 255]),
+          });
+        }),
+      ]);
+
+      expect(request).toBeTruthy();
+      expect(request.hasPostData()).toBe(true);
+      expect(await request.fetchPostData()).toBe('hello\x00\uFFFD');
+    });
+  });
+
+  describe('Request.content', function () {
+    it('should work with binary post data', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (_req, res) => {
+        return res.end();
+      });
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'request', r => {
+          return !isFavicon(r);
+        }),
+        page.evaluate(() => {
+          return fetch('./post', {
+            method: 'POST',
+            body: new Uint8Array([0, 255, 128, 10, 200, 1]),
+          });
+        }),
+      ]);
+
+      expect(request).toBeTruthy();
+      expect(request.hasPostData()).toBe(true);
+      expect(await request.content()).toEqual(
+        new Uint8Array([0, 255, 128, 10, 200, 1]),
+      );
+    });
+
+    it('should be |undefined| when there is no post data', async () => {
+      const {page, server} = await getTestState();
+
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.request().hasPostData()).toBeFalsy();
+
+      expect(await response.request().content()).toBe(undefined);
     });
   });
 
@@ -636,6 +807,23 @@ describe('network', function () {
       } else {
         expect(failedRequest.failure()!.errorText).toBe('NS_ERROR_ABORT');
       }
+    });
+    it('Page.Events.RequestFailed for blocked requests', async () => {
+      const {page, server} = await getTestState();
+
+      server.setCSP('/empty.html', "default-src 'none'");
+      const failedRequests: HTTPRequest[] = [];
+      page.on('requestfailed', request => {
+        if (!isFavicon(request)) {
+          failedRequests.push(request);
+        }
+      });
+      await page.goto(server.EMPTY_PAGE);
+      await page
+        .addScriptTag({url: server.PREFIX + '/one-script.js'})
+        .catch(() => {});
+      expect(failedRequests).toHaveLength(1);
+      expect(failedRequests[0]!.failure()?.errorText).toBe('csp');
     });
     it('Page.Events.RequestFinished', async () => {
       const {page, server} = await getTestState();

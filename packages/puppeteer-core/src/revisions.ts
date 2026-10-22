@@ -8,7 +8,7 @@
  * @internal
  */
 export const PUPPETEER_REVISIONS = Object.freeze({
-  chrome: '155.0.8059.84',
-  'chrome-headless-shell': '155.0.8059.84',
-  firefox: 'stable_158.0',
+  chrome: '156.0.8078.47',
+  'chrome-headless-shell': '156.0.8078.47',
+  firefox: 'stable_158.0.1',
 });

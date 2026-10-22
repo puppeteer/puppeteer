@@ -372,8 +372,9 @@ export class TargetManager
     // service worker instead: network conditions are reset when the session
     // that set them detaches, so staying attached is what keeps the rules
     // enforced for requests the worker issues, including the ones it forwards
-    // on behalf of controlled pages. As a consequence, the browser never
-    // idle-terminates service workers while rules are configured.
+    // on behalf of controlled pages. Kept sessions are not released when rules
+    // are cleared, so the browser never idle-terminates these service workers
+    // once rules have been configured.
     if (targetInfo.type === 'service_worker') {
       if (this.#hasNetworkRules()) {
         this.#networkConditionsSessions.set(session, targetInfo);
@@ -391,8 +392,12 @@ export class TargetManager
           this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         });
         await networkConditionsSetUp;
+        // An already exposed WorkerTarget (created on the silent-detach path)
+        // proceeds to #attachServiceWorkerTarget() even when its script URL is
+        // now disallowed, so the target receives the kept session.
         if (
-          !this.isUrlAllowed(targetInfo.url) ||
+          (!this.isUrlAllowed(targetInfo.url) &&
+            !this.#attachedTargetsByTargetId.has(targetInfo.targetId)) ||
           this.#ignoredTargets.has(targetInfo.targetId) ||
           !this.#discoveredTargetsByTargetId.has(targetInfo.targetId)
         ) {
@@ -510,7 +515,7 @@ export class TargetManager
     this.#setupAttachmentListeners(session);
 
     if (isExistingTarget) {
-      session.setTarget(target);
+      target._setSession(session);
     } else {
       target._initialize();
       this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
@@ -612,6 +617,10 @@ export class TargetManager
 
     const isActive = this.#hasNetworkRules();
 
+    if (isActive && !wasActive) {
+      await this.#attachToServiceWorkers();
+    }
+
     if (isActive || wasActive) {
       await this.#reapplyNetworkConditions(wasActive && !isActive);
     }
@@ -633,6 +642,32 @@ export class TargetManager
           targetInfo,
           forceClear,
         ).catch(error => {
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+        }),
+      );
+    }
+    await Promise.all(promises);
+  }
+
+  async #attachToServiceWorkers(): Promise<void> {
+    const trackedTargetIds = new Set<string>();
+    for (const [session, targetInfo] of this.#networkConditionsSessions) {
+      if (!session.detached) {
+        trackedTargetIds.add(targetInfo.targetId);
+      }
+    }
+
+    const promises: Array<Promise<unknown>> = [];
+    for (const targetInfo of this.#discoveredTargetsByTargetId.values()) {
+      if (
+        targetInfo.type !== 'service_worker' ||
+        trackedTargetIds.has(targetInfo.targetId) ||
+        this.#ignoredTargets.has(targetInfo.targetId)
+      ) {
+        continue;
+      }
+      promises.push(
+        this.#connection._createSession(targetInfo, true).catch(error => {
           this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         }),
       );

@@ -2283,6 +2283,18 @@ describe('Page', function () {
       expect(size).toBeGreaterThan(0);
     });
 
+    it('should accept page ranges without spaces', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(html`
+        <div style="break-after: page">1</div>
+        <div style="break-after: page">2</div>
+        <div>3</div>
+      `);
+      const pdf = await page.pdf({pageRanges: '1-2,3'});
+      expect(pdf.byteLength).toBeGreaterThan(0);
+    });
+
     it('should respect timeout', async () => {
       const {page, server} = await getTestState();
 
@@ -2648,6 +2660,30 @@ describe('Page', function () {
           return document.visibilityState;
         }),
       ).toBe('visible');
+
+      await page1.close();
+      await page2.close();
+    });
+  });
+
+  describe('Page.tabInfo', function () {
+    it('should return the tab index and active state', async () => {
+      const {context} = await getTestState();
+      const page1 = await context.newPage();
+      const page2 = await context.newPage();
+
+      await page1.bringToFront();
+      const tabInfo1 = await page1.tabInfo();
+      const tabInfo2 = await page2.tabInfo();
+      expect(tabInfo1).toMatchObject({active: true, pinned: false});
+      expect(tabInfo2).toMatchObject({active: false, pinned: false});
+      expect(tabInfo2!.index).toBe(tabInfo1!.index + 1);
+      expect(tabInfo1!.groupId).toBeUndefined();
+      expect(tabInfo2!.groupId).toBeUndefined();
+
+      await page2.bringToFront();
+      expect(await page1.tabInfo()).toMatchObject({active: false});
+      expect(await page2.tabInfo()).toMatchObject({active: true});
 
       await page1.close();
       await page2.close();
