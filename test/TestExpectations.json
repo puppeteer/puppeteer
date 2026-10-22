@@ -11,7 +11,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support the CDP Autofill domain. ElementHandle.autofill() sends the Chrome-only `Autofill.trigger` CDP command. Added in https://github.com/puppeteer/puppeteer/pull/10565."
   },
   {
     "testIdPattern": "[bfcache.test] *",
@@ -53,14 +53,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support the CDP DeviceAccess commands that the device request prompt uses. The tests are flaky in Firefox. See https://github.com/puppeteer/puppeteer/issues/11215."
   },
   {
     "testIdPattern": "[devtools.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP-specific test. WebDriver BiDi does not expose DevTools targets, and the BiDi Page.openDevTools() throws UnsupportedOperation."
   },
   {
     "testIdPattern": "[devtools.test] *",
@@ -137,7 +137,7 @@
     "platforms": ["win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Puppeteer.launch tests fail with WebDriver BiDi on Windows CI. Skipped when BiDi CI jobs for Windows were enabled in https://github.com/puppeteer/puppeteer/pull/11578."
   },
   {
     "testIdPattern": "[network_restrictions.test] *",
@@ -158,14 +158,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support bypassing service workers. Page.setBypassServiceWorker uses the CDP `Network.setBypassServiceWorker` command."
   },
   {
     "testIdPattern": "[network.test] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi has no command to bypass service workers. The BiDi Page.setBypassServiceWorker() throws UnsupportedOperation."
   },
   {
     "testIdPattern": "[network.test] network Response.remoteAddress *",
@@ -186,7 +186,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Page.metrics() uses the CDP Performance domain. WebDriver BiDi has no equivalent, so the BiDi implementation throws UnsupportedOperation."
   },
   {
     "testIdPattern": "[page.test] Page Page.tabInfo *",
@@ -277,7 +277,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP-specific screenshot options. WebDriver BiDi does not support clip `scale`, `omitBackground`, or `fromSurface`, and Puppeteer throws UnsupportedOperation for them."
   },
   {
     "testIdPattern": "[userDataDir.test] userDataDir should not launch the browser twice with the same userDataDir *",
@@ -319,7 +319,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support web worker targets in Puppeteer. The BiDi worker implementation from https://github.com/puppeteer/puppeteer/pull/11909 works only with Chrome."
   },
   {
     "testIdPattern": "[worker.test] Workers when the worker script does not load *",
@@ -333,14 +333,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support CDP. Puppeteer implements page.accessibility with the CDP Accessibility domain, which is available over BiDi only in Chrome."
   },
   {
     "testIdPattern": "[autofill.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "chrome-headless-shell does not support the Autofill CDP domain. Autofill works only in headful Chrome and new headless Chrome."
   },
   {
     "testIdPattern": "[bluetooth-emulation.test] request prompt for emulated bluetooth device can be canceled",
@@ -395,7 +395,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support CDP, so createCDPSession fails with WebDriver BiDi. Only Chrome supports CDP sessions over BiDi (goog:cdp)."
   },
   {
     "testIdPattern": "[CDPSession.test] Target.createCDPSession should not report created targets for custom CDP sessions",
@@ -408,7 +408,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi does not report CDP Log domain entries, such as network errors from fetch. Puppeteer reports these only through CDP Log.entryAdded."
   },
   {
     "testIdPattern": "[console.test] console should return remote objects",
@@ -422,7 +422,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "BiDi does not support getting a handle for console log arguments. Firefox runs only with WebDriver BiDi, so the test does not run."
   },
   {
     "testIdPattern": "[console.test] console should return the first line of the error message in text()",
@@ -436,7 +436,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi does not report CDP Log domain entries, such as the CORS error from fetch. Puppeteer reports these only through CDP Log.entryAdded."
   },
   {
     "testIdPattern": "[console.test] console should work for Error instances",
@@ -464,7 +464,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support CDP. Puppeteer implements page.coverage with the CDP Profiler and CSS domains, which are available over BiDi only in Chrome."
   },
   {
     "testIdPattern": "[devtools.test] DevTools browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()",
@@ -478,28 +478,28 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Chrome-specific test. Firefox does not expose its DevTools as a devtools:// target with window.DevToolsAPI."
   },
   {
     "testIdPattern": "[devtools.test] DevTools should open devtools when \"devtools: true\" option is given",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Chrome-specific test. In Firefox, devtools: true adds --devtools, which does not create a devtools:// target."
   },
   {
     "testIdPattern": "[devtools.test] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not expose the DevTools front-end as a target. The test needs a Chrome DevTools target with a devtools:// URL."
   },
   {
     "testIdPattern": "[devtools.test] DevTools target.page() should return Page when calling asPage on DevTools target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not expose the DevTools front-end as a target. The test calls asPage() on a Chrome DevTools target of type 'other'."
   },
   {
     "testIdPattern": "[drag-and-drop.test] Drag n' Drop should release the mouse button when the drop fails",
@@ -519,14 +519,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP serializes return values with returnByValue (JSON-like), so Symbols do not become undefined. WebDriver BiDi serialization supports this case."
   },
   {
     "testIdPattern": "[evaluation.test] Evaluation specs Page.evaluate should return properly serialize objects with unknown type fields",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP returnByValue cannot serialize objects with fields of unknown type, such as ImageBitmap. WebDriver BiDi serialization replaces these fields with undefined."
   },
   {
     "testIdPattern": "[evaluation.test] Evaluation specs Page.evaluate should return RegEx",
@@ -547,7 +547,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP returnByValue cannot serialize circular objects, so Puppeteer returns undefined. WebDriver BiDi serialization supports circular references."
   },
   {
     "testIdPattern": "[extensions.test] *",
@@ -568,7 +568,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support the Idle Detection API. The BiDi implementation of emulateIdleState also uses CDP, which Firefox does not have."
   },
   {
     "testIdPattern": "[input.test] input tests FileChooser*",
@@ -589,14 +589,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP returnByValue cannot serialize circular objects, so jsonValue() throws 'Could not serialize referenced object'. WebDriver BiDi serialization supports circular references."
   },
   {
     "testIdPattern": "[jshandle.test] JSHandle JSHandle.jsonValue should work with dates",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP returnByValue serializes Date objects as {}, so jsonValue() does not return a Date. WebDriver BiDi serializes dates natively."
   },
   {
     "testIdPattern": "[jshandle.test] JSHandle JSHandle.toString should work with window subtypes",
@@ -610,14 +610,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "JSHandle.remoteObject() returns a CDP RemoteObject. BidiJSHandle.remoteObject() throws UnsupportedOperation in WebDriver BiDi."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Browser.disconnect *",
     "platforms": ["win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support multiple WebDriver BiDi sessions, and these tests connect a second client with puppeteer.connect (https://bugzilla.mozilla.org/show_bug.cgi?id=1862018). Skipped on Windows since the Windows BiDi CI jobs were enabled in https://github.com/puppeteer/puppeteer/pull/11578."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect *",
@@ -652,7 +652,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi browsingContext.navigate has no referrer parameter. BidiFrame.goto ignores the `referer` option, so the server does not get the custom Referer header."
   },
   {
     "testIdPattern": "[network_restrictions.test] Network Restrictions should detach from targets violating allowlist when connecting to a running browser",
@@ -721,14 +721,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in Chrome with WebDriver BiDi. The expectation went from FAIL to flaky when the chromium-bidi 0.5.12 network module rewrite landed in https://github.com/puppeteer/puppeteer/pull/12027. Needs investigation."
   },
   {
     "testIdPattern": "[network.test] network Response.fromServiceWorker Response.fromServiceWorker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi does not report whether a service worker served a response. BidiHTTPResponse.fromServiceWorker() always returns false."
   },
   {
     "testIdPattern": "[oopif.test] OOPIF should evaluate on a page with a PDF viewer",
@@ -749,7 +749,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "In Firefox, addStyleTag with inline content does not reject on a page whose CSP blocks inline styles. The test was itFailsFirefox before the expectation file, and https://github.com/puppeteer/puppeteer/pull/10572 extended the skip to WebDriver BiDi."
   },
   {
     "testIdPattern": "[page.test] Page Page.bringToFront should work",
@@ -763,7 +763,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi has no event for a renderer crash. Only CdpPage emits the 'error' event ('Page crashed!'), so the test waits forever."
   },
   {
     "testIdPattern": "[page.test] Page Page.Events.PageError should fire for all value types",
@@ -833,7 +833,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "BidiPage.setBypassCSP sends the CDP command Page.setBypassCSP. Firefox does not support CDP, and WebDriver BiDi has no command to bypass CSP."
   },
   {
     "testIdPattern": "[page.test] Page Page.setGeolocation should work",
@@ -903,7 +903,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP-specific feature: Page.screencast uses the CDP Page.startScreencast command, which Firefox does not support. Firefox also does not support prerendering."
   },
   {
     "testIdPattern": "[pwa.test] *",
@@ -965,21 +965,21 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The `fromSurface: false` option works only in headful mode, and chrome-headless-shell cannot capture a screenshot from the view. See https://github.com/puppeteer/puppeteer/pull/8496."
   },
   {
     "testIdPattern": "[screenshot.test] Screenshots Cdp should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["headless"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The CDP `fromSurface: false` screenshot option works only in headful mode. The test was headful-only since it was added in https://github.com/puppeteer/puppeteer/pull/8496."
   },
   {
     "testIdPattern": "[screenshot.test] Screenshots Page.screenshot should get screenshot bigger than the viewport",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The golden image screenshot-offscreen-clip.png matches the WebDriver BiDi output. The CDP screenshot output does not match this golden. Changed in https://github.com/puppeteer/puppeteer/pull/11398."
   },
   {
     "testIdPattern": "[target.test] Target page should return tab target id",
@@ -1007,7 +1007,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP-specific: the test uses the internal CDP TargetManager (CdpBrowser._targetManager()). Firefox with WebDriver BiDi has no CDP target manager."
   },
   {
     "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
@@ -1021,7 +1021,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Page.tracing uses the CDP Tracing domain. BiDi Page sends it over the CDP client, and Firefox does not support CDP."
   },
   {
     "testIdPattern": "[userDataDir.test] userDataDir should report a permission error when the userDataDir is not writable",
@@ -1056,28 +1056,28 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support HTTPResponse.securityDetails() with WebDriver BiDi. Puppeteer reads `goog:securityDetails` only when CDP is available, else it throws UnsupportedOperation. See https://github.com/puppeteer/puppeteer/pull/12736."
   },
   {
     "testIdPattern": "[acceptInsecureCerts.test] acceptInsecureCerts Response.securityDetails should be |null| for non-secure requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support HTTPResponse.securityDetails() with WebDriver BiDi. The method throws UnsupportedOperation, so it cannot return null. See https://github.com/puppeteer/puppeteer/pull/12736."
   },
   {
     "testIdPattern": "[acceptInsecureCerts.test] acceptInsecureCerts Response.securityDetails should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support HTTPResponse.securityDetails() with WebDriver BiDi. Puppeteer reads `goog:securityDetails` only when CDP is available, else it throws UnsupportedOperation. See https://github.com/puppeteer/puppeteer/pull/12736."
   },
   {
     "testIdPattern": "[accessibility.test] Accessibility get snapshots while the tree is re-calculated",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Fails or hangs in Chrome with WebDriver BiDi: the test clicks the button and then times out in waitForSelector('aria/Hide'). Added in https://github.com/puppeteer/puppeteer/pull/10338."
   },
   {
     "testIdPattern": "[ariaqueryhandler.test] AriaQueryHandler queryAllArray $$eval should handle many elements",
@@ -1147,21 +1147,21 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Known failure with CDP: the click misses a fixed-position button inside a scrolled cross-process iframe. See https://github.com/puppeteer/puppeteer/issues/4110. The test passes with WebDriver BiDi."
   },
   {
     "testIdPattern": "[click.test] Page.click should click with disabled javascript",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support the emulation.setScriptingEnabled command, so page.setJavaScriptEnabled(false) fails."
   },
   {
     "testIdPattern": "[click.test] Page.click should scroll and click with disabled javascript",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support the emulation.setScriptingEnabled command, so page.setJavaScriptEnabled(false) fails."
   },
   {
     "testIdPattern": "[connect.test] Puppeteer.connect should be able to connect using browserUrl, with and without trailing slash",
@@ -1231,35 +1231,35 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP Input.dispatchMouseEvent does not start a native HTML5 drag in Chrome. The mouse-based drag()/drop() API works only through WebDriver BiDi. Added in https://github.com/puppeteer/puppeteer/pull/10651."
   },
   {
     "testIdPattern": "[elementhandle.test] ElementHandle specs ElementHandle.touchMove should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not report the touchmove events that the test expects. All Touchscreen touchMove tests fail in Firefox too. Added in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
     "testIdPattern": "[elementhandle.test] ElementHandle specs ElementHandle.touchMove should work with a pre-existing Touch",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not report the touchmove events that the test expects. All Touchscreen touchMove tests fail in Firefox too. Added in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateCPUThrottling should change the CPU throttling rate successfully",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support CDP. page.emulateCPUThrottling uses CDP Emulation.setCPUThrottlingRate, and WebDriver BiDi has no equivalent."
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should work with forced-colors",
@@ -1287,49 +1287,49 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi in Firefox supports only offline network emulation, so throttled conditions throw UnsupportedOperation. Firefox also does not implement navigator.connection."
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateTimezone should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox fails this test with named timezone IDs over WebDriver BiDi. The offset and invalid-ID timezone tests pass since the Firefox 144 roll (https://github.com/puppeteer/puppeteer/pull/14322)."
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateVisionDeficiency should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "BiDi Page.emulateVisionDeficiency uses the CDP Emulation domain. Firefox does not support CDP over WebDriver BiDi."
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.viewport should be detectable by Modernizr",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Touch emulation does not work in Firefox over WebDriver BiDi. Puppeteer ignores errors from emulation.setTouchOverride (https://github.com/puppeteer/puppeteer/pull/14566)."
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.viewport should detect touch when applying viewport with touches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Touch emulation does not work in Firefox over WebDriver BiDi. Puppeteer ignores errors from emulation.setTouchOverride (https://github.com/puppeteer/puppeteer/pull/14566)."
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.viewport should support touch emulation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Touch emulation does not work in Firefox over WebDriver BiDi. Puppeteer ignores errors from emulation.setTouchOverride (https://github.com/puppeteer/puppeteer/pull/14566)."
   },
   {
     "testIdPattern": "[extensions.test] extensions can evaluate in the service worker",
@@ -1392,28 +1392,28 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP supports the `text` option of ElementHandle.press, so CDP types 'ё' instead of 'a'. The test checks the WebDriver BiDi behavior. Added in https://github.com/puppeteer/puppeteer/pull/10466."
   },
   {
     "testIdPattern": "[keyboard.test] Keyboard should report modifiers",
     "platforms": ["darwin"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Fails only in Firefox on macOS over WebDriver BiDi. Added when Firefox BiDi tests were re-enabled on macOS in https://github.com/puppeteer/puppeteer/pull/11596."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Times out in Chrome over WebDriver BiDi: the connected browsers do not reliably emit the `disconnected` event. Skipped in https://github.com/puppeteer/puppeteer/pull/11824."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The test connects multiple clients to one browser. Firefox does not support multiple WebDriver BiDi sessions. See https://bugzilla.mozilla.org/show_bug.cgi?id=1862018"
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
@@ -1427,7 +1427,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The test connects a second client with puppeteer.connect. Firefox does not support multiple WebDriver BiDi sessions: https://bugzilla.mozilla.org/show_bug.cgi?id=1862018"
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Browser.close should terminate network waiters",
@@ -1469,7 +1469,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in Chrome over CDP when the test closes all pages and then connects. The flake has been in the expectations since the mocha test runner was added in https://github.com/puppeteer/puppeteer/pull/8866."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support acceptInsecureCerts option",
@@ -1483,7 +1483,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The WebDriver BiDi implementation does not support the targetFilter option of puppeteer.connect. Only the CDP Browser and TargetManager use targetFilter."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
@@ -1504,7 +1504,7 @@
     "platforms": ["linux"],
     "parameters": ["firefox", "headful"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "On Linux, puppeteer.defaultArgs() returns headless args, so the first arg is '--headless'. A headful Firefox launch does not use '--headless', so the check fails. Added in https://github.com/puppeteer/puppeteer/pull/9004."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default arguments in Chrome",
@@ -1565,14 +1565,14 @@
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky on Windows in Chrome over CDP. Added in https://github.com/puppeteer/puppeteer/pull/9088."
   },
   {
     "testIdPattern": "[network.test] network Network Events should fire events in proper order",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in Chrome over CDP: the first three events are sometimes not request, response, requestfinished in this order. First seen on Windows headful in https://github.com/puppeteer/puppeteer/pull/9088. Extended to all platforms in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[network.test] network Page.authenticate should allow disable authentication",
@@ -1614,14 +1614,14 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in Chrome over WebDriver BiDi. The test checks the raw set-cookie header of a cross-origin XHR response. Changed from FAIL to flaky in https://github.com/puppeteer/puppeteer/pull/10374."
   },
   {
     "testIdPattern": "[network.test] network raw network headers Same-origin set-cookie subresource",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky on Windows in Chrome over CDP. Added in https://github.com/puppeteer/puppeteer/pull/9088."
   },
   {
     "testIdPattern": "[network.test] network Request.content should work with binary post data",
@@ -1666,7 +1666,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "HTTPRequest.postData() throws UnsupportedOperation when the browser does not support CDP. Firefox does not support CDP. Use fetchPostData() instead."
   },
   {
     "testIdPattern": "[network.test] network Request.postData should work with blobs",
@@ -1701,7 +1701,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support. The test calls puppeteer.connect() on a browser that already has a session."
   },
   {
     "testIdPattern": "[oopif.test] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
@@ -1722,7 +1722,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "The test uses page.createCDPSession() and CDP Target/Network commands. Firefox does not support CDP sessions over WebDriver BiDi."
   },
   {
     "testIdPattern": "[oopif.test] OOPIF should keep track of a frames OOP state",
@@ -1820,7 +1820,7 @@
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky on Linux Chrome/CDP. Became visible after mocha retries were removed in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[queryObjects.test] page.queryObjects should fail for disposed handles",
@@ -1867,7 +1867,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in Chrome/CDP. Became visible after mocha retries were removed in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should be abortable with custom error codes",
@@ -1923,105 +1923,105 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
   },
   {
     "testIdPattern": "[target.test] Target should create a worker from a service worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
   },
   {
     "testIdPattern": "[target.test] Target should create a worker from a shared worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi. Puppeteer does not create targets for shared workers, so no 'shared_worker' target appears."
   },
   {
     "testIdPattern": "[target.test] Target should create a worker from a shared worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi. Puppeteer does not create targets for shared workers, so no 'shared_worker' target appears."
   },
   {
     "testIdPattern": "[target.test] Target should have an opener",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi: Target.opener() throws UnsupportedOperation."
   },
   {
     "testIdPattern": "[target.test] Target should have an opener",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi: BidiPageTarget.opener() throws UnsupportedOperation."
   },
   {
     "testIdPattern": "[target.test] Target should report when a service worker is created and destroyed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi: Puppeteer BiDi does not create service worker targets. It only creates targets for pages, frames and dedicated workers."
   },
   {
     "testIdPattern": "[target.test] Target should report when a service worker is created and destroyed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Not supported in WebDriver BiDi: Puppeteer BiDi does not create service worker targets. It only creates targets for pages, frames and dedicated workers."
   },
   {
     "testIdPattern": "[TargetManager.test] TargetManager should handle targets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "CDP-only test: it calls CdpBrowser._targetManager(), which does not exist in the WebDriver BiDi implementation."
   },
   {
     "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.tap should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox reports different touch and pointer event values than the test asserts. The test checks exact values that come from Chrome."
   },
   {
     "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.tap should work if another touch is already active",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox reports different touch and pointer event values than the test asserts. Added with the test in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
     "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.touchMove should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox reports different touch and pointer event values than the test asserts. The test checks exact values that come from Chrome."
   },
   {
     "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.touchMove should work when moving touches separately",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Fails in Firefox BiDi: the recorded pointer and touch events do not match the events that the test expects. Added in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
     "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Fails in Firefox BiDi: the recorded pointer and touch events do not match the events that the test expects. Added in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
     "testIdPattern": "[touchscreen.test] Touchscreen Touchscreen.prototype.touchMove should work with two touches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Fails in Firefox BiDi: the recorded pointer and touch events do not match the events that the test expects. Added in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
     "testIdPattern": "[userDataDir.test] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
@@ -2056,7 +2056,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "WebDriver BiDi does not support WebWorker.close(). BidiWebWorker does not override close(), so close() throws UnsupportedOperation. CDP support added in https://github.com/puppeteer/puppeteer/pull/11870."
   },
   {
     "testIdPattern": "[worker.test] Workers should report errors",
@@ -2083,7 +2083,7 @@
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in headless Chrome on Windows: the test expects exactly one Network.requestWillBeSent event for the navigation. Added when test retries were removed in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[mouse.test] Mouse should select the text with mouse",
@@ -2104,14 +2104,14 @@
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in headless Chrome on Linux: the test expects exactly one request event with a response after page.goto(). Added when test retries were removed in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[network.test] network raw network headers Same-origin set-cookie subresource",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in headful Chrome: the set-cookie header is sometimes not in the XHR response headers. Added when test retries were removed in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[oopif.test] OOPIF should support lazy OOP frames",
@@ -2125,7 +2125,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "chrome-headless-shell does not change document.visibilityState when bringToFront() activates a page. The test needs headful or new headless Chrome."
   },
   {
     "testIdPattern": "[page.test] Page Page.resize should resize the browser window to fit page content when fullscreen",
@@ -2139,21 +2139,21 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in headful Chrome: the requestfailed count for the aborted CSS request is sometimes not 1 when page.goto() resolves. Added when test retries were removed in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should work with redirects",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky on Windows Chrome headless with CDP. The cause is unknown. Added in https://github.com/puppeteer/puppeteer/pull/9897."
   },
   {
     "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should work with redirects",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky on Windows headful Chrome with CDP. The cause is unknown. Added in https://github.com/puppeteer/puppeteer/pull/9091."
   },
   {
     "testIdPattern": "[target.test] Target should close a service worker",
@@ -2174,6 +2174,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Flaky in chrome-headless-shell: the worker realm can exist before the worker script runs, so workerFunction is not yet defined. Added in https://github.com/puppeteer/puppeteer/pull/9897."
   }
 ]

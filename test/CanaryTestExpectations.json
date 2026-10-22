@@ -4,14 +4,14 @@
     "platforms": ["darwin", "linux"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["TIMEOUT"],
-    "comment": "Needs investigation"
+    "comment": "Times out in Chrome Canary with WebDriver BiDi on Linux and macOS. The cause is unknown. Added in https://github.com/puppeteer/puppeteer/pull/14460."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
     "platforms": ["win32"],
     "parameters": ["cdp"],
     "expectations": ["TIMEOUT"],
-    "comment": "Needs investigation"
+    "comment": "Times out in Chrome Canary on Windows with CDP. The same test is also flaky (PASS/TIMEOUT) on Windows in stable Chrome. The cause is unknown. Added in https://github.com/puppeteer/puppeteer/pull/14460."
   },
   {
     "testIdPattern": "[waittask.test] waittask specs protocol timeout *",
