@@ -699,18 +699,20 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
 
     request._fromMemoryCache = fromMemoryCache;
+    // With request interception enabled, Network.loadingFailed may have
+    // arrived before the Fetch.requestPaused that created this request.
+    const loadingFailed = this.#networkEventManager.getRequestWillBeSent(
+      event.requestId,
+    )?.loadingFailed;
     this.#networkEventManager.storeRequest(event.requestId, request);
     this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
     this.emit(NetworkManagerEvent.Request, request);
-    // With request interception enabled, Network.loadingFailed may have
-    // arrived before the Fetch.requestPaused that created this request. Emit
-    // the failure once the request's interception handlers have run.
-    const loadingFailedEvent =
-      this.#networkEventManager.takePendingLoadingFailed(event.requestId);
     const interceptionsFinalized = request.finalizeInterceptions();
-    if (loadingFailedEvent) {
+    if (loadingFailed) {
+      // Emit the failure once the request's interception handlers have run,
+      // using the session that reported it.
       void interceptionsFinalized.finally(() => {
-        this.#emitLoadingFailed(client, loadingFailedEvent);
+        this.#emitLoadingFailed(loadingFailed.client, loadingFailed.event);
       });
     }
   }
@@ -958,13 +960,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       // With request interception enabled, the request is only created on
       // Fetch.requestPaused, which can arrive after Network.loadingFailed.
       // Keep the failure until then so that `requestfailed` is still emitted.
-      if (
-        this.#userRequestInterceptionEnabled &&
-        this.#networkEventManager.getRequestWillBeSent(event.requestId)
-      ) {
-        this.#networkEventManager.storePendingLoadingFailed(
+      if (this.#userRequestInterceptionEnabled) {
+        this.#networkEventManager.storeLoadingFailedBeforeRequest(
           event.requestId,
           event,
+          client,
         );
       }
       // For certain requestIds we never receive requestWillBeSent event.
