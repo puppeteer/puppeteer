@@ -3041,7 +3041,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * To generate a PDF with the `screen` media type, call
    * {@link Page.emulateMediaType | `page.emulateMediaType('screen')`} before
-   * calling `page.pdf()`.
+   * calling `page.pdf()`. Note that this disables `@media print` stylesheets,
+   * which may cause layout issues on pages that rely on print styles for
+   * pagination. Call
+   * {@link Page.emulateMediaType | `page.emulateMediaType(null)`} to restore
+   * the default `print` media type.
    *
    * By default, `page.pdf()` generates a pdf with modified colors for printing.
    * Use the
