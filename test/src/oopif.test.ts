@@ -260,6 +260,18 @@ describe('OOPIF', function () {
       document.body.style.padding = '50px';
     });
     await frame.waitForSelector('#test-button', {visible: true});
+    // The page layout change moves the OOP iframe. The browser routes input
+    // with hit-test data from the last compositor frame. Wait for two
+    // animation frames in the main frame so that the browser has hit-test
+    // data for the new iframe position. Otherwise, the click can go to the
+    // <iframe> element in the main frame instead of the button.
+    await page.evaluate(() => {
+      return new Promise(resolve => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resolve);
+        });
+      });
+    });
     await frame.click('#test-button');
     await frame.waitForSelector('#clicked');
   });
