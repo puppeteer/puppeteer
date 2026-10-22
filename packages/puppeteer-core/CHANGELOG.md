@@ -1,5 +1,41 @@
 # Changelog
 
+## [25.16.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.15.0...puppeteer-core-v25.16.0) (2026-10-22)
+
+
+### 🎉 Features
+
+* **network:** support unmodified post data via HTTPRequest.content() and decode base64 post data ([#15585](https://github.com/puppeteer/puppeteer/issues/15585)) ([ee2a8de](https://github.com/puppeteer/puppeteer/commit/ee2a8de23e56981b24a03a2b357d3bfe08a3dc49))
+* roll to Chrome 156.0.8078.47 ([#15621](https://github.com/puppeteer/puppeteer/issues/15621)) ([48705f6](https://github.com/puppeteer/puppeteer/commit/48705f6f6b3cfc248cf3e8679221e8aad9e8be95))
+
+
+### 🛠️ Fixes
+
+* **bidi:** accept page ranges without spaces in Page.pdf() ([#15628](https://github.com/puppeteer/puppeteer/issues/15628)) ([49372d1](https://github.com/puppeteer/puppeteer/commit/49372d1c02eca6816e68f1b9295d512bb1fab4a4))
+* **bidi:** update request headers on response and error events ([#15612](https://github.com/puppeteer/puppeteer/issues/15612)) ([611b320](https://github.com/puppeteer/puppeteer/commit/611b320bc4c1e0ffb309cc0a2a59a351a550d888))
+* **cdp:** destroy replaced service_worker target when re-installing an extension ([#15614](https://github.com/puppeteer/puppeteer/issues/15614)) ([e6686fb](https://github.com/puppeteer/puppeteer/commit/e6686fb094e09a0313eee5897d459f5f78dec495))
+* **cdp:** fall back to blockedReason when loadingFailed errorText is empty ([#15624](https://github.com/puppeteer/puppeteer/issues/15624)) ([66ee3ea](https://github.com/puppeteer/puppeteer/commit/66ee3eaa3ee83a0a704777dc349e0369cd70a7c6))
+* **cdp:** ignore fileChooserOpened events without backendNodeId ([#15625](https://github.com/puppeteer/puppeteer/issues/15625)) ([2bd58eb](https://github.com/puppeteer/puppeteer/commit/2bd58eb8f0d68a91a397a19d434b20716adb7462))
+* **cdp:** skip undefined header values in HTTPRequest.respond() ([#15595](https://github.com/puppeteer/puppeteer/issues/15595)) ([4dd58bc](https://github.com/puppeteer/puppeteer/commit/4dd58bc1625e5c0a33b8f1f0419fb23975d5aac4))
+* **connect:** report permission denied when DevToolsActivePort fails with EPERM/EACCES ([#15615](https://github.com/puppeteer/puppeteer/issues/15615)) ([64ee541](https://github.com/puppeteer/puppeteer/commit/64ee5413680cba145fa0167f283807f49163f44f))
+* **locators:** reject read-only elements and unaccepted values in Locator.fill ([#15603](https://github.com/puppeteer/puppeteer/issues/15603)) ([46cfff5](https://github.com/puppeteer/puppeteer/commit/46cfff5dda570ba444662a1278db749b274f4ecd))
+* log browser WebSocket transport errors ([#15519](https://github.com/puppeteer/puppeteer/issues/15519)) ([027927b](https://github.com/puppeteer/puppeteer/commit/027927b913303f6e2bf846a5e7eef303bca4375e))
+* make deleteMatchingCookies respect domain, path, url and partitionKey ([#15581](https://github.com/puppeteer/puppeteer/issues/15581)) ([deab4f3](https://github.com/puppeteer/puppeteer/commit/deab4f37e194272d782ab30bacf6ed5c52297a1f))
+* **network:** intercept requests on the session that paused them ([#15605](https://github.com/puppeteer/puppeteer/issues/15605)) ([68ae9b8](https://github.com/puppeteer/puppeteer/commit/68ae9b83738f072b914ae5efc615b8ea4c7d4276))
+* **network:** return post data of a paused request without asking Chrome ([#15607](https://github.com/puppeteer/puppeteer/issues/15607)) ([c7fcd9a](https://github.com/puppeteer/puppeteer/commit/c7fcd9a8ef0d29fdf48e247df1a4d17761390cc2))
+* **pdf:** use exact CSS unit ratios in unitToPixels and respect lengthUnit for default paper size ([#15611](https://github.com/puppeteer/puppeteer/issues/15611)) ([ba0fdea](https://github.com/puppeteer/puppeteer/commit/ba0fdea565265b2bee8fa2a85bec9aaac7525ce9))
+* respect the navigation timeout after a follow-up navigation ([#15488](https://github.com/puppeteer/puppeteer/issues/15488)) ([bd227ce](https://github.com/puppeteer/puppeteer/commit/bd227cea68835f8e6bbc983b9ca4564cebfa8938))
+* return null from SerializedAXNode.elementHandle() after a navigation ([#15634](https://github.com/puppeteer/puppeteer/issues/15634)) ([244e68c](https://github.com/puppeteer/puppeteer/commit/244e68c402e1ea9a82af26beb119df17b1599c75))
+* roll to Firefox 158.0.1 ([#15619](https://github.com/puppeteer/puppeteer/issues/15619)) ([6fde1bd](https://github.com/puppeteer/puppeteer/commit/6fde1bde4ac50d9adbb96ab1e15141e1db488ce1))
+* **webdriver:** type an apostrophe for the Quote key ([#15622](https://github.com/puppeteer/puppeteer/issues/15622)) ([69f1b57](https://github.com/puppeteer/puppeteer/commit/69f1b57ce7c4a659682dd3dbe9700d6b48fa27ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.5 to 3.2.6
+
 ## [25.15.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.14.0...puppeteer-core-v25.15.0) (2026-10-20)
 
 
