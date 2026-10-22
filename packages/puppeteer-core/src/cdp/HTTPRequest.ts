@@ -251,7 +251,11 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   protected canBeIntercepted(): boolean {
-    return !this.url().startsWith('data:') && !this._fromMemoryCache;
+    return (
+      !this.url().startsWith('data:') &&
+      !this._fromMemoryCache &&
+      Boolean(this._interceptionId)
+    );
   }
 
   /**
