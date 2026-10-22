@@ -135,7 +135,8 @@ export interface SerializedAXNode {
    * Get an ElementHandle for this AXNode if available.
    *
    * If the underlying DOM element has been disposed, the method might return an
-   * error.
+   * error. If the frame has navigated to a new document since the snapshot,
+   * the method returns `null`.
    */
   elementHandle(): Promise<ElementHandle | null>;
 }
@@ -387,6 +388,7 @@ class AXNode {
   #ignored: boolean;
   #cachedHasFocusableChild?: boolean;
   #realm: Realm;
+  #loaderId: string;
 
   constructor(realm: Realm, payload: Protocol.Accessibility.AXNode) {
     this.payload = payload;
@@ -397,6 +399,7 @@ class AXNode {
       ? this.payload.description.value
       : undefined;
     this.#realm = realm;
+    this.#loaderId = (realm.environment as CdpFrame)._loaderId;
     for (const property of this.payload.properties || []) {
       if (property.name === 'editable') {
         this.#richlyEditable = property.value.value === 'richtext';
@@ -620,6 +623,13 @@ class AXNode {
         if (!this.payload.backendDOMNodeId) {
           return null;
         }
+        // After a navigation, the backend node ID can belong to a different
+        // node in the new document, for example in a new renderer process.
+        if (
+          (this.#realm.environment as CdpFrame)._loaderId !== this.#loaderId
+        ) {
+          return null;
+        }
         using handle = await this.#realm.adoptBackendNode(
           this.payload.backendDOMNodeId,
         );
@@ -642,7 +652,7 @@ class AXNode {
       backendNodeId: this.payload.backendDOMNodeId,
       // LoaderId is an experimental mechanism to establish unique IDs across
       // navigations.
-      loaderId: (this.#realm.environment as CdpFrame)._loaderId,
+      loaderId: this.#loaderId,
     };
 
     type UserStringProperty =

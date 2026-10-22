@@ -1,5 +1,12 @@
 [
   {
+    "testIdPattern": "[a11yLoaderId.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "not supported, CDP-specific test"
+  },
+  {
     "testIdPattern": "[autofill.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -320,13 +327,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL", "PASS"],
     "comment": "BiDi does not wait for the worker script to load, so evaluate sometimes runs in the worker realm before it is destroyed"
-  },
-  {
-    "testIdPattern": "[a11yLoaderId.test] Accessibility loaderId should match loaderId for iframes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "not supported, CDP-specific test"
   },
   {
     "testIdPattern": "[accessibility.test] *",
