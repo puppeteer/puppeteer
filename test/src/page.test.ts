@@ -2283,6 +2283,18 @@ describe('Page', function () {
       expect(size).toBeGreaterThan(0);
     });
 
+    it('should accept page ranges without spaces', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(html`
+        <div style="break-after: page">1</div>
+        <div style="break-after: page">2</div>
+        <div>3</div>
+      `);
+      const pdf = await page.pdf({pageRanges: '1-2,3'});
+      expect(pdf.byteLength).toBeGreaterThan(0);
+    });
+
     it('should respect timeout', async () => {
       const {page, server} = await getTestState();
 

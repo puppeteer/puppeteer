@@ -513,7 +513,11 @@ export class BidiPage extends Page {
       scale,
       preferCSSPageSize,
     } = parsePDFOptions(options, 'cm');
-    const pageRanges = ranges ? ranges.split(', ') : [];
+    const pageRanges = ranges
+      ? ranges.split(',').map(range => {
+          return range.trim();
+        })
+      : [];
 
     await firstValueFrom(
       from(
