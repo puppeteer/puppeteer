@@ -420,6 +420,16 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     ) {
       const {requestId: networkRequestId} = event;
 
+      const previousRequestWillBeSent =
+        this.#networkEventManager.getRequestWillBeSent(networkRequestId);
+      if (previousRequestWillBeSent && event.redirectResponse) {
+        this.#onRequest(
+          previousRequestWillBeSent.client,
+          previousRequestWillBeSent.event,
+          undefined,
+        );
+      }
+
       this.#networkEventManager.storeRequestWillBeSent(
         networkRequestId,
         event,
@@ -532,7 +542,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       requestWillBeSentEvent.request.url !== event.request.url ||
       requestWillBeSentEvent.request.method !== event.request.method
     ) {
-      this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+      this.#onRequest(networkClient, requestWillBeSentEvent, undefined);
       this.#networkEventManager.storeRequestPaused(
         networkRequestId,
         event,
@@ -631,6 +641,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     fetchClient = client,
     fromMemoryCache = false,
   ): void {
+    this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
     let redirectChain: CdpHTTPRequest[] = [];
     if (event.redirectResponse) {
       // We want to emit a response and requestfinished for the
@@ -700,7 +711,6 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
     request._fromMemoryCache = fromMemoryCache;
     this.#networkEventManager.storeRequest(event.requestId, request);
-    this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
     this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
   }
