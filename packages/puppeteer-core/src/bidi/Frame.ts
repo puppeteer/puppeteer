@@ -384,7 +384,17 @@ export class BidiFrame extends Frame {
               if (navigation === null) {
                 return of(null);
               }
-              return this.#waitForLoad$(options).pipe(
+              // Wait for the commit before the lifecycle events. Lifecycle
+              // events of the previous document (e.g. the error page of a
+              // failed navigation) can come after this navigation starts.
+              return fromEmitterEvent(
+                this.browsingContext,
+                'navigationCommitted',
+              ).pipe(
+                first(),
+                switchMap(() => {
+                  return this.#waitForLoad$(options);
+                }),
                 delayWhen(() => {
                   if (frames.length === 0) {
                     return of(undefined);

@@ -393,6 +393,36 @@ const browserNotClosedError = new Error(
   'A manually launched browser was not closed!',
 );
 
+const WARM_UP_TIMEOUT = 120_000;
+
+/**
+ * Launches and closes the browser one time before the tests start.
+ *
+ * The first browser launch on a new CI runner can take more than the test
+ * launch timeout (e.g. Firefox on a cold disk cache). The warm-up launch has a
+ * long timeout. It loads the browser files into the OS cache, so that the
+ * launches in the test hooks are fast.
+ */
+async function warmUpBrowser(context: Mocha.Context): Promise<void> {
+  context.timeout(WARM_UP_TIMEOUT + 10_000);
+  const start = performance.now();
+  try {
+    await verifyExecutable();
+    const browser = await (puppeteer as unknown as PuppeteerNode).launch({
+      ...processVariables.defaultBrowserOptions,
+      timeout: WARM_UP_TIMEOUT,
+      protocolTimeout: WARM_UP_TIMEOUT,
+    });
+    await browser.close();
+    console.log(
+      `Browser warm-up finished in ${Math.round(performance.now() - start)}ms`,
+    );
+  } catch (error) {
+    // Do not fail here. The test hooks report launch errors.
+    console.warn('Browser warm-up failed', error);
+  }
+}
+
 export const mochaHooks: Mocha.RootHookObject = {
   async beforeAll(this: Mocha.Context): Promise<void> {
     const {server, httpsServer} = await setupServer();
@@ -416,6 +446,8 @@ export const mochaHooks: Mocha.RootHookObject = {
         'puppeteer.js',
       ),
     );
+
+    await warmUpBrowser(this);
   },
 
   async afterAll(this: Mocha.Context): Promise<void> {
