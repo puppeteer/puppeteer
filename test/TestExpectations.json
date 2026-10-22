@@ -322,7 +322,7 @@
     "comment": "BiDi does not wait for the worker script to load, so evaluate sometimes runs in the worker realm before it is destroyed"
   },
   {
-    "testIdPattern": "[a11yLoaderId.test] Accessibility loaderId should match loaderId for iframes",
+    "testIdPattern": "[a11yLoaderId.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],

@@ -63,4 +63,20 @@ describe('Accessibility loaderId', function () {
       ],
     });
   });
+
+  it('should not resolve an element handle after a cross-process navigation', async () => {
+    const {page, server} = await getTestState();
+    await page.goto(server.PREFIX + '/input/button.html');
+    const snapshot = await page.accessibility.snapshot();
+    const button = snapshot!.children!.find(node => {
+      return node.role === 'button';
+    })!;
+
+    await page.goto(server.CROSS_PROCESS_PREFIX + '/input/button.html');
+    // Assigns backend node IDs in the new renderer process.
+    await page.accessibility.snapshot();
+
+    using handle = await button.elementHandle();
+    expect(handle).toBeNull();
+  });
 });
