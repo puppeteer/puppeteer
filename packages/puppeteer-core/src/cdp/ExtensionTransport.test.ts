@@ -169,6 +169,36 @@ describe('ExtensionTransport', function () {
       ]);
     });
 
+    it('returns pageTargetSessionId on Target.attachToTarget for pageTargetId', async () => {
+      expect(
+        await testTranportResponse({
+          id: 1,
+          method: 'Target.attachToTarget',
+          params: {
+            targetId: 'pageTargetId',
+            flatten: true,
+          },
+        }),
+      ).toStrictEqual([
+        '{"id":1,"method":"Target.attachToTarget","result":{"sessionId":"pageTargetSessionId"}}',
+      ]);
+    });
+
+    it('returns tabTargetSessionId on Target.attachToTarget for tabTargetId', async () => {
+      expect(
+        await testTranportResponse({
+          id: 1,
+          method: 'Target.attachToTarget',
+          params: {
+            targetId: 'tabTargetId',
+            flatten: true,
+          },
+        }),
+      ).toStrictEqual([
+        '{"id":1,"method":"Target.attachToTarget","result":{"sessionId":"tabTargetSessionId"}}',
+      ]);
+    });
+
     it('rewrites session id for pageTargetSessionId commands', async () => {
       const {fakeSendCommand} = mockChrome();
       const transport = await ExtensionTransport.connectTab(1);
@@ -223,6 +253,41 @@ describe('ExtensionTransport', function () {
       expect(onmessageFake.args).toStrictEqual([
         [
           '{"id":1,"sessionId":"testSessionId","method":"Runtime.evaluate","error":{"code":-999,"message":"test error"}}',
+        ],
+      ]);
+    });
+
+    it('does not add pageTargetSessionId to root connection responses', async () => {
+      const error = new Error('Not allowed');
+      // @ts-expect-error not-standard.
+      error.code = -32000;
+      mockChrome(
+        sinon.fake.rejects<
+          [chrome.debugger.Debuggee, string, object | undefined],
+          Promise<object>
+        >(error),
+      );
+      const transport = await ExtensionTransport.connectTab(1);
+      const onmessageFake = sinon.fake();
+      transport.onmessage = onmessageFake;
+      transport.send(
+        JSON.stringify({
+          id: 1,
+          method: 'Target.attachToTarget',
+          params: {
+            targetId: 'unknownTargetId',
+          },
+        }),
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 0);
+      });
+      await new Promise(resolve => {
+        return setTimeout(resolve, 0);
+      });
+      expect(onmessageFake.args).toStrictEqual([
+        [
+          '{"id":1,"method":"Target.attachToTarget","error":{"code":-32000,"message":"Not allowed"}}',
         ],
       ]);
     });
