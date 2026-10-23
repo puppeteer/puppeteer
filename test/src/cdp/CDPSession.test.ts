@@ -72,7 +72,7 @@ describe('Target.createCDPSession', function () {
       if (typeof name !== 'string') {
         return;
       }
-      events.add((name as string).split('.').shift());
+      events.add(name.split('.').shift());
     });
     await Promise.all([
       waitEvent(client, 'Network.requestWillBeSent'),

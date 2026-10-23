@@ -41,6 +41,15 @@ describe('EventEmitter', () => {
         const returnValue = emitter[methodName]('foo', listener);
         expect(returnValue).toBe(emitter);
       });
+
+      it(`${methodName}: sends event type and data to wildcard handler`, () => {
+        const listener = sinon.spy();
+        const data = {bar: 1};
+        emitter[methodName]('*', listener);
+        emitter.emit('foo', data);
+        expect(listener.callCount).toEqual(1);
+        expect(listener.firstCall.args).toEqual(['foo', data]);
+      });
     };
     onTests('on');
   });
@@ -81,6 +90,16 @@ describe('EventEmitter', () => {
       const listener = sinon.spy();
       const returnValue = emitter.once('foo', listener);
       expect(returnValue).toBe(emitter);
+    });
+
+    it('sends event type and data to wildcard handler once', () => {
+      const listener = sinon.spy();
+      const data = {bar: 1};
+      emitter.once('*', listener);
+      emitter.emit('foo', data);
+      emitter.emit('foo', data);
+      expect(listener.callCount).toEqual(1);
+      expect(listener.firstCall.args).toEqual(['foo', data]);
     });
   });
 

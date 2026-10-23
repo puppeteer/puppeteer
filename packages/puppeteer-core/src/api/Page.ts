@@ -922,7 +922,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   override on<K extends keyof EventsWithWildcard<PageEvents>>(
     type: K,
-    handler: (event: EventsWithWildcard<PageEvents>[K]) => void,
+    handler: (
+      event: EventsWithWildcard<PageEvents>[K],
+      eventData: K extends '*' ? PageEvents[keyof PageEvents] : never,
+    ) => void,
   ): this {
     if (type !== PageEvent.Request) {
       return super.on(type, handler);
@@ -933,7 +936,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
     if (wrapper === undefined) {
       wrapper = (event: HTTPRequest) => {
         event.enqueueInterceptAction(() => {
-          return handler(event as EventsWithWildcard<PageEvents>[K]);
+          return handler(
+            event as EventsWithWildcard<PageEvents>[K],
+            undefined as never,
+          );
         });
       };
       this.#requestHandlers.set(
@@ -952,7 +958,10 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   override off<K extends keyof EventsWithWildcard<PageEvents>>(
     type: K,
-    handler: (event: EventsWithWildcard<PageEvents>[K]) => void,
+    handler?: (
+      event: EventsWithWildcard<PageEvents>[K],
+      eventData: K extends '*' ? PageEvents[keyof PageEvents] : never,
+    ) => void,
   ): this {
     if (type === PageEvent.Request) {
       handler =
