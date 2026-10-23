@@ -902,6 +902,40 @@ describe('network', function () {
       expect(redirectChain).toHaveLength(1);
       expect(redirectChain[0]!.url()).toContain('/foo.html');
     });
+    it('should treat a redirect status without a Location header as a final response', async () => {
+      const {page, server} = await getTestState();
+
+      const events: string[] = [];
+      page.on('request', request => {
+        if (!isFavicon(request)) {
+          events.push(`${request.method()} ${request.url()}`);
+        }
+      });
+      page.on('response', response => {
+        if (!isFavicon(response)) {
+          events.push(`${response.status()} ${response.url()}`);
+        }
+      });
+      page.on('requestfinished', request => {
+        if (!isFavicon(request)) {
+          events.push(`DONE ${request.url()}`);
+        }
+      });
+      page.on('requestfailed', request => {
+        if (!isFavicon(request)) {
+          events.push(`FAIL ${request.url()}`);
+        }
+      });
+      server.setRoute('/no-location.html', (_req, res) => {
+        res.statusCode = 302;
+        res.end('final response');
+      });
+      const url = server.PREFIX + '/no-location.html';
+      const response = (await page.goto(url))!;
+      expect(events).toEqual([`GET ${url}`, `302 ${url}`, `DONE ${url}`]);
+      expect(response.status()).toBe(302);
+      expect(response.request().redirectChain()).toHaveLength(0);
+    });
   });
 
   describe('Request.isNavigationRequest', () => {
