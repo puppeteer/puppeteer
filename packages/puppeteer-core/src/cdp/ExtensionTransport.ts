@@ -157,21 +157,46 @@ export class ExtensionTransport implements ConnectionTransport {
           });
           return;
         }
+        break;
+      }
+      case 'Target.attachToTarget': {
+        switch (parsed.params?.targetId) {
+          case pageTargetInfo.targetId:
+            this.#dispatchResponse({
+              id: parsed.id,
+              sessionId: parsed.sessionId,
+              method: parsed.method,
+              result: {
+                sessionId: 'pageTargetSessionId',
+              },
+            });
+            return;
+          case tabTargetInfo.targetId:
+            this.#dispatchResponse({
+              id: parsed.id,
+              sessionId: parsed.sessionId,
+              method: parsed.method,
+              result: {
+                sessionId: 'tabTargetSessionId',
+              },
+            });
+            return;
+        }
+        break;
       }
     }
-    if (parsed.sessionId === 'pageTargetSessionId') {
-      delete parsed.sessionId;
-    }
+    const sessionId =
+      parsed.sessionId === 'pageTargetSessionId' ? undefined : parsed.sessionId;
     chrome.debugger
       .sendCommand(
-        {tabId: this.#tabId, sessionId: parsed.sessionId},
+        {tabId: this.#tabId, sessionId},
         parsed.method,
         parsed.params,
       )
       .then(response => {
         this.#dispatchResponse({
           id: parsed.id,
-          sessionId: parsed.sessionId ?? 'pageTargetSessionId',
+          sessionId: parsed.sessionId,
           method: parsed.method,
           result: response,
         });
@@ -179,7 +204,7 @@ export class ExtensionTransport implements ConnectionTransport {
       .catch(err => {
         this.#dispatchResponse({
           id: parsed.id,
-          sessionId: parsed.sessionId ?? 'pageTargetSessionId',
+          sessionId: parsed.sessionId,
           method: parsed.method,
           error: {
             code: err?.code,
