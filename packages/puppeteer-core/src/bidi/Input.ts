@@ -269,6 +269,8 @@ const getBidiKeyValue = (key: KeyInput) => {
       return ']';
     case 'Quote':
       return "'";
+    case 'Space':
+      return ' ';
     default:
       throw new Error(`Unknown key: "${key}"`);
   }

@@ -118,6 +118,18 @@ describe('Keyboard', function () {
       }),
     ).toBe('a');
   });
+  it('should press the Space key', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    using textarea = (await page.$('textarea'))!;
+    await textarea.press('Space');
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('textarea')!.value;
+      }),
+    ).toBe(' ');
+  });
   it('ElementHandle.press should not support |text| option', async () => {
     const {page, server} = await getTestState();
 
