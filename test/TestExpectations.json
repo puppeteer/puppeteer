@@ -1777,27 +1777,6 @@
     "comment": "Chrome-specific test"
   },
   {
-    "testIdPattern": "[pipe.test] Puppeteer.launch should fire \"disconnected\" when closing with pipe",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
-  },
-  {
-    "testIdPattern": "[pipe.test] Puppeteer.launch should support the pipe argument",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
-  },
-  {
-    "testIdPattern": "[pipe.test] Puppeteer.launch should support the pipe option",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
-  },
-  {
     "testIdPattern": "[proxy.test] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
@@ -2013,25 +1992,11 @@
     "comment": "Fails in Firefox BiDi: the recorded pointer and touch events do not match the events that the test expects. Added in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
-    "testIdPattern": "[userDataDir.test] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
-  },
-  {
     "testIdPattern": "[waittask.test] waittask specs protocol timeout *",
     "platforms": ["darwin"],
     "parameters": ["firefox", "headful", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "session.new before the test consistently times out on mac + headful since 147"
-  },
-  {
-    "testIdPattern": "[webExtension.test] webExtension can install and uninstall an extension",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "https://github.com/puppeteer/puppeteer/issues/14594"
   },
   {
     "testIdPattern": "[webmcp.test] *",
