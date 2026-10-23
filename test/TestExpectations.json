@@ -1332,20 +1332,6 @@
     "comment": "Touch emulation does not work in Firefox over WebDriver BiDi. Puppeteer ignores errors from emulation.setTouchOverride (https://github.com/puppeteer/puppeteer/pull/14566)."
   },
   {
-    "testIdPattern": "[extensions.test] extensions can evaluate in the service worker",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"],
-    "comment": "Flaky test needing investigation, seems to be MacOS only."
-  },
-  {
-    "testIdPattern": "[extensions.test] extensions can evaluate in the service worker",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"],
-    "comment": "Flaky or failing on Windows. See https://github.com/puppeteer/puppeteer/issues/13417"
-  },
-  {
     "testIdPattern": "[fixtures.test] Fixtures should close the browser when the node process closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
