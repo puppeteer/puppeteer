@@ -83,7 +83,8 @@
       ],
       "output": [
         "lib/**",
-        "!lib/package.json"
+        "!lib/package.json",
+        "!lib/types.d.ts"
       ]
     },
     "build:types": {

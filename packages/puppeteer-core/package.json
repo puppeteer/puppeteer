@@ -91,7 +91,9 @@
         "Herebyfile.mjs"
       ],
       "output": [
-        "lib/**"
+        "lib/**",
+        "!lib/types.d.ts",
+        "!lib/es5-iife/**"
       ]
     },
     "build:es5": {
@@ -100,7 +102,7 @@
         "rollup.config.mjs"
       ],
       "output": [
-        "lib/es5-iife/puppeteer-core-browser.js"
+        "lib/es5-iife/**"
       ],
       "dependencies": [
         "build:tsc",
