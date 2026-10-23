@@ -69,7 +69,8 @@ describe('Workers', function () {
     ]);
   });
   it('should report console logs', async () => {
-    const {page} = await getTestState();
+    const {page, browser} = await getTestState();
+    const isCdp = browser.protocol === 'cdp';
 
     const [message] = await Promise.all([
       waitEvent(page, 'console'),
@@ -82,6 +83,7 @@ describe('Workers', function () {
       url: '',
       lineNumber: 0,
       columnNumber: 8,
+      ...(isCdp ? {scriptId: expect.any(String)} : {}),
     });
   });
   it('should work with console logs', async () => {
