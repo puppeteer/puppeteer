@@ -190,4 +190,54 @@ describe('Firefox', () => {
     assert.ok(compareVersions('110.0a1', '111.0a1') <= -1);
     assert.ok(compareVersions('111.0a1', '111.0a1') === 0);
   });
+
+  it('should compare version parts numerically', () => {
+    assert.ok(compareVersions('139.0', '140.0') < 0);
+    assert.ok(compareVersions('9.0', '10.0') < 0);
+    assert.ok(compareVersions('138.0', '138.0.1') < 0);
+    assert.ok(compareVersions('138.0.1', '138.0') > 0);
+    assert.ok(compareVersions('138.0', '138.0.0') === 0);
+  });
+
+  it('should order nightly before beta before release', () => {
+    assert.ok(compareVersions('139.0a1', '140.0') < 0);
+    assert.ok(compareVersions('139.0a1', '139.0b1') < 0);
+    assert.ok(compareVersions('139.0b1', '139.0') < 0);
+    assert.ok(compareVersions('140.0a1', '140.0a2') < 0);
+    assert.ok(compareVersions('140.0b2', '140.0b10') < 0);
+    assert.ok(compareVersions('128.5.0esr', '128.5.0') === 0);
+  });
+
+  it('should sort versions to find the latest alias', () => {
+    assert.deepStrictEqual(
+      ['140.0', '139.0a1', '138.0.1', '9.0', '138.0', '140.0b2', '139.0'].sort(
+        compareVersions,
+      ),
+      ['9.0', '138.0', '138.0.1', '139.0a1', '139.0', '140.0b2', '140.0'],
+    );
+  });
+
+  it('should compare the version of channel prefixed build ids', () => {
+    assert.deepStrictEqual(
+      [
+        'stable_139.0',
+        'nightly_140.0a1',
+        'devedition_140.0b10',
+        'esr_128.5.0esr',
+        'beta_140.0b3',
+      ].sort(compareVersions),
+      [
+        'esr_128.5.0esr',
+        'stable_139.0',
+        'nightly_140.0a1',
+        'beta_140.0b3',
+        'devedition_140.0b10',
+      ],
+    );
+  });
+
+  it('should sort unparsable versions lowest', () => {
+    assert.ok(compareVersions('unknown', '1.0') < 0);
+    assert.ok(compareVersions('unknown', 'unknown') === 0);
+  });
 });
