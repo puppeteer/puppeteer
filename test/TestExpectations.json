@@ -696,6 +696,13 @@
     "comment": "Flaky with both CDP and WebDriver BiDi. Needs investigation."
   },
   {
+    "testIdPattern": "[network.test] network Page.setRequestInterception should work with internal redirects not paused by Fetch.requestPaused",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Test relies on Chrome's internal 307 HSTS upgrade redirect"
+  },
+  {
     "testIdPattern": "[network.test] network Request.fetchPostData should work for intercepted form submissions*",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
