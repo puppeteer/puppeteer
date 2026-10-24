@@ -380,6 +380,55 @@ describe('Keyboard', function () {
       }),
     ).toBe('Keyup: Alt AltLeft []');
   });
+  it('should keep a modifier active until both left and right keys are released', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/keyboard.html');
+    const keyboard = page.keyboard;
+    for (const modifier of ['Shift', 'Control', 'Alt'] as const) {
+      await keyboard.down(`${modifier}Left`);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).getResult();
+        }),
+      ).toBe(`Keydown: ${modifier} ${modifier}Left [${modifier}]`);
+      await keyboard.down(`${modifier}Right`);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).getResult();
+        }),
+      ).toBe(`Keydown: ${modifier} ${modifier}Right [${modifier}]`);
+      await keyboard.up(`${modifier}Right`);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).getResult();
+        }),
+      ).toBe(`Keyup: ${modifier} ${modifier}Right [${modifier}]`);
+      await keyboard.up(`${modifier}Left`);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).getResult();
+        }),
+      ).toBe(`Keyup: ${modifier} ${modifier}Left []`);
+    }
+  });
+  // @see https://github.com/puppeteer/puppeteer/issues/15655
+  it('should keep shift active after releasing only the right shift key', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.focus('textarea');
+    await page.keyboard.down('ShiftLeft');
+    await page.keyboard.down('ShiftRight');
+    await page.keyboard.up('ShiftRight');
+    await page.keyboard.press('KeyA');
+    await page.keyboard.up('ShiftLeft');
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('textarea')!.value;
+      }),
+    ).toBe('A');
+  });
   it('should send proper codes while typing', async () => {
     const {page, server} = await getTestState();
 

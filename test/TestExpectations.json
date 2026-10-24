@@ -1381,6 +1381,34 @@
     "comment": "CDP supports the `text` option of ElementHandle.press, so CDP types 'ё' instead of 'a'. The test checks the WebDriver BiDi behavior. Added in https://github.com/puppeteer/puppeteer/pull/10466."
   },
   {
+    "testIdPattern": "[keyboard.test] Keyboard should keep a modifier active until both left and right keys are released",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "chromium-bidi keeps a single boolean per modifier in the input source, so releasing one of the left/right keys clears the modifier while the other is still held. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
+    "testIdPattern": "[keyboard.test] Keyboard should keep a modifier active until both left and right keys are released",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Not verified in Firefox yet. Tolerating both results until the left/right modifier behavior is checked there. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
+    "testIdPattern": "[keyboard.test] Keyboard should keep shift active after releasing only the right shift key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "chromium-bidi keeps a single boolean per modifier in the input source, so releasing one of the left/right keys clears the modifier while the other is still held. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
+    "testIdPattern": "[keyboard.test] Keyboard should keep shift active after releasing only the right shift key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Not verified in Firefox yet. Tolerating both results until the left/right modifier behavior is checked there. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
     "testIdPattern": "[keyboard.test] Keyboard should report modifiers",
     "platforms": ["darwin"],
     "parameters": ["firefox", "webDriverBiDi"],
