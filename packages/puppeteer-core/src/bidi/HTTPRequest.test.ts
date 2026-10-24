@@ -6,6 +6,7 @@
 import {describe, it} from 'node:test';
 
 import expect from 'expect';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {ProtocolError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -18,16 +19,30 @@ class FakeRequest extends EventEmitter<{authenticate: void}> {
   readonly id = 'requestId';
   readonly isBlocked = true;
   calls: Array<Record<string, unknown>> = [];
+  responses: Array<Omit<Bidi.Network.ProvideResponseParameters, 'request'>> =
+    [];
 
   async continueWithAuth(parameters: Record<string, unknown>): Promise<void> {
     this.calls.push(parameters);
     throw new ProtocolError('No such request with the given id');
+  }
+
+  async provideResponse(
+    parameters: Omit<Bidi.Network.ProvideResponseParameters, 'request'>,
+  ): Promise<void> {
+    this.responses.push(parameters);
   }
 }
 
 function createRequest(
   credentials: {username: string; password: string} | null,
 ): FakeRequest {
+  return createBidiRequest(credentials).fakeRequest;
+}
+
+function createBidiRequest(
+  credentials: {username: string; password: string} | null,
+): {fakeRequest: FakeRequest; request: BidiHTTPRequest} {
   const fakeRequest = new FakeRequest();
   const frame = {
     page() {
@@ -40,7 +55,7 @@ function createRequest(
     },
   } as unknown as BidiFrame;
 
-  BidiHTTPRequest.from(
+  const request = BidiHTTPRequest.from(
     fakeRequest as unknown as Request,
     frame,
     false,
@@ -50,7 +65,7 @@ function createRequest(
     },
   );
 
-  return fakeRequest;
+  return {fakeRequest, request};
 }
 
 async function unhandledRejectionsOnAuthenticate(
@@ -93,5 +108,22 @@ describe('BidiHTTPRequest', () => {
 
     expect(fakeRequest.calls[0]!['action']).toBe('cancel');
     expect(rejections).toHaveLength(0);
+  });
+
+  it('should let contentType replace a content-type header in respond()', async () => {
+    const {fakeRequest, request} = createBidiRequest(null);
+
+    await request._respond({
+      status: 200,
+      headers: {'Content-Type': 'text/html'},
+      contentType: 'text/plain',
+      body: 'ok',
+    });
+
+    expect(fakeRequest.responses).toHaveLength(1);
+    expect(fakeRequest.responses[0]!.headers).toEqual([
+      {name: 'content-type', value: {type: 'string', value: 'text/plain'}},
+      {name: 'content-length', value: {type: 'string', value: '2'}},
+    ]);
   });
 });
