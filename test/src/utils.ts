@@ -81,6 +81,55 @@ export const attachFrame = async (
   return await handle.contentFrame();
 };
 
+export async function expectScreenshotForScrolledFrame(
+  frame: Frame,
+  scrollTarget: 'page' | 'iframe',
+): Promise<void> {
+  const page = frame.page();
+  await page.setViewport({width: 500, height: 500});
+  await page.addStyleTag({
+    content: `
+      body {
+        margin: 0;
+        width: 1000px;
+        height: 1000px;
+      }
+      iframe {
+        margin: 100px;
+        width: 300px;
+        height: 300px;
+        border: none;
+      }
+    `,
+  });
+  await frame.setContent(html`
+    <style>
+      body {
+        margin: 0;
+        width: 1000px;
+        height: 1000px;
+      }
+      div {
+        position: absolute;
+        top: 100px;
+        left: 100px;
+        border: 2px solid blue;
+        background: green;
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+    <div></div>
+  `);
+  await (scrollTarget === 'page' ? page : frame).evaluate(() => {
+    window.scrollTo(100, 100);
+  });
+
+  using elementHandle = (await frame.$('div'))!;
+  const screenshot = await elementHandle.screenshot();
+  expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+}
+
 export const isFavicon = (request: {url: () => string | string[]}): boolean => {
   return request.url().includes('favicon.ico');
 };

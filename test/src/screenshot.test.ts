@@ -13,7 +13,7 @@ import {
   setupSeparateTestBrowserHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
-import {html} from './utils.js';
+import {expectScreenshotForScrolledFrame, html} from './utils.js';
 
 describe('Screenshots', function () {
   setupTestBrowserHooks();
@@ -252,6 +252,17 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
+    for (const scrollTarget of ['page', 'iframe'] as const) {
+      it(`should capture an iframe element when the ${scrollTarget} is scrolled`, async () => {
+        const {page} = await getTestState();
+
+        await page.setContent(html`<iframe></iframe>`);
+        using iframe = (await page.$('iframe'))!;
+        const frame = await iframe.contentFrame();
+        assert(frame);
+        await expectScreenshotForScrolledFrame(frame, scrollTarget);
+      });
+    }
     it('should capture full element when larger than viewport', async () => {
       const {page} = await getTestState();
 
