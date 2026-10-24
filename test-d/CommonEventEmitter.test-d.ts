@@ -7,9 +7,10 @@
 import {EventEmitter as NodeEventEmitter} from 'node:events';
 
 import type {CommonEventEmitter, EventEmitter, EventType} from 'puppeteer';
-import {expectAssignable} from 'tsd';
+import {expectAssignable, expectType} from 'tsd';
 
 declare const emitter: EventEmitter<Record<EventType, any>>;
+declare const typedEmitter: EventEmitter<{foo: number; bar: string}>;
 
 {
   {
@@ -19,5 +20,11 @@ declare const emitter: EventEmitter<Record<EventType, any>>;
   }
   {
     expectAssignable<CommonEventEmitter<Record<EventType, any>>>(emitter);
+  }
+  {
+    typedEmitter.on('*', (type, event) => {
+      expectType<'foo' | 'bar'>(type);
+      expectType<number | string>(event);
+    });
   }
 }
