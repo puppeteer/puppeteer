@@ -10,7 +10,13 @@ import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame, dumpFrames, navigateFrame} from './utils.js';
+import {
+  attachFrame,
+  detachFrame,
+  dumpFrames,
+  expectScreenshotForScrolledFrame,
+  navigateFrame,
+} from './utils.js';
 
 describe('OOPIF', function () {
   // We start a new browser instance for this test because we need the
@@ -398,6 +404,20 @@ describe('OOPIF', function () {
     expect(resultBoundingBox.x).toBeGreaterThan(150); // padding + margin + border left
     expect(resultBoundingBox.y).toBeGreaterThan(150); // padding + margin + border top
   });
+
+  for (const scrollTarget of ['page', 'iframe'] as const) {
+    it(`should capture an OOPIF element when the ${scrollTarget} is scrolled`, async () => {
+      const {server, page} = state;
+
+      await page.goto(server.EMPTY_PAGE);
+      const frame = await attachFrame(
+        page,
+        'frame1',
+        server.CROSS_PROCESS_PREFIX + '/empty.html',
+      );
+      await expectScreenshotForScrolledFrame(frame, scrollTarget);
+    });
+  }
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
     const {server, puppeteer, browser, page} = state;

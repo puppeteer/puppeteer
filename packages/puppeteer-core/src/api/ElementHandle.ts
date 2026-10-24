@@ -1251,7 +1251,8 @@ export abstract class ElementHandle<
   }
 
   /**
-   * This method returns the bounding box of the element (relative to the main frame),
+   * This method returns the bounding box of the element (relative to the main
+   * frame's viewport),
    * or `null` if the element is {@link https://drafts.csswg.org/css-display-4/#box-generation | not part of the layout}
    * (example: `display: none`).
    */
@@ -1452,15 +1453,19 @@ export abstract class ElementHandle<
     }
     const elementClip = await this.#nonEmptyVisibleBoundingBox();
 
-    const [pageLeft, pageTop] = await this.evaluate(() => {
-      if (!window.visualViewport) {
-        throw new Error('window.visualViewport is not supported.');
-      }
-      return [
-        window.visualViewport.pageLeft,
-        window.visualViewport.pageTop,
-      ] as const;
-    });
+    // Convert boundingBox()'s viewport coordinates to page coordinates.
+    const [pageLeft, pageTop] = await page
+      .mainFrame()
+      .isolatedRealm()
+      .evaluate(() => {
+        if (!window.visualViewport) {
+          throw new Error('window.visualViewport is not supported.');
+        }
+        return [
+          window.visualViewport.pageLeft,
+          window.visualViewport.pageTop,
+        ] as const;
+      });
     elementClip.x += pageLeft;
     elementClip.y += pageTop;
     if (clip) {
