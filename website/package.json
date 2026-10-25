@@ -26,17 +26,17 @@
     "@mdx-js/react": "3.1.1",
     "algoliasearch-helper": "3.30.0",
     "clsx": "2.1.1",
-    "docusaurus-plugin-copy-page-button": "0.8.4",
+    "docusaurus-plugin-copy-page-button": "0.8.5",
     "prism-react-renderer": "2.4.1",
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-cookie-consent": "10.0.2",
-    "react-dom": "19.3.0",
+    "react-dom": "19.3.1",
     "semver": "7.8.5"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@swc/core": "1.16.13"
+    "@swc/core": "1.16.18"
   },
   "browserslist": {
     "production": [
