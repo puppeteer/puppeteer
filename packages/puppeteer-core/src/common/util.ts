@@ -108,8 +108,11 @@ export const withSourcePuppeteerURLIfNone = <T extends NonNullable<unknown>>(
     // which is precisely what we want.
     return stack[2];
   };
-  const site = new Error().stack as unknown as NodeJS.CallSite;
+  const site = new Error().stack as unknown as NodeJS.CallSite | undefined;
   Error.prepareStackTrace = original;
+  if (!site) {
+    return object;
+  }
   return Object.assign(object, {
     [SOURCE_URL]: PuppeteerURL.fromCallSite(functionName, site),
   });
