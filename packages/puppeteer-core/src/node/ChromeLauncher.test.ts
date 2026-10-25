@@ -82,4 +82,46 @@ describe('ChromeLauncher', () => {
     const disabledFeatures = disableFeaturesFlag!.split('=')[1]!.split(',');
     expect(disabledFeatures).not.toContain('Translate');
   });
+
+  it('does not mutate options.args and returns the same result on repeated calls', () => {
+    const launcher = new ChromeLauncher({} as any, () => {
+      return undefined;
+    });
+    const args = [
+      '--no-sandbox',
+      '--enable-features=WebGPUUndelayedSwapOnPresentation,Foo',
+      '--enable-features=Bar',
+      '--disable-features=UserDisabledFeature',
+    ];
+    const options = {args};
+    const originalArgs = [...args];
+
+    const first = launcher.defaultArgs(options);
+    const second = launcher.defaultArgs(options);
+
+    expect(options.args).toBe(args);
+    expect(options.args).toEqual(originalArgs);
+    expect(second).toEqual(first);
+
+    const enableFeatureArgs = first.filter(arg => {
+      return arg.startsWith('--enable-features=');
+    });
+    expect(enableFeatureArgs).toEqual([
+      '--enable-features=PdfOopif,WebGPUUndelayedSwapOnPresentation,Foo,Bar',
+    ]);
+
+    const disableFeatureArg = first.find(arg => {
+      return arg.startsWith('--disable-features=');
+    });
+    expect(disableFeatureArg).toBeDefined();
+    expect(disableFeatureArg!.split('=')[1]!.split(',')).toContain(
+      'UserDisabledFeature',
+    );
+    expect(
+      first.filter(arg => {
+        return arg.startsWith('--disable-features=');
+      }),
+    ).toHaveLength(1);
+    expect(first).toContain('--no-sandbox');
+  });
 });
