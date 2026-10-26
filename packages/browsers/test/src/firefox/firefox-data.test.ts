@@ -236,8 +236,27 @@ describe('Firefox', () => {
     );
   });
 
-  it('should sort unparsable versions lowest', () => {
-    assert.ok(compareVersions('unknown', '1.0') < 0);
-    assert.ok(compareVersions('unknown', 'unknown') === 0);
+  it('should throw on invalid versions', () => {
+    assert.throws(() => {
+      compareVersions('unknown', '1.0');
+    }, /Version unknown is not a valid Firefox version/);
+    assert.throws(() => {
+      compareVersions('1.0', 'unknown');
+    }, /Version unknown is not a valid Firefox version/);
+    assert.throws(() => {
+      compareVersions('', '1.0');
+    });
+    assert.throws(() => {
+      compareVersions('stable_', '1.0');
+    });
+    assert.throws(() => {
+      compareVersions('139.0c1', '1.0');
+    });
+  });
+
+  it('should ignore surrounding whitespace', () => {
+    assert.ok(compareVersions(' 139.0 ', '139.0') === 0);
+    assert.ok(compareVersions('139.0a1\n', '139.0') < 0);
+    assert.ok(compareVersions(' stable_139.0', 'stable_140.0 ') < 0);
   });
 });
