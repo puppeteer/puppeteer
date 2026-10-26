@@ -7,6 +7,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {InterceptResolutionAction} from '../api/HTTPRequest.js';
 import {ProtocolError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 
@@ -16,8 +17,12 @@ import {BidiHTTPRequest} from './HTTPRequest.js';
 
 class FakeRequest extends EventEmitter<{authenticate: void}> {
   readonly id = 'requestId';
-  readonly isBlocked = true;
+  isBlocked = true;
   calls: Array<Record<string, unknown>> = [];
+
+  async continueRequest(parameters: Record<string, unknown>): Promise<void> {
+    this.calls.push(parameters);
+  }
 
   async continueWithAuth(parameters: Record<string, unknown>): Promise<void> {
     this.calls.push(parameters);
@@ -27,7 +32,8 @@ class FakeRequest extends EventEmitter<{authenticate: void}> {
 
 function createRequest(
   credentials: {username: string; password: string} | null,
-): FakeRequest {
+  interceptionEnabled = false,
+): {fakeRequest: FakeRequest; httpRequest: BidiHTTPRequest} {
   const fakeRequest = new FakeRequest();
   const frame = {
     page() {
@@ -40,17 +46,17 @@ function createRequest(
     },
   } as unknown as BidiFrame;
 
-  BidiHTTPRequest.from(
+  const httpRequest = BidiHTTPRequest.from(
     fakeRequest as unknown as Request,
     frame,
-    false,
+    interceptionEnabled,
     undefined,
     () => {
       return undefined;
     },
   );
 
-  return fakeRequest;
+  return {fakeRequest, httpRequest};
 }
 
 async function unhandledRejectionsOnAuthenticate(
@@ -78,7 +84,7 @@ async function unhandledRejectionsOnAuthenticate(
 
 describe('BidiHTTPRequest', () => {
   it('should not reject when continueWithAuth fails while providing credentials', async () => {
-    const fakeRequest = createRequest({username: 'user', password: 'pass'});
+    const {fakeRequest} = createRequest({username: 'user', password: 'pass'});
 
     const rejections = await unhandledRejectionsOnAuthenticate(fakeRequest);
 
@@ -87,11 +93,22 @@ describe('BidiHTTPRequest', () => {
   });
 
   it('should not reject when continueWithAuth fails while canceling', async () => {
-    const fakeRequest = createRequest(null);
+    const {fakeRequest} = createRequest(null);
 
     const rejections = await unhandledRejectionsOnAuthenticate(fakeRequest);
 
     expect(fakeRequest.calls[0]!['action']).toBe('cancel');
     expect(rejections).toHaveLength(0);
+  });
+
+  it('should keep interceptResolutionState as already-handled after request unblocks', async () => {
+    const {fakeRequest, httpRequest} = createRequest(null, true);
+
+    await httpRequest.continue();
+    fakeRequest.isBlocked = false;
+
+    expect(httpRequest.interceptResolutionState()).toEqual({
+      action: InterceptResolutionAction.AlreadyHandled,
+    });
   });
 });

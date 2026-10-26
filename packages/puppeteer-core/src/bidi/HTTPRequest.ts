@@ -136,7 +136,7 @@ export class BidiHTTPRequest extends HTTPRequest {
   }
 
   override interceptResolutionState(): InterceptResolutionState {
-    if (!this.#request.isBlocked) {
+    if (!this.#request.isBlocked && !this.interception.handled) {
       return {action: InterceptResolutionAction.Disabled};
     }
     return super.interceptResolutionState();
