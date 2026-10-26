@@ -163,6 +163,48 @@ describe('downloadFile', function () {
     assert.deepStrictEqual(methods, ['HEAD', 'HEAD']);
   });
 
+  describe('when the redirect target is unreachable', () => {
+    beforeEach(async () => {
+      const closedServer = http.createServer();
+      await new Promise<void>(resolve => {
+        closedServer.listen(0, '127.0.0.1', resolve);
+      });
+      const {port} = closedServer.address() as {port: number};
+      await new Promise<void>(resolve => {
+        closedServer.close(() => {
+          return resolve();
+        });
+      });
+      server.removeAllListeners('request');
+      server.on('request', (_req, res) => {
+        res.writeHead(302, {Location: `http://127.0.0.1:${port}/file.bin`});
+        res.end();
+      });
+    });
+
+    it('rejects downloadFile', async () => {
+      await assert.rejects(
+        () => {
+          return downloadFile(serverUrl, path.join(tmpDir, 'download.bin'));
+        },
+        {code: 'ECONNREFUSED'},
+      );
+    });
+
+    it('rejects getText', async () => {
+      await assert.rejects(
+        () => {
+          return getText(serverUrl);
+        },
+        {code: 'ECONNREFUSED'},
+      );
+    });
+
+    it('resolves headHttpRequest to false', async () => {
+      assert.strictEqual(await headHttpRequest(serverUrl), false);
+    });
+  });
+
   it('rejects when the response ends before the content length is reached', async () => {
     await new Promise<void>(resolve => {
       server.close(() => {

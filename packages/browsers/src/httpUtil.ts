@@ -65,7 +65,18 @@ export async function httpRequest(
       res.statusCode < 400 &&
       res.headers.location
     ) {
-      void httpRequest(new URL(res.headers.location, url), method, response);
+      // Callers only listen for errors on the initial request, so forward
+      // errors from the redirected request to it.
+      httpRequest(new URL(res.headers.location, url), method, response).then(
+        redirectRequest => {
+          redirectRequest.on('error', error => {
+            request.emit('error', error);
+          });
+        },
+        error => {
+          request.emit('error', error);
+        },
+      );
       // consume response data to free up memory
       // And prevents the connection from being kept alive
       res.resume();
