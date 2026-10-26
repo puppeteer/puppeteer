@@ -167,20 +167,21 @@ export class ChromeLauncher extends BrowserLauncher {
   override defaultArgs(options: LaunchOptions = {}): string[] {
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
 
-    const userDisabledFeatures = getFeatures(
-      '--disable-features',
-      options.args,
-    );
-    if (options.args && userDisabledFeatures.length > 0) {
-      removeMatchingFlags(options.args, '--disable-features');
+    // Feature flags are merged below; clone so repeated defaultArgs() /
+    // launch() calls do not mutate the caller's options.args.
+    const args = structuredClone(options.args ?? []);
+
+    const userDisabledFeatures = getFeatures('--disable-features', args);
+    if (userDisabledFeatures.length > 0) {
+      removeMatchingFlags(args, '--disable-features');
     }
 
     const turnOnExperimentalFeaturesForTesting =
       process.env['PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES'] === 'true';
 
-    const userEnabledFeatures = getFeatures('--enable-features', options.args);
-    if (options.args && userEnabledFeatures.length > 0) {
-      removeMatchingFlags(options.args, '--enable-features');
+    const userEnabledFeatures = getFeatures('--enable-features', args);
+    if (userEnabledFeatures.length > 0) {
+      removeMatchingFlags(args, '--enable-features');
     }
 
     // Merge default enabled features with user-provided ones, if any.
@@ -254,7 +255,6 @@ export class ChromeLauncher extends BrowserLauncher {
     const {
       devtools = false,
       headless = !devtools,
-      args = [],
       userDataDir,
       enableExtensions = false,
     } = options;
