@@ -167,10 +167,9 @@ export class ChromeLauncher extends BrowserLauncher {
   override defaultArgs(options: LaunchOptions = {}): string[] {
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
 
-    // Feature flags are merged into a single --enable-features /
-    // --disable-features argument below. Filter a copy so repeated
-    // defaultArgs() or launch() calls keep the caller's options.args.
-    const args = [...(options.args ?? [])];
+    // Feature flags are merged below; clone so repeated defaultArgs() /
+    // launch() calls do not mutate the caller's options.args.
+    const args = structuredClone(options.args ?? []);
 
     const userDisabledFeatures = getFeatures('--disable-features', args);
     if (userDisabledFeatures.length > 0) {
