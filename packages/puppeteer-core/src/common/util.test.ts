@@ -13,8 +13,10 @@ import type {CDPSession} from '../api/CDPSession.js';
 import {
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
+  getSourcePuppeteerURLIfAvailable,
   parsePDFOptions,
   unitToPixels,
+  withSourcePuppeteerURLIfNone,
 } from './util.js';
 
 describe('util', () => {
@@ -185,6 +187,22 @@ describe('util', () => {
         }),
       ).rejects.toThrow('openFileForWriting is not available');
       expect(commands).toContain('IO.close');
+    });
+  });
+
+  describe('withSourcePuppeteerURLIfNone', () => {
+    it('does not throw when the caller frame is not available', () => {
+      const original = Error.stackTraceLimit;
+      Error.stackTraceLimit = 2;
+      try {
+        const fn = () => {
+          return 1;
+        };
+        expect(withSourcePuppeteerURLIfNone('evaluate', fn)).toBe(fn);
+        expect(getSourcePuppeteerURLIfAvailable(fn)).toBeUndefined();
+      } finally {
+        Error.stackTraceLimit = original;
+      }
     });
   });
 });
