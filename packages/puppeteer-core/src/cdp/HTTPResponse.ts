@@ -30,6 +30,7 @@ export class CdpHTTPResponse extends HTTPResponse {
   #headers: Record<string, string> = {};
   #securityDetails: SecurityDetails | null;
   #timing: Protocol.Network.ResourceTiming | null;
+  #encodedDataLength: number;
 
   constructor(
     request: CdpHTTPRequest,
@@ -62,6 +63,7 @@ export class CdpHTTPResponse extends HTTPResponse {
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
     this.#timing = responsePayload.timing || null;
+    this.#encodedDataLength = responsePayload.encodedDataLength;
   }
 
   #parseStatusTextFromExtraInfo(
@@ -85,7 +87,10 @@ export class CdpHTTPResponse extends HTTPResponse {
     return statusText;
   }
 
-  _resolveBody(err?: Error): void {
+  _resolveBody(err?: Error, encodedDataLength?: number): void {
+    if (encodedDataLength !== undefined) {
+      this.#encodedDataLength = encodedDataLength;
+    }
     if (err) {
       return this.#bodyLoadedDeferred.reject(err);
     }
@@ -118,6 +123,10 @@ export class CdpHTTPResponse extends HTTPResponse {
 
   override timing(): Protocol.Network.ResourceTiming | null {
     return this.#timing;
+  }
+
+  override encodedDataLength(): number {
+    return this.#encodedDataLength;
   }
 
   override content(): Promise<Uint8Array> {
