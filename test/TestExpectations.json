@@ -1391,8 +1391,8 @@
     "testIdPattern": "[keyboard.test] Keyboard should keep a modifier active until both left and right keys are released",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Not verified in Firefox yet. Tolerating both results until the left/right modifier behavior is checked there. See https://github.com/puppeteer/puppeteer/issues/15655"
+    "expectations": ["FAIL"],
+    "comment": "Fails in Firefox 158 over WebDriver BiDi: after ShiftRight is released, releasing ShiftLeft does not produce a keyup event. See https://github.com/puppeteer/puppeteer/issues/15655"
   },
   {
     "testIdPattern": "[keyboard.test] Keyboard should keep shift active after releasing only the right shift key",
@@ -1405,8 +1405,8 @@
     "testIdPattern": "[keyboard.test] Keyboard should keep shift active after releasing only the right shift key",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Not verified in Firefox yet. Tolerating both results until the left/right modifier behavior is checked there. See https://github.com/puppeteer/puppeteer/issues/15655"
+    "expectations": ["FAIL"],
+    "comment": "Fails in Firefox 158 over WebDriver BiDi: pressing A types 'a' after only the right Shift key was released while the left one is still held. See https://github.com/puppeteer/puppeteer/issues/15655"
   },
   {
     "testIdPattern": "[keyboard.test] Keyboard should report modifiers",
