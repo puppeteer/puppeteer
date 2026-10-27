@@ -7,7 +7,10 @@ sidebar_label: Mapper
 ### Signature
 
 ```typescript
-export type Mapper<From, To> = (value: From) => Awaitable<To>;
+export type Mapper<From, To, Args extends unknown[] = []> = (
+  value: From,
+  ...args: InnerParams<Args>
+) => Awaitable<To>;
 ```
 
-**References:** [Awaitable](./puppeteer.awaitable.md)
+**References:** [InnerParams](./puppeteer.innerparams.md), [Awaitable](./puppeteer.awaitable.md)

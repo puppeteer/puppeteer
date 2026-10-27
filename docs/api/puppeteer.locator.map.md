@@ -10,7 +10,10 @@ Maps the locator using the provided mapper.
 
 ```typescript
 class Locator {
-  map<To>(mapper: Mapper<T, To>): Locator<To>;
+  map<To, Args extends unknown[] = []>(
+    mapper: Mapper<T, To, Args>,
+    ...args: Args
+  ): Locator<To>;
 }
 ```
 
@@ -35,7 +38,18 @@ mapper
 
 </td><td>
 
-[Mapper](./puppeteer.mapper.md)&lt;T, To&gt;
+[Mapper](./puppeteer.mapper.md)&lt;T, To, Args&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Args
 
 </td><td>
 

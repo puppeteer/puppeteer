@@ -123,7 +123,7 @@ Fills out the input identified by the locator using the provided value. The type
 </td></tr>
 <tr><td>
 
-<span id="filter">[filter(predicate)](./puppeteer.locator.filter.md)</span>
+<span id="filter">[filter(predicate, args)](./puppeteer.locator.filter.md)</span>
 
 </td><td>
 
@@ -147,7 +147,7 @@ Hovers over the located element.
 </td></tr>
 <tr><td>
 
-<span id="map">[map(mapper)](./puppeteer.locator.map.md)</span>
+<span id="map">[map(mapper, args)](./puppeteer.locator.map.md)</span>
 
 </td><td>
 

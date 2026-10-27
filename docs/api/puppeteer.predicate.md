@@ -7,8 +7,13 @@ sidebar_label: Predicate
 ### Signature
 
 ```typescript
-export type Predicate<From, To extends From = From> =
-  ((value: From) => value is To) | ((value: From) => Awaitable<boolean>);
+export type Predicate<
+  From,
+  To extends From = From,
+  Args extends unknown[] = [],
+> =
+  | ((value: From, ...args: InnerParams<Args>) => value is To)
+  | ((value: From, ...args: InnerParams<Args>) => Awaitable<boolean>);
 ```
 
-**References:** [Awaitable](./puppeteer.awaitable.md)
+**References:** [InnerParams](./puppeteer.innerparams.md), [Awaitable](./puppeteer.awaitable.md)
