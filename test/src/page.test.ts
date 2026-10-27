@@ -9,7 +9,7 @@ import type {ServerResponse} from 'node:http';
 import path from 'node:path';
 
 import expect from 'expect';
-import type {Issue} from 'puppeteer';
+import type {ElementHandle, Issue} from 'puppeteer';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
@@ -1221,6 +1221,46 @@ describe('Page', function () {
         return (globalThis as any).call();
       });
       expect(calls).toBe(1);
+    });
+
+    it('should work after deleting exposed function from globalThis', async () => {
+      const {page} = await getTestState();
+
+      await page.exposeFunction(
+        'compute',
+        async function (a: number, b: number, element?: ElementHandle) {
+          if (a < 0) {
+            throw new Error('negative input');
+          }
+          const tag = element
+            ? await element.evaluate(el => {
+                return el.nodeName;
+              })
+            : '';
+          return `${a * b}:${tag}`;
+        },
+      );
+      const result = await page.evaluate(async function () {
+        const compute = (globalThis as any).compute;
+        delete (globalThis as any).compute;
+        const value = await compute(9, 4, document.body);
+        let errorMessage = '';
+        try {
+          await compute(-1, 4);
+        } catch (error) {
+          errorMessage = (error as Error).message;
+        }
+        return {
+          existsOnWindow: 'compute' in globalThis,
+          value,
+          errorMessage,
+        };
+      });
+      expect(result).toEqual({
+        existsOnWindow: false,
+        value: '36:BODY',
+        errorMessage: 'negative input',
+      });
     });
   });
 
