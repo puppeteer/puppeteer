@@ -10,6 +10,10 @@ import type {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
+import {
+  decodeBinaryResult,
+  withBinaryResultEncoding,
+} from '../common/BinaryTransfer.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {scriptInjector} from '../common/ScriptInjector.js';
@@ -154,6 +158,7 @@ export abstract class BidiRealm extends Realm {
     );
 
     let responsePromise;
+    let binaryResultEncoded = false;
     const resultOwnership = returnByValue
       ? Bidi.Script.ResultOwnership.None
       : Bidi.Script.ResultOwnership.Root;
@@ -175,6 +180,12 @@ export abstract class BidiRealm extends Realm {
       });
     } else {
       let functionDeclaration = stringifyFunction(pageFunction);
+      if (returnByValue) {
+        // A typed array, DataView or ArrayBuffer returned by value is encoded
+        // in the page, as WebDriver BiDi serializes them without their data.
+        functionDeclaration = withBinaryResultEncoding(functionDeclaration);
+        binaryResultEncoded = true;
+      }
       functionDeclaration = SOURCE_URL_REGEX.test(functionDeclaration)
         ? functionDeclaration
         : `${functionDeclaration}\n${sourceUrlComment}\n`;
@@ -209,7 +220,10 @@ export abstract class BidiRealm extends Realm {
     }
 
     if (returnByValue) {
-      return BidiDeserializer.deserialize(result.result);
+      const value = BidiDeserializer.deserialize(result.result);
+      return (
+        binaryResultEncoded ? decodeBinaryResult(value) : value
+      ) as Awaited<ReturnType<Func>>;
     }
 
     return this.createHandle(result.result) as unknown as HandleFor<
