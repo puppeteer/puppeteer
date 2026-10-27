@@ -65,9 +65,19 @@ export async function httpRequest(
       res.statusCode < 400 &&
       res.headers.location
     ) {
+      // consume response data to free up memory
+      // And prevents the connection from being kept alive
+      res.resume();
       // Callers only listen for errors on the initial request, so forward
-      // errors from the redirected request to it.
-      httpRequest(new URL(res.headers.location, url), method, response).then(
+      // errors from the redirect to it.
+      let redirectUrl: URL;
+      try {
+        redirectUrl = new URL(res.headers.location, url);
+      } catch (error) {
+        request.emit('error', error);
+        return;
+      }
+      httpRequest(redirectUrl, method, response).then(
         redirectRequest => {
           redirectRequest.on('error', error => {
             request.emit('error', error);
@@ -77,9 +87,6 @@ export async function httpRequest(
           request.emit('error', error);
         },
       );
-      // consume response data to free up memory
-      // And prevents the connection from being kept alive
-      res.resume();
     } else {
       response(res);
     }

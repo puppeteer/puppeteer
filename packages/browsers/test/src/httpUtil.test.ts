@@ -205,6 +205,21 @@ describe('downloadFile', function () {
     });
   });
 
+  it('rejects when the redirect location is not a valid URL', async () => {
+    server.removeAllListeners('request');
+    server.on('request', (_req, res) => {
+      res.writeHead(302, {Location: 'http://[invalid'});
+      res.end();
+    });
+
+    await assert.rejects(
+      () => {
+        return getText(serverUrl);
+      },
+      {code: 'ERR_INVALID_URL'},
+    );
+  });
+
   it('rejects when the response ends before the content length is reached', async () => {
     await new Promise<void>(resolve => {
       server.close(() => {
