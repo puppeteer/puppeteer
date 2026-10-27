@@ -459,7 +459,55 @@ async function syncPreferences(options: ProfileOptions): Promise<void> {
   }
 }
 
+/**
+ * Firefox prerelease channels, ordered from earliest to latest.
+ * Nightly (`a`) sorts before beta (`b`), which sorts before release.
+ */
+const PRERELEASE_ORDER: Record<string, number> = {
+  a: 1, // nightly
+  b: 2, // beta
+};
+
+function parseVersionPart(part: string): {number: number; prerelease: number} {
+  // Firefox version parts look like `139`, `0`, or `0a1` / `0b4`.
+  const match = /^(\d+)([ab]\d*)?$/.exec(part);
+  if (!match) {
+    // Unknown format (e.g. `esr`); treat the whole part as numeric-only.
+    const number = parseInt(part, 10);
+    return {number: Number.isNaN(number) ? 0 : number, prerelease: 0};
+  }
+  const number = parseInt(match[1]!, 10);
+  const suffix = match[2];
+  // A missing prerelease suffix means a stable release, which sorts latest.
+  const prerelease = suffix ? (PRERELEASE_ORDER[suffix[0]!] ?? 0) : 3;
+  return {number, prerelease};
+}
+
+/**
+ * Build ids may be prefixed with the release channel, e.g. `stable_140.0` or
+ * `nightly_139.0a1` (see `resolveBuildId`). Strip it so the version itself can
+ * be compared; the `a`/`b` suffix already carries the prerelease ordering.
+ */
+function stripChannelPrefix(version: string): string {
+  const index = version.indexOf('_');
+  return index === -1 ? version : version.slice(index + 1);
+}
+
 export function compareVersions(a: string, b: string): number {
-  // TODO: this is a not very reliable check.
-  return parseInt(a.replace('.', ''), 16) - parseInt(b.replace('.', ''), 16);
+  const aParts = stripChannelPrefix(a.trim()).split('.');
+  const bParts = stripChannelPrefix(b.trim()).split('.');
+
+  for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+    const aPart = parseVersionPart(aParts[i] ?? '0');
+    const bPart = parseVersionPart(bParts[i] ?? '0');
+
+    if (aPart.number !== bPart.number) {
+      return aPart.number - bPart.number;
+    }
+    if (aPart.prerelease !== bPart.prerelease) {
+      return aPart.prerelease - bPart.prerelease;
+    }
+  }
+
+  return 0;
 }

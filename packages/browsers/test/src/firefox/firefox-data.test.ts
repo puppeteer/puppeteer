@@ -190,4 +190,37 @@ describe('Firefox', () => {
     assert.ok(compareVersions('110.0a1', '111.0a1') <= -1);
     assert.ok(compareVersions('111.0a1', '111.0a1') === 0);
   });
+
+  it('should order stable releases above prerelease versions', () => {
+    // A nightly of an older milestone must rank below a stable of a newer one.
+    assert.ok(compareVersions('139.0a1', '140.0') < 0);
+    assert.ok(compareVersions('140.0b4', '141.0') < 0);
+  });
+
+  it('should compare patch releases correctly', () => {
+    assert.ok(compareVersions('138.0', '138.0.1') < 0);
+    assert.ok(compareVersions('138.0.1', '138.0') > 0);
+    assert.ok(compareVersions('138.0.1', '138.0.1') === 0);
+  });
+
+  it('should order nightly below beta below stable', () => {
+    assert.ok(compareVersions('140.0a1', '140.0b1') < 0);
+    assert.ok(compareVersions('140.0b1', '140.0') < 0);
+    assert.ok(compareVersions('140.0a1', '140.0') < 0);
+  });
+
+  it('should compare equal stable versions as equal', () => {
+    assert.ok(compareVersions('140.0', '140.0') === 0);
+  });
+
+  it('should compare channel-prefixed build ids by their version', () => {
+    // Build ids stored as aliases are prefixed with the channel, e.g.
+    // `stable_140.0`, so the version still has to be parsed after the prefix.
+    assert.ok(compareVersions('stable_139.0', 'stable_140.0') < 0);
+    assert.ok(compareVersions('nightly_139.0a1', 'nightly_140.0a1') < 0);
+    assert.ok(compareVersions('nightly_139.0a1', 'stable_140.0') < 0);
+    assert.ok(compareVersions('beta_140.0b4', 'stable_141.0') < 0);
+    assert.ok(compareVersions('stable_140.0.1', 'stable_140.0') > 0);
+    assert.ok(compareVersions('stable_140.0', 'stable_140.0') === 0);
+  });
 });
