@@ -190,4 +190,73 @@ describe('Firefox', () => {
     assert.ok(compareVersions('110.0a1', '111.0a1') <= -1);
     assert.ok(compareVersions('111.0a1', '111.0a1') === 0);
   });
+
+  it('should compare version parts numerically', () => {
+    assert.ok(compareVersions('139.0', '140.0') < 0);
+    assert.ok(compareVersions('9.0', '10.0') < 0);
+    assert.ok(compareVersions('138.0', '138.0.1') < 0);
+    assert.ok(compareVersions('138.0.1', '138.0') > 0);
+    assert.ok(compareVersions('138.0', '138.0.0') === 0);
+  });
+
+  it('should order nightly before beta before release', () => {
+    assert.ok(compareVersions('139.0a1', '140.0') < 0);
+    assert.ok(compareVersions('139.0a1', '139.0b1') < 0);
+    assert.ok(compareVersions('139.0b1', '139.0') < 0);
+    assert.ok(compareVersions('140.0a1', '140.0a2') < 0);
+    assert.ok(compareVersions('140.0b2', '140.0b10') < 0);
+    assert.ok(compareVersions('128.5.0esr', '128.5.0') === 0);
+  });
+
+  it('should sort versions to find the latest alias', () => {
+    assert.deepStrictEqual(
+      ['140.0', '139.0a1', '138.0.1', '9.0', '138.0', '140.0b2', '139.0'].sort(
+        compareVersions,
+      ),
+      ['9.0', '138.0', '138.0.1', '139.0a1', '139.0', '140.0b2', '140.0'],
+    );
+  });
+
+  it('should compare the version of channel prefixed build ids', () => {
+    assert.deepStrictEqual(
+      [
+        'stable_139.0',
+        'nightly_140.0a1',
+        'devedition_140.0b10',
+        'esr_128.5.0esr',
+        'beta_140.0b3',
+      ].sort(compareVersions),
+      [
+        'esr_128.5.0esr',
+        'stable_139.0',
+        'nightly_140.0a1',
+        'beta_140.0b3',
+        'devedition_140.0b10',
+      ],
+    );
+  });
+
+  it('should throw on invalid versions', () => {
+    assert.throws(() => {
+      compareVersions('unknown', '1.0');
+    }, /Version unknown is not a valid Firefox version/);
+    assert.throws(() => {
+      compareVersions('1.0', 'unknown');
+    }, /Version unknown is not a valid Firefox version/);
+    assert.throws(() => {
+      compareVersions('', '1.0');
+    });
+    assert.throws(() => {
+      compareVersions('stable_', '1.0');
+    });
+    assert.throws(() => {
+      compareVersions('139.0c1', '1.0');
+    });
+  });
+
+  it('should ignore surrounding whitespace', () => {
+    assert.ok(compareVersions(' 139.0 ', '139.0') === 0);
+    assert.ok(compareVersions('139.0a1\n', '139.0') < 0);
+    assert.ok(compareVersions(' stable_139.0', 'stable_140.0 ') < 0);
+  });
 });

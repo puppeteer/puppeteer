@@ -459,7 +459,29 @@ async function syncPreferences(options: ProfileOptions): Promise<void> {
   }
 }
 
+function parseVersion(buildId: string): [number[], number[]] {
+  const [, version] = parseBuildId(buildId.trim());
+  const match = /^(\d+(?:\.\d+)*)(?:([ab])(\d+)|esr)?$/.exec(version);
+  if (!match) {
+    throw new Error(`Version ${buildId} is not a valid Firefox version`);
+  }
+  const [, numbers = '0', type, build = '0'] = match;
+  const rank = type === 'a' ? 0 : type === 'b' ? 1 : 2;
+  return [numbers.split('.').map(Number), [rank, Number(build)]];
+}
+
+function compareParts(a: number[], b: number[]): number {
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const diff = (a[i] ?? 0) - (b[i] ?? 0);
+    if (diff) {
+      return diff;
+    }
+  }
+  return 0;
+}
+
 export function compareVersions(a: string, b: string): number {
-  // TODO: this is a not very reliable check.
-  return parseInt(a.replace('.', ''), 16) - parseInt(b.replace('.', ''), 16);
+  const [aNumbers, aRelease] = parseVersion(a);
+  const [bNumbers, bRelease] = parseVersion(b);
+  return compareParts(aNumbers, bNumbers) || compareParts(aRelease, bRelease);
 }
