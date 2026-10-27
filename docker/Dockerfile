@@ -1,18 +1,10 @@
 FROM node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
 # Configure default locale (important for chrome-headless-shell).
-ENV LANG=en_US.UTF-8 
+ENV LANG=en_US.UTF-8
 # UID of the non-root user 'pptruser'
 ENV PPTRUSER_UID=10042
 # Attempts to start a new DBUS session if none is present
 ENV DBUS_SESSION_BUS_ADDRESS=autolaunch:
-
-# Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
-# Note: this installs the necessary libs to make the bundled version of Chrome that Puppeteer
-# installs, work.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros \
-    fonts-kacst fonts-freefont-ttf dbus dbus-x11 
-   
 
 # Add pptruser.
 RUN groupadd -r pptruser && useradd -u $PPTRUSER_UID -rm -g pptruser -G audio,video pptruser
@@ -30,12 +22,18 @@ RUN npm i ./puppeteer-browsers-latest.tgz ./puppeteer-core-latest.tgz ./puppetee
 
 # Install system dependencies as root.
 USER root
+# Install fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
+# and the necessary libs to make the bundled version of Chrome that Puppeteer installs, work.
+# `--install-deps` relies on the apt lists, so they are removed in the same layer.
 # Overriding the cache directory to install the deps for the Chrome
-# version installed for pptruser. 
-RUN PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
+# version installed for pptruser.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros \
+    fonts-kacst fonts-freefont-ttf dbus dbus-x11 \
+    && PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
     npx puppeteer browsers install chrome --install-deps \
-     && apt-get clean \
-     && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 USER $PPTRUSER_UID
 # Generate THIRD_PARTY_NOTICES using chrome --credits.
