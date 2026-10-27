@@ -266,7 +266,8 @@ export function addPageBinding(
     [name](...args: unknown[]): Promise<unknown> {
       // This is the Puppeteer binding.
       // @ts-expect-error: In a different context.
-      const callPuppeteer = globalThis[name];
+      // Needs to be the same as CDP_BINDING_PREFIX.
+      const callPuppeteer = globalThis[prefix + name];
       callPuppeteer.args ??= new Map();
       callPuppeteer.callbacks ??= new Map();
 
@@ -274,9 +275,7 @@ export function addPageBinding(
       callPuppeteer.lastSeq = seq;
       callPuppeteer.args.set(seq, args);
 
-      // @ts-expect-error: In a different context.
-      // Needs to be the same as CDP_BINDING_PREFIX.
-      globalThis[prefix + name](
+      callPuppeteer(
         JSON.stringify({
           type,
           name,

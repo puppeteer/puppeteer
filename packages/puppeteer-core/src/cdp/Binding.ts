@@ -9,6 +9,7 @@ import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {ExecutionContext} from './ExecutionContext.js';
+import {CDP_BINDING_PREFIX} from './utils.js';
 
 /**
  * @internal
@@ -52,6 +53,7 @@ export class Binding {
     isTrivial: boolean,
   ): Promise<void> {
     const stack = new DisposableStack();
+    const cdpName = CDP_BINDING_PREFIX + this.#name;
     try {
       if (!isTrivial) {
         // Getting non-trivial arguments.
@@ -60,7 +62,7 @@ export class Binding {
             // @ts-expect-error Code is evaluated in a different context.
             return globalThis[name].args.get(seq);
           },
-          this.#name,
+          cdpName,
           id,
         );
         const properties = await handles.getProperties();
@@ -88,7 +90,7 @@ export class Binding {
           callbacks.get(seq).resolve(result);
           callbacks.delete(seq);
         },
-        this.#name,
+        cdpName,
         id,
         await this.#fn(...args),
       );
@@ -110,7 +112,7 @@ export class Binding {
               callbacks.get(seq).reject(error);
               callbacks.delete(seq);
             },
-            this.#name,
+            cdpName,
             id,
             error.message,
             error.stack,
@@ -127,7 +129,7 @@ export class Binding {
               callbacks.get(seq).reject(error);
               callbacks.delete(seq);
             },
-            this.#name,
+            cdpName,
             id,
             error,
           )
