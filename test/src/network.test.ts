@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import type {ServerResponse} from 'node:http';
 import path from 'node:path';
+import zlib from 'node:zlib';
 
 import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
@@ -720,6 +721,51 @@ describe('network', function () {
       await page.goto(server.EMPTY_PAGE);
       expect(responses).toHaveLength(1);
       expect(responses[0]!.timing()!.receiveHeadersEnd).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Response.encodedDataLength', function () {
+    it('should return the encoded transfer size', async () => {
+      const {page, server} = await getTestState();
+
+      const raw = Array.from({length: 1000}, (_, i) => {
+        return `line-number-${i}-some-repeated-text`;
+      }).join('\n');
+      const compressed = zlib.gzipSync(raw);
+      server.setRoute('/compressible', (_req, res) => {
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Encoding', 'gzip');
+        res.end(compressed);
+      });
+      const response = (await page.goto(server.PREFIX + '/compressible'))!;
+      const responseBuffer = await response.buffer();
+      expect(responseBuffer.length).toBe(raw.length);
+      expect(response.encodedDataLength()).toBeGreaterThanOrEqual(
+        compressed.length,
+      );
+      expect(response.encodedDataLength()).toBeLessThan(raw.length);
+    });
+
+    it('should return 0 for cached responses', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/cached-encoded-length', (_req, res) => {
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('Content-Type', 'text/plain');
+        res.end('cached-content-'.repeat(100));
+      });
+      const firstResponse = (await page.goto(
+        server.PREFIX + '/cached-encoded-length',
+      ))!;
+      await firstResponse.buffer();
+      expect(firstResponse.fromCache()).toBe(false);
+      expect(firstResponse.encodedDataLength()).toBeGreaterThan(1500);
+
+      const cachedResponse = (await page.goto(
+        server.PREFIX + '/cached-encoded-length',
+      ))!;
+      expect(cachedResponse.fromCache()).toBe(true);
+      expect(cachedResponse.encodedDataLength()).toBe(0);
     });
   });
 

@@ -147,6 +147,10 @@ export class BidiHTTPResponse extends HTTPResponse {
     };
   }
 
+  override encodedDataLength(): number {
+    return this.#data.bytesReceived;
+  }
+
   override frame(): Frame | null {
     return this.#request.frame();
   }

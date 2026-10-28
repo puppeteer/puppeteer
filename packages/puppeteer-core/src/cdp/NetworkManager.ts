@@ -929,7 +929,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     // Under certain conditions we never get the Network.responseReceived
     // event from protocol. @see https://crbug.com/883475
     if (request.response()) {
-      request.response()?._resolveBody();
+      request.response()?._resolveBody(undefined, event.encodedDataLength);
     }
     this.#forgetRequest(request, true);
     this.emit(NetworkManagerEvent.RequestFinished, request);
