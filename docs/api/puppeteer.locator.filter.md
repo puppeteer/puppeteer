@@ -12,7 +12,10 @@ If the expectations do not match, then the locator will retry.
 
 ```typescript
 class Locator {
-  filter<S extends T>(predicate: Predicate<T, S>): Locator<S>;
+  filter<S extends T, Args extends unknown[] = []>(
+    predicate: Predicate<T, S, Args>,
+    ...args: Args
+  ): Locator<S>;
 }
 ```
 
@@ -37,7 +40,18 @@ predicate
 
 </td><td>
 
-[Predicate](./puppeteer.predicate.md)&lt;T, S&gt;
+[Predicate](./puppeteer.predicate.md)&lt;T, S, Args&gt;
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+args
+
+</td><td>
+
+Args
 
 </td><td>
 

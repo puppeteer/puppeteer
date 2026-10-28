@@ -1072,6 +1072,25 @@ describe('Locator', function () {
       });
       await expect(result).resolves.toEqual('true');
     });
+    it('should work with arguments', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div>test</div>`);
+      using suffixHandle = await page.evaluateHandle(() => {
+        return '-handle';
+      });
+      await expect(
+        page
+          .locator('::-p-text(test)')
+          .map(
+            (element, suffix, handleSuffix) => {
+              return (element.textContent ?? '') + suffix + handleSuffix;
+            },
+            '-mapped',
+            suffixHandle,
+          )
+          .wait(),
+      ).resolves.toEqual('test-mapped-handle');
+    });
   });
 
   describe('Locator.prototype.filter', () => {
@@ -1092,6 +1111,46 @@ describe('Locator', function () {
           .filter(element => {
             return element.getAttribute('clickable') === 'true';
           })
+          .hover();
+        clock.tick(2000);
+        await page.evaluate(() => {
+          document.querySelector('div')?.setAttribute('clickable', 'true');
+        });
+        clock.restore();
+        await expect(result).resolves.toEqual(undefined);
+      } finally {
+        clock.restore();
+      }
+    });
+    it('should work with arguments', async () => {
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
+      });
+      try {
+        const {page} = await getTestState();
+        await page.setContent(html`<div>test</div>`);
+        const attributeName = 'clickable';
+        using expectedValue = await page.evaluateHandle(() => {
+          return 'true';
+        });
+        const result = page
+          .locator('::-p-text(test)')
+          .setTimeout(5000)
+          .filter(
+            async (element, attr, value) => {
+              return element.getAttribute(attr) === value;
+            },
+            attributeName,
+            expectedValue,
+          )
+          .filter(
+            (element, attr, value) => {
+              return element.getAttribute(attr) === value;
+            },
+            attributeName,
+            expectedValue,
+          )
           .hover();
         clock.tick(2000);
         await page.evaluate(() => {

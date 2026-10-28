@@ -149,13 +149,13 @@ await page
   .click();
 ```
 
-Since `.filter()`'s callback is executed in browser context, it doesn't have access to variables from the Node scope. You can build a string function to inject a variable:
+Since `.filter()`'s callback is executed in browser context, it doesn't have access to variables from the Node scope. You can pass arguments to the filter function:
 
 ```ts
 const buttonName = 'My button';
 await page
   .locator('button')
-  .filter(`button => button.textContent === ${JSON.stringify(buttonName)}`)
+  .filter((button, buttonName) => button.textContent === buttonName, buttonName)
   .click();
 ```
 
