@@ -372,6 +372,89 @@ describe('Page.click', function () {
       }),
     ).toBe('clicked');
   });
+  it('should scroll the element into view when a sticky element covers it', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+          height: 3000px;
+        }
+        #sticky {
+          position: sticky;
+          top: 0;
+          height: 100px;
+        }
+        #spacer {
+          height: 430px;
+        }
+        #target {
+          display: block;
+          margin-left: 50px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <div id="sticky">sticky header</div>
+      <div id="spacer"></div>
+      <button id="target">target</button>
+      <script>
+        window.clicked = [];
+        document.addEventListener(
+          'click',
+          event => {
+            window.clicked.push(event.target.id);
+          },
+          true,
+        );
+      </script>
+    `);
+    // The button is fully inside the viewport, but behind the sticky header.
+    await page.evaluate(() => {
+      window.scrollTo(0, 500);
+    });
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('#target')!.getBoundingClientRect().top;
+      }),
+    ).toBe(30);
+
+    await page.click('#target');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual(['target']);
+  });
+  it('should not scroll when the element is not covered', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+          height: 3000px;
+        }
+        #target {
+          position: absolute;
+          top: 300px;
+          left: 50px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <button id="target">target</button>
+    `);
+    await page.click('#target');
+    expect(
+      await page.evaluate(() => {
+        return window.scrollY;
+      }),
+    ).toBe(0);
+  });
   it('should double click the button', async () => {
     const {page, server} = await getTestState();
 
