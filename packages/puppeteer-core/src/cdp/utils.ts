@@ -30,7 +30,8 @@ export function createConsoleMessage(
   // eslint-disable-next-line max-len -- The comment is long.
   // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
   for (const arg of values) {
-    textTokens.push(valueFromJSHandle(arg));
+    // `join()` would turn `null` and `undefined` into empty strings.
+    textTokens.push(String(valueFromJSHandle(arg)));
   }
   const stackTraceLocations = [];
   if (event.stackTrace) {
