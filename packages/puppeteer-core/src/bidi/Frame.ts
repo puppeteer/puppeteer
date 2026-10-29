@@ -588,10 +588,25 @@ export class BidiFrame extends Frame {
       return of(undefined);
     }
 
-    return this.page().waitForNetworkIdle$({
+    const networkIdleOptions = {
       idleTime: 500,
       timeout: options.timeout ?? this.timeoutSettings.timeout(),
       concurrency,
+    };
+    if (!this.parentFrame()) {
+      return this.page().waitForNetworkIdle$(networkIdleOptions);
+    }
+    // Only requests of this frame and the frames nested inside it count, as
+    // with the per-frame lifecycle events used over CDP.
+    return this.page().waitForNetworkIdle$(networkIdleOptions, request => {
+      let frame = request.frame();
+      while (frame) {
+        if (frame === this) {
+          return true;
+        }
+        frame = frame.parentFrame();
+      }
+      return false;
     });
   }
 

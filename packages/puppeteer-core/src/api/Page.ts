@@ -845,7 +845,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   #requestHandlers = new WeakMap<Handler<HTTPRequest>, Handler<HTTPRequest>>();
 
-  #inflight$ = new ReplaySubject<number>(1);
+  #inflight$ = new ReplaySubject<ReadonlySet<HTTPRequest>>(1);
 
   /**
    * @internal
@@ -862,7 +862,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
       .pipe(
         mergeMap(originalRequest => {
           return concat(
-            of(1),
+            of({request: originalRequest, inflight: true}),
             merge(
               fromEmitterEvent(this, PageEvent.RequestFailed),
               fromEmitterEvent(this, PageEvent.RequestFinished),
@@ -877,16 +877,22 @@ export abstract class Page extends EventEmitter<PageEvents> {
               }),
               take(1),
               map(() => {
-                return -1;
+                return {request: originalRequest, inflight: false};
               }),
             ),
           );
         }),
-        mergeScan((acc, addend) => {
-          return of(acc + addend);
-        }, 0),
+        mergeScan((inflight, {request, inflight: isInflight}) => {
+          const next = new Set(inflight);
+          if (isInflight) {
+            next.add(request);
+          } else {
+            next.delete(request);
+          }
+          return of(next);
+        }, new Set<HTTPRequest>() as ReadonlySet<HTTPRequest>),
         takeUntil(fromEmitterEvent(this, PageEvent.Close)),
-        startWith(0),
+        startWith(new Set<HTTPRequest>()),
       )
       .subscribe(this.#inflight$);
   }
@@ -2094,6 +2100,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    */
   waitForNetworkIdle$(
     options: WaitForNetworkIdleOptions = {},
+    isCounted: (request: HTTPRequest) => boolean = () => {
+      return true;
+    },
   ): Observable<void> {
     const {
       timeout: ms = this._timeoutSettings.timeout(),
@@ -2104,7 +2113,13 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
     return this.#inflight$.pipe(
       map(inflight => {
-        return inflight > concurrency;
+        let count = 0;
+        for (const request of inflight) {
+          if (isCounted(request)) {
+            count++;
+          }
+        }
+        return count > concurrency;
       }),
       distinctUntilChanged(),
       switchMap(isInflightOverConcurrency => {
