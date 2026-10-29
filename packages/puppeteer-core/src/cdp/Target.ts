@@ -277,7 +277,7 @@ export class PageTarget extends CdpTarget {
   override async page(): Promise<Page | null> {
     if (!this.pagePromise) {
       const session = this._session();
-      this.pagePromise = (
+      const pagePromise = (
         session
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
@@ -288,6 +288,14 @@ export class PageTarget extends CdpTarget {
           this.#defaultViewport ?? null,
           this.logger,
         );
+      });
+      this.pagePromise = pagePromise;
+      // A failed initialization, for example one blocked by a dialog until
+      // the protocol timeout, must not prevent later calls from retrying.
+      pagePromise.catch(() => {
+        if (this.pagePromise === pagePromise) {
+          this.pagePromise = undefined;
+        }
       });
     }
     return (await this.pagePromise) ?? null;

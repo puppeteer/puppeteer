@@ -10,7 +10,7 @@ import expect from 'expect';
 import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Target', function () {
@@ -352,6 +352,50 @@ describe('Target', function () {
     );
     expect(createdTarget.opener()).toBe(page.target());
     expect(page.target().opener()).toBeUndefined();
+  });
+
+  it('should retry Target.page() after the page failed to initialize', async () => {
+    const {browser, server, close} = await launch({protocolTimeout: 3000});
+    try {
+      const page = await browser.newPage();
+      await page.goto(server.EMPTY_PAGE);
+      const [target] = await Promise.all([
+        browser.waitForTarget(target => {
+          return target.opener() === page.target();
+        }),
+        page.evaluate(() => {
+          window.open('about:blank', 'popup');
+        }),
+      ]);
+      // The alert below blocks the initialization of the popup page.
+      const session = await target.createCDPSession();
+      await session.send('Page.enable');
+      server.setRoute('/alert.html', (_req, res) => {
+        res.setHeader('Content-Type', 'text/html');
+        res.end('<script>alert("blocked")</script>');
+      });
+      await Promise.all([
+        waitEvent(session, 'Page.javascriptDialogOpening'),
+        page.evaluate(url => {
+          window.open(url, 'popup');
+        }, server.PREFIX + '/alert.html'),
+      ]);
+
+      const error = await target.page().catch(error_ => {
+        return error_;
+      });
+      expect(error).toBeInstanceOf(Error);
+
+      await session.send('Page.handleJavaScriptDialog', {accept: true});
+      const popup = await target.page();
+      expect(
+        await popup!.evaluate(() => {
+          return 7 * 8;
+        }),
+      ).toBe(56);
+    } finally {
+      await close();
+    }
   });
 
   describe('Browser.waitForTarget', () => {

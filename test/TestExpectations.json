@@ -1003,6 +1003,13 @@
     "comment": "not supported"
   },
   {
+    "testIdPattern": "[target.test] Target should retry Target.page() after the page failed to initialize",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "CDP-specific: the test blocks the CDP page initialization with a dialog and handles it through a CDP session."
+  },
+  {
     "testIdPattern": "[TargetManager.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
