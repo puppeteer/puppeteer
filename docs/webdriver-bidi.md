@@ -53,6 +53,7 @@ await chromeBrowser.close();
 
 - CDP-specific features
   - HTTPRequest.client()
+  - HTTPRequest.postData() (use HTTPRequest.fetchPostData() instead)
   - HTTPRequest.resourceType()
   - Page.createCDPSession()
   - Page.extensionRealms()
@@ -169,6 +170,7 @@ await chromeBrowser.close();
   - HTTPRequest.abortErrorReason()
   - HTTPRequest.continue()
   - HTTPRequest.continueRequestOverrides()
+  - HTTPRequest.fetchPostData()
   - HTTPRequest.failure()
   - HTTPRequest.finalizeInterceptions()
   - HTTPRequest.interceptResolutionState()
