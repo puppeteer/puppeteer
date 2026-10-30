@@ -51,6 +51,8 @@ boolean
 
 Whether to show the header and footer.
 
+WebDriver BiDi does not currently support PDF header and footer templates.
+
 </td><td>
 
 `false`
