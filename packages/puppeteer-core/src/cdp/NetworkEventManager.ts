@@ -136,6 +136,34 @@ export class NetworkEventManager {
     this.#responseReceivedExtraInfoMap.delete(networkRequestId);
   }
 
+  /**
+   * Ids of the requests whose Network events come from `client`, both the
+   * ones already emitted and the ones still waiting for more events.
+   */
+  requestIdsForClient(client: CDPSession): Set<NetworkRequestId> {
+    const ids = new Set<NetworkRequestId>();
+    for (const [id, request] of this.#httpRequestsMap) {
+      if (request.client === client) {
+        ids.add(id);
+      }
+    }
+    for (const [id, stored] of this.#requestWillBeSentMap) {
+      if (stored.client === client) {
+        ids.add(id);
+      }
+    }
+    for (const [id, infos] of this.#queuedRedirectInfoMap) {
+      if (
+        infos.some(info => {
+          return info.client === client;
+        })
+      ) {
+        ids.add(id);
+      }
+    }
+    return ids;
+  }
+
   requestExtraInfo(
     networkRequestId: NetworkRequestId,
   ): Protocol.Network.RequestWillBeSentExtraInfoEvent[] {
