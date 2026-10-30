@@ -136,3 +136,21 @@ installed as an optional peer dependency.
 
 All other options can be found in the documentation for the
 [`Configuration`](../api/puppeteer.configuration) interface.
+
+### Custom certificates
+
+Browsers are downloaded using the Node.js HTTPS client, so the standard Node.js
+TLS environment variables apply. This is useful if downloads go through a
+corporate proxy or mirror that uses a custom certificate authority (CA):
+
+- `NODE_EXTRA_CA_CERTS` - path to a PEM file with additional CA certificates to
+  trust, for example `NODE_EXTRA_CA_CERTS=/path/to/ca.pem npm install puppeteer`.
+- `NODE_TLS_REJECT_UNAUTHORIZED=0` - disables certificate verification
+  entirely. This is insecure and should only be used as a last resort.
+
+:::note
+
+By default, Node.js does not read `SSL_CERT_FILE` or `SSL_CERT_DIR`, so setting
+them has no effect on browser downloads.
+
+:::
