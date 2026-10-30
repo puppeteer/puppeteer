@@ -717,6 +717,13 @@
     "comment": "Bidi does not have equivalent field"
   },
   {
+    "testIdPattern": "[network.test] network Request.worker should return null for page navigation requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
     "testIdPattern": "[network.test] network Response.buffer should throw if the response does not have a body",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
