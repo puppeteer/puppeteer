@@ -1381,6 +1381,34 @@
     "comment": "CDP supports the `text` option of ElementHandle.press, so CDP types 'ё' instead of 'a'. The test checks the WebDriver BiDi behavior. Added in https://github.com/puppeteer/puppeteer/pull/10466."
   },
   {
+    "testIdPattern": "[keyboard.test] Keyboard should keep a modifier active until both left and right keys are released",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "In the WebDriver 'dispatch a keyDown action' (steps 2, 8, 11) and 'dispatch a keyUp action' (steps 2, 3, 8, 11) algorithms, both U+E008 (Left Shift) and U+E050 (Right Shift) are normalized to 'Shift' and the pressed set is kept by that normalized key. Releasing ShiftRight removes 'Shift' and sets shift to false, so its keyup reports no modifier, and the later ShiftLeft keyUp returns early at step 3 without dispatching a keyup. CDP tracks keys by code instead. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
+    "testIdPattern": "[keyboard.test] Keyboard should keep a modifier active until both left and right keys are released",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "In the WebDriver 'dispatch a keyDown action' (steps 2, 8, 11) and 'dispatch a keyUp action' (steps 2, 3, 8, 11) algorithms, both U+E008 (Left Shift) and U+E050 (Right Shift) are normalized to 'Shift' and the pressed set is kept by that normalized key. Releasing ShiftRight removes 'Shift', so the later ShiftLeft keyUp returns early at step 3 and Firefox 158 dispatches no keyup for it. CDP tracks keys by code instead. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
+    "testIdPattern": "[keyboard.test] Keyboard should keep shift active after releasing only the right shift key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "In the WebDriver 'dispatch a keyDown action' (steps 2, 8, 11) and 'dispatch a keyUp action' (steps 2, 3, 8, 11) algorithms, both U+E008 (Left Shift) and U+E050 (Right Shift) are normalized to 'Shift' and the pressed set is kept by that normalized key. Releasing ShiftRight sets shift to false (keyUp step 8) even though ShiftLeft is still held, so pressing A types 'a'. CDP tracks keys by code instead. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
+    "testIdPattern": "[keyboard.test] Keyboard should keep shift active after releasing only the right shift key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "In the WebDriver 'dispatch a keyDown action' (steps 2, 8, 11) and 'dispatch a keyUp action' (steps 2, 3, 8, 11) algorithms, both U+E008 (Left Shift) and U+E050 (Right Shift) are normalized to 'Shift' and the pressed set is kept by that normalized key. Releasing ShiftRight sets shift to false (keyUp step 8) even though ShiftLeft is still held, so pressing A types 'a'. CDP tracks keys by code instead. See https://github.com/puppeteer/puppeteer/issues/15655"
+  },
+  {
     "testIdPattern": "[keyboard.test] Keyboard should report modifiers",
     "platforms": ["darwin"],
     "parameters": ["firefox", "webDriverBiDi"],
