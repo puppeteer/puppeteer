@@ -20,16 +20,21 @@ actions on them.
 
 ## Locators
 
-Locators is the recommended way to select an element and interact with it.
-Locators encapsulate the information on how to select an element and they allow
-Puppeteer to automatically wait for the element to be present in the DOM and to
-be in the right state for the action. You always instantiate a locator using the
+Locators are the recommended way to select an element and interact with it for
+most user-facing actions. They encapsulate the information on how to select an
+element and allow Puppeteer to automatically wait for the element to be present
+in the DOM and to be in the right state for the action. You always instantiate a
+locator using the
 [`page.locator()`](https://pptr.dev/api/puppeteer.page.locator) or
-[`frame.locator()`](https://pptr.dev/api/puppeteer.frame.locator) function. If
-the locator API doesn't offer a functionality you need, you can still use lower
-level APIs such as
+[`frame.locator()`](https://pptr.dev/api/puppeteer.frame.locator) function.
+
+The lower-level APIs are still supported and useful when you need direct control
+over querying, waiting, or element handles. For example, use
 [`page.waitForSelector()`](https://pptr.dev/api/puppeteer.page.waitforselector)
-or [`ElementHandle`](https://pptr.dev/api/puppeteer.elementhandle).
+when you need an
+[`ElementHandle`](https://pptr.dev/api/puppeteer.elementhandle) for a custom
+workflow, or `page.$()` / `page.$$()` when you know elements are already present
+and want to query without waiting.
 
 ### Clicking an element using locators
 
@@ -238,7 +243,8 @@ fire multiple times if the locator retries the action.
 lower-level API compared to locators that allows waiting for an element to be
 available in DOM. It does not automatically retry the action if it fails and
 requires manually disposing the resulting ElementHandle to prevent memory leaks.
-The method exists on the Page, Frame and ElementHandle instances.
+The method exists on the Page, Frame and ElementHandle instances. Use it when
+you need an explicit handle or a custom wait flow instead of a locator action.
 
 ```ts
 // Import puppeteer
