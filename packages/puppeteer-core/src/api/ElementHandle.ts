@@ -1511,9 +1511,44 @@ export abstract class ElementHandle<
         threshold: 1,
       })
     ) {
+      if (!(await this.#isCovered())) {
+        return;
+      }
+      // The element is inside the viewport but something else, such as a
+      // sticky header, is on top of it. Bring it to the center of the viewport
+      // so that it is the element that receives the interaction.
+      await this.evaluate((element): void => {
+        element.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          behavior: 'instant',
+        });
+      });
       return;
     }
     await this.scrollIntoView();
+  }
+
+  /**
+   * Whether another element is on top of the center of this element.
+   */
+  async #isCovered(this: ElementHandle<Element>): Promise<boolean> {
+    return await this.evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) {
+        return false;
+      }
+      const root = element.getRootNode() as Document | ShadowRoot;
+      const topElement = root.elementFromPoint(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2,
+      );
+      return (
+        topElement !== null &&
+        !element.contains(topElement) &&
+        !topElement.contains(element)
+      );
+    });
   }
 
   /**
