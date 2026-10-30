@@ -1042,6 +1042,115 @@ describe('navigation', function () {
         'Frame detached',
       ]);
     });
+    it('should not wait for requests of the parent frame with networkidle0', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const frame = (await attachFrame(page, 'frame1', server.EMPTY_PAGE))!;
+      server.setRoute('/hang', () => {});
+      await Promise.all([
+        server.waitForRequest('/hang'),
+        page.evaluate(() => {
+          void fetch('/hang');
+        }),
+      ]);
+
+      await Promise.all([
+        frame.waitForNavigation({waitUntil: 'networkidle0', timeout: 5000}),
+        frame.evaluate(url => {
+          window.location.href = url;
+        }, server.PREFIX + '/title.html'),
+      ]);
+      expect(frame.url()).toBe(server.PREFIX + '/title.html');
+    });
+    it('should not wait for requests of sibling frames with networkidle0', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const sibling = (await attachFrame(page, 'frame1', server.EMPTY_PAGE))!;
+      const frame = (await attachFrame(page, 'frame2', server.EMPTY_PAGE))!;
+      server.setRoute('/hang', () => {});
+      await Promise.all([
+        server.waitForRequest('/hang'),
+        sibling.evaluate(() => {
+          void fetch('/hang');
+        }),
+      ]);
+
+      await Promise.all([
+        frame.waitForNavigation({waitUntil: 'networkidle0', timeout: 5000}),
+        frame.evaluate(url => {
+          window.location.href = url;
+        }, server.PREFIX + '/title.html'),
+      ]);
+      expect(frame.url()).toBe(server.PREFIX + '/title.html');
+    });
+    it('should wait for requests of nested frames with networkidle0', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const frame = (await attachFrame(page, 'frame1', server.EMPTY_PAGE))!;
+      server.setRoute('/hang', () => {});
+      await Promise.all([
+        server.waitForRequest('/hang'),
+        page.evaluate(() => {
+          void fetch('/hang');
+        }),
+      ]);
+      let imageResponse!: ServerResponse;
+      server.setRoute('/slow.png', (_request, response) => {
+        imageResponse = response;
+      });
+      server.setRoute('/outer.html', (_request, response) => {
+        response.setHeader('Content-Type', 'text/html');
+        response.end('<iframe src="/inner.html"></iframe>');
+      });
+      server.setRoute('/inner.html', (_request, response) => {
+        response.setHeader('Content-Type', 'text/html');
+        response.end('<img src="/slow.png">');
+      });
+
+      let navigated = false;
+      const navigation = Promise.all([
+        frame.waitForNavigation({waitUntil: 'networkidle0', timeout: 10000}),
+        frame.evaluate(url => {
+          window.location.href = url;
+        }, server.PREFIX + '/outer.html'),
+      ]).then(() => {
+        navigated = true;
+      });
+      await server.waitForRequest('/slow.png');
+      await new Promise(resolve => {
+        return setTimeout(resolve, 1000);
+      });
+      expect(navigated).toBe(false);
+      imageResponse.end();
+      await navigation;
+      expect(navigated).toBe(true);
+    });
+    it('should only count requests of the frame with networkidle2', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const frame = (await attachFrame(page, 'frame1', server.EMPTY_PAGE))!;
+      for (const path of ['/hang-1', '/hang-2', '/hang-3']) {
+        server.setRoute(path, () => {});
+        await Promise.all([
+          server.waitForRequest(path),
+          page.evaluate(url => {
+            void fetch(url);
+          }, path),
+        ]);
+      }
+
+      await Promise.all([
+        frame.waitForNavigation({waitUntil: 'networkidle2', timeout: 5000}),
+        frame.evaluate(url => {
+          window.location.href = url;
+        }, server.PREFIX + '/title.html'),
+      ]);
+      expect(frame.url()).toBe(server.PREFIX + '/title.html');
+    });
   });
 
   describe('Page.reload', function () {
