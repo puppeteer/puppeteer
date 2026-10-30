@@ -63,7 +63,13 @@ export function headersInputToRecord(
 ): Record<string, string> {
   return Object.fromEntries(
     Object.entries(normalizeHeadersInput(headers)).map(([key, value]) => {
-      return [key, Array.isArray(value) ? value.join(', ') : value];
+      const normalizedValue = Array.isArray(value) ? value.join(', ') : value;
+      if (/[\r\n]/.test(key) || /[\r\n]/.test(normalizedValue)) {
+        throw new Error(
+          `Invalid header: CRLF characters are not allowed in header names or values (header: "${key}").`,
+        );
+      }
+      return [key, normalizedValue];
     }),
   );
 }
