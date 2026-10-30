@@ -20,6 +20,8 @@ import {
   raceWith,
   switchMap,
 } from '../../third_party/rxjs/rxjs.js';
+import {BrowserEvent} from '../api/Browser.js';
+import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import {
@@ -174,7 +176,19 @@ export class BidiFrame extends Frame {
         return;
       }
       if (isConsoleLogEntry(entry)) {
-        if (!this.page().listenerCount(PageEvent.Console)) {
+        // Chromium sets `source.context` of dedicated worker logs to the frame
+        // that created the worker, so they pass the context check above. Since
+        // BidiWorkerRealm emits them with the correct worker and realm we can
+        // skip them here.
+        if (this.#isWorkerRealm(entry.source.realm)) {
+          return;
+        }
+        const page = this.page();
+        if (
+          !page.listenerCount(PageEvent.Console) &&
+          !page.browserContext().listenerCount(BrowserContextEvent.Console) &&
+          !page.browser().listenerCount(BrowserEvent.Console)
+        ) {
           return;
         }
         const args = entry.args.map(arg => {
@@ -222,6 +236,14 @@ export class BidiFrame extends Frame {
       });
       this.page().trustedEmitter.emit(PageEvent.WorkerCreated, worker);
     });
+  }
+
+  #isWorkerRealm(realmId: string): boolean {
+    return this.page()
+      .workers()
+      .some(worker => {
+        return worker.mainRealm().realm.id === realmId;
+      });
   }
 
   #createFrameTarget(browsingContext: BrowsingContext) {

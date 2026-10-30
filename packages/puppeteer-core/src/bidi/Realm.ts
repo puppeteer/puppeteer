@@ -5,8 +5,11 @@
  */
 import * as Bidi from 'webdriver-bidi-protocol';
 
+import {BrowserEvent} from '../api/Browser.js';
+import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {Extension} from '../api/Extension.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import {PageEvent} from '../api/Page.js';
 import {Realm} from '../api/Realm.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
@@ -440,23 +443,32 @@ export class BidiWorkerRealm extends BidiRealm {
   override initialize(): void {
     super.initialize();
     this.realm.on('log', entry => {
-      if (
-        isConsoleLogEntry(entry) &&
-        this.#worker.listenerCount(WebWorkerEvent.Console)
-      ) {
-        const args = entry.args.map(arg => {
-          return this.createHandle(arg);
-        });
-
-        const message = getConsoleMessage(
-          entry,
-          args,
-          undefined,
-          this.realm.id,
-          this.#worker,
-        );
-        this.#worker.emit(WebWorkerEvent.Console, message);
+      if (!isConsoleLogEntry(entry)) {
+        return;
       }
+      const page = this.#worker.frame.page();
+      const context = page.browserContext();
+      if (
+        !this.#worker.listenerCount(WebWorkerEvent.Console) &&
+        !page.listenerCount(PageEvent.Console) &&
+        !context.listenerCount(BrowserContextEvent.Console) &&
+        !context.browser().listenerCount(BrowserEvent.Console)
+      ) {
+        return;
+      }
+      const args = entry.args.map(arg => {
+        return this.createHandle(arg);
+      });
+
+      const message = getConsoleMessage(
+        entry,
+        args,
+        undefined,
+        this.realm.id,
+        this.#worker,
+      );
+      this.#worker.emit(WebWorkerEvent.Console, message);
+      page.trustedEmitter.emit(PageEvent.Console, message);
     });
   }
 

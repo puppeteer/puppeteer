@@ -37,6 +37,36 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="console">console</span>
+
+</td><td>
+
+</td><td>
+
+[ConsoleMessage](./puppeteer.consolemessage.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="request">request</span>
+
+</td><td>
+
+</td><td>
+
+[HTTPRequest](./puppeteer.httprequest.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="targetchanged">targetchanged</span>
 
 </td><td>

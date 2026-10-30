@@ -6,10 +6,12 @@
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {isFavicon, waitEvent} from './utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
@@ -455,6 +457,70 @@ describe('BrowserContext', function () {
       );
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
       expect(await getPermission(page, 'midi')).toBe('prompt');
+    });
+  });
+
+  describe('BrowserContext.on("console")', function () {
+    it('should only report console messages from its own pages', async () => {
+      const {browser, page, context} = await getTestState();
+
+      await using otherContext = await browser.createBrowserContext();
+      const otherPage = await otherContext.newPage();
+
+      const messages: ConsoleMessage[] = [];
+      context.on('console', message => {
+        messages.push(message);
+      });
+
+      await otherPage.evaluate(() => {
+        console.log('from-other-context');
+      });
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(context, 'console', message => {
+          return message.text() === 'from-own-context';
+        }),
+        page.evaluate(() => {
+          console.log('from-own-context');
+        }),
+      ]);
+
+      expect(message.page()).toBe(page);
+      expect(
+        messages.map(message => {
+          return message.text();
+        }),
+      ).toEqual(['from-own-context']);
+    });
+  });
+
+  describe('BrowserContext.on("request")', function () {
+    it('should only report requests from its own pages', async () => {
+      const {browser, page, context, server} = await getTestState();
+
+      await using otherContext = await browser.createBrowserContext();
+      const otherPage = await otherContext.newPage();
+
+      const requests: HTTPRequest[] = [];
+      context.on('request', request => {
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
+      });
+
+      await otherPage.goto(server.PREFIX + '/one-style.html');
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(context, 'request', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(request.page()).toBe(page);
+      expect(
+        requests.map(request => {
+          return request.url();
+        }),
+      ).toEqual([server.EMPTY_PAGE]);
     });
   });
 });
