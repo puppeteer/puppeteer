@@ -282,12 +282,17 @@ export class BidiHTTPRequest extends HTTPRequest {
       parsedBody = HTTPRequest.getResponse(response.body);
     }
 
-    const headers: Bidi.Network.Header[] = getBidiHeaders(response.headers);
+    let headers: Bidi.Network.Header[] = getBidiHeaders(response.headers);
     const hasContentLength = headers.some(header => {
       return header.name === 'content-length';
     });
 
     if (response.contentType) {
+      // Like the CDP implementation, `contentType` replaces a `content-type`
+      // passed in `headers` instead of sending both.
+      headers = headers.filter(header => {
+        return header.name !== 'content-type';
+      });
       headers.push({
         name: 'content-type',
         value: {
