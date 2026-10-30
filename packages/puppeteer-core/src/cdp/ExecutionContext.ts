@@ -10,6 +10,10 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
+import {
+  decodeBinaryResult,
+  withBinaryResultEncoding,
+} from '../common/BinaryTransfer.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {LazyArg} from '../common/LazyArg.js';
@@ -430,7 +434,11 @@ export class ExecutionContext
       >;
     }
 
-    const functionDeclaration = stringifyFunction(pageFunction);
+    // A typed array, DataView or ArrayBuffer returned by value is encoded in
+    // the page so that it survives the JSON serialization of returnByValue.
+    const functionDeclaration = returnByValue
+      ? withBinaryResultEncoding(stringifyFunction(pageFunction))
+      : stringifyFunction(pageFunction);
     const functionDeclarationWithSourceUrl = SOURCE_URL_REGEX.test(
       functionDeclaration,
     )
@@ -474,8 +482,8 @@ export class ExecutionContext
     }
 
     if (returnByValue) {
-      return valueFromPrimitiveRemoteObject(
-        remoteObject,
+      return decodeBinaryResult(
+        valueFromPrimitiveRemoteObject(remoteObject),
       ) as unknown as HandleFor<Awaited<ReturnType<Func>>>;
     }
 
