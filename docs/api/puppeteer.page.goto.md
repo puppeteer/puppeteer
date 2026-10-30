@@ -10,7 +10,7 @@ Navigates the frame or page to the given `url`.
 
 ```typescript
 class Page {
-  goto(url: string, options?: GoToOptions): Promise<HTTPResponse | null>;
+  goto(url: string | URL, options?: GoToOptions): Promise<HTTPResponse | null>;
 }
 ```
 
@@ -35,7 +35,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 </td><td>
 

@@ -146,7 +146,7 @@ export class CdpFrame extends Frame {
 
   @throwIfDetached
   override async goto(
-    url: string,
+    url: string | URL,
     options: {
       referer?: string;
       referrerPolicy?: string;
@@ -154,9 +154,10 @@ export class CdpFrame extends Frame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {},
   ): Promise<HTTPResponse | null> {
-    if (!this.page()._isUrlAllowed(url)) {
+    const urlString = url.toString();
+    if (!this.page()._isUrlAllowed(urlString)) {
       throw new Error(
-        `Navigation to ${url} is blocked by blocklist/allowlist rules`,
+        `Navigation to ${urlString} is blocked by blocklist/allowlist rules`,
       );
     }
 
@@ -179,7 +180,7 @@ export class CdpFrame extends Frame {
     let error = await Deferred.race([
       navigate(
         this.#client,
-        url,
+        urlString,
         referer,
         referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined,
         this._id,
