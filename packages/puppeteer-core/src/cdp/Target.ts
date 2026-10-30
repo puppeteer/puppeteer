@@ -42,9 +42,9 @@ export class CdpTarget extends Target {
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
-  _asPagePromise?: Promise<Page>;
   /** @internal */
   pagePromise?: Promise<Page>;
+  #page?: CdpPage;
 
   /**
    * To initialize the target for use, call initialize.
@@ -74,23 +74,37 @@ export class CdpTarget extends Target {
   }
 
   override async asPage(): Promise<Page> {
-    if (this.pagePromise) {
-      const page = await this.pagePromise;
-      if (page) {
-        return page;
-      }
-    }
-    if (!this._asPagePromise) {
-      const session = this._session();
-      this._asPagePromise = (
-        session
-          ? Promise.resolve(session)
-          : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
-      ).then(client => {
-        return CdpPage._create(client, this, null, this.#logger);
+    return await this._initializePage(null);
+  }
+
+  /**
+   * Creates the page once and initializes it again after a failed
+   * initialization, so a retry does not add a second page to the session.
+   *
+   * @internal
+   */
+  _initializePage(defaultViewport: Viewport | null): Promise<Page> {
+    if (!this.pagePromise) {
+      const pagePromise = (async () => {
+        if (!this.#page) {
+          const client =
+            this._session() ??
+            (await this._sessionFactory()(/* isAutoAttachEmulated=*/ false));
+          this.#page = new CdpPage(client, this, this.#logger);
+        }
+        await this.#page._initialize(defaultViewport);
+        return this.#page;
+      })();
+      this.pagePromise = pagePromise;
+      // A failed initialization, for example one blocked by a dialog until
+      // the protocol timeout, must not prevent later calls from retrying.
+      pagePromise.catch(() => {
+        if (this.pagePromise === pagePromise) {
+          this.pagePromise = undefined;
+        }
       });
     }
-    return (await this._asPagePromise) ?? null;
+    return this.pagePromise;
   }
 
   _subtype(): string | undefined {
@@ -275,22 +289,7 @@ export class PageTarget extends CdpTarget {
   }
 
   override async page(): Promise<Page | null> {
-    if (!this.pagePromise) {
-      const session = this._session();
-      this.pagePromise = (
-        session
-          ? Promise.resolve(session)
-          : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
-      ).then(client => {
-        return CdpPage._create(
-          client,
-          this,
-          this.#defaultViewport ?? null,
-          this.logger,
-        );
-      });
-    }
-    return (await this.pagePromise) ?? null;
+    return await this._initializePage(this.#defaultViewport ?? null);
   }
 
   override _checkIfInitialized(): void {

@@ -118,26 +118,24 @@ export function convertSameSiteFromPuppeteerToCdp(
  * @internal
  */
 export class CdpPage extends Page {
-  static async _create(
-    client: CdpCDPSession,
-    target: CdpTarget,
-    defaultViewport: Viewport | null,
-    logger: Logger,
-  ): Promise<CdpPage> {
-    const page = new CdpPage(client, target, logger);
-    await page.#initialize();
+  /**
+   * Can be called again if a previous call failed.
+   *
+   * @internal
+   */
+  async _initialize(defaultViewport: Viewport | null): Promise<void> {
+    await this.#initialize();
     if (defaultViewport) {
       try {
-        await page.setViewport(defaultViewport);
+        await this.setViewport(defaultViewport);
       } catch (err) {
         if (isErrorLike(err) && isTargetClosedError(err)) {
-          page.logger?.(DEBUG_PREFIXES.error)?.(err);
+          this.logger?.(DEBUG_PREFIXES.error)?.(err);
         } else {
           throw err;
         }
       }
     }
-    return page;
   }
 
   #closed = false;
