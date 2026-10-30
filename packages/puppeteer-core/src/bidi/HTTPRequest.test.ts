@@ -173,6 +173,6 @@ describe('BidiHTTPRequest after the request is gone', () => {
   });
 });
  
-Claude finished the response
+
 
 
