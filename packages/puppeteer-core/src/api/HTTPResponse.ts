@@ -77,6 +77,24 @@ export abstract class HTTPResponse {
 
   /**
    * Timing information related to the response.
+   *
+   * @remarks
+   *
+   * The returned `ResourceTiming` fields follow the Chrome DevTools Protocol:
+   * all timing values except `requestTime` are measured in milliseconds
+   * relative to `requestTime`. To calculate time to first byte (TTFB) for this
+   * response, use `receiveHeadersStart`.
+   *
+   * @example
+   *
+   * ```ts
+   * const response = await page.goto('https://example.com');
+   * const timing = response?.timing();
+   * if (timing) {
+   *   const ttfb = timing.receiveHeadersStart;
+   *   console.log(`TTFB: ${ttfb}ms`);
+   * }
+   * ```
    */
   abstract timing(): Protocol.Network.ResourceTiming | null;
 
