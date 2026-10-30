@@ -2276,6 +2276,19 @@ describe('Page', function () {
       ]);
       expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
     });
+    it('should enable the cache when called without arguments', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setCacheEnabled(false);
+      await page.setCacheEnabled();
+
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      const [cachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload(),
+      ]);
+      expect(cachedRequest.headers['if-modified-since']).not.toBe(undefined);
+    });
     it('should stay disabled when toggling request interception on/off', async () => {
       const {page, server} = await getTestState();
 

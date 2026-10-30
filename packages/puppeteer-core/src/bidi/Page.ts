@@ -667,7 +667,7 @@ export class BidiPage extends Page {
     return false;
   }
 
-  override async setCacheEnabled(enabled?: boolean): Promise<void> {
+  override async setCacheEnabled(enabled = true): Promise<void> {
     if (!this.#browserContext.browser().cdpSupported) {
       await this.#frame.browsingContext.setCacheBehavior(
         enabled ? 'default' : 'bypass',
