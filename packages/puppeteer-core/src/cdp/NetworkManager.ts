@@ -10,6 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {headersInputToRecord, type HeadersInput} from '../api/HTTPRequest.js';
 import type {Credentials, Page} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {
@@ -72,6 +73,7 @@ export interface InternalNetworkConditions extends NetworkConditions {
  */
 export interface FrameProvider {
   frame(id: string): Frame | null;
+  worker(client: CDPSession): WebWorker | null;
   page(): Page;
 }
 
@@ -611,9 +613,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker = this.#frameManager.worker(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker,
       event.requestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -680,9 +685,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker = this.#frameManager.worker(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker,
       fetchRequestId,
       this.#userRequestInterceptionEnabled,
       event,

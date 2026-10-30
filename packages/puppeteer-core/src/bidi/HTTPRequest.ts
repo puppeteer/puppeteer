@@ -20,6 +20,7 @@ import {
   InterceptResolutionAction,
 } from '../api/HTTPRequest.js';
 import {PageEvent} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {stringToBase64} from '../util/encoding.js';
@@ -27,6 +28,7 @@ import {stringToBase64} from '../util/encoding.js';
 import type {Request} from './core/Request.js';
 import type {BidiFrame} from './Frame.js';
 import {BidiHTTPResponse} from './HTTPResponse.js';
+import type {BidiPage} from './Page.js';
 
 export const requests = new WeakMap<Request, BidiHTTPRequest>();
 
@@ -218,6 +220,14 @@ export class BidiHTTPRequest extends HTTPRequest {
 
   override redirectChain(): BidiHTTPRequest[] {
     return this.#redirectChain.slice();
+  }
+
+  override worker(): WebWorker | null {
+    throw new UnsupportedOperation('Not available in WebDriver BiDi');
+  }
+
+  override page(): BidiPage {
+    return this.#frame.page();
   }
 
   override frame(): BidiFrame {

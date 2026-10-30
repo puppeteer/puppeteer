@@ -225,7 +225,7 @@ Awaits pending interception handlers and then decides how to fulfill the request
 
 </td><td>
 
-The frame that initiated the request, or null if navigating to error pages.
+The frame that initiated the request, or null if navigating to error pages or the request is coming from a worker.
 
 </td></tr>
 <tr><td>
@@ -311,6 +311,17 @@ True if the request is the driver of the current frame's navigation.
 </td><td>
 
 The method used (`GET`, `POST`, etc.)
+
+</td></tr>
+<tr><td>
+
+<span id="page">[page()](./puppeteer.httprequest.page.md)</span>
+
+</td><td>
+
+</td><td>
+
+The page that initiated the request, or null if navigating to error pages or the request is coming from a worker.
 
 </td></tr>
 <tr><td>
@@ -419,6 +430,17 @@ The `ResponseForRequest` that gets used if the interception is allowed to respon
 </td><td>
 
 The URL of the request
+
+</td></tr>
+<tr><td>
+
+<span id="worker">[worker()](./puppeteer.httprequest.worker.md)</span>
+
+</td><td>
+
+</td><td>
+
+The worker that initiated the request, or null if the request was not initiated by a worker.
 
 </td></tr>
 </tbody></table>

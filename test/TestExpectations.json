@@ -322,6 +322,13 @@
     "comment": "Firefox does not support web worker targets in Puppeteer. The BiDi worker implementation from https://github.com/puppeteer/puppeteer/pull/11909 works only with Chrome."
   },
   {
+    "testIdPattern": "[worker.test] Workers should report network requests*",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
     "testIdPattern": "[worker.test] Workers when the worker script does not load *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -710,6 +717,13 @@
     "comment": "Bidi does not have equivalent field"
   },
   {
+    "testIdPattern": "[network.test] network Request.worker should return null for page navigation requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
     "testIdPattern": "[network.test] network Response.buffer should throw if the response does not have a body",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -729,6 +743,13 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "WebDriver BiDi does not report whether a service worker served a response. BidiHTTPResponse.fromServiceWorker() always returns false."
+  },
+  {
+    "testIdPattern": "[oopif.test] OOPIF should continue intercepted requests from workers in OOPIFs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not support worker network requests yet"
   },
   {
     "testIdPattern": "[oopif.test] OOPIF should evaluate on a page with a PDF viewer",
