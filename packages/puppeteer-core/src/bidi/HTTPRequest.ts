@@ -222,9 +222,8 @@ export class BidiHTTPRequest extends HTTPRequest {
     return this.#redirectChain.slice();
   }
 
-  // TODO: BiDi needs to implement network requests for workers first.
   override worker(): WebWorker | null {
-    return null;
+    throw new UnsupportedOperation('Not available in WebDriver BiDi');
   }
 
   override page(): BidiPage {
