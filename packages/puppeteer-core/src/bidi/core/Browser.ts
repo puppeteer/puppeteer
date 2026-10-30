@@ -7,6 +7,7 @@
 import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {BrowserContextOptions} from '../../api/Browser.js';
+import type {DownloadBehavior} from '../../common/DownloadBehavior.js';
 import {UnsupportedOperation} from '../../common/Errors.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
@@ -228,32 +229,52 @@ export class Browser extends EventEmitter<{
     } = await this.session.send('browser.createUserContext', {
       proxy: proxyConfig,
     });
-    if (options.downloadBehavior?.policy === 'allowAndName') {
-      throw new UnsupportedOperation(
-        '`allowAndName` is not supported in WebDriver BiDi',
-      );
-    }
-    if (options.downloadBehavior?.policy === 'allow') {
-      if (options.downloadBehavior.downloadPath === undefined) {
-        throw new UnsupportedOperation(
-          '`downloadPath` is required in `allow` download behavior',
-        );
-      }
-      await this.session.send('browser.setDownloadBehavior', {
-        downloadBehavior: {
-          type: 'allowed',
-          destinationFolder: options.downloadBehavior.downloadPath,
-        },
-        userContexts: [userContext],
-      });
-    }
-    if (options.downloadBehavior?.policy === 'deny') {
-      await this.session.send('browser.setDownloadBehavior', {
-        downloadBehavior: {type: 'denied'},
-        userContexts: [userContext],
-      });
+    if (options.downloadBehavior) {
+      await this.setDownloadBehavior(options.downloadBehavior, [userContext]);
     }
     return this.#createUserContext(userContext);
+  }
+
+  /**
+   * Sets the download behavior for the given user contexts. If no user
+   * contexts are provided, the behavior is applied globally.
+   */
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async setDownloadBehavior(
+    downloadBehavior: DownloadBehavior,
+    userContexts?: [string, ...string[]],
+  ): Promise<void> {
+    switch (downloadBehavior.policy) {
+      case 'allowAndName':
+        throw new UnsupportedOperation(
+          '`allowAndName` is not supported in WebDriver BiDi',
+        );
+      case 'allow':
+        if (downloadBehavior.downloadPath === undefined) {
+          throw new UnsupportedOperation(
+            '`downloadPath` is required in `allow` download behavior',
+          );
+        }
+        await this.session.send('browser.setDownloadBehavior', {
+          downloadBehavior: {
+            type: 'allowed',
+            destinationFolder: downloadBehavior.downloadPath,
+          },
+          userContexts,
+        });
+        return;
+      case 'deny':
+        await this.session.send('browser.setDownloadBehavior', {
+          downloadBehavior: {type: 'denied'},
+          userContexts,
+        });
+        return;
+      case 'default':
+        return;
+    }
   }
 
   @throwIfDisposed<Browser>(browser => {

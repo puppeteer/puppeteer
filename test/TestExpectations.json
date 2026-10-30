@@ -1234,20 +1234,6 @@
     "comment": "Firefox does not support multiple active BiDi sessions."
   },
   {
-    "testIdPattern": "[download.test] Download Browser.createBrowserContext should download to configured location",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Firefox does not support download behavior."
-  },
-  {
-    "testIdPattern": "[download.test] Download Browser.createBrowserContext should not download to location",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Firefox does not support download behavior."
-  },
-  {
     "testIdPattern": "[drag-and-drop.test] Drag n' Drop should drag and drop",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],

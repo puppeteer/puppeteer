@@ -28,6 +28,7 @@ import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -37,7 +38,7 @@ import {BidiBrowserContext} from './BrowserContext.js';
 import type {BidiConnection, CdpEvent} from './Connection.js';
 import type {Browser as BrowserCore} from './core/Browser.js';
 import {Session} from './core/Session.js';
-import type {UserContext} from './core/UserContext.js';
+import {UserContext} from './core/UserContext.js';
 import {BidiBrowserTarget} from './Target.js';
 
 /**
@@ -49,6 +50,7 @@ export interface BidiBrowserOptions {
   connection: BidiConnection;
   cdpConnection?: CdpConnection;
   defaultViewport: Viewport | null;
+  downloadBehavior?: DownloadBehavior;
   acceptInsecureCerts?: boolean;
   capabilities?: SupportedWebDriverCapabilities;
   networkEnabled: boolean;
@@ -143,6 +145,11 @@ export class BidiBrowser extends Browser {
 
     const browser = new BidiBrowser(session.browser, opts, opts.logger);
     browser.#initialize();
+    if (opts.downloadBehavior) {
+      await session.browser.setDownloadBehavior(opts.downloadBehavior, [
+        UserContext.DEFAULT,
+      ]);
+    }
     return browser;
   }
 
