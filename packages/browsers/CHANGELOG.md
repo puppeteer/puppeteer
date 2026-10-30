@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.7](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.6...browsers-v3.2.7) (2026-10-30)
+
+
+### 🛠️ Fixes
+
+* **browsers:** compare Firefox versions numerically ([#15658](https://github.com/puppeteer/puppeteer/issues/15658)) ([47e587d](https://github.com/puppeteer/puppeteer/commit/47e587dac8e44820219ba1264b21bbe086914aae))
+* **browsers:** propagate errors from redirected requests ([#15675](https://github.com/puppeteer/puppeteer/issues/15675)) ([8df33ea](https://github.com/puppeteer/puppeteer/commit/8df33eac9569e67aec6c8d8f119927260c95565a))
+
 ## [3.2.6](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.5...browsers-v3.2.6) (2026-10-22)
 
 
