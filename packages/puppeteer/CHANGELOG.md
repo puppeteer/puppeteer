@@ -1,5 +1,20 @@
 # Changelog
 
+## [25.17.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.16.0...puppeteer-v25.17.0) (2026-10-30)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.6 to 3.2.7
+    * puppeteer-core bumped from 25.16.0 to 25.17.0
+
 ## [25.16.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v25.15.0...puppeteer-v25.16.0) (2026-10-22)
 
 

@@ -1,5 +1,44 @@
 # Changelog
 
+## [25.17.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.16.0...puppeteer-core-v25.17.0) (2026-10-30)
+
+
+### 🎉 Features
+
+* add page and worker methods on HTTPRequest ([#15514](https://github.com/puppeteer/puppeteer/issues/15514)) ([9b2fe5e](https://github.com/puppeteer/puppeteer/commit/9b2fe5e30743fd9122fe51d5f316ea4c1bf0fe78))
+* add scriptId to ConsoleMessageLocation ([#15537](https://github.com/puppeteer/puppeteer/issues/15537)) ([f3511d8](https://github.com/puppeteer/puppeteer/commit/f3511d8529e23fb32441b54928b61abc837e9236))
+* **locators:** support passing arguments to Locator.filter and Locator.map ([#15684](https://github.com/puppeteer/puppeteer/issues/15684)) ([a0b2b8d](https://github.com/puppeteer/puppeteer/commit/a0b2b8dd0de163b9f0ac8fb78445f4158196a705))
+* roll to Firefox 159.0 ([#15685](https://github.com/puppeteer/puppeteer/issues/15685)) ([de2e9f9](https://github.com/puppeteer/puppeteer/commit/de2e9f9c97970b2d8106497c837a80df862d3faa))
+
+
+### 🛠️ Fixes
+
+* **bidi:** return domain cookies for the domain itself in page.cookies() ([#15689](https://github.com/puppeteer/puppeteer/issues/15689)) ([884a8c3](https://github.com/puppeteer/puppeteer/commit/884a8c3a62b727a58ee2fd4ee4a0a3c4970fd171))
+* **cdp:** allow calling exposed functions after deleting from globalThis ([#15683](https://github.com/puppeteer/puppeteer/issues/15683)) ([5c11065](https://github.com/puppeteer/puppeteer/commit/5c11065ae361c384aa470dd7f7f482852dfbe98f))
+* deflake BiDi navigation and flaky tests from main CI ([#15638](https://github.com/puppeteer/puppeteer/issues/15638)) ([d8ef67a](https://github.com/puppeteer/puppeteer/commit/d8ef67a5ce6bf9b307408290389a8339e99c2f4c))
+* do not mutate options.args in defaultArgs ([#15664](https://github.com/puppeteer/puppeteer/issues/15664)) ([1581677](https://github.com/puppeteer/puppeteer/commit/15816772ad01431b976ff1bb052456a0aa9ecd0b))
+* do not throw in evaluate when the caller stack frame is missing ([#15666](https://github.com/puppeteer/puppeteer/issues/15666)) ([28782a2](https://github.com/puppeteer/puppeteer/commit/28782a2b84f431b88c559bbf78d0f243b144d27f))
+* **extensions:** support Target.attachToTarget in ExtensionTransport ([#15647](https://github.com/puppeteer/puppeteer/issues/15647)) ([c615311](https://github.com/puppeteer/puppeteer/commit/c615311db0f6f1826f31cbc59978e8367b2ed9b3))
+* fail pending worker requests on worker termination ([#15538](https://github.com/puppeteer/puppeteer/issues/15538)) ([7231774](https://github.com/puppeteer/puppeteer/commit/72317747dbead16bcb53334cb8c356ccc9f01ce3))
+* **network:** emit requestfailed when loadingFailed precedes requestPaused ([#15576](https://github.com/puppeteer/puppeteer/issues/15576)) ([5b0c34a](https://github.com/puppeteer/puppeteer/commit/5b0c34aa079e5943921bce65be67e360e581e862))
+* roll to Chrome 156.0.8078.73 ([#15686](https://github.com/puppeteer/puppeteer/issues/15686)) ([33f2ad6](https://github.com/puppeteer/puppeteer/commit/33f2ad619cfb0ca8d359436b8796fc6031f26a27))
+* roll to Chrome 156.0.8078.80 ([#15696](https://github.com/puppeteer/puppeteer/issues/15696)) ([715534b](https://github.com/puppeteer/puppeteer/commit/715534b579b5b90062ee246cc904c48ee204dbdc))
+* type wildcard event emitter handlers correctly ([#15643](https://github.com/puppeteer/puppeteer/issues/15643)) ([08e7b1a](https://github.com/puppeteer/puppeteer/commit/08e7b1aebe60462b6f7834e9dfe0f6c70464247c))
+* **webdriver:** dispose requests that complete with a 3xx status but are not redirected ([#15631](https://github.com/puppeteer/puppeteer/issues/15631)) ([fac3a5b](https://github.com/puppeteer/puppeteer/commit/fac3a5b659d19f7108c8d2fc44d14f4161ef46d2))
+* **webdriver:** support the Space key over WebDriver BiDi ([#15650](https://github.com/puppeteer/puppeteer/issues/15650)) ([346bace](https://github.com/puppeteer/puppeteer/commit/346bace62a480837302c9c820db0858d6e377e1b))
+
+
+### 📄 Documentation
+
+* **pdf:** clarify emulateMediaType('screen') behavior with page.pdf() ([#15636](https://github.com/puppeteer/puppeteer/issues/15636)) ([a1149f3](https://github.com/puppeteer/puppeteer/commit/a1149f302f8c1ddd0740fe26964c59e8533d1179))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.6 to 3.2.7
+
 ## [25.16.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.15.0...puppeteer-core-v25.16.0) (2026-10-22)
 
 
