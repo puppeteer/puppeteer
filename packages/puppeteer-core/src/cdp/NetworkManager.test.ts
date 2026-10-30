@@ -2466,6 +2466,237 @@ describe('NetworkManager', () => {
     ).toEqual([200, 302, 200]);
   });
 
+  describe('internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)', () => {
+    for (const pauseFirst of [false, true]) {
+      it(`should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=${pauseFirst})`, async () => {
+        const sentCommands: Array<{method: string; params: unknown}> = [];
+        const mockCDPSession = new MockCDPSession();
+        mockCDPSession.send = (async (method: string, params: unknown) => {
+          sentCommands.push({method, params});
+        }) as any;
+        const manager = createNetworkManager();
+        await manager.addClient(mockCDPSession);
+        await manager.setRequestInterception(true);
+
+        const requests: HTTPRequest[] = [];
+        const responses: HTTPResponse[] = [];
+        const continued: Array<Promise<void>> = [];
+        manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+          requests.push(request);
+          continued.push(request.continue());
+        });
+        manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+          responses.push(response);
+        });
+
+        const requestId = 'LOADERID';
+        const frameId = 'FRAMEID';
+        const baseRequest = {
+          method: 'GET',
+          headers: {},
+          mixedContentType: 'none' as const,
+          initialPriority: 'VeryHigh' as const,
+          referrerPolicy: 'strict-origin-when-cross-origin' as const,
+          isSameSite: true,
+        };
+        const baseResponse = {
+          charset: 'utf-8',
+          headers: {},
+          mimeType: 'text/html',
+          connectionReused: false,
+          connectionId: 1,
+          fromDiskCache: false,
+          fromServiceWorker: false,
+          fromPrefetchCache: false,
+          encodedDataLength: 0,
+          protocol: 'http/1.1',
+          securityState: 'secure' as const,
+        };
+
+        // Hop 1: https://example.com/start -> 301 to http://sub.example.com/page
+        mockCDPSession.emit('Network.requestWillBeSent', {
+          requestId,
+          loaderId: requestId,
+          documentURL: 'https://example.com/start',
+          request: {...baseRequest, url: 'https://example.com/start'},
+          timestamp: 1,
+          wallTime: 1,
+          initiator: {type: 'other'},
+          redirectHasExtraInfo: false,
+          type: 'Document',
+          frameId,
+          hasUserGesture: false,
+        });
+        mockCDPSession.emit('Fetch.requestPaused', {
+          requestId: 'interception-job-1.0',
+          request: {
+            url: 'https://example.com/start',
+            method: 'GET',
+            headers: {},
+            initialPriority: 'VeryHigh',
+            referrerPolicy: 'strict-origin-when-cross-origin',
+          },
+          frameId,
+          resourceType: 'Document',
+          networkId: requestId,
+        });
+        mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+          requestId,
+          associatedCookies: [],
+          headers: {},
+          connectTiming: {requestTime: 1},
+        });
+        mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+          requestId,
+          blockedCookies: [],
+          headers: {location: 'http://sub.example.com/page'},
+          resourceIPAddressSpace: 'Public',
+          statusCode: 301,
+        });
+
+        // Hop 2: http://sub.example.com/page (internally upgraded via 307
+        // without Fetch.requestPaused)
+        mockCDPSession.emit('Network.requestWillBeSent', {
+          requestId,
+          loaderId: requestId,
+          documentURL: 'http://sub.example.com/page',
+          request: {...baseRequest, url: 'http://sub.example.com/page'},
+          timestamp: 2,
+          wallTime: 2,
+          initiator: {type: 'other'},
+          redirectHasExtraInfo: true,
+          redirectResponse: {
+            ...baseResponse,
+            url: 'https://example.com/start',
+            status: 301,
+            statusText: 'Moved Permanently',
+            headers: {location: 'http://sub.example.com/page'},
+          },
+          type: 'Document',
+          frameId,
+          hasUserGesture: false,
+        });
+
+        // Hop 3: https://sub.example.com/page (paused by Fetch.requestPaused)
+        const emitHop3Paused = () => {
+          mockCDPSession.emit('Fetch.requestPaused', {
+            requestId: 'interception-job-2.0',
+            request: {
+              url: 'https://sub.example.com/page',
+              method: 'GET',
+              headers: {},
+              initialPriority: 'VeryHigh',
+              referrerPolicy: 'strict-origin-when-cross-origin',
+            },
+            frameId,
+            resourceType: 'Document',
+            networkId: requestId,
+          });
+        };
+        const emitHop3WillBeSent = () => {
+          mockCDPSession.emit('Network.requestWillBeSent', {
+            requestId,
+            loaderId: requestId,
+            documentURL: 'https://sub.example.com/page',
+            request: {...baseRequest, url: 'https://sub.example.com/page'},
+            timestamp: 3,
+            wallTime: 3,
+            initiator: {type: 'other'},
+            redirectHasExtraInfo: false,
+            redirectResponse: {
+              ...baseResponse,
+              url: 'http://sub.example.com/page',
+              status: 307,
+              statusText: 'Temporary Redirect',
+              headers: {
+                Location: 'https://sub.example.com/page',
+                'Non-Authoritative-Reason': 'HttpsUpgrades',
+              },
+              securityState: 'insecure',
+            },
+            type: 'Document',
+            frameId,
+            hasUserGesture: false,
+          });
+        };
+
+        if (pauseFirst) {
+          emitHop3Paused();
+          emitHop3WillBeSent();
+        } else {
+          emitHop3WillBeSent();
+          emitHop3Paused();
+        }
+
+        mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+          requestId,
+          associatedCookies: [],
+          headers: {},
+          connectTiming: {requestTime: 3},
+        });
+        mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+          requestId,
+          blockedCookies: [],
+          headers: {'content-type': 'text/html'},
+          resourceIPAddressSpace: 'Public',
+          statusCode: 200,
+        });
+        mockCDPSession.emit('Network.responseReceived', {
+          requestId,
+          loaderId: requestId,
+          timestamp: 4,
+          type: 'Document',
+          response: {
+            ...baseResponse,
+            url: 'https://sub.example.com/page',
+            status: 200,
+            statusText: 'OK',
+          },
+          hasExtraInfo: true,
+          frameId,
+        });
+        mockCDPSession.emit('Network.loadingFinished', {
+          requestId,
+          timestamp: 5,
+          encodedDataLength: 100,
+        });
+
+        await Promise.all(continued);
+
+        expect(
+          requests.map(r => {
+            return r.url();
+          }),
+        ).toEqual([
+          'https://example.com/start',
+          'http://sub.example.com/page',
+          'https://sub.example.com/page',
+        ]);
+        expect(
+          responses.map(r => {
+            return r.status();
+          }),
+        ).toEqual([301, 307, 200]);
+        expect(requests[2]!.redirectChain()).toEqual([
+          requests[0],
+          requests[1],
+        ]);
+        expect(
+          sentCommands
+            .filter(c => {
+              return c.method === 'Fetch.continueRequest';
+            })
+            .map(c => {
+              return c.params;
+            }),
+        ).toEqual([
+          {requestId: 'interception-job-1.0'},
+          {requestId: 'interception-job-2.0'},
+        ]);
+      });
+    }
+  });
+
   it('should not override the user agent when nothing is emulated', async () => {
     const commands: string[] = [];
     const mockCDPSession = new MockCDPSession();
