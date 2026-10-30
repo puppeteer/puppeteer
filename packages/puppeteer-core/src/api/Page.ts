@@ -180,6 +180,16 @@ export interface Metrics {
    * Total JavaScript heap size, in bytes.
    */
   JSHeapTotalSize?: number;
+  /**
+   * The timestamp when the DOMContentLoaded event was fired, in monotonic
+   * time (seconds since an arbitrary point in the past).
+   */
+  DomContentLoaded?: number;
+  /**
+   * The timestamp when the navigation started, in monotonic time (seconds
+   * since an arbitrary point in the past).
+   */
+  NavigationStart?: number;
 }
 
 /**

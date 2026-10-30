@@ -1432,6 +1432,8 @@ const supportedMetrics = new Set<string>([
   'TaskDuration',
   'JSHeapUsedSize',
   'JSHeapTotalSize',
+  'DomContentLoaded',
+  'NavigationStart',
 ]);
 
 /** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
