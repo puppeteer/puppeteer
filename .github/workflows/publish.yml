@@ -27,16 +27,39 @@ jobs:
         with:
           cache: npm
           node-version-file: '.nvmrc'
-          registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build
-      - name: Publish packages
+      - name: Authenticate to Google Cloud for OSS Exit Gate
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: 'projects/305452601764/locations/global/workloadIdentityPools/builders/providers/github'
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+      - name: Stage packages to Artifact Registry and trigger OSS Exit Gate
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
-          npm publish --provenance --access public --workspace packages/${GITHUB_REF_NAME%-v*}
+          cat << 'NPMRC' > "$HOME/.npmrc"
+          registry=https://us-npm.pkg.dev/oss-exit-gate-prod/puppeteer--npm/
+          //us-npm.pkg.dev/oss-exit-gate-prod/puppeteer--npm/:always-auth=true
+          //us-npm.pkg.dev/oss-exit-gate-prod/puppeteer--npm/:_authToken=${ACCESS_TOKEN}
+          NPMRC
+          trap 'rm -f "$HOME/.npmrc"' EXIT
+          npm publish --access public --workspace "packages/${GITHUB_REF_NAME%-v*}" --registry="https://us-npm.pkg.dev/oss-exit-gate-prod/puppeteer--npm/"
+          cat << 'MANIFEST' > manifest.json
+          {
+            "publish_all": true
+          }
+          MANIFEST
+          gcloud storage cp manifest.json "gs://oss-exit-gate-prod-projects-bucket/puppeteer/npm/manifests/manifest-${RUN_ID}-${RUN_ATTEMPT}.json"
       - name: Deprecate old Puppeteer versions
         if: ${{ startsWith(github.ref_name, 'puppeteer-v') }}
         env:
