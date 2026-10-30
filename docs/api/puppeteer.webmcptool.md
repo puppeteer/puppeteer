@@ -152,6 +152,23 @@ string
 Tool name.
 
 </td></tr>
+<tr><td>
+
+<span id="outputschema">outputSchema</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+object
+
+</td><td>
+
+Schema for the tool's output.
+
+</td></tr>
 </tbody></table>
 
 ## Methods
