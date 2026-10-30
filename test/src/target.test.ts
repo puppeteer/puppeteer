@@ -9,6 +9,7 @@ import type {ServerResponse} from 'node:http';
 import expect from 'expect';
 import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {CdpTarget} from 'puppeteer-core/internal/cdp/Target.js';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
@@ -354,7 +355,13 @@ describe('Target', function () {
     expect(page.target().opener()).toBeUndefined();
   });
 
-  it('should retry Target.page() after the page failed to initialize', async () => {
+  for (const method of ['page', 'asPage'] as const) {
+    it(`should retry Target.${method}() after the page failed to initialize`, async () => {
+      await testRetryAfterFailedInitialization(method);
+    });
+  }
+
+  async function testRetryAfterFailedInitialization(method: 'page' | 'asPage') {
     const {browser, server, close} = await launch({protocolTimeout: 3000});
     try {
       const page = await browser.newPage();
@@ -381,22 +388,30 @@ describe('Target', function () {
         }, server.PREFIX + '/alert.html'),
       ]);
 
-      const error = await target.page().catch(error_ => {
+      const error = await target[method]().catch(error_ => {
         return error_;
       });
       expect(error).toBeInstanceOf(Error);
+      const client = (target as CdpTarget)._session()!;
+      const listenerCount = client.listenerCount('Page.frameNavigated');
 
       await session.send('Page.handleJavaScriptDialog', {accept: true});
-      const popup = await target.page();
+      const popup = await target[method]();
       expect(
         await popup!.evaluate(() => {
           return 7 * 8;
         }),
       ).toBe(56);
+      const response = await popup!.goto(server.EMPTY_PAGE);
+      expect(response!.ok()).toBe(true);
+      expect(await target.page()).toBe(popup);
+      expect(await target.asPage()).toBe(popup);
+      // The retry reuses the page instead of adding listeners to the session.
+      expect(client.listenerCount('Page.frameNavigated')).toBe(listenerCount);
     } finally {
       await close();
     }
-  });
+  }
 
   describe('Browser.waitForTarget', () => {
     it('should wait for a target', async () => {

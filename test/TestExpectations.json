@@ -280,6 +280,13 @@
     "comment": "CDP-specific screenshot options. WebDriver BiDi does not support clip `scale`, `omitBackground`, or `fromSurface`, and Puppeteer throws UnsupportedOperation for them."
   },
   {
+    "testIdPattern": "[target.test] Target should retry Target.* after the page failed to initialize",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "CDP-specific: the test blocks the CDP page initialization with a dialog and handles it through a CDP session."
+  },
+  {
     "testIdPattern": "[userDataDir.test] userDataDir should not launch the browser twice with the same userDataDir *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
@@ -1001,13 +1008,6 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "not supported"
-  },
-  {
-    "testIdPattern": "[target.test] Target should retry Target.page() after the page failed to initialize",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "CDP-specific: the test blocks the CDP page initialization with a dialog and handles it through a CDP session."
   },
   {
     "testIdPattern": "[TargetManager.test] *",
