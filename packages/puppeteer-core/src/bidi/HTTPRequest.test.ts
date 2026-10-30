@@ -95,3 +95,55 @@ describe('BidiHTTPRequest', () => {
     expect(rejections).toHaveLength(0);
   });
 });
+
+class CanceledRequest extends EventEmitter<{authenticate: void}> {
+  readonly id = 'requestId';
+  readonly isBlocked = true;
+
+  async provideResponse(): Promise<void> {
+    throw new ProtocolError('no such request');
+  }
+
+  async failRequest(): Promise<void> {
+    throw new ProtocolError('no such request');
+  }
+}
+
+function createCanceledRequest(): BidiHTTPRequest {
+  const frame = {
+    page() {
+      return {
+        _credentials: null,
+        trustedEmitter: {
+          emit() {},
+        },
+      };
+    },
+  } as unknown as BidiFrame;
+
+  return BidiHTTPRequest.from(
+    new CanceledRequest() as unknown as Request,
+    frame,
+    false,
+    undefined,
+    () => {
+      return undefined;
+    },
+  );
+}
+
+describe('BidiHTTPRequest after the request is gone', () => {
+  it('should not reject when respond() fails', async () => {
+    const request = createCanceledRequest();
+
+    await expect(request._respond({status: 200, body: 'ok'})).resolves.toBe(
+      undefined,
+    );
+  });
+
+  it('should not reject when abort() fails', async () => {
+    const request = createCanceledRequest();
+
+    await expect(request._abort()).resolves.toBe(undefined);
+  });
+});

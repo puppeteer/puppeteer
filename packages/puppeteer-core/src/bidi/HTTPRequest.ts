@@ -262,7 +262,7 @@ export class BidiHTTPRequest extends HTTPRequest {
     this.interception.handled = true;
     return await this.#request.failRequest().catch(error => {
       this.interception.handled = false;
-      throw error;
+      return handleError(error, this.#logger);
     });
   }
 
@@ -322,7 +322,7 @@ export class BidiHTTPRequest extends HTTPRequest {
       })
       .catch(error => {
         this.interception.handled = false;
-        throw error;
+        return handleError(error, this.#logger);
       });
   }
 
