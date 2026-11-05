@@ -806,9 +806,17 @@ describe('network', function () {
       expect(firstResponse.fromCache()).toBe(false);
       expect(firstResponse.encodedDataLength()).toBeGreaterThan(1500);
 
+      const cachedRequestFinished = waitEvent<HTTPRequest>(
+        page,
+        'requestfinished',
+        request => {
+          return request.url() === server.PREFIX + '/cached-encoded-length';
+        },
+      );
       const cachedResponse = (await page.goto(
         server.PREFIX + '/cached-encoded-length',
       ))!;
+      await cachedRequestFinished;
       expect(cachedResponse.fromCache()).toBe(true);
       expect(cachedResponse.encodedDataLength()).toBe(0);
     });

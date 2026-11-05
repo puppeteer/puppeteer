@@ -88,7 +88,10 @@ export class CdpHTTPResponse extends HTTPResponse {
   }
 
   _resolveBody(err?: Error, encodedDataLength?: number): void {
-    if (encodedDataLength !== undefined) {
+    // Chromium reports -1 (kUnknownEncodedDataLength) when the size is
+    // unknown, e.g. for synchronous XHRs to data: URLs. Keep the last known
+    // value in that case, like the DevTools frontend does.
+    if (encodedDataLength !== undefined && encodedDataLength >= 0) {
       this.#encodedDataLength = encodedDataLength;
     }
     if (err) {
