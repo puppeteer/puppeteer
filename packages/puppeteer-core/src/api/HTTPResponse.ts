@@ -81,6 +81,19 @@ export abstract class HTTPResponse {
   abstract timing(): Protocol.Network.ResourceTiming | null;
 
   /**
+   * Total number of bytes received for this request over the network.
+   *
+   * @remarks
+   * The value is updated when the response finishes loading. During the
+   * `response` event, it only covers the bytes received up to the response
+   * headers. To get the total encoded transfer size (headers + compressed
+   * body), read it in a `requestfinished` handler or after awaiting
+   * {@link HTTPResponse.content}. If the request fails after the response is
+   * received, the value is not updated.
+   */
+  abstract encodedDataLength(): number;
+
+  /**
    * Promise which resolves to a buffer with response body.
    *
    * @remarks
