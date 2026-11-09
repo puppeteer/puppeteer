@@ -1297,13 +1297,6 @@
     "comment": "WebDriver BiDi in Firefox supports only offline network emulation, so throttled conditions throw UnsupportedOperation. Firefox also does not implement navigator.connection."
   },
   {
-    "testIdPattern": "[emulation.test] Emulation Page.emulateTimezone should support the GMT timezone ID",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox fails this test with named timezone IDs over WebDriver BiDi, like Page.emulateTimezone should work."
-  },
-  {
     "testIdPattern": "[emulation.test] Emulation Page.emulateTimezone should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
