@@ -500,7 +500,7 @@ describe('Emulation', () => {
       ).toBe(
         'Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)',
       );
-      
+
       await page.emulateTimezone('GMT');
       expect(
         await page.evaluate(() => {
@@ -529,7 +529,7 @@ describe('Emulation', () => {
         }),
       ).toBe('Sat Nov 19 2016 05:38:34 GMT-1234 (GMT-12:34)');
     });
-    
+
     it('should throw for invalid timezone IDs', async () => {
       const {page} = await getTestState();
 
