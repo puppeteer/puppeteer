@@ -30,7 +30,7 @@ export class CdpHTTPResponse extends HTTPResponse {
   #headers: Record<string, string> = {};
   #securityDetails: SecurityDetails | null;
   #timing: Protocol.Network.ResourceTiming | null;
-  #encodedDataLength: number;
+  #encodedDataLength = 0;
 
   constructor(
     request: CdpHTTPRequest,
@@ -63,7 +63,7 @@ export class CdpHTTPResponse extends HTTPResponse {
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
     this.#timing = responsePayload.timing || null;
-    this.#encodedDataLength = responsePayload.encodedDataLength;
+    this._setEncodedDataLength(responsePayload.encodedDataLength);
   }
 
   #parseStatusTextFromExtraInfo(
@@ -87,13 +87,16 @@ export class CdpHTTPResponse extends HTTPResponse {
     return statusText;
   }
 
-  _resolveBody(err?: Error, encodedDataLength?: number): void {
-    // Chromium reports -1 (kUnknownEncodedDataLength) when the size is
-    // unknown, e.g. for synchronous XHRs to data: URLs. Keep the last known
-    // value in that case, like the DevTools frontend does.
-    if (encodedDataLength !== undefined && encodedDataLength >= 0) {
+  _setEncodedDataLength(encodedDataLength: number): void {
+    // Chromium reports -1 when no data was transferred over the network (e.g.
+    // data: or file: URLs) or when the size is unknown (e.g. synchronous XHRs
+    // to data: URLs). Keep the last known value in that case, defaulting to 0.
+    if (encodedDataLength >= 0) {
       this.#encodedDataLength = encodedDataLength;
     }
+  }
+
+  _resolveBody(err?: Error): void {
     if (err) {
       return this.#bodyLoadedDeferred.reject(err);
     }

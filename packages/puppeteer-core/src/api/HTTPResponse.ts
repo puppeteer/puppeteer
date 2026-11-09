@@ -89,7 +89,8 @@ export abstract class HTTPResponse {
    * headers. To get the total encoded transfer size (headers + compressed
    * body), read it in a `requestfinished` handler or after awaiting
    * {@link HTTPResponse.content}. If the request fails after the response is
-   * received, the value is not updated.
+   * received, the value is not updated. The value is `0` when no data was
+   * transferred over the network, e.g. for `data:`, `file:` or `blob:` URLs.
    */
   abstract encodedDataLength(): number;
 

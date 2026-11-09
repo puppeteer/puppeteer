@@ -992,7 +992,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
     this.#adoptCdpSessionIfNeeded(client, request);
 
-    request.response()?._resolveBody(undefined, event.encodedDataLength);
+    request.response()?._setEncodedDataLength(event.encodedDataLength);
     this.#forgetRequest(request, true);
     this.emit(NetworkManagerEvent.RequestFinished, request);
   }

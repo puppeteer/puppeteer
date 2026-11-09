@@ -820,6 +820,21 @@ describe('network', function () {
       expect(cachedResponse.fromCache()).toBe(true);
       expect(cachedResponse.encodedDataLength()).toBe(0);
     });
+
+    it('should return 0 for data: URLs', async () => {
+      const {page} = await getTestState();
+
+      let responseLengthOnEvent: number | undefined;
+      page.on('response', response => {
+        if (response.url() === 'data:text/plain,hello') {
+          responseLengthOnEvent = response.encodedDataLength();
+        }
+      });
+
+      const response = (await page.goto('data:text/plain,hello'))!;
+      expect(responseLengthOnEvent).toBe(0);
+      expect(response.encodedDataLength()).toBe(0);
+    });
   });
 
   describe('Network Events', function () {
