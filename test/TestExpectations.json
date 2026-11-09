@@ -813,34 +813,6 @@
     "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
   },
   {
-    "testIdPattern": "[page.test] Page Page.Events.Exception should fall back to the exception location for syntax errors",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "The exception event is not implemented for WebDriver BiDi yet."
-  },
-  {
-    "testIdPattern": "[page.test] Page Page.Events.Exception should fire",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "The exception event is not implemented for WebDriver BiDi yet."
-  },
-  {
-    "testIdPattern": "[page.test] Page Page.Events.Exception should fire for primitive values",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "The exception event is not implemented for WebDriver BiDi yet."
-  },
-  {
-    "testIdPattern": "[page.test] Page Page.Events.Exception should fire together with pageerror",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "The exception event is not implemented for WebDriver BiDi yet."
-  },
-  {
     "testIdPattern": "[page.test] Page Page.Events.Exception should report the name and text as rendered by the browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1106,25 +1078,11 @@
     "comment": "BiDi does not support getting a Handle for log args"
   },
   {
-    "testIdPattern": "[worker.test] Workers should emit exception events on the worker and the page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "The exception event is not implemented for WebDriver BiDi yet."
-  },
-  {
     "testIdPattern": "[worker.test] Workers should expose the remote exception via a moved handle",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
-  },
-  {
-    "testIdPattern": "[worker.test] Workers should report each worker exception on the page exactly once",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "The exception event is not implemented for WebDriver BiDi yet."
   },
   {
     "testIdPattern": "[acceptInsecureCerts.test] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",

@@ -57,6 +57,8 @@ import {BidiFrameRealm} from './Realm.js';
 import {
   getConsoleMessage,
   isConsoleLogEntry,
+  createPageErrorFromLogEntry,
+  createRemoteExceptionFromLogEntry,
   isJavaScriptLogEntry,
   rewriteNavigationError,
 } from './util.js';
@@ -191,14 +193,14 @@ export class BidiFrame extends Frame {
       if (this._id !== entry.source.context) {
         return;
       }
+      // Chromium sets `source.context` of dedicated worker logs to the frame
+      // that created the worker, so they pass the context check above. Since
+      // BidiWorkerRealm emits them (console messages and exceptions) with the
+      // correct worker and realm we can skip them here.
+      if (this.#isWorkerRealm(entry.source.realm)) {
+        return;
+      }
       if (isConsoleLogEntry(entry)) {
-        // Chromium sets `source.context` of dedicated worker logs to the frame
-        // that created the worker, so they pass the context check above. Since
-        // BidiWorkerRealm emits them with the correct worker and realm we can
-        // skip them here.
-        if (this.#isWorkerRealm(entry.source.realm)) {
-          return;
-        }
         const page = this.page();
         if (
           !page.listenerCount(PageEvent.Console) &&
@@ -213,28 +215,14 @@ export class BidiFrame extends Frame {
 
         page.emitConsoleMessage(getConsoleMessage(entry, args, this));
       } else if (isJavaScriptLogEntry(entry)) {
-        const error = new Error(entry.text ?? '');
-
-        const messageHeight = error.message.split('\n').length;
-        const messageLines = error.stack!.split('\n').splice(0, messageHeight);
-
-        const stackLines = [];
-        if (entry.stackTrace) {
-          for (const frame of entry.stackTrace.callFrames) {
-            // Note we need to add `1` because the values are 0-indexed.
-            stackLines.push(
-              `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
-                frame.lineNumber + 1
-              }:${frame.columnNumber + 1})`,
-            );
-            if (stackLines.length >= Error.stackTraceLimit) {
-              break;
-            }
-          }
-        }
-
-        error.stack = [...messageLines, ...stackLines].join('\n');
-        this.page().trustedEmitter.emit(PageEvent.PageError, error);
+        this.page().trustedEmitter.emit(
+          PageEvent.PageError,
+          createPageErrorFromLogEntry(entry),
+        );
+        this.page().trustedEmitter.emit(
+          PageEvent.Exception,
+          createRemoteExceptionFromLogEntry(entry),
+        );
       } else {
         this.#logger?.(DEBUG_PREFIXES.error)?.(
           `Unhandled LogEntry with type "${entry.type}", text "${entry.text}" and level "${entry.level}"`,
