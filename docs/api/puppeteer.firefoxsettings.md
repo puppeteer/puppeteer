@@ -76,7 +76,7 @@ boolean
 
 Tells Puppeteer to not download the browser during installation.
 
-Can be overridden by `PUPPETEER_FIREFOX_SKIP_DOWNLOAD`.
+Can be overridden by `PUPPETEER_FIREFOX_SKIP_DOWNLOAD` or `PUPPETEER_SKIP_FIREFOX_DOWNLOAD`.
 
 </td><td>
 
