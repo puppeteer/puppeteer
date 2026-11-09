@@ -1951,6 +1951,21 @@ describe('Page', function () {
       expect(error).toBeTruthy();
     });
 
+    it('should not throw when added with JSON content to the CSP page', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/csp.html');
+      using scriptHandle = await page.addScriptTag({
+        content: '{"injected": 35}',
+        type: 'application/json',
+      });
+      expect(
+        await scriptHandle.evaluate(script => {
+          return script.textContent;
+        }),
+      ).toBe('{"injected": 35}');
+    });
+
     it('should throw when added with URL to the CSP page', async () => {
       const {page, server} = await getTestState();
 
@@ -2655,7 +2670,11 @@ describe('Page', function () {
 
       const issuePromise = waitEvent<Issue>(page, 'issue');
 
-      await page.addScriptTag({content: 'console.log("CSP test")'});
+      await page
+        .addScriptTag({content: 'console.log("CSP test")'})
+        .catch(error => {
+          return void error;
+        });
 
       const issue = await issuePromise;
       expect(issue).toBeTruthy();
@@ -2675,9 +2694,13 @@ describe('Page', function () {
       const frame = await page.waitForFrame(crossOriginUrl);
       expect(frame).toBeTruthy();
 
-      await frame.addScriptTag({
-        content: 'console.log("CSP test in iframe")',
-      });
+      await frame
+        .addScriptTag({
+          content: 'console.log("CSP test in iframe")',
+        })
+        .catch(error => {
+          return void error;
+        });
 
       const issue = await issuePromise;
       expect(issue).toBeTruthy();

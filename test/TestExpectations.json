@@ -787,13 +787,6 @@
     "comment": "chrome-headless-shell does not have a PDF viewer"
   },
   {
-    "testIdPattern": "[page.test] Page Page.addScriptTag should throw when added with content to the CSP page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "See https://github.com/puppeteer/puppeteer/issues/4840"
-  },
-  {
     "testIdPattern": "[page.test] Page Page.addStyleTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1803,13 +1796,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support"
-  },
-  {
-    "testIdPattern": "[page.test] Page Page.addScriptTag should throw when added with content to the CSP page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"],
-    "comment": "See https://github.com/puppeteer/puppeteer/issues/4840"
   },
   {
     "testIdPattern": "[page.test] Page Page.Events.error should throw when page crashes",

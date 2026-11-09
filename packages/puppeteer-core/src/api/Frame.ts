@@ -972,6 +972,20 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
               );
               document.head.appendChild(script);
             } else {
+              if (type === 'text/javascript' || type === 'module') {
+                const probe = document.createElement('script');
+                probe.text = 'document.currentScript.remove();';
+                document.head.appendChild(probe);
+                if (probe.isConnected) {
+                  probe.remove();
+                  reject(
+                    new Error(
+                      'Could not add script tag: inline scripts are not allowed in the frame',
+                    ),
+                  );
+                  return;
+                }
+              }
               document.head.appendChild(script);
               resolve(script);
             }
