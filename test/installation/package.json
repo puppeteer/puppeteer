@@ -52,7 +52,7 @@
     "assets"
   ],
   "devDependencies": {
-    "glob": "13.0.6",
+    "glob": "14.0.3",
     "mocha": "12.0.3"
   },
   "dependencies": {
