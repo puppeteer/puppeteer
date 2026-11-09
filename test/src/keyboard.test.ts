@@ -430,6 +430,31 @@ describe('Keyboard', function () {
     );
     await keyboard.up('Shift');
   });
+  it('should send the Enter code for Enter', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.evaluate(() => {
+      (globalThis as any).codes = [];
+      window.addEventListener(
+        'keydown',
+        event => {
+          (globalThis as any).codes.push(`${event.code} ${event.location}`);
+        },
+        true,
+      );
+    });
+    using textarea = (await page.$('textarea'))!;
+
+    await textarea.press('Enter');
+    await textarea.type('\n');
+    await textarea.press('NumpadEnter');
+    const codes = await page.evaluate(() => {
+      return (globalThis as any).codes;
+    });
+    expect(codes.slice(0, 2)).toEqual(['Enter 0', 'Enter 0']);
+    expect(codes[2]).toMatch(/^NumpadEnter /);
+  });
   it('should not type canceled events', async () => {
     const {page, server} = await getTestState();
 
