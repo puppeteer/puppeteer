@@ -500,6 +500,13 @@ describe('Emulation', () => {
       ).toBe(
         'Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)',
       );
+      
+      await page.emulateTimezone('GMT');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).date.toString();
+        }),
+      ).toBe('Sat Nov 19 2016 18:12:34 GMT+0000 (Greenwich Mean Time)');
     });
 
     it('should support timezone offset', async () => {
@@ -522,22 +529,7 @@ describe('Emulation', () => {
         }),
       ).toBe('Sat Nov 19 2016 05:38:34 GMT-1234 (GMT-12:34)');
     });
-
-    it('should support the GMT timezone ID', async () => {
-      const {page} = await getTestState();
-
-      await page.evaluate(() => {
-        (globalThis as any).date = new Date(1479579154987);
-      });
-      await page.emulateTimezone('America/Jamaica');
-      await page.emulateTimezone('GMT');
-      expect(
-        await page.evaluate(() => {
-          return (globalThis as any).date.getHours();
-        }),
-      ).toBe(18);
-    });
-
+    
     it('should throw for invalid timezone IDs', async () => {
       const {page} = await getTestState();
 
