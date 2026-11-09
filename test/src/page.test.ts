@@ -2026,6 +2026,19 @@ describe('Page', function () {
       ).toBe('rgb(255, 0, 0)');
     });
 
+    it('should work with a path when the options are reused', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const options = {
+        path: path.join(import.meta.dirname, '../assets/injectedstyle.css'),
+      };
+      await page.addStyleTag(options);
+      using styleHandle = await page.addStyleTag(options);
+      expect(styleHandle.asElement()).not.toBeNull();
+      expect(Object.keys(options)).toEqual(['path']);
+    });
+
     it('should include sourcemap when path is provided', async () => {
       const {page, server} = await getTestState();
 

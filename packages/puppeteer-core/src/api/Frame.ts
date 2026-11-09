@@ -1020,7 +1020,7 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
     if (path) {
       content = await environment.value.readFile(path, 'utf8');
       content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
-      options.content = content;
+      options = {...options, content};
     }
 
     return await this.mainRealm().transferHandle(
