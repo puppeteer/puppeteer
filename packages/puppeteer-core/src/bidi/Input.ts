@@ -85,6 +85,7 @@ const getBidiKeyValue = (key: KeyInput): string => {
     case 'Clear':
       return '\uE005';
     case 'Enter':
+      return '\uE006';
     case 'NumpadEnter':
       return '\uE007';
     case 'Shift':
