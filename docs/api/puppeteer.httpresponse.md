@@ -203,6 +203,21 @@ The status text of the response (e.g. usually an "OK" for a success).
 </td></tr>
 <tr><td>
 
+<span id="stream">[stream()](./puppeteer.httpresponse.stream.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Returns the response body as a stream of chunks as they arrive from the network.
+
+**Remarks:**
+
+Call this from the [response](./puppeteer.pageevent.md) event to receive the body while it is still loading. If the body has already finished loading, the stream contains the whole body as a single chunk.
+
+</td></tr>
+<tr><td>
+
 <span id="text">[text()](./puppeteer.httpresponse.text.md)</span>
 
 </td><td>

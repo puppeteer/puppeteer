@@ -94,6 +94,20 @@ export abstract class HTTPResponse {
   abstract content(): Promise<Uint8Array>;
 
   /**
+   * Returns the response body as a stream of chunks as they arrive from the
+   * network.
+   *
+   * @remarks
+   *
+   * Call this from the {@link PageEvent.Response | response} event to
+   * receive the body while it is still loading. If the body has already
+   * finished loading, the stream contains the whole body as a single chunk.
+   *
+   * @experimental
+   */
+  abstract stream(): Promise<ReadableStream<Uint8Array>>;
+
+  /**
    * {@inheritDoc HTTPResponse.content}
    */
   async buffer(): Promise<Buffer> {

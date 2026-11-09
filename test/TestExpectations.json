@@ -175,6 +175,13 @@
     "comment": "Bidi does not have equivalent field"
   },
   {
+    "testIdPattern": "[network.test] network Response.stream *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi yet - https://github.com/w3c/webdriver-bidi/issues/958"
+  },
+  {
     "testIdPattern": "[page.test] Page Page.Events.Issue *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

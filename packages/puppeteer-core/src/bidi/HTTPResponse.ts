@@ -169,4 +169,8 @@ export class BidiHTTPResponse extends HTTPResponse {
   async content(): Promise<Uint8Array> {
     return await this.#request.getResponseContent();
   }
+
+  override stream(): never {
+    throw new UnsupportedOperation();
+  }
 }

@@ -14,6 +14,7 @@ import {stringToTypedArray} from '../util/encoding.js';
 import {normalizeHeaderValue} from '../util/httpUtils.js';
 
 import type {CdpHTTPRequest} from './HTTPRequest.js';
+import {createResponseBodyStream} from './ResponseBodyStream.js';
 
 /**
  * @internal
@@ -152,6 +153,38 @@ export class CdpHTTPResponse extends HTTPResponse {
         });
     }
     return this.#contentPromise;
+  }
+
+  override async stream(): Promise<ReadableStream<Uint8Array>> {
+    if (this.#bodyLoadedDeferred.finished()) {
+      return await this.#contentStream();
+    }
+    try {
+      // Use the request's client, as it might have been updated for an adopted
+      // OOPIF.
+      return await createResponseBodyStream(
+        this.#request.client,
+        this.#request.id,
+      );
+    } catch (error) {
+      if (
+        error instanceof ProtocolError &&
+        error.originalMessage.includes('already finished loading')
+      ) {
+        return await this.#contentStream();
+      }
+      throw error;
+    }
+  }
+
+  async #contentStream(): Promise<ReadableStream<Uint8Array>> {
+    const content = await this.content();
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(content);
+        controller.close();
+      },
+    });
   }
 
   override request(): CdpHTTPRequest {
