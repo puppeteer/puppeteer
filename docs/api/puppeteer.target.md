@@ -14,6 +14,18 @@ export declare abstract class Target
 
 ## Remarks
 
+With CDP, Puppeteer reports all targets that it attaches to. This includes `"tab"` targets and targets with a [subtype](./puppeteer.target.subtype.md), such as prerendered pages. Each tab has a `"tab"` target and a `"page"` target with the same URL. To find the target that shows the content of a tab, check the type and the subtype:
+
+```ts
+const target = await browser.waitForTarget(target => {
+  return (
+    target.type() === 'page' &&
+    !target.subtype() &&
+    target.url() === 'https://www.example.com/'
+  );
+});
+```
+
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Target` class.
 
 ## Properties
@@ -77,6 +89,10 @@ Description
 
 Forcefully creates a page for a target of any type. It is useful if you want to handle a CDP target of type `other` as a page. If you deal with a regular page target, use [Target.page()](./puppeteer.target.page.md).
 
+**Remarks:**
+
+For a `"tab"` target, forces a page for the child target that shows the content of the tab, and throws if the tab has no such child yet. Throws for a target with the `"prerender"` [subtype](./puppeteer.target.subtype.md).
+
 </td></tr>
 <tr><td>
 
@@ -130,7 +146,41 @@ Get the target that opened this target. Top-level targets return `null`.
 
 </td><td>
 
-If the target is not of type `"page"`, `"webview"` or `"background_page"`, returns `null`.
+Returns the [Page](./puppeteer.page.md) of the target, or `null` if the target has no page.
+
+**Remarks:**
+
+- A `"tab"` target and its primary `"page"` target return the same [Page](./puppeteer.page.md). - A target with the `"prerender"` [subtype](./puppeteer.target.subtype.md) returns `null`. After Chrome activates the prerendered page, the target returns the [Page](./puppeteer.page.md) of the tab. - Targets that are not of type `"page"`, `"tab"`, `"webview"` or `"background_page"` return `null`.
+
+</td></tr>
+<tr><td>
+
+<span id="parent">[parent()](./puppeteer.target.parent.md)</span>
+
+</td><td>
+
+</td><td>
+
+Returns the target that Puppeteer attached this target through. For example, the parent of a `"page"` target is the `"tab"` target of its tab. Returns `undefined` for top-level targets, such as `"tab"` targets.
+
+**Remarks:**
+
+Only supported for Chrome and the CDP protocol. With WebDriver BiDi, returns `undefined`.
+
+</td></tr>
+<tr><td>
+
+<span id="subtype">[subtype()](./puppeteer.target.subtype.md)</span>
+
+</td><td>
+
+</td><td>
+
+Returns the subtype of the target, as CDP reports it. For example, a prerendered page has the subtype `"prerender"`. Returns `undefined` if the target has no subtype.
+
+**Remarks:**
+
+Only supported for Chrome and the CDP protocol. With WebDriver BiDi, returns `undefined`.
 
 </td></tr>
 <tr><td>

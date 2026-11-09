@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
+import type {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
@@ -83,14 +84,21 @@ describe('BrowserContext', function () {
     const {server, context} = await getTestState();
 
     const events: string[] = [];
+    // Each tab also has a "tab" target. This test checks the page target.
     context.on('targetcreated', target => {
-      events.push('CREATED: ' + target.url());
+      if (target.type() === 'page') {
+        events.push('CREATED: ' + target.url());
+      }
     });
     context.on('targetchanged', target => {
-      events.push('CHANGED: ' + target.url());
+      if (target.type() === 'page') {
+        events.push('CHANGED: ' + target.url());
+      }
     });
     context.on('targetdestroyed', target => {
-      events.push('DESTROYED: ' + target.url());
+      if (target.type() === 'page') {
+        events.push('DESTROYED: ' + target.url());
+      }
     });
     const page = await context.newPage();
     await page.goto(server.EMPTY_PAGE);
@@ -176,8 +184,14 @@ describe('BrowserContext', function () {
       document.cookie = 'name=page1';
     });
 
-    expect(context1.targets()).toHaveLength(1);
-    expect(context2.targets()).toHaveLength(0);
+    // With CDP, each tab also has a "tab" target. Check the page targets only.
+    const pageTargets = (context: BrowserContext) => {
+      return context.targets().filter(target => {
+        return target.type() === 'page';
+      });
+    };
+    expect(pageTargets(context1)).toHaveLength(1);
+    expect(pageTargets(context2)).toHaveLength(0);
 
     // Create a page in second incognito context.
     const page2 = await context2.newPage();
@@ -187,10 +201,10 @@ describe('BrowserContext', function () {
       document.cookie = 'name=page2';
     });
 
-    expect(context1.targets()).toHaveLength(1);
-    expect(await context1.targets()[0]?.page()).toBe(page1);
-    expect(context2.targets()).toHaveLength(1);
-    expect(await context2.targets()[0]?.page()).toBe(page2);
+    expect(pageTargets(context1)).toHaveLength(1);
+    expect(await pageTargets(context1)[0]?.page()).toBe(page1);
+    expect(pageTargets(context2)).toHaveLength(1);
+    expect(await pageTargets(context2)[0]?.page()).toBe(page2);
 
     // Make sure pages don't share localstorage or cookies.
     expect(

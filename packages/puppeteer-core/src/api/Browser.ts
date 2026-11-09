@@ -178,11 +178,14 @@ export const enum BrowserEvent {
    */
   Disconnected = 'disconnected',
   /**
-   * Emitted when the URL of a target changes. Contains a {@link Target}
-   * instance.
+   * Emitted when the URL or the {@link Target.subtype | subtype} of a target
+   * changes. Contains a {@link Target} instance.
    *
    * @remarks Note that this includes target changes in all browser
    * contexts.
+   *
+   * With CDP, a prerendered page target emits this event when Chrome
+   * activates it, because Chrome removes its `"prerender"` subtype.
    */
   TargetChanged = 'targetchanged',
   /**
@@ -194,6 +197,10 @@ export const enum BrowserEvent {
    *
    * @remarks Note that this includes target creations in all browser
    * contexts.
+   *
+   * With CDP, this event is also emitted for `"tab"` targets and for targets
+   * with a {@link Target.subtype | subtype}, such as prerendered pages. A new
+   * tab emits this event for its `"tab"` target and for its `"page"` target.
    */
   TargetCreated = 'targetcreated',
   /**
@@ -719,6 +726,11 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * In case of multiple {@link BrowserContext | browser contexts}, this returns
    * all {@link Target | targets} in all
    * {@link BrowserContext | browser contexts}.
+   *
+   * @remarks
+   *
+   * With CDP, this includes `"tab"` targets and targets with a
+   * {@link Target.subtype | subtype}, such as prerendered pages.
    */
   abstract targets(): Target[];
 
@@ -760,10 +772,21 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    *
    * ```ts
    * await page.evaluate(() => window.open('https://www.example.com/'));
-   * const newWindowTarget = await browser.waitForTarget(
-   *   target => target.url() === 'https://www.example.com/',
-   * );
+   * const newWindowTarget = await browser.waitForTarget(target => {
+   *   return (
+   *     target.type() === 'page' &&
+   *     !target.subtype() &&
+   *     target.url() === 'https://www.example.com/'
+   *   );
+   * });
    * ```
+   *
+   * @remarks
+   *
+   * With CDP, a tab has a `"tab"` target and a `"page"` target with the same
+   * URL, and a prerendered page has a `"page"` target with the `"prerender"`
+   * {@link Target.subtype | subtype}. Check the type and the subtype in the
+   * predicate, as the example shows.
    */
   async waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,

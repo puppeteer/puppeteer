@@ -542,6 +542,18 @@ Target represents a [CDP target](https://chromedevtools.github.io/devtools-proto
 
 **Remarks:**
 
+With CDP, Puppeteer reports all targets that it attaches to. This includes `"tab"` targets and targets with a [subtype](./puppeteer.target.subtype.md), such as prerendered pages. Each tab has a `"tab"` target and a `"page"` target with the same URL. To find the target that shows the content of a tab, check the type and the subtype:
+
+```ts
+const target = await browser.waitForTarget(target => {
+  return (
+    target.type() === 'page' &&
+    !target.subtype() &&
+    target.url() === 'https://www.example.com/'
+  );
+});
+```
+
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Target` class.
 
 </td></tr>

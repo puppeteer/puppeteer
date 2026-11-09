@@ -42,7 +42,14 @@ export class CdpTarget extends Target {
   #sessionFactory:
     ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined;
   #logger: Logger;
+  #parentTarget?: CdpTarget;
   #childTargets = new Set<CdpTarget>();
+  /**
+   * Pages for which this target is the tab target. A page keeps its tab target
+   * for its whole life, but its primary target can change, for example when a
+   * prerendered page activates.
+   */
+  #tabPages = new Set<CdpPage>();
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
@@ -63,6 +70,7 @@ export class CdpTarget extends Target {
     sessionFactory:
       ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined,
     logger: Logger,
+    parentTarget?: CdpTarget,
   ) {
     super(logger);
     this.#session = session;
@@ -72,12 +80,33 @@ export class CdpTarget extends Target {
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
     this.#logger = logger;
+    this.#parentTarget = parentTarget;
     if (this.#session) {
       this.#session.setTarget(this);
     }
   }
 
+  override async page(): Promise<Page | null> {
+    if (this.type() === TargetType.TAB) {
+      return (await this._primaryChildTarget()?.page()) ?? null;
+    }
+    return null;
+  }
+
   override async asPage(): Promise<Page> {
+    if (this.type() === TargetType.TAB) {
+      // Force a page for the content of the tab, like asPage() does for
+      // other targets. The child can be a target that page() ignores.
+      const child = this._primaryChildTarget();
+      if (!child) {
+        throw new Error('The tab target has no page.');
+      }
+      return await child.asPage();
+    }
+    if (this._subtype() === 'prerender') {
+      throw new Error('Cannot create a page for a prerender target.');
+    }
+    this._adoptExistingPage();
     if (this.pagePromise) {
       const page = await this.pagePromise;
       if (page) {
@@ -101,6 +130,14 @@ export class CdpTarget extends Target {
     return this.#targetInfo.subtype;
   }
 
+  override subtype(): string | undefined {
+    return this.#targetInfo.subtype;
+  }
+
+  override parent(): CdpTarget | undefined {
+    return this.#parentTarget;
+  }
+
   _session(): CdpCDPSession | undefined {
     return this.#session;
   }
@@ -111,11 +148,53 @@ export class CdpTarget extends Target {
   }
 
   _addChildTarget(target: CdpTarget): void {
+    target.#parentTarget ??= this;
     this.#childTargets.add(target);
   }
 
   _removeChildTarget(target: CdpTarget): void {
     this.#childTargets.delete(target);
+  }
+
+  _addTabPage(page: CdpPage): void {
+    this.#tabPages.add(page);
+  }
+
+  _removeTabPage(page: CdpPage): void {
+    this.#tabPages.delete(page);
+  }
+
+  /**
+   * For a tab target, returns the child target that shows the content of the
+   * tab: the child without a subtype. Prerendered children have the
+   * `"prerender"` subtype.
+   */
+  _primaryChildTarget(): CdpTarget | undefined {
+    for (const child of this.#childTargets) {
+      if (!child._subtype()) {
+        return child;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * If an open page already uses this target as its primary target, sets
+   * `pagePromise` to that page. This happens when a prerendered target
+   * activates: the page stays the same, but its primary target changes to this
+   * target. Chrome detaches the old primary target before it activates the
+   * prerendered target, so the old target cannot give its page to this target.
+   */
+  _adoptExistingPage(): void {
+    if (this.pagePromise || !this.#parentTarget) {
+      return;
+    }
+    for (const page of this.#parentTarget.#tabPages) {
+      if (!page.isClosed() && page.target() === this) {
+        this.pagePromise = Promise.resolve(page);
+        return;
+      }
+    }
   }
 
   _childTargets(): ReadonlySet<CdpTarget> {
@@ -213,10 +292,6 @@ export class CdpTarget extends Target {
     this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
   }
 
-  _isTargetExposed(): boolean {
-    return this.type() !== TargetType.TAB && !this._subtype();
-  }
-
   protected _checkIfInitialized(): void {
     if (!this._initializedDeferred.resolved()) {
       this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
@@ -238,6 +313,7 @@ export class PageTarget extends CdpTarget {
     sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>,
     defaultViewport: Viewport | null,
     logger: Logger,
+    parentTarget?: CdpTarget,
   ) {
     super(
       targetInfo,
@@ -246,6 +322,7 @@ export class PageTarget extends CdpTarget {
       targetManager,
       sessionFactory,
       logger,
+      parentTarget,
     );
     this.#defaultViewport = defaultViewport ?? undefined;
   }
@@ -261,6 +338,7 @@ export class PageTarget extends CdpTarget {
         if (!(opener instanceof PageTarget)) {
           return;
         }
+        opener._adoptExistingPage();
         if (!opener || !opener.pagePromise || this.type() !== 'page') {
           return true;
         }
@@ -269,7 +347,9 @@ export class PageTarget extends CdpTarget {
           return true;
         }
         const popupPage = await this.page();
-        openerPage.emit(PageEvent.Popup, popupPage);
+        if (popupPage) {
+          openerPage.emit(PageEvent.Popup, popupPage);
+        }
         return true;
       })
       .catch(error => {
@@ -279,6 +359,10 @@ export class PageTarget extends CdpTarget {
   }
 
   override async page(): Promise<Page | null> {
+    if (this._subtype() === 'prerender') {
+      return null;
+    }
+    this._adoptExistingPage();
     if (!this.pagePromise) {
       const session = this._session();
       this.pagePromise = (

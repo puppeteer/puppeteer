@@ -14,6 +14,7 @@ import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
+import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
@@ -2603,9 +2604,15 @@ describe('Page', function () {
       const {page, context} = await getTestState();
 
       const newPagePromise = new Promise<Page | null>(fulfill => {
-        return context.once('targetcreated', target => {
-          return fulfill(target.page());
-        });
+        const listener = (target: Target) => {
+          // The "tab" target is created before its "page" target.
+          if (target.type() !== 'page') {
+            return;
+          }
+          context.off('targetcreated', listener);
+          fulfill(target.page());
+        };
+        context.on('targetcreated', listener);
       });
       assert(page);
       await page.evaluate(() => {

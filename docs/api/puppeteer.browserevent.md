@@ -166,11 +166,13 @@ TargetChanged
 
 </td><td>
 
-Emitted when the URL of a target changes. Contains a [Target](./puppeteer.target.md) instance.
+Emitted when the URL or the [subtype](./puppeteer.target.subtype.md) of a target changes. Contains a [Target](./puppeteer.target.md) instance.
 
 **Remarks:**
 
 Note that this includes target changes in all browser contexts.
+
+With CDP, a prerendered page target emits this event when Chrome activates it, because Chrome removes its `"prerender"` subtype.
 
 </td></tr>
 <tr><td>
@@ -190,6 +192,8 @@ Contains a [Target](./puppeteer.target.md) instance.
 **Remarks:**
 
 Note that this includes target creations in all browser contexts.
+
+With CDP, this event is also emitted for `"tab"` targets and for targets with a [subtype](./puppeteer.target.subtype.md), such as prerendered pages. A new tab emits this event for its `"tab"` target and for its `"page"` target.
 
 </td></tr>
 <tr><td>
