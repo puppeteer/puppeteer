@@ -8,6 +8,7 @@ import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {EventType} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import type {RemoteException} from '../common/RemoteException.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
@@ -25,8 +26,20 @@ export enum WebWorkerEvent {
   Console = 'console',
   /**
    * Emitted when the worker throws an exception.
+   *
+   * @deprecated Use {@link WebWorkerEvent.Exception} instead.
    */
   Error = 'error',
+  /**
+   * Emitted when an uncaught exception happens within the worker. Contains a
+   * {@link RemoteException}.
+   *
+   * @remarks
+   * The {@link RemoteException.handle | handle} of the exception is disposed
+   * right after the event has been dispatched. Call `move()` on it
+   * synchronously inside the listener to keep it alive.
+   */
+  Exception = 'exception',
 }
 
 /**
@@ -35,6 +48,7 @@ export enum WebWorkerEvent {
 export interface WebWorkerEvents extends Record<EventType, unknown> {
   [WebWorkerEvent.Console]: ConsoleMessage;
   [WebWorkerEvent.Error]: Error;
+  [WebWorkerEvent.Exception]: RemoteException;
 }
 
 /**
