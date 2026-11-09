@@ -218,52 +218,43 @@ function recordTargetEvents(h: ReturnType<typeof createHarness>): string[] {
 }
 
 describe('Target events', function () {
-  for (const activateFirst of [true, false]) {
-    it(`should emit targetcreated for an activated prerender target (${activateFirst ? 'activation first' : 'detach first'})`, async () => {
-      const h = createHarness();
-      await h.attach();
-      const tab = h.attachTab('main');
-      await h.flush();
-      const firstTarget = h.browser.targets()[0]!;
-      const page = (await firstTarget.page())!;
+  it('should emit targetcreated for an activated prerender target', async () => {
+    const h = createHarness();
+    await h.attach();
+    const tab = h.attachTab('main');
+    await h.flush();
+    const firstTarget = h.browser.targets()[0]!;
+    const page = (await firstTarget.page())!;
 
-      const events = recordTargetEvents(h);
-      const prerender = h.attachChild(
-        tab.tabSessionId,
-        'page-prerender',
-        'page',
-        {subtype: 'prerender', url: 'https://example.com/prerender'},
-      );
-      await h.flush();
-      // A prerender target is not exposed and has no events.
-      expect(events).toEqual([]);
-      expect(targetIds(h.browser.targets())).toEqual(['page-main']);
+    const events = recordTargetEvents(h);
+    const prerender = h.attachChild(
+      tab.tabSessionId,
+      'page-prerender',
+      'page',
+      {subtype: 'prerender', url: 'https://example.com/prerender'},
+    );
+    await h.flush();
+    // A prerender target is not exposed and has no events.
+    expect(events).toEqual([]);
+    expect(targetIds(h.browser.targets())).toEqual(['page-main']);
 
-      const activate = () => {
-        h.transport.emitEvent('Target.targetInfoChanged', {
-          targetInfo: {...prerender.info, subtype: undefined},
-        });
-      };
-      if (activateFirst) {
-        activate();
-        tab.detachChild(tab.page!.sessionId);
-      } else {
-        tab.detachChild(tab.page!.sessionId);
-        activate();
-      }
-      await h.flush();
-
-      expect(events).toEqual(
-        activateFirst
-          ? ['targetcreated:page-prerender', 'targetdestroyed:page-main']
-          : ['targetdestroyed:page-main', 'targetcreated:page-prerender'],
-      );
-      expect(targetIds(h.browser.targets())).toEqual(['page-prerender']);
-      const activatedTarget = h.browser.targets()[0]!;
-      await expect(activatedTarget.page()).resolves.toBe(page);
-      await expect(h.browser.pages()).resolves.toEqual([page]);
+    // Chrome detaches the old primary target before it activates the
+    // prerendered target.
+    tab.detachChild(tab.page!.sessionId);
+    h.transport.emitEvent('Target.targetInfoChanged', {
+      targetInfo: {...prerender.info, subtype: undefined},
     });
-  }
+    await h.flush();
+
+    expect(events).toEqual([
+      'targetdestroyed:page-main',
+      'targetcreated:page-prerender',
+    ]);
+    expect(targetIds(h.browser.targets())).toEqual(['page-prerender']);
+    const activatedTarget = h.browser.targets()[0]!;
+    await expect(activatedTarget.page()).resolves.toBe(page);
+    await expect(h.browser.pages()).resolves.toEqual([page]);
+  });
 
   it('should emit targetchanged only for exposed targets', async () => {
     const h = createHarness();

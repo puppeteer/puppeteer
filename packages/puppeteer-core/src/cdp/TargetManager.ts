@@ -320,21 +320,37 @@ export class TargetManager
     const wasInitialized =
       target._initializedDeferred.value() === InitializationStatus.SUCCESS;
 
-    if (isPageTargetBecomingPrimary(target, event.targetInfo)) {
+    // Read the old subtype before `_targetInfoChanged` updates it.
+    const becomingPrimary = isPageTargetBecomingPrimary(
+      target,
+      event.targetInfo,
+    );
+    if (becomingPrimary) {
       const session = target._session();
       assert(
         session,
         'Target that is being activated is missing a CDPSession.',
       );
       session.parentSession()?.emit(CDPSessionEvent.Swapped, session);
-      target._targetInfoChanged(event.targetInfo);
-      // The prerendered target was hidden until now. Report it as a new
-      // target instead of a changed one.
-      this.emit(TargetManagerEvent.TargetAvailable, target);
-      return;
     }
 
     target._targetInfoChanged(event.targetInfo);
+
+    if (becomingPrimary) {
+      // Report the activated target as a new target:
+      // - When the prerendered target attached, CdpBrowser ignored its
+      //   TargetAvailable event, because a prerender target is not exposed.
+      // - Chrome detaches the old primary target first. Then Chrome clears the
+      //   subtype with Target.targetInfoChanged. It does not send a new
+      //   Target.attachedToTarget event.
+      // - Now the target is exposed, and browser.targets() returns it.
+      //   CdpBrowser needs TargetAvailable to emit targetcreated.
+      //   TargetChanged does not work: it does not fire if the URL stays the
+      //   same, and it would emit targetchanged for a target without
+      //   targetcreated.
+      this.emit(TargetManagerEvent.TargetAvailable, target);
+      return;
+    }
 
     if (wasInitialized && previousURL !== target.url()) {
       this.emit(TargetManagerEvent.TargetChanged, {

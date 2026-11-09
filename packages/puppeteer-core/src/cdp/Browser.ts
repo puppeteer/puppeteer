@@ -391,10 +391,10 @@ export class CdpBrowser extends BrowserBase {
     if (
       (await target._initializedDeferred.valueOrThrow()) ===
         InitializationStatus.SUCCESS &&
-      // The target can change while it initializes, and the target manager
-      // can report a target again when a prerendered target becomes primary.
+      // The target can become hidden or close while it initializes.
       target._isTargetExposed() &&
       !target._isClosedDeferred.resolved() &&
+      // Defensive: emit targetcreated at most once for each target.
       !this.#announcedTargets.has(target)
     ) {
       this.#announcedTargets.add(target);
