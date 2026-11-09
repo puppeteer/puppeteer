@@ -152,7 +152,8 @@ export class BidiHTTPResponse extends HTTPResponse {
   }
 
   override encodedDataLength(): number {
-    return this.#data.bytesReceived;
+    // Chromium reports -1 when the size is unknown, e.g. for data: URLs.
+    return Math.max(this.#data.bytesReceived, 0);
   }
 
   override frame(): Frame | null {

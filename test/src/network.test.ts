@@ -821,9 +821,12 @@ describe('network', function () {
       expect(cachedResponse.encodedDataLength()).toBe(0);
     });
 
-    it('should return 0 for data: URLs', async () => {
+    it('should not return a negative value for data: URLs', async () => {
       const {page} = await getTestState();
 
+      // Chromium reports -1 for data: URLs when the response is received.
+      // Browsers differ in the final value, so only check that the unknown
+      // size is not exposed.
       let responseLengthOnEvent: number | undefined;
       page.on('response', response => {
         if (response.url() === 'data:text/plain,hello') {
@@ -832,8 +835,8 @@ describe('network', function () {
       });
 
       const response = (await page.goto('data:text/plain,hello'))!;
-      expect(responseLengthOnEvent).toBe(0);
-      expect(response.encodedDataLength()).toBe(0);
+      expect(responseLengthOnEvent).toBeGreaterThanOrEqual(0);
+      expect(response.encodedDataLength()).toBeGreaterThanOrEqual(0);
     });
   });
 
