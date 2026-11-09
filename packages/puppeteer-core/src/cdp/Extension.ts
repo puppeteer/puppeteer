@@ -70,6 +70,8 @@ export class CdpExtension extends Extension {
       const targetUrl = target.url();
       return (
         (target.type() === 'page' || target.type() === 'background_page') &&
+        // Prerendered pages are not visible and have no page.
+        !target.subtype() &&
         targetUrl.startsWith('chrome-extension://' + this.id)
       );
     });

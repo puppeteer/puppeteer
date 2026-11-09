@@ -19,3 +19,7 @@ class Browser {
 **Returns:**
 
 [Target](./puppeteer.target.md)\[\]
+
+## Remarks
+
+With CDP, this includes `"tab"` targets and targets with a [subtype](./puppeteer.target.subtype.md), such as prerendered pages.

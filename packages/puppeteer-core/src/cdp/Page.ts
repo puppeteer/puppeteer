@@ -138,6 +138,9 @@ export class CdpPage extends Page {
         if (isErrorLike(err) && isTargetClosedError(err)) {
           page.logger?.(DEBUG_PREFIXES.error)?.(err);
         } else {
+          // The page cannot be used. Remove it so that the tab target does
+          // not give it to other targets.
+          page.#tabTarget._removeTabPage(page);
           throw err;
         }
       }
@@ -178,6 +181,7 @@ export class CdpPage extends Page {
     this.#tabTarget = (this.#tabTargetClient as CdpCDPSession).target();
     assert(this.#tabTarget, 'Tab target is not defined.');
     this._tabId = this.#tabTarget._getTargetInfo().targetId;
+    this.#tabTarget._addTabPage(this);
     this.#primaryTarget = target;
     this.#targetManager = target._targetManager();
     this.#keyboard = new CdpKeyboard(client);
@@ -293,6 +297,7 @@ export class CdpPage extends Page {
           TargetManagerEvent.TargetGone,
           this.#onDetachedFromTarget,
         );
+        this.#tabTarget._removeTabPage(this);
 
         this.emit(PageEvent.Close, undefined);
         this.#closed = true;
@@ -461,6 +466,9 @@ export class CdpPage extends Page {
       if (isErrorLike(err) && isTargetClosedError(err)) {
         this.logger?.(DEBUG_PREFIXES.error)?.(err);
       } else {
+        // The page cannot be used. Remove it so that the tab target does not
+        // give it to other targets.
+        this.#tabTarget._removeTabPage(this);
         throw err;
       }
     }

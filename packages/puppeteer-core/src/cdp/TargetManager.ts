@@ -334,6 +334,7 @@ export class TargetManager
       return;
     }
     const previousURL = target.url();
+    const previousSubtype = target._subtype();
     const wasInitialized =
       target._initializedDeferred.value() === InitializationStatus.SUCCESS;
 
@@ -348,7 +349,10 @@ export class TargetManager
 
     target._targetInfoChanged(event.targetInfo);
 
-    if (wasInitialized && previousURL !== target.url()) {
+    if (
+      wasInitialized &&
+      (previousURL !== target.url() || previousSubtype !== target._subtype())
+    ) {
       this.emit(TargetManagerEvent.TargetChanged, {
         target,
         wasInitialized,
