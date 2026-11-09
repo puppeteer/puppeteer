@@ -25,7 +25,7 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import type {NetworkManager} from './NetworkManager.js';
-import {createConsoleMessage} from './utils.js';
+import {createConsoleMessage, createRemoteException} from './utils.js';
 
 /**
  * @internal
@@ -119,6 +119,7 @@ export class CdpWebWorker extends WebWorker {
       }
     });
     this.#client.on('Runtime.exceptionThrown', exceptionThrown);
+    this.#client.on('Runtime.exceptionThrown', this.#onException.bind(this));
     this.#client.once(CDPSessionEvent.Disconnected, () => {
       // The worker might be destroyed before its script loads (e.g. a 404
       // script), in which case `Inspector.workerScriptLoaded` never fires.
@@ -137,6 +138,24 @@ export class CdpWebWorker extends WebWorker {
     this.#client.send('Runtime.enable').catch((err: Error) => {
       return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
+  }
+
+  #onException(event: Protocol.Runtime.ExceptionThrownEvent): void {
+    const details = event.exceptionDetails;
+    // Disposed when this scope ends, i.e. right after dispatch. This is a no-op
+    // if a listener called `move()` on the handle.
+    using handle = details.exception?.objectId
+      ? this.#world.createCdpHandle(details.exception)
+      : undefined;
+    try {
+      const exception = createRemoteException(details, handle);
+      // Emitted internally first so that the page can forward it before the
+      // handle is disposed.
+      this.#emitter.emit(WebWorkerEvent.Exception, exception);
+      this.emit(WebWorkerEvent.Exception, exception);
+    } catch (err) {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+    }
   }
 
   mainRealm(): Realm {

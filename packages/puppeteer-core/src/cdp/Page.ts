@@ -85,7 +85,7 @@ import {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
-import {MAIN_WORLD} from './IsolatedWorlds.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
 import type {NetworkConditions} from './NetworkManager.js';
 import {CdpScreenRecording} from './ScreenRecording.js';
@@ -97,6 +97,7 @@ import {
   convertConsoleMessageLevel,
   createClientError,
   createConsoleMessage,
+  createRemoteException,
   pageBindingInitString,
 } from './utils.js';
 import {WebMCP} from './WebMCP.js';
@@ -370,6 +371,10 @@ export class CdpPage extends Page {
       this.#handleException.bind(this),
     );
     clientEmitter.on(
+      'Runtime.exceptionThrown',
+      this.#onMainTargetException.bind(this),
+    );
+    clientEmitter.on(
       'Inspector.targetCrashed',
       this.#onTargetCrashed.bind(this),
     );
@@ -424,6 +429,9 @@ export class CdpPage extends Page {
         }
 
         this.#emitConsoleMessage(message);
+      });
+      worker.internalEmitter.on(WebWorkerEvent.Exception, exception => {
+        this.emit(PageEvent.Exception, exception);
       });
       this.emit(PageEvent.WorkerCreated, worker);
     }
@@ -991,6 +999,60 @@ export class CdpPage extends Page {
       PageEvent.PageError,
       createClientError(exception.exceptionDetails),
     );
+  }
+
+  #onMainTargetException(event: Protocol.Runtime.ExceptionThrownEvent): void {
+    const details = event.exceptionDetails;
+    // Disposed when this scope ends, i.e. right after dispatch. This is a no-op
+    // if a listener called `move()` on the handle.
+    using handle = this.#createExceptionHandle(details);
+    try {
+      this.emit(PageEvent.Exception, createRemoteException(details, handle));
+    } catch (error) {
+      this.logger?.(DEBUG_PREFIXES.error)?.(error);
+    }
+  }
+
+  #createExceptionHandle(
+    details: Protocol.Runtime.ExceptionDetails,
+  ): JSHandle | undefined {
+    const remoteObject = details.exception;
+    if (!remoteObject?.objectId) {
+      return;
+    }
+    const world = this.#findWorldByExecutionContextId(
+      details.executionContextId,
+    );
+    if (world) {
+      return world.createCdpHandle(remoteObject);
+    }
+    // We cannot bind the handle to a realm, but the remote object must still
+    // be released to avoid leaking it.
+    void releaseObject(this.#primaryTargetClient, remoteObject, this.logger);
+    return;
+  }
+
+  #findWorldByExecutionContextId(
+    executionContextId: number | undefined,
+  ): IsolatedWorld | undefined {
+    if (executionContextId === undefined) {
+      return;
+    }
+    for (const frame of this.#frameManager.frames()) {
+      // Execution context IDs are only unique per session.
+      if (frame.client !== this.#primaryTargetClient) {
+        continue;
+      }
+      for (const world of [
+        frame.worlds[MAIN_WORLD],
+        frame.worlds[PUPPETEER_WORLD],
+      ]) {
+        if (world.context?.id === executionContextId) {
+          return world;
+        }
+      }
+    }
+    return;
   }
 
   #onConsoleAPI(

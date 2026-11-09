@@ -13,8 +13,10 @@ import type {ElementHandle, Issue} from 'puppeteer';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {JSHandle} from 'puppeteer-core/internal/api/JSHandle.js';
 import type {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
+import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import sinon from 'sinon';
 
@@ -1316,6 +1318,173 @@ describe('Page', function () {
         page.goto(server.PREFIX + '/error-primitive.html'),
       ]);
       expect(error).toBe(undefined);
+    });
+  });
+
+  describe('Page.Events.Exception', function () {
+    it('should fire', async () => {
+      const {page, server, browser} = await getTestState();
+      const isCdp = browser.protocol === 'cdp';
+
+      const [exception] = await Promise.all([
+        waitEvent<RemoteException>(page, 'exception'),
+        page.goto(server.PREFIX + '/error.html'),
+      ]);
+      expect(exception.text()).toContain('Fancy error!');
+      expect(exception.name()).toBe(isCdp ? 'Error' : null);
+      const stackTrace = exception.stackTrace();
+      expect(
+        stackTrace.slice(0, 3).map(frame => {
+          return frame.functionName;
+        }),
+      ).toEqual(['c', 'b', 'a']);
+      expect(exception.location()).toEqual(stackTrace[0]);
+      expect(exception.location().url).toContain('error.html');
+      // 0-based, `throw new Error('Fancy error!')` is on line 14.
+      expect(exception.location().lineNumber).toBe(13);
+    });
+
+    it('should fire together with pageerror', async () => {
+      const {page, server} = await getTestState();
+
+      const [error, exception] = await Promise.all([
+        waitEvent<Error>(page, 'pageerror'),
+        waitEvent<RemoteException>(page, 'exception'),
+        page.goto(server.PREFIX + '/error.html'),
+      ]);
+      expect(error.message).toContain('Fancy error!');
+      expect(exception.text()).toContain('Fancy error!');
+    });
+
+    it('should fire for primitive values', async () => {
+      const {page, server, browser} = await getTestState();
+      const isCdp = browser.protocol === 'cdp';
+
+      const [exception] = await Promise.all([
+        waitEvent<RemoteException>(page, 'exception'),
+        page.goto(server.PREFIX + '/error-primitive.html'),
+      ]);
+      expect(exception.name()).toBe(isCdp ? '' : null);
+      expect(exception.handle()).toBeUndefined();
+    });
+
+    it('should report the name and text as rendered by the browser', async () => {
+      const {page} = await getTestState();
+
+      const cases = [
+        {
+          code: `const error = new Error('x'); error.name = 'AbortError'; throw error;`,
+          name: 'AbortError',
+          text: 'AbortError: x',
+        },
+        {
+          code: `throw new DOMException('bad', 'AbortError');`,
+          name: 'AbortError',
+          text: 'AbortError: bad',
+        },
+        {
+          code: `class ValidationError extends Error {} throw new ValidationError('v');`,
+          name: 'ValidationError',
+          text: 'ValidationError: v',
+        },
+        {code: `throw new Error();`, name: 'Error', text: 'Error'},
+        {
+          code: `throw new Error('line1\\nline2');`,
+          name: 'Error',
+          text: 'Error: line1\nline2',
+        },
+        {code: `throw {code: 1};`, name: '', text: 'Object'},
+        {code: `throw Symbol('s');`, name: '', text: 'Symbol(s)'},
+      ];
+      for (const {code, name, text} of cases) {
+        const [exception] = await Promise.all([
+          waitEvent<RemoteException>(page, 'exception'),
+          page.setContent(
+            html`<script>
+              ${code};
+            </script>`,
+          ),
+        ]);
+        expect({name: exception.name(), text: exception.text()}).toEqual({
+          name,
+          text,
+        });
+      }
+    });
+
+    it('should fall back to the exception location for syntax errors', async () => {
+      const {page, server, browser} = await getTestState();
+      const isCdp = browser.protocol === 'cdp';
+
+      // Load the invalid script from a file rather than via `setContent`:
+      // `setContent` parses the HTML inside a Puppeteer-injected script, and
+      // WebDriver BiDi then reports that injected code as the stack.
+      const [exception] = await Promise.all([
+        waitEvent<RemoteException>(page, 'exception'),
+        page.goto(server.PREFIX + '/syntax-error.html'),
+      ]);
+      expect(exception.stackTrace()).toEqual([]);
+      if (!isCdp) {
+        // `log.JavascriptLogEntry` has no top-level coordinates, so there is
+        // nothing to fall back to.
+        expect(exception.location()).toEqual({});
+        return;
+      }
+      expect(exception.name()).toBe('SyntaxError');
+      expect(exception.text()).toBe("SyntaxError: Unexpected token '='");
+      // With an empty stack, `location()` falls back to the top-level
+      // coordinates of the exception.
+      expect(exception.location()).toEqual({
+        url: server.PREFIX + '/syntax-error.js',
+        lineNumber: 2,
+        columnNumber: expect.any(Number),
+      });
+    });
+
+    it('should expose the remote exception via a moved handle', async () => {
+      const {page} = await getTestState();
+
+      const handlePromise = new Promise<JSHandle>(resolve => {
+        page.once('exception', exception => {
+          resolve(exception.handle()!.move());
+        });
+      });
+      // Exceptions from code injected via `page.evaluate` carry no remote
+      // exception object, so throw from a page script instead.
+      await page.setContent(
+        html`<script>
+          const error = new Error('custom');
+          error.code = 'E_CUSTOM';
+          throw error;
+        </script>`,
+      );
+      using handle = await handlePromise;
+      expect(handle.disposed).toBe(false);
+      expect(
+        await handle.evaluate(error => {
+          return (error as Error & {code: string}).code;
+        }),
+      ).toBe('E_CUSTOM');
+    });
+
+    it('should dispose the handle after dispatch if not moved', async () => {
+      const {page} = await getTestState();
+
+      const handlePromise = new Promise<JSHandle | undefined>(resolve => {
+        page.once('exception', exception => {
+          resolve(exception.handle());
+        });
+      });
+      await page.setContent(
+        html`<script>
+          throw new Error('not moved');
+        </script>`,
+      );
+      // eslint-disable-next-line max-len -- The comment is long.
+      // eslint-disable-next-line @puppeteer/use-using -- Not owned by the test; Puppeteer disposes of it.
+      const handle = await handlePromise;
+      expect(handle).toBeDefined();
+      expect(handle!.disposed).toBe(true);
     });
   });
 
