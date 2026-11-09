@@ -167,6 +167,24 @@ describe('navigation', function () {
         }),
       ).toBe(1);
     });
+    it('should wait for the new document when reload causes history API in beforeunload', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        (globalThis as any).beforeReload = true;
+        window.addEventListener('beforeunload', () => {
+          history.replaceState({scroll: 0}, '', window.location.href);
+        });
+      });
+      const response = await page.reload();
+      expect(response!.ok()).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).beforeReload;
+        }),
+      ).toBe(undefined);
+    });
     it('should navigate to empty page with networkidle0', async () => {
       const {page, server} = await getTestState();
 
