@@ -499,6 +499,21 @@ The constructor for this class is marked as internal. Third-party code should no
 </td></tr>
 <tr><td>
 
+<span id="remoteexception">[RemoteException](./puppeteer.remoteexception.md)</span>
+
+</td><td>
+
+A protocol-agnostic description of an uncaught exception thrown in a page or worker. Dispatched via the `exception` event on [Page](./puppeteer.page.md) and [WebWorker](./puppeteer.webworker.md).
+
+**Remarks:**
+
+Unlike the deprecated `pageerror` event, `RemoteException` does not reconstruct a Node.js `Error`. When the protocol supports it (CDP), it exposes the live remote exception value through [RemoteException.handle()](./puppeteer.remoteexception.handle.md).
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `RemoteException` class.
+
+</td></tr>
+<tr><td>
+
 <span id="screenrecorder">[ScreenRecorder](./puppeteer.screenrecorder.md)</span>
 
 </td><td>
@@ -858,6 +873,19 @@ Represents the simulated bluetooth peripheral's manufacturer data.
 <span id="browserevents">[BrowserEvents](./puppeteer.browserevents.md)</span>
 
 </td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="callframe">[CallFrame](./puppeteer.callframe.md)</span>
+
+</td><td>
+
+A single location in the JavaScript stack.
+
+**Remarks:**
+
+Line and column numbers are 0-based and refer to the raw (possibly minified) script coordinates as reported by the browser.
 
 </td></tr>
 <tr><td>
