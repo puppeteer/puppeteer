@@ -280,6 +280,31 @@ describe('Emulation', () => {
   });
 
   describe('Page.emulateMediaFeatures', function () {
+    it('should keep the emulated media type', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaType('print');
+      await page.emulateMediaFeatures([
+        {name: 'prefers-reduced-motion', value: 'reduce'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return [
+            matchMedia('print').matches,
+            matchMedia('(prefers-reduced-motion: reduce)').matches,
+          ];
+        }),
+      ).toEqual([true, true]);
+      await page.emulateMediaType('screen');
+      expect(
+        await page.evaluate(() => {
+          return [
+            matchMedia('print').matches,
+            matchMedia('(prefers-reduced-motion: reduce)').matches,
+          ];
+        }),
+      ).toEqual([false, true]);
+    });
     it('should work', async () => {
       const {page} = await getTestState();
 
