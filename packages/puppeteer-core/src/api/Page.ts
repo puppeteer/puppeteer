@@ -583,8 +583,32 @@ export const enum PageEvent {
   /**
    * Emitted when a frame is navigated to a new URL. Will contain a
    * {@link Frame}.
+   *
+   * @remarks
+   * This event is emitted for both same-document navigations (for example,
+   * fragment navigations) and navigations to a new document. Use
+   * {@link PageEvent.FrameNavigatedSameDocument} or
+   * {@link PageEvent.FrameNavigatedNewDocument} to distinguish between the
+   * two.
    */
   FrameNavigated = 'framenavigated',
+  /**
+   * Emitted when a frame navigates within the same document, for example, to
+   * a different fragment (`#hash`) or via the History API. Will contain a
+   * {@link Frame}.
+   *
+   * @remarks
+   * Emitted after {@link PageEvent.FrameNavigated}.
+   */
+  FrameNavigatedSameDocument = 'framenavigatedsamedocument',
+  /**
+   * Emitted when a frame is navigated to a new document. Will contain a
+   * {@link Frame}.
+   *
+   * @remarks
+   * Emitted after {@link PageEvent.FrameNavigated}.
+   */
+  FrameNavigatedNewDocument = 'framenavigatednewdocument',
   /**
    * Emitted when the JavaScript
    * {@link https://developer.mozilla.org/en-US/docs/Web/Events/load | load}
@@ -699,6 +723,8 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.FrameAttached]: Frame;
   [PageEvent.FrameDetached]: Frame;
   [PageEvent.FrameNavigated]: Frame;
+  [PageEvent.FrameNavigatedSameDocument]: Frame;
+  [PageEvent.FrameNavigatedNewDocument]: Frame;
   [PageEvent.Load]: undefined;
   [PageEvent.Metrics]: {title: string; metrics: Metrics};
   [PageEvent.PageError]: Error | unknown;

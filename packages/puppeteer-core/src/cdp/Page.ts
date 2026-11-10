@@ -211,6 +211,18 @@ export class CdpPage extends Page {
       this.emit(PageEvent.FrameNavigated, frame);
     });
     frameManagerEmitter.on(
+      FrameManagerEvent.FrameNavigatedWithinDocument,
+      frame => {
+        this.emit(PageEvent.FrameNavigatedSameDocument, frame);
+      },
+    );
+    frameManagerEmitter.on(
+      FrameManagerEvent.FrameNavigatedNewDocument,
+      frame => {
+        this.emit(PageEvent.FrameNavigatedNewDocument, frame);
+      },
+    );
+    frameManagerEmitter.on(
       FrameManagerEvent.ConsoleApiCalled,
       ([world, event]) => {
         this.#onConsoleAPI(world, event);

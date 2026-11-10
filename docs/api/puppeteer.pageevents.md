@@ -161,6 +161,36 @@ Error
 </td></tr>
 <tr><td>
 
+<span id="framenavigatednewdocument">framenavigatednewdocument</span>
+
+</td><td>
+
+</td><td>
+
+[Frame](./puppeteer.frame.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="framenavigatedsamedocument">framenavigatedsamedocument</span>
+
+</td><td>
+
+</td><td>
+
+[Frame](./puppeteer.frame.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="issue">issue</span>
 
 </td><td>
