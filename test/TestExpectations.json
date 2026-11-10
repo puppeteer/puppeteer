@@ -21,6 +21,13 @@
     "comment": "Chrome-only feature blocked on https://github.com/GoogleChromeLabs/chromium-bidi/issues/2082"
   },
   {
+    "testIdPattern": "[binding.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Tests CDP binding handle ownership. WebDriver BiDi uses a separate exposed function implementation."
+  },
+  {
     "testIdPattern": "[bluetooth-emulation.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome-headless-shell"],
