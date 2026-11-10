@@ -498,6 +498,41 @@ describe('Page.click', function () {
       }),
     ).toEqual([]);
   });
+  it('should click a checkbox that is covered by an element in its label', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`
+      <style>
+        label {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 30px;
+        }
+        input {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          margin: 0;
+        }
+        span {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <label
+        ><input
+          id="checkbox"
+          type="checkbox" /><span></span
+      ></label>
+    `);
+    await page.click('#checkbox');
+    expect(
+      await page.$eval('#checkbox', element => {
+        return (element as HTMLInputElement).checked;
+      }),
+    ).toBe(true);
+  });
   it('should check the click point given by the offset', async () => {
     const {page} = await getTestState();
 

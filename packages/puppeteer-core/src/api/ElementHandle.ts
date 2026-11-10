@@ -1218,6 +1218,16 @@ export abstract class ElementHandle<
         ) {
           return null;
         }
+        // A click on the label of a control activates the control.
+        const labels = (element as Partial<HTMLInputElement>).labels;
+        if (
+          labels &&
+          [...labels].some(label => {
+            return label.contains(topElement);
+          })
+        ) {
+          return null;
+        }
         const id = topElement.id ? `#${topElement.id}` : '';
         return `<${topElement.localName}${id}>`;
       },
