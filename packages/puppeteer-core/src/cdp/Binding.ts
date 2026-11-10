@@ -14,24 +14,36 @@ import {CDP_BINDING_PREFIX} from './utils.js';
 /**
  * @internal
  */
+export interface BindingOptions {
+  /** Whether to dispose node arguments after the binding call finishes. */
+  ownsArguments?: boolean;
+  /** Whether to dispose a returned handle after forwarding it to the page. */
+  ownsResult?: boolean;
+}
+
+/**
+ * @internal
+ */
 export class Binding {
   #name: string;
   #fn: (...args: unknown[]) => unknown;
   #initSource: string;
   #logger: Logger;
+  #ownsArguments: boolean;
   #ownsResult: boolean;
   constructor(
     name: string,
     fn: (...args: unknown[]) => unknown,
     initSource: string,
     logger: Logger,
-    ownsResult = false,
+    options: BindingOptions = {},
   ) {
     this.#name = name;
     this.#fn = fn;
     this.#initSource = initSource;
     this.#logger = logger;
-    this.#ownsResult = ownsResult;
+    this.#ownsArguments = options.ownsArguments ?? false;
+    this.#ownsResult = options.ownsResult ?? false;
   }
 
   get name(): string {
@@ -70,12 +82,16 @@ export class Binding {
         );
         const properties = await handles.getProperties();
         for (const [index, handle] of properties) {
-          stack.use(handle);
           // This is not straight-forward since some arguments can stringify, but
           // aren't plain objects so add subtypes when the use-case arises.
           if (index in args && handle.remoteObject().subtype === 'node') {
             args[+index] = handle;
+            // Exposed functions can retain node arguments beyond this call.
+            if (!this.#ownsArguments) {
+              continue;
+            }
           }
+          stack.use(handle);
         }
       }
 

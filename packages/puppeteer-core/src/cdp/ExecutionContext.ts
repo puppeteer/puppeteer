@@ -58,7 +58,7 @@ export class ExecutionContext
       ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
       '', // custom init
       logger,
-      true, // ownsResult
+      {ownsArguments: true, ownsResult: true},
     ));
   }
 
@@ -73,6 +73,8 @@ export class ExecutionContext
         using stack = new DisposableStack();
         const results = ARIAQueryHandler.queryAll(element, selector);
         const elements = [];
+        // The stack keeps these handles alive until the result array is created.
+        // eslint-disable-next-line @puppeteer/use-using
         for await (const result of results) {
           elements.push(stack.use(result));
         }
@@ -85,7 +87,7 @@ export class ExecutionContext
       }) as (...args: unknown[]) => unknown,
       '', // custom init
       logger,
-      true, // ownsResult
+      {ownsArguments: true, ownsResult: true},
     ));
   }
 

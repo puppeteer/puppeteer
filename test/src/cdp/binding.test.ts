@@ -79,7 +79,7 @@ describe('CDP binding handle disposal', () => {
         : outcome === 'error'
           ? 'reject with an Error'
           : 'reject with a value';
-    it(`should release node arguments when exposed functions ${description}`, async () => {
+    it(`should preserve node arguments when exposed functions ${description}`, async () => {
       const {page} = await getTestState();
       const receivedNodes: ElementHandle[] = [];
       await page.exposeFunction('inspectNode', async (node: ElementHandle) => {
@@ -108,9 +108,43 @@ describe('CDP binding handle disposal', () => {
       // Wait for the binding to finish its response round trip.
       await page.evaluate(() => {});
       expect(receivedNodes).toHaveLength(1);
-      expect(receivedNodes[0]!.disposed).toBe(true);
+      await using node = receivedNodes[0]!;
+      expect(node.disposed).toBe(false);
+      await expect(
+        node.evaluate(node => {
+          return node.nodeName;
+        }),
+      ).resolves.toBe('BODY');
     });
   }
+
+  it('should preserve node arguments returned by exposed functions', async () => {
+    const {page} = await getTestState();
+    const receivedNodes: ElementHandle[] = [];
+    await page.exposeFunction('echoNode', async (node: ElementHandle) => {
+      receivedNodes.push(node);
+      await node.evaluate(node => {
+        return node.nodeName;
+      });
+      return node;
+    });
+    await expect(
+      page.evaluate(async () => {
+        return (
+          (await (globalThis as any).echoNode(document.body)) === document.body
+        );
+      }),
+    ).resolves.toBe(true);
+    await page.evaluate(() => {});
+    expect(receivedNodes).toHaveLength(1);
+    await using node = receivedNodes[0]!;
+    expect(node.disposed).toBe(false);
+    await expect(
+      node.evaluate(node => {
+        return node.nodeName;
+      }),
+    ).resolves.toBe('BODY');
+  });
 
   it('should preserve handles returned by exposed functions', async () => {
     const {page} = await getTestState();
