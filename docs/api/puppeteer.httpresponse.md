@@ -78,6 +78,21 @@ The buffer might be re-encoded by the browser based on HTTP-headers or other heu
 </td></tr>
 <tr><td>
 
+<span id="encodeddatalength">[encodedDataLength()](./puppeteer.httpresponse.encodeddatalength.md)</span>
+
+</td><td>
+
+</td><td>
+
+Total number of bytes received for this request over the network.
+
+**Remarks:**
+
+The value is updated when the response finishes loading. During the `response` event, it only covers the bytes received up to the response headers. To get the total encoded transfer size (headers + compressed body), read it in a `requestfinished` handler or after awaiting [HTTPResponse.content()](./puppeteer.httpresponse.content.md). If the request fails after the response is received, the value is not updated. If the browser does not report a size, e.g. for `data:` or `file:` URLs, the value is `0`.
+
+</td></tr>
+<tr><td>
+
 <span id="frame">[frame()](./puppeteer.httpresponse.frame.md)</span>
 
 </td><td>

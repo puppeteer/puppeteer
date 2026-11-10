@@ -31,6 +31,7 @@ export class CdpHTTPResponse extends HTTPResponse {
   #headers: Record<string, string> = {};
   #securityDetails: SecurityDetails | null;
   #timing: Protocol.Network.ResourceTiming | null;
+  #encodedDataLength = 0;
 
   constructor(
     request: CdpHTTPRequest,
@@ -63,6 +64,7 @@ export class CdpHTTPResponse extends HTTPResponse {
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
     this.#timing = responsePayload.timing || null;
+    this._setEncodedDataLength(responsePayload.encodedDataLength);
   }
 
   #parseStatusTextFromExtraInfo(
@@ -84,6 +86,15 @@ export class CdpHTTPResponse extends HTTPResponse {
       return;
     }
     return statusText;
+  }
+
+  _setEncodedDataLength(encodedDataLength: number): void {
+    // Chromium reports -1 when no data was transferred over the network (e.g.
+    // data: or file: URLs) or when the size is unknown (e.g. synchronous XHRs
+    // to data: URLs). Keep the last known value in that case, defaulting to 0.
+    if (encodedDataLength >= 0) {
+      this.#encodedDataLength = encodedDataLength;
+    }
   }
 
   _resolveBody(err?: Error): void {
@@ -119,6 +130,10 @@ export class CdpHTTPResponse extends HTTPResponse {
 
   override timing(): Protocol.Network.ResourceTiming | null {
     return this.#timing;
+  }
+
+  override encodedDataLength(): number {
+    return this.#encodedDataLength;
   }
 
   override content(): Promise<Uint8Array> {

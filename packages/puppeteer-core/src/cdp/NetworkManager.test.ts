@@ -3075,4 +3075,134 @@ describe('NetworkManager', () => {
       await manager.addClient(mockCDPSession);
     });
   });
+
+  describe('encodedDataLength', () => {
+    const baseRequest = {
+      method: 'GET',
+      headers: {},
+      mixedContentType: 'none' as const,
+      initialPriority: 'VeryHigh' as const,
+      referrerPolicy: 'strict-origin-when-cross-origin' as const,
+      isSameSite: true,
+    };
+    const baseResponse = {
+      charset: 'utf-8',
+      headers: {},
+      mimeType: 'text/plain',
+      connectionReused: false,
+      connectionId: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      fromPrefetchCache: false,
+      protocol: 'data',
+      securityState: 'unknown' as const,
+    };
+
+    it('should clamp -1 in responseReceived to 0 and preserve it on failure', async () => {
+      const mockCDPSession = new MockCDPSession();
+      const manager = createNetworkManager();
+      await manager.addClient(mockCDPSession);
+
+      let responseLengthOnEvent: number | undefined;
+      let capturedResponse: HTTPResponse | undefined;
+      manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+        capturedResponse = response;
+        responseLengthOnEvent = response.encodedDataLength();
+      });
+
+      mockCDPSession.emit('Network.requestWillBeSent', {
+        requestId: 'req-1',
+        loaderId: 'req-1',
+        documentURL: 'data:text/plain,hello',
+        request: {...baseRequest, url: 'data:text/plain,hello'},
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'other'},
+        redirectHasExtraInfo: false,
+        type: 'Document',
+        frameId: 'frame-1',
+        hasUserGesture: false,
+      });
+      mockCDPSession.emit('Network.responseReceived', {
+        requestId: 'req-1',
+        loaderId: 'req-1',
+        timestamp: 2,
+        type: 'Document',
+        response: {
+          ...baseResponse,
+          url: 'data:text/plain,hello',
+          status: 200,
+          statusText: 'OK',
+          encodedDataLength: -1,
+        },
+        hasExtraInfo: false,
+        frameId: 'frame-1',
+      });
+      mockCDPSession.emit('Network.loadingFailed', {
+        requestId: 'req-1',
+        timestamp: 3,
+        type: 'Document',
+        errorText: 'net::ERR_ABORTED',
+      });
+
+      expect(responseLengthOnEvent).toBe(0);
+      expect(capturedResponse?.encodedDataLength()).toBe(0);
+    });
+
+    it('should update encodedDataLength on loadingFinished and ignore -1', async () => {
+      const mockCDPSession = new MockCDPSession();
+      const manager = createNetworkManager();
+      await manager.addClient(mockCDPSession);
+
+      const responses: HTTPResponse[] = [];
+      const lengthsOnResponse: number[] = [];
+      manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+        responses.push(response);
+        lengthsOnResponse.push(response.encodedDataLength());
+      });
+
+      for (const [id, responseLen, finishedLen] of [
+        ['req-1', 120, 450],
+        ['req-2', 120, -1],
+      ] as const) {
+        mockCDPSession.emit('Network.requestWillBeSent', {
+          requestId: id,
+          loaderId: id,
+          documentURL: 'https://example.com/',
+          request: {...baseRequest, url: 'https://example.com/'},
+          timestamp: 1,
+          wallTime: 1,
+          initiator: {type: 'other'},
+          redirectHasExtraInfo: false,
+          type: 'Document',
+          frameId: 'frame-1',
+          hasUserGesture: false,
+        });
+        mockCDPSession.emit('Network.responseReceived', {
+          requestId: id,
+          loaderId: id,
+          timestamp: 2,
+          type: 'Document',
+          response: {
+            ...baseResponse,
+            url: 'https://example.com/',
+            status: 200,
+            statusText: 'OK',
+            encodedDataLength: responseLen,
+          },
+          hasExtraInfo: false,
+          frameId: 'frame-1',
+        });
+        mockCDPSession.emit('Network.loadingFinished', {
+          requestId: id,
+          timestamp: 3,
+          encodedDataLength: finishedLen,
+        });
+      }
+
+      expect(lengthsOnResponse).toEqual([120, 120]);
+      expect(responses[0]!.encodedDataLength()).toBe(450);
+      expect(responses[1]!.encodedDataLength()).toBe(120);
+    });
+  });
 });
