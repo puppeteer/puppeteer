@@ -500,6 +500,13 @@ describe('Emulation', () => {
       ).toBe(
         'Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)',
       );
+
+      await page.emulateTimezone('GMT');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).date.toString();
+        }),
+      ).toBe('Sat Nov 19 2016 18:12:34 GMT+0000 (Greenwich Mean Time)');
     });
 
     it('should support timezone offset', async () => {

@@ -10,6 +10,7 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {headersInputToRecord, type HeadersInput} from '../api/HTTPRequest.js';
 import type {Credentials, Page} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {
@@ -72,6 +73,7 @@ export interface InternalNetworkConditions extends NetworkConditions {
  */
 export interface FrameProvider {
   frame(id: string): Frame | null;
+  worker(client: CDPSession): WebWorker | null;
   page(): Page;
 }
 
@@ -165,6 +167,42 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   async #removeClient(client: CDPSession) {
     this.#clients.get(client)?.dispose();
     this.#clients.delete(client);
+
+    // Only dedicated workers leave requests pending when their session goes
+    // away. The worker is still known here: the session is closed before the
+    // page handles the target detaching.
+    if (!this.#frameManager.worker(client)) {
+      return;
+    }
+    for (const requestId of this.#networkEventManager.requestIdsForClient(
+      client,
+    )) {
+      if (client.connection()?._closed) {
+        this.#networkEventManager.forgetRequest(requestId);
+        this.#networkEventManager.forget(requestId);
+      } else {
+        this.#abortPendingWorkerRequest(requestId);
+      }
+    }
+  }
+
+  /**
+   * Chrome does not send `Network.loadingFailed` or `Network.loadingFinished`
+   * for requests that are still pending when a dedicated worker is
+   * terminated. Fail them so that listeners observe the end of the request
+   * and they no longer count as in flight (e.g. for `waitForNetworkIdle`).
+   */
+  #abortPendingWorkerRequest(requestId: string): void {
+    const request = this.#networkEventManager.getRequest(requestId);
+    if (!request) {
+      // The request was never surfaced (e.g. still waiting for
+      // `Fetch.requestPaused`), so only drop the buffered events.
+      this.#networkEventManager.forget(requestId);
+      return;
+    }
+    request._failureText = 'net::ERR_ABORTED';
+    this.#forgetRequest(request, true);
+    this.emit(NetworkManagerEvent.RequestFailed, request);
   }
 
   async authenticate(credentials: Credentials | null): Promise<void> {
@@ -420,6 +458,16 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     ) {
       const {requestId: networkRequestId} = event;
 
+      const previousRequestWillBeSent =
+        this.#networkEventManager.getRequestWillBeSent(networkRequestId);
+      if (previousRequestWillBeSent && event.redirectResponse) {
+        this.#onRequest(
+          previousRequestWillBeSent.client,
+          previousRequestWillBeSent.event,
+          undefined,
+        );
+      }
+
       this.#networkEventManager.storeRequestWillBeSent(
         networkRequestId,
         event,
@@ -532,7 +580,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       requestWillBeSentEvent.request.url !== event.request.url ||
       requestWillBeSentEvent.request.method !== event.request.method
     ) {
-      this.#networkEventManager.forgetRequestWillBeSent(networkRequestId);
+      this.#onRequest(networkClient, requestWillBeSentEvent, undefined);
       this.#networkEventManager.storeRequestPaused(
         networkRequestId,
         event,
@@ -611,9 +659,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker = this.#frameManager.worker(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker,
       event.requestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -631,6 +682,17 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     fetchClient = client,
     fromMemoryCache = false,
   ): void {
+    // With request interception enabled, Network.loadingFailed may have
+    // arrived before the Fetch.requestPaused that created this request.
+    const storedRequestWillBeSent =
+      this.#networkEventManager.getRequestWillBeSent(event.requestId);
+    const loadingFailed =
+      storedRequestWillBeSent?.event === event
+        ? storedRequestWillBeSent.loadingFailed
+        : undefined;
+    if (storedRequestWillBeSent?.event === event) {
+      this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
+    }
     let redirectChain: CdpHTTPRequest[] = [];
     if (event.redirectResponse) {
       // We want to emit a response and requestfinished for the
@@ -680,9 +742,12 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
+    const worker = this.#frameManager.worker(client);
+
     const request = new CdpHTTPRequest(
       client,
       frame,
+      worker,
       fetchRequestId,
       this.#userRequestInterceptionEnabled,
       event,
@@ -699,13 +764,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
 
     request._fromMemoryCache = fromMemoryCache;
-    // With request interception enabled, Network.loadingFailed may have
-    // arrived before the Fetch.requestPaused that created this request.
-    const loadingFailed = this.#networkEventManager.getRequestWillBeSent(
-      event.requestId,
-    )?.loadingFailed;
     this.#networkEventManager.storeRequest(event.requestId, request);
-    this.#networkEventManager.forgetRequestWillBeSent(event.requestId);
     this.emit(NetworkManagerEvent.Request, request);
     const interceptionsFinalized = request.finalizeInterceptions();
     if (loadingFailed) {
@@ -884,6 +943,13 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   }
 
   #forgetRequest(request: CdpHTTPRequest, events: boolean): void {
+    // Settle the body so `response.content()` does not wait forever. Under
+    // certain conditions we never get the Network.responseReceived event from
+    // protocol (@see https://crbug.com/883475), so the response can be
+    // missing. A body that was already settled (e.g. rejected for a redirect)
+    // keeps its value.
+    request.response()?._resolveBody();
+
     const requestId = request.id;
     const interceptionId = request._interceptionId;
 
@@ -926,11 +992,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
     this.#adoptCdpSessionIfNeeded(client, request);
 
-    // Under certain conditions we never get the Network.responseReceived
-    // event from protocol. @see https://crbug.com/883475
-    if (request.response()) {
-      request.response()?._resolveBody();
-    }
+    request.response()?._setEncodedDataLength(event.encodedDataLength);
     this.#forgetRequest(request, true);
     this.emit(NetworkManagerEvent.RequestFinished, request);
   }
@@ -973,10 +1035,6 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
     this.#adoptCdpSessionIfNeeded(client, request);
     request._failureText = event.errorText || event.blockedReason || null;
-    const response = request.response();
-    if (response) {
-      response._resolveBody();
-    }
     this.#forgetRequest(request, true);
     this.emit(NetworkManagerEvent.RequestFailed, request);
   }

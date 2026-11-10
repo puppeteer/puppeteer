@@ -6,10 +6,14 @@
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
+import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {isFavicon, waitEvent} from './utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
@@ -455,6 +459,217 @@ describe('BrowserContext', function () {
       );
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
       expect(await getPermission(page, 'midi')).toBe('prompt');
+    });
+
+    it('should be reset by clearPermissionOverrides', async () => {
+      const {page, server, context} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {permission: {name: 'geolocation'}, state: 'granted'},
+        {permission: {name: 'midi'}, state: 'denied'},
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      expect(await getPermission(page, 'midi')).toBe('denied');
+
+      await context.clearPermissionOverrides();
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(page, 'midi')).toBe('prompt');
+    });
+  });
+
+  describe('BrowserContext.on("console")', function () {
+    it('should only report console messages from its own pages', async () => {
+      const {browser, page, context} = await getTestState();
+
+      await using otherContext = await browser.createBrowserContext();
+      const otherPage = await otherContext.newPage();
+
+      const messages: ConsoleMessage[] = [];
+      context.on('console', message => {
+        messages.push(message);
+      });
+
+      await otherPage.evaluate(() => {
+        console.log('from-other-context');
+      });
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(context, 'console', message => {
+          return message.text() === 'from-own-context';
+        }),
+        page.evaluate(() => {
+          console.log('from-own-context');
+        }),
+      ]);
+
+      expect(message.page()).toBe(page);
+      expect(
+        messages.map(message => {
+          return message.text();
+        }),
+      ).toEqual(['from-own-context']);
+    });
+
+    it('should only report console messages from workers of its own pages', async () => {
+      const {browser, page, context} = await getTestState();
+
+      await using otherContext = await browser.createBrowserContext();
+      const otherPage = await otherContext.newPage();
+
+      const messages: ConsoleMessage[] = [];
+      context.on('console', message => {
+        messages.push(message);
+      });
+
+      await Promise.all([
+        waitEvent<ConsoleMessage>(otherContext, 'console', message => {
+          return message.text() === 'other-done';
+        }),
+        otherPage.evaluate(() => {
+          return new Worker(
+            `data:text/javascript,console.log('from-other-worker');console.log('other-done')`,
+          );
+        }),
+      ]);
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        waitEvent<ConsoleMessage>(context, 'console', message => {
+          return message.text() === 'own-done';
+        }),
+        page.evaluate(() => {
+          return new Worker(
+            `data:text/javascript,console.log('from-own-worker');console.log('own-done')`,
+          );
+        }),
+      ]);
+
+      expect(
+        messages.map(message => {
+          return message.text();
+        }),
+      ).toEqual(['from-own-worker', 'own-done']);
+      expect(messages[0]!.worker()).toBe(worker);
+    });
+  });
+
+  describe('BrowserContext.on("request")', function () {
+    it('should only report requests from its own pages', async () => {
+      const {browser, page, context, server} = await getTestState();
+
+      await using otherContext = await browser.createBrowserContext();
+      const otherPage = await otherContext.newPage();
+
+      const requests: HTTPRequest[] = [];
+      context.on('request', request => {
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
+      });
+
+      await otherPage.goto(server.PREFIX + '/one-style.html');
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(context, 'request', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(request.page()).toBe(page);
+      expect(
+        requests.map(request => {
+          return request.url();
+        }),
+      ).toEqual([server.EMPTY_PAGE]);
+    });
+  });
+
+  describe('BrowserContext network events', function () {
+    it('should only report network events from its own pages', async () => {
+      const {browser, page, context, server} = await getTestState();
+
+      await using otherContext = await browser.createBrowserContext();
+      const otherPage = await otherContext.newPage();
+
+      const seen = {
+        response: [] as Array<Page | null>,
+        requestfinished: [] as Array<Page | null>,
+        requestfailed: [] as Array<Page | null>,
+        requestservedfromcache: [] as Array<Page | null>,
+      };
+      const onResponse = (response: HTTPResponse) => {
+        if (!isFavicon(response)) {
+          seen.response.push(response.request().page());
+        }
+      };
+      const record = (event: Exclude<keyof typeof seen, 'response'>) => {
+        return (request: HTTPRequest) => {
+          if (!isFavicon(request)) {
+            seen[event].push(request.page());
+          }
+        };
+      };
+      const onFinished = record('requestfinished');
+      const onFailed = record('requestfailed');
+      const onCached = record('requestservedfromcache');
+      context.on('response', onResponse);
+      context.on('requestfinished', onFinished);
+      context.on('requestfailed', onFailed);
+      context.on('requestservedfromcache', onCached);
+
+      // Triggers all four events on the given page.
+      const triggerNetworkEvents = async (target: Page) => {
+        await target.setRequestInterception(true);
+        const onRequest = (request: HTTPRequest) => {
+          if (request.url().endsWith('css')) {
+            void request.abort();
+          } else {
+            void request.continue();
+          }
+        };
+        target.on('request', onRequest);
+        await target.goto(server.PREFIX + '/one-style.html');
+        target.off('request', onRequest);
+        await target.setRequestInterception(false);
+
+        await target.goto(server.PREFIX + '/cached/one-script.html');
+        await new Promise(res => {
+          setTimeout(res, 1000);
+        });
+        await target.reload();
+      };
+
+      try {
+        await triggerNetworkEvents(otherPage);
+        await triggerNetworkEvents(page);
+
+        const summary = Object.fromEntries(
+          Object.entries(seen).map(([event, pages]) => {
+            return [
+              event,
+              {
+                own: pages.some(reportedPage => {
+                  return reportedPage === page;
+                }),
+                foreign: pages.filter(reportedPage => {
+                  return reportedPage !== page;
+                }).length,
+              },
+            ];
+          }),
+        );
+        expect(summary).toEqual({
+          response: {own: true, foreign: 0},
+          requestfinished: {own: true, foreign: 0},
+          requestfailed: {own: true, foreign: 0},
+          requestservedfromcache: {own: true, foreign: 0},
+        });
+      } finally {
+        context.off('response', onResponse);
+        context.off('requestfinished', onFinished);
+        context.off('requestfailed', onFailed);
+        context.off('requestservedfromcache', onCached);
+      }
     });
   });
 });

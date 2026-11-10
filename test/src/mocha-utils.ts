@@ -107,6 +107,10 @@ defaultBrowserOptions.args!.push(
   `--host-resolver-rules=MAP domain1.test 127.0.0.1,MAP domain2.test 127.0.0.1,MAP domain3.test 127.0.0.1`,
 );
 defaultBrowserOptions.args!.push(`--force-device-scale-factor=1`);
+if (isChrome) {
+  // TODO(crbug.com/579030694): Remove once OrganizerPanel stops eagerly loading WebUI.
+  defaultBrowserOptions.args!.push(`--disable-features=OrganizerPanel`);
+}
 
 let executableExists = false;
 async function verifyExecutable() {

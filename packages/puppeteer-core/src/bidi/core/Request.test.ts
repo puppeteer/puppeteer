@@ -138,4 +138,31 @@ describe('Request', () => {
 
     expect(request.disposed).toBe(false);
   });
+
+  it('should update isBlocked across network lifecycle events', () => {
+    const {browsingContext, session} = createBrowsingContext();
+    const request = Request.from(browsingContext, {
+      ...requestEvent(0),
+      isBlocked: true,
+    });
+    expect(request.isBlocked).toBe(true);
+
+    session.emit('network.authRequired', {
+      ...responseCompletedEvent(0, 401),
+      isBlocked: false,
+    });
+    expect(request.isBlocked).toBe(false);
+
+    session.emit('network.responseStarted', {
+      ...responseCompletedEvent(0, 200),
+      isBlocked: true,
+    });
+    expect(request.isBlocked).toBe(true);
+
+    session.emit('network.responseCompleted', {
+      ...responseCompletedEvent(0, 200),
+      isBlocked: false,
+    });
+    expect(request.isBlocked).toBe(false);
+  });
 });

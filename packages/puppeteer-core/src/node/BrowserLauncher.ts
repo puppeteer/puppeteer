@@ -28,6 +28,7 @@ import {CdpBrowser} from '../cdp/Browser.js';
 import {Connection} from '../cdp/Connection.js';
 import type {WsOptions} from '../common/ConnectOptions.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {TimeoutError} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {
@@ -262,6 +263,7 @@ export abstract class BrowserLauncher {
             protocolTimeout,
             slowMo,
             defaultViewport,
+            downloadBehavior,
             acceptInsecureCerts,
             networkEnabled,
             idGenerator,
@@ -296,6 +298,7 @@ export abstract class BrowserLauncher {
             browserCloseCallback,
             {
               defaultViewport,
+              downloadBehavior,
               acceptInsecureCerts,
               networkEnabled,
               issuesEnabled,
@@ -526,6 +529,7 @@ export abstract class BrowserLauncher {
     closeCallback: BrowserCloseCallback,
     opts: {
       defaultViewport: Viewport | null;
+      downloadBehavior?: DownloadBehavior;
       acceptInsecureCerts?: boolean;
       networkEnabled: boolean;
       issuesEnabled: boolean;
@@ -546,6 +550,7 @@ export abstract class BrowserLauncher {
       closeCallback,
       process: browserProcess.nodeProcess,
       defaultViewport: opts.defaultViewport,
+      downloadBehavior: opts.downloadBehavior,
       acceptInsecureCerts: opts.acceptInsecureCerts,
       networkEnabled: opts.networkEnabled,
       issuesEnabled: opts.issuesEnabled,
@@ -565,6 +570,7 @@ export abstract class BrowserLauncher {
       slowMo: number;
       idGenerator: GetIdFn;
       defaultViewport: Viewport | null;
+      downloadBehavior?: DownloadBehavior;
       acceptInsecureCerts?: boolean;
       networkEnabled?: boolean;
       issuesEnabled?: boolean;
@@ -597,6 +603,7 @@ export abstract class BrowserLauncher {
       closeCallback,
       process: browserProcess.nodeProcess,
       defaultViewport: opts.defaultViewport,
+      downloadBehavior: opts.downloadBehavior,
       acceptInsecureCerts: opts.acceptInsecureCerts,
       networkEnabled: opts.networkEnabled ?? true,
       issuesEnabled: opts.issuesEnabled ?? true,

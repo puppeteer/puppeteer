@@ -14,6 +14,7 @@ import {stringToTypedArray} from '../util/encoding.js';
 import {normalizeHeaderValue} from '../util/httpUtils.js';
 
 import type {CdpHTTPRequest} from './HTTPRequest.js';
+import {createResponseBodyStream} from './ResponseBodyStream.js';
 
 /**
  * @internal
@@ -30,6 +31,7 @@ export class CdpHTTPResponse extends HTTPResponse {
   #headers: Record<string, string> = {};
   #securityDetails: SecurityDetails | null;
   #timing: Protocol.Network.ResourceTiming | null;
+  #encodedDataLength = 0;
 
   constructor(
     request: CdpHTTPRequest,
@@ -62,6 +64,7 @@ export class CdpHTTPResponse extends HTTPResponse {
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
     this.#timing = responsePayload.timing || null;
+    this._setEncodedDataLength(responsePayload.encodedDataLength);
   }
 
   #parseStatusTextFromExtraInfo(
@@ -83,6 +86,15 @@ export class CdpHTTPResponse extends HTTPResponse {
       return;
     }
     return statusText;
+  }
+
+  _setEncodedDataLength(encodedDataLength: number): void {
+    // Chromium reports -1 when no data was transferred over the network (e.g.
+    // data: or file: URLs) or when the size is unknown (e.g. synchronous XHRs
+    // to data: URLs). Keep the last known value in that case, defaulting to 0.
+    if (encodedDataLength >= 0) {
+      this.#encodedDataLength = encodedDataLength;
+    }
   }
 
   _resolveBody(err?: Error): void {
@@ -120,6 +132,10 @@ export class CdpHTTPResponse extends HTTPResponse {
     return this.#timing;
   }
 
+  override encodedDataLength(): number {
+    return this.#encodedDataLength;
+  }
+
   override content(): Promise<Uint8Array> {
     if (!this.#contentPromise) {
       this.#contentPromise = this.#bodyLoadedDeferred
@@ -152,6 +168,38 @@ export class CdpHTTPResponse extends HTTPResponse {
         });
     }
     return this.#contentPromise;
+  }
+
+  override async stream(): Promise<ReadableStream<Uint8Array>> {
+    if (this.#bodyLoadedDeferred.finished()) {
+      return await this.#contentStream();
+    }
+    try {
+      // Use the request's client, as it might have been updated for an adopted
+      // OOPIF.
+      return await createResponseBodyStream(
+        this.#request.client,
+        this.#request.id,
+      );
+    } catch (error) {
+      if (
+        error instanceof ProtocolError &&
+        error.originalMessage.includes('already finished loading')
+      ) {
+        return await this.#contentStream();
+      }
+      throw error;
+    }
+  }
+
+  async #contentStream(): Promise<ReadableStream<Uint8Array>> {
+    const content = await this.content();
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(content);
+        controller.close();
+      },
+    });
   }
 
   override request(): CdpHTTPRequest {

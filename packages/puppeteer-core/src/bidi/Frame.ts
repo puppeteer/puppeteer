@@ -20,6 +20,8 @@ import {
   raceWith,
   switchMap,
 } from '../../third_party/rxjs/rxjs.js';
+import {BrowserEvent} from '../api/Browser.js';
+import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import {
@@ -48,6 +50,7 @@ import {BidiElementHandle} from './ElementHandle.js';
 import {ExposableFunction} from './ExposedFunction.js';
 import {BidiHTTPRequest, requests} from './HTTPRequest.js';
 import type {BidiHTTPResponse} from './HTTPResponse.js';
+import {emitRequestFailed, emitRequestFinished} from './NetworkEvents.js';
 import type {BidiPage} from './Page.js';
 import type {BidiRealm} from './Realm.js';
 import {BidiFrameRealm} from './Realm.js';
@@ -139,11 +142,11 @@ export class BidiFrame extends Frame {
         this.logger,
       );
       request.once('success', () => {
-        this.page().trustedEmitter.emit(PageEvent.RequestFinished, httpRequest);
+        emitRequestFinished(this.page(), httpRequest);
       });
 
       request.once('error', () => {
-        this.page().trustedEmitter.emit(PageEvent.RequestFailed, httpRequest);
+        emitRequestFailed(this.page(), httpRequest);
       });
       void httpRequest.finalizeInterceptions();
     });
@@ -174,17 +177,26 @@ export class BidiFrame extends Frame {
         return;
       }
       if (isConsoleLogEntry(entry)) {
-        if (!this.page().listenerCount(PageEvent.Console)) {
+        // Chromium sets `source.context` of dedicated worker logs to the frame
+        // that created the worker, so they pass the context check above. Since
+        // BidiWorkerRealm emits them with the correct worker and realm we can
+        // skip them here.
+        if (this.#isWorkerRealm(entry.source.realm)) {
+          return;
+        }
+        const page = this.page();
+        if (
+          !page.listenerCount(PageEvent.Console) &&
+          !page.browserContext().listenerCount(BrowserContextEvent.Console) &&
+          !page.browser().listenerCount(BrowserEvent.Console)
+        ) {
           return;
         }
         const args = entry.args.map(arg => {
           return this.mainRealm().createHandle(arg);
         });
 
-        this.page().trustedEmitter.emit(
-          PageEvent.Console,
-          getConsoleMessage(entry, args, this),
-        );
+        page.emitConsoleMessage(getConsoleMessage(entry, args, this));
       } else if (isJavaScriptLogEntry(entry)) {
         const error = new Error(entry.text ?? '');
 
@@ -222,6 +234,14 @@ export class BidiFrame extends Frame {
       });
       this.page().trustedEmitter.emit(PageEvent.WorkerCreated, worker);
     });
+  }
+
+  #isWorkerRealm(realmId: string): boolean {
+    return this.page()
+      .workers()
+      .some(worker => {
+        return worker.mainRealm().realm.id === realmId;
+      });
   }
 
   #createFrameTarget(browsingContext: BrowsingContext) {

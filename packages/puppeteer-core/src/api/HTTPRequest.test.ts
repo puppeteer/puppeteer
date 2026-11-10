@@ -13,6 +13,7 @@ import {
   headersInputToRecord,
   HTTPRequest,
   normalizeHeadersInput,
+  type HeadersInput,
 } from './HTTPRequest.js';
 
 describe('HTTPRequest', () => {
@@ -241,6 +242,28 @@ describe('HTTPRequest', () => {
       expect(headersInputToRecord(headers)).toEqual({
         'set-cookie': 'a=1, b=2',
       });
+    });
+
+    it('should throw when a header name contains CRLF characters', () => {
+      expect(() => {
+        headersInputToRecord({'x-foo\r\nx-injected': 'bar'});
+      }).toThrow(/CRLF/);
+    });
+
+    it('should throw when a header value contains CRLF characters', () => {
+      expect(() => {
+        headersInputToRecord({'x-foo': 'bar\r\nx-injected: evil'});
+      }).toThrow(/CRLF/);
+    });
+
+    it('should throw when a joined repeated header value contains CRLF characters', () => {
+      const headers = {
+        'set-cookie': ['a=1', 'b=2\r\nx-injected: evil'],
+      } as unknown as HeadersInput;
+
+      expect(() => {
+        headersInputToRecord(headers);
+      }).toThrow(/CRLF/);
     });
   });
 });

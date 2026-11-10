@@ -54,6 +54,25 @@ Number of documents in the page.
 </td></tr>
 <tr><td>
 
+<span id="domcontentloaded">DomContentLoaded</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+The timestamp when the DOMContentLoaded event was fired, in monotonic time (seconds since an arbitrary point in the past).
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="frames">Frames</span>
 
 </td><td>
@@ -162,6 +181,25 @@ number
 </td><td>
 
 Combined duration of all page layouts, in seconds.
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="navigationstart">NavigationStart</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+The timestamp when the navigation started, in monotonic time (seconds since an arbitrary point in the past).
 
 </td><td>
 

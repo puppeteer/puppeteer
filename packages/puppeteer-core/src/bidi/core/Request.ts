@@ -109,10 +109,13 @@ export class Request extends EventEmitter<{
     sessionEmitter.on('network.authRequired', event => {
       if (
         event.context !== this.#browsingContext.id ||
-        event.request.request !== this.id ||
-        // Don't try to authenticate for events that are not blocked
-        !event.isBlocked
+        event.request.request !== this.id
       ) {
+        return;
+      }
+      this.#event.isBlocked = event.isBlocked;
+      // Don't try to authenticate for events that are not blocked
+      if (!event.isBlocked) {
         return;
       }
       this.emit('authenticate', undefined);
@@ -126,6 +129,7 @@ export class Request extends EventEmitter<{
         return;
       }
       this.#error = event.errorText;
+      this.#event.isBlocked = event.isBlocked;
       this.#event.request.headers = event.request.headers;
       this.#event.request.timings = event.request.timings;
       this.emit('error', this.#error);
@@ -140,6 +144,7 @@ export class Request extends EventEmitter<{
         return;
       }
       this.#response = event.response;
+      this.#event.isBlocked = event.isBlocked;
       this.#event.request.headers = event.request.headers;
       this.#event.request.timings = event.request.timings;
       this.emit('response', this.#response);
@@ -153,6 +158,7 @@ export class Request extends EventEmitter<{
         return;
       }
       this.#response = event.response;
+      this.#event.isBlocked = event.isBlocked;
       this.#event.request.headers = event.request.headers;
       this.#event.request.timings = event.request.timings;
       this.emit('success', this.#response);

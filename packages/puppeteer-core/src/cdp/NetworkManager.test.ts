@@ -9,25 +9,36 @@ import {describe, it} from 'node:test';
 import type {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 
-import type {CDPSessionEvents} from '../api/CDPSession.js';
+import {
+  CDPSessionEvent,
+  type CDPSession,
+  type CDPSessionEvents,
+} from '../api/CDPSession.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 
+import type {Connection} from './cdp.js';
 import type {CdpFrame} from './Frame.js';
 import {NetworkManager} from './NetworkManager.js';
 
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.
 
-function createNetworkManager() {
+function createNetworkManager(
+  worker: (client: CDPSession) => WebWorker | null = () => {
+    return null;
+  },
+) {
   return new NetworkManager(
     {
       frame(): CdpFrame | null {
         return null;
       },
+      worker,
       page() {
         return {
           browser() {
@@ -48,14 +59,21 @@ function createNetworkManager() {
 }
 
 class MockCDPSession extends EventEmitter<CDPSessionEvents> {
-  async send(): Promise<any> {}
+  public closed?: boolean;
+  readonly sent: Array<{method: string; params: unknown}> = [];
+  constructor(readonly sessionId = '1') {
+    super();
+  }
+  async send(method: string, params?: unknown): Promise<any> {
+    this.sent.push({method, params});
+  }
   connection() {
-    return undefined;
+    return this.closed ? ({_closed: true} as Connection) : undefined;
   }
   readonly detached = false;
   async detach() {}
   id() {
-    return '1';
+    return this.sessionId;
   }
   parentSession() {
     return undefined;
@@ -499,6 +517,230 @@ describe('NetworkManager', () => {
       frameId: '099A5216AF03AAFEC988F214B024DF08',
     });
   });
+  describe('worker requests', () => {
+    const workerRequestWillBeSent = (
+      requestId: string,
+      url: string,
+      redirectResponse?: {url: string; status: number},
+    ): Protocol.Network.RequestWillBeSentEvent => {
+      return {
+        requestId,
+        loaderId: '',
+        documentURL: 'http://localhost:8907/worker/worker.js',
+        request: {
+          url,
+          method: 'GET',
+          headers: {},
+          mixedContentType: 'none',
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+          isSameSite: true,
+        },
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'script'},
+        redirectHasExtraInfo: false,
+        type: 'Fetch',
+        hasUserGesture: false,
+        ...(redirectResponse
+          ? {
+              redirectResponse: {
+                url: redirectResponse.url,
+                status: redirectResponse.status,
+                statusText: 'Found',
+                headers: {},
+                mimeType: '',
+                charset: '',
+                connectionReused: false,
+                connectionId: 0,
+                encodedDataLength: 0,
+                securityState: 'secure',
+              },
+            }
+          : {}),
+      };
+    };
+    const workerRequestPaused = (
+      fetchRequestId: string,
+      networkId: string,
+      url: string,
+    ): Protocol.Fetch.RequestPausedEvent => {
+      return {
+        requestId: fetchRequestId,
+        request: {
+          url,
+          method: 'GET',
+          headers: {},
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId: '84AC261A351B86932B775B76D1DD79F8',
+        resourceType: 'Fetch',
+        networkId,
+      };
+    };
+
+    const setup = async ({interception = true} = {}) => {
+      const pageSession = new MockCDPSession('page');
+      const workerSession = new MockCDPSession('worker');
+      const worker = {client: workerSession} as unknown as WebWorker;
+      const manager = createNetworkManager(client => {
+        return client === workerSession ? worker : null;
+      });
+      await manager.addClient(pageSession);
+      await manager.addClient(workerSession);
+      if (interception) {
+        await manager.setRequestInterception(true);
+      }
+      pageSession.sent.length = 0;
+      workerSession.sent.length = 0;
+
+      const requests: HTTPRequest[] = [];
+      manager.on(NetworkManagerEvent.Request, async (request: HTTPRequest) => {
+        requests.push(request);
+        if (interception) {
+          await request.continue();
+        }
+      });
+      const failed: HTTPRequest[] = [];
+      manager.on(NetworkManagerEvent.RequestFailed, (request: HTTPRequest) => {
+        failed.push(request);
+      });
+      return {manager, pageSession, workerSession, worker, requests, failed};
+    };
+
+    it('should report the worker when Fetch.requestPaused arrives first', async () => {
+      const {pageSession, workerSession, worker, requests} = await setup();
+      const url = 'http://localhost:8907/empty.html';
+
+      pageSession.emit(
+        'Fetch.requestPaused',
+        workerRequestPaused('interception-job-1.0', 'worker-req-1', url),
+      );
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', url),
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 0);
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0]!.worker()).toBe(worker);
+      expect(requests[0]!.frame()).toBeNull();
+      expect(requests[0]!.client).toBe(workerSession);
+      expect(
+        pageSession.sent.filter(({method}) => {
+          return method === 'Fetch.continueRequest';
+        }),
+      ).toHaveLength(1);
+      expect(
+        workerSession.sent.filter(({method}) => {
+          return method === 'Fetch.continueRequest';
+        }),
+      ).toHaveLength(0);
+    });
+
+    it('should keep the worker across redirects', async () => {
+      const {pageSession, workerSession, worker, requests} = await setup();
+      const url1 = 'http://localhost:8907/redirect/1.html';
+      const url2 = 'http://localhost:8907/redirect/2.html';
+
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', url1),
+      );
+      pageSession.emit(
+        'Fetch.requestPaused',
+        workerRequestPaused('interception-job-1.0', 'worker-req-1', url1),
+      );
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', url2, {url: url1, status: 302}),
+      );
+      pageSession.emit(
+        'Fetch.requestPaused',
+        workerRequestPaused('interception-job-2.0', 'worker-req-1', url2),
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 0);
+      });
+
+      expect(requests).toHaveLength(2);
+      expect(requests[1]!.url()).toBe(url2);
+      expect(requests[1]!.worker()).toBe(worker);
+      expect(requests[1]!.redirectChain()).toHaveLength(1);
+    });
+
+    it('should not fail pending worker requests when the whole connection closes', async () => {
+      const {manager, workerSession, requests, failed} = await setup({
+        interception: false,
+      });
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', 'http://localhost/hang'),
+      );
+      expect(requests).toHaveLength(1);
+      expect(manager.inFlightRequestsCount()).toBe(1);
+
+      workerSession.closed = true;
+      workerSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(failed).toEqual([]);
+      expect(manager.inFlightRequestsCount()).toBe(0);
+    });
+
+    it('should fail pending requests when the worker session disconnects', async () => {
+      const {manager, workerSession, requests, failed} = await setup({
+        interception: false,
+      });
+
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', 'http://localhost/hang'),
+      );
+      expect(requests).toHaveLength(1);
+      expect(manager.inFlightRequestsCount()).toBe(1);
+
+      workerSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(failed).toEqual([requests[0]]);
+      expect(failed[0]!.failure()).toEqual({errorText: 'net::ERR_ABORTED'});
+      expect(manager.inFlightRequestsCount()).toBe(0);
+    });
+
+    it('should not fail pending page requests when a session disconnects', async () => {
+      const {manager, pageSession, requests, failed} = await setup({
+        interception: false,
+      });
+
+      pageSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('page-req-1', 'http://localhost/hang'),
+      );
+      pageSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(requests).toHaveLength(1);
+      expect(failed).toHaveLength(0);
+      expect(manager.inFlightRequestsCount()).toBe(1);
+    });
+
+    it('should not emit requestfailed for worker requests that were never surfaced', async () => {
+      const {workerSession, requests, failed} = await setup();
+
+      // With interception enabled, no request is emitted until
+      // Fetch.requestPaused arrives, which never happens here.
+      workerSession.emit(
+        'Network.requestWillBeSent',
+        workerRequestWillBeSent('worker-req-1', 'http://localhost/hang'),
+      );
+      workerSession.emit(CDPSessionEvent.Disconnected, undefined);
+
+      expect(requests).toHaveLength(0);
+      expect(failed).toHaveLength(0);
+    });
+  });
+
   it(`should handle "double pause" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event`, async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = createNetworkManager();
@@ -2224,6 +2466,431 @@ describe('NetworkManager', () => {
     ).toEqual([200, 302, 200]);
   });
 
+  describe('internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)', () => {
+    for (const pauseFirst of [false, true]) {
+      it(`should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=${pauseFirst})`, async () => {
+        const sentCommands: Array<{method: string; params: unknown}> = [];
+        const mockCDPSession = new MockCDPSession();
+        mockCDPSession.send = (async (method: string, params: unknown) => {
+          sentCommands.push({method, params});
+        }) as any;
+        const manager = createNetworkManager();
+        await manager.addClient(mockCDPSession);
+        await manager.setRequestInterception(true);
+
+        const requests: HTTPRequest[] = [];
+        const responses: HTTPResponse[] = [];
+        const continued: Array<Promise<void>> = [];
+        manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+          requests.push(request);
+          continued.push(request.continue());
+        });
+        manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+          responses.push(response);
+        });
+
+        const requestId = 'LOADERID';
+        const frameId = 'FRAMEID';
+        const baseRequest = {
+          method: 'GET',
+          headers: {},
+          mixedContentType: 'none' as const,
+          initialPriority: 'VeryHigh' as const,
+          referrerPolicy: 'strict-origin-when-cross-origin' as const,
+          isSameSite: true,
+        };
+        const baseResponse = {
+          charset: 'utf-8',
+          headers: {},
+          mimeType: 'text/html',
+          connectionReused: false,
+          connectionId: 1,
+          fromDiskCache: false,
+          fromServiceWorker: false,
+          fromPrefetchCache: false,
+          encodedDataLength: 0,
+          protocol: 'http/1.1',
+          securityState: 'secure' as const,
+        };
+
+        // Hop 1: https://example.com/start -> 301 to http://sub.example.com/page
+        mockCDPSession.emit('Network.requestWillBeSent', {
+          requestId,
+          loaderId: requestId,
+          documentURL: 'https://example.com/start',
+          request: {...baseRequest, url: 'https://example.com/start'},
+          timestamp: 1,
+          wallTime: 1,
+          initiator: {type: 'other'},
+          redirectHasExtraInfo: false,
+          type: 'Document',
+          frameId,
+          hasUserGesture: false,
+        });
+        mockCDPSession.emit('Fetch.requestPaused', {
+          requestId: 'interception-job-1.0',
+          request: {
+            url: 'https://example.com/start',
+            method: 'GET',
+            headers: {},
+            initialPriority: 'VeryHigh',
+            referrerPolicy: 'strict-origin-when-cross-origin',
+          },
+          frameId,
+          resourceType: 'Document',
+          networkId: requestId,
+        });
+        mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+          requestId,
+          associatedCookies: [],
+          headers: {},
+          connectTiming: {requestTime: 1},
+        });
+        mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+          requestId,
+          blockedCookies: [],
+          headers: {location: 'http://sub.example.com/page'},
+          resourceIPAddressSpace: 'Public',
+          statusCode: 301,
+        });
+
+        // Hop 2: http://sub.example.com/page (internally upgraded via 307
+        // without Fetch.requestPaused)
+        mockCDPSession.emit('Network.requestWillBeSent', {
+          requestId,
+          loaderId: requestId,
+          documentURL: 'http://sub.example.com/page',
+          request: {...baseRequest, url: 'http://sub.example.com/page'},
+          timestamp: 2,
+          wallTime: 2,
+          initiator: {type: 'other'},
+          redirectHasExtraInfo: true,
+          redirectResponse: {
+            ...baseResponse,
+            url: 'https://example.com/start',
+            status: 301,
+            statusText: 'Moved Permanently',
+            headers: {location: 'http://sub.example.com/page'},
+          },
+          type: 'Document',
+          frameId,
+          hasUserGesture: false,
+        });
+
+        // Hop 3: https://sub.example.com/page (paused by Fetch.requestPaused)
+        const emitHop3Paused = () => {
+          mockCDPSession.emit('Fetch.requestPaused', {
+            requestId: 'interception-job-2.0',
+            request: {
+              url: 'https://sub.example.com/page',
+              method: 'GET',
+              headers: {},
+              initialPriority: 'VeryHigh',
+              referrerPolicy: 'strict-origin-when-cross-origin',
+            },
+            frameId,
+            resourceType: 'Document',
+            networkId: requestId,
+          });
+        };
+        const emitHop3WillBeSent = () => {
+          mockCDPSession.emit('Network.requestWillBeSent', {
+            requestId,
+            loaderId: requestId,
+            documentURL: 'https://sub.example.com/page',
+            request: {...baseRequest, url: 'https://sub.example.com/page'},
+            timestamp: 3,
+            wallTime: 3,
+            initiator: {type: 'other'},
+            redirectHasExtraInfo: false,
+            redirectResponse: {
+              ...baseResponse,
+              url: 'http://sub.example.com/page',
+              status: 307,
+              statusText: 'Temporary Redirect',
+              headers: {
+                Location: 'https://sub.example.com/page',
+                'Non-Authoritative-Reason': 'HttpsUpgrades',
+              },
+              securityState: 'insecure',
+            },
+            type: 'Document',
+            frameId,
+            hasUserGesture: false,
+          });
+        };
+
+        if (pauseFirst) {
+          emitHop3Paused();
+          emitHop3WillBeSent();
+        } else {
+          emitHop3WillBeSent();
+          emitHop3Paused();
+        }
+
+        mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+          requestId,
+          associatedCookies: [],
+          headers: {},
+          connectTiming: {requestTime: 3},
+        });
+        mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+          requestId,
+          blockedCookies: [],
+          headers: {'content-type': 'text/html'},
+          resourceIPAddressSpace: 'Public',
+          statusCode: 200,
+        });
+        mockCDPSession.emit('Network.responseReceived', {
+          requestId,
+          loaderId: requestId,
+          timestamp: 4,
+          type: 'Document',
+          response: {
+            ...baseResponse,
+            url: 'https://sub.example.com/page',
+            status: 200,
+            statusText: 'OK',
+          },
+          hasExtraInfo: true,
+          frameId,
+        });
+        mockCDPSession.emit('Network.loadingFinished', {
+          requestId,
+          timestamp: 5,
+          encodedDataLength: 100,
+        });
+
+        await Promise.all(continued);
+
+        expect(
+          requests.map(r => {
+            return r.url();
+          }),
+        ).toEqual([
+          'https://example.com/start',
+          'http://sub.example.com/page',
+          'https://sub.example.com/page',
+        ]);
+        expect(
+          responses.map(r => {
+            return r.status();
+          }),
+        ).toEqual([301, 307, 200]);
+        expect(requests[2]!.redirectChain()).toEqual([
+          requests[0],
+          requests[1],
+        ]);
+        expect(
+          sentCommands
+            .filter(c => {
+              return c.method === 'Fetch.continueRequest';
+            })
+            .map(c => {
+              return c.params;
+            }),
+        ).toEqual([
+          {requestId: 'interception-job-1.0'},
+          {requestId: 'interception-job-2.0'},
+        ]);
+      });
+    }
+
+    it('should handle delayed responseReceivedExtraInfo across an unpaused internal redirect', async () => {
+      const sentCommands: Array<{method: string; params: unknown}> = [];
+      const mockCDPSession = new MockCDPSession();
+      mockCDPSession.send = (async (method: string, params: unknown) => {
+        sentCommands.push({method, params});
+      }) as any;
+      const manager = createNetworkManager();
+      await manager.addClient(mockCDPSession);
+      await manager.setRequestInterception(true);
+
+      const requests: HTTPRequest[] = [];
+      const responses: HTTPResponse[] = [];
+      const continued: Array<Promise<void>> = [];
+      manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+        requests.push(request);
+        continued.push(request.continue());
+      });
+      manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+        responses.push(response);
+      });
+
+      const requestId = 'LOADERID';
+      const frameId = 'FRAMEID';
+      const baseRequest = {
+        method: 'GET',
+        headers: {},
+        mixedContentType: 'none' as const,
+        initialPriority: 'VeryHigh' as const,
+        referrerPolicy: 'strict-origin-when-cross-origin' as const,
+        isSameSite: true,
+      };
+      const baseResponse = {
+        charset: 'utf-8',
+        headers: {},
+        mimeType: 'text/html',
+        connectionReused: false,
+        connectionId: 1,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 0,
+        protocol: 'http/1.1',
+        securityState: 'secure' as const,
+      };
+
+      // Hop 1: https://example.com/start -> 301 to http://sub.example.com/page
+      mockCDPSession.emit('Network.requestWillBeSent', {
+        requestId,
+        loaderId: requestId,
+        documentURL: 'https://example.com/start',
+        request: {...baseRequest, url: 'https://example.com/start'},
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'other'},
+        redirectHasExtraInfo: false,
+        type: 'Document',
+        frameId,
+        hasUserGesture: false,
+      });
+      mockCDPSession.emit('Fetch.requestPaused', {
+        requestId: 'interception-job-1.0',
+        request: {
+          url: 'https://example.com/start',
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId,
+        resourceType: 'Document',
+        networkId: requestId,
+      });
+
+      // Hop 2 arrives BEFORE Hop 1's responseReceivedExtraInfo
+      mockCDPSession.emit('Network.requestWillBeSent', {
+        requestId,
+        loaderId: requestId,
+        documentURL: 'http://sub.example.com/page',
+        request: {...baseRequest, url: 'http://sub.example.com/page'},
+        timestamp: 2,
+        wallTime: 2,
+        initiator: {type: 'other'},
+        redirectHasExtraInfo: true,
+        redirectResponse: {
+          ...baseResponse,
+          url: 'https://example.com/start',
+          status: 301,
+          statusText: 'Moved Permanently',
+          headers: {location: 'http://sub.example.com/page'},
+        },
+        type: 'Document',
+        frameId,
+        hasUserGesture: false,
+      });
+
+      // Hop 3's requestWillBeSent also arrives BEFORE Hop 1's
+      // responseReceivedExtraInfo, queueing Hop 2 in queuedRedirectInfo while
+      // storing Hop 3 in requestWillBeSentMap.
+      mockCDPSession.emit('Network.requestWillBeSent', {
+        requestId,
+        loaderId: requestId,
+        documentURL: 'https://sub.example.com/page',
+        request: {...baseRequest, url: 'https://sub.example.com/page'},
+        timestamp: 3,
+        wallTime: 3,
+        initiator: {type: 'other'},
+        redirectHasExtraInfo: false,
+        redirectResponse: {
+          ...baseResponse,
+          url: 'http://sub.example.com/page',
+          status: 307,
+          statusText: 'Temporary Redirect',
+          headers: {
+            Location: 'https://sub.example.com/page',
+            'Non-Authoritative-Reason': 'HttpsUpgrades',
+          },
+          securityState: 'insecure',
+        },
+        type: 'Document',
+        frameId,
+        hasUserGesture: false,
+      });
+
+      // Now Hop 1's delayed responseReceivedExtraInfo arrives, replaying Hop 2.
+      mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+        requestId,
+        blockedCookies: [],
+        headers: {location: 'http://sub.example.com/page'},
+        resourceIPAddressSpace: 'Public',
+        statusCode: 301,
+      });
+
+      // Hop 3's Fetch.requestPaused arrives and must still find Hop 3's stored
+      // requestWillBeSent.
+      mockCDPSession.emit('Fetch.requestPaused', {
+        requestId: 'interception-job-2.0',
+        request: {
+          url: 'https://sub.example.com/page',
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId,
+        resourceType: 'Document',
+        networkId: requestId,
+      });
+
+      mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+        requestId,
+        blockedCookies: [],
+        headers: {'content-type': 'text/html'},
+        resourceIPAddressSpace: 'Public',
+        statusCode: 200,
+      });
+      mockCDPSession.emit('Network.responseReceived', {
+        requestId,
+        loaderId: requestId,
+        timestamp: 4,
+        type: 'Document',
+        response: {
+          ...baseResponse,
+          url: 'https://sub.example.com/page',
+          status: 200,
+          statusText: 'OK',
+        },
+        hasExtraInfo: true,
+        frameId,
+      });
+      mockCDPSession.emit('Network.loadingFinished', {
+        requestId,
+        timestamp: 5,
+        encodedDataLength: 100,
+      });
+
+      await Promise.all(continued);
+
+      expect(
+        requests.map(r => {
+          return r.url();
+        }),
+      ).toEqual([
+        'https://example.com/start',
+        'http://sub.example.com/page',
+        'https://sub.example.com/page',
+      ]);
+      expect(
+        responses.map(r => {
+          return r.status();
+        }),
+      ).toEqual([301, 307, 200]);
+      expect(requests[2]!.redirectChain()).toEqual([requests[0], requests[1]]);
+    });
+  });
+
   it('should not override the user agent when nothing is emulated', async () => {
     const commands: string[] = [];
     const mockCDPSession = new MockCDPSession();
@@ -2385,6 +3052,9 @@ describe('NetworkManager', () => {
           frame(): CdpFrame | null {
             return null;
           },
+          worker(): null {
+            return null;
+          },
           page() {
             return {
               browser() {
@@ -2403,6 +3073,136 @@ describe('NetworkManager', () => {
         },
       );
       await manager.addClient(mockCDPSession);
+    });
+  });
+
+  describe('encodedDataLength', () => {
+    const baseRequest = {
+      method: 'GET',
+      headers: {},
+      mixedContentType: 'none' as const,
+      initialPriority: 'VeryHigh' as const,
+      referrerPolicy: 'strict-origin-when-cross-origin' as const,
+      isSameSite: true,
+    };
+    const baseResponse = {
+      charset: 'utf-8',
+      headers: {},
+      mimeType: 'text/plain',
+      connectionReused: false,
+      connectionId: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      fromPrefetchCache: false,
+      protocol: 'data',
+      securityState: 'unknown' as const,
+    };
+
+    it('should clamp -1 in responseReceived to 0 and preserve it on failure', async () => {
+      const mockCDPSession = new MockCDPSession();
+      const manager = createNetworkManager();
+      await manager.addClient(mockCDPSession);
+
+      let responseLengthOnEvent: number | undefined;
+      let capturedResponse: HTTPResponse | undefined;
+      manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+        capturedResponse = response;
+        responseLengthOnEvent = response.encodedDataLength();
+      });
+
+      mockCDPSession.emit('Network.requestWillBeSent', {
+        requestId: 'req-1',
+        loaderId: 'req-1',
+        documentURL: 'data:text/plain,hello',
+        request: {...baseRequest, url: 'data:text/plain,hello'},
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'other'},
+        redirectHasExtraInfo: false,
+        type: 'Document',
+        frameId: 'frame-1',
+        hasUserGesture: false,
+      });
+      mockCDPSession.emit('Network.responseReceived', {
+        requestId: 'req-1',
+        loaderId: 'req-1',
+        timestamp: 2,
+        type: 'Document',
+        response: {
+          ...baseResponse,
+          url: 'data:text/plain,hello',
+          status: 200,
+          statusText: 'OK',
+          encodedDataLength: -1,
+        },
+        hasExtraInfo: false,
+        frameId: 'frame-1',
+      });
+      mockCDPSession.emit('Network.loadingFailed', {
+        requestId: 'req-1',
+        timestamp: 3,
+        type: 'Document',
+        errorText: 'net::ERR_ABORTED',
+      });
+
+      expect(responseLengthOnEvent).toBe(0);
+      expect(capturedResponse?.encodedDataLength()).toBe(0);
+    });
+
+    it('should update encodedDataLength on loadingFinished and ignore -1', async () => {
+      const mockCDPSession = new MockCDPSession();
+      const manager = createNetworkManager();
+      await manager.addClient(mockCDPSession);
+
+      const responses: HTTPResponse[] = [];
+      const lengthsOnResponse: number[] = [];
+      manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+        responses.push(response);
+        lengthsOnResponse.push(response.encodedDataLength());
+      });
+
+      for (const [id, responseLen, finishedLen] of [
+        ['req-1', 120, 450],
+        ['req-2', 120, -1],
+      ] as const) {
+        mockCDPSession.emit('Network.requestWillBeSent', {
+          requestId: id,
+          loaderId: id,
+          documentURL: 'https://example.com/',
+          request: {...baseRequest, url: 'https://example.com/'},
+          timestamp: 1,
+          wallTime: 1,
+          initiator: {type: 'other'},
+          redirectHasExtraInfo: false,
+          type: 'Document',
+          frameId: 'frame-1',
+          hasUserGesture: false,
+        });
+        mockCDPSession.emit('Network.responseReceived', {
+          requestId: id,
+          loaderId: id,
+          timestamp: 2,
+          type: 'Document',
+          response: {
+            ...baseResponse,
+            url: 'https://example.com/',
+            status: 200,
+            statusText: 'OK',
+            encodedDataLength: responseLen,
+          },
+          hasExtraInfo: false,
+          frameId: 'frame-1',
+        });
+        mockCDPSession.emit('Network.loadingFinished', {
+          requestId: id,
+          timestamp: 3,
+          encodedDataLength: finishedLen,
+        });
+      }
+
+      expect(lengthsOnResponse).toEqual([120, 120]);
+      expect(responses[0]!.encodedDataLength()).toBe(450);
+      expect(responses[1]!.encodedDataLength()).toBe(120);
     });
   });
 });

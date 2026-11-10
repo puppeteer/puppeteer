@@ -477,6 +477,7 @@ async function installUrl(
             `Delete ${outputPath} and install the browser again.`,
         );
       }
+      writeBuildIdAlias(installedBrowser, options.buildIdAlias);
       await runSetup(installedBrowser, logger);
       if (options.installDeps) {
         await installDeps(installedBrowser, logger);
@@ -514,11 +515,7 @@ async function installUrl(
       debugTimeEnd('extract', logger);
     }
 
-    if (options.buildIdAlias) {
-      const metadata = installedBrowser.readMetadata();
-      metadata.aliases[options.buildIdAlias] = options.buildId;
-      installedBrowser.writeMetadata(metadata);
-    }
+    writeBuildIdAlias(installedBrowser, options.buildIdAlias);
 
     await runSetup(installedBrowser, logger);
     if (options.installDeps) {
@@ -563,6 +560,23 @@ async function runSetup(
       debugTimeEnd('permissions', logger);
     }
   }
+}
+
+function writeBuildIdAlias(
+  installedBrowser: InstalledBrowser,
+  buildIdAlias?: string,
+): void {
+  if (!buildIdAlias) {
+    return;
+  }
+  const metadata = installedBrowser.readMetadata();
+  // Skip the write if nothing changes so that re-running an install does not
+  // require a writable cache.
+  if (metadata.aliases[buildIdAlias] === installedBrowser.buildId) {
+    return;
+  }
+  metadata.aliases[buildIdAlias] = installedBrowser.buildId;
+  installedBrowser.writeMetadata(metadata);
 }
 
 /**

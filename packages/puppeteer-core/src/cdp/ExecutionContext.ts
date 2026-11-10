@@ -23,7 +23,6 @@ import {
   isString,
 } from '../common/util.js';
 import type {PuppeteerInjectedUtil} from '../injected/injected.js';
-import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {DisposableStack, disposeSymbol} from '../util/disposable.js';
 import {stringifyFunction} from '../util/Function.js';
 import {Mutex} from '../util/Mutex.js';
@@ -59,6 +58,7 @@ export class ExecutionContext
       ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
       '', // custom init
       logger,
+      {ownsArguments: true, ownsResult: true},
     ));
   }
 
@@ -70,16 +70,24 @@ export class ExecutionContext
         element: ElementHandle<Node>,
         selector: string,
       ): Promise<JSHandle<Node[]>> => {
+        using stack = new DisposableStack();
         const results = ARIAQueryHandler.queryAll(element, selector);
+        const elements = [];
+        // The stack keeps these handles alive until the result array is created.
+        // eslint-disable-next-line @puppeteer/use-using
+        for await (const result of results) {
+          elements.push(stack.use(result));
+        }
         return await element.realm.evaluateHandle(
           (...elements) => {
             return elements;
           },
-          ...(await AsyncIterableUtil.collect(results)),
+          ...elements,
         );
       }) as (...args: unknown[]) => unknown,
       '', // custom init
       logger,
+      {ownsArguments: true, ownsResult: true},
     ));
   }
 

@@ -17,6 +17,8 @@ import {
   STATUS_TEXTS,
   handleError,
 } from '../api/HTTPRequest.js';
+import type {Page} from '../api/Page.js';
+import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {
   mergeUint8Arrays,
@@ -65,6 +67,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   #initiator?: Protocol.Network.Initiator;
   #logger: Logger;
   #resolution: InterceptResolution | null = null;
+  #worker: WebWorker | null;
 
   override get client(): CDPSession {
     return this.#client;
@@ -88,6 +91,7 @@ export class CdpHTTPRequest extends HTTPRequest {
   constructor(
     client: CDPSession,
     frame: Frame | null,
+    worker: WebWorker | null,
     interceptionId: string | undefined,
     allowInterception: boolean,
     data: {
@@ -153,6 +157,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     }
     this.#hasPostData = data.request.hasPostData ?? false;
     this.#frame = frame;
+    this.#worker = worker;
     this._redirectChain = redirectChain;
     this.#initiator = data.initiator;
 
@@ -225,6 +230,14 @@ export class CdpHTTPRequest extends HTTPRequest {
     return this._response;
   }
 
+  override page(): Page | null {
+    return this.#frame?.page() ?? null;
+  }
+
+  override worker(): WebWorker | null {
+    return this.#worker;
+  }
+
   override frame(): Frame | null {
     return this.#frame;
   }
@@ -251,7 +264,11 @@ export class CdpHTTPRequest extends HTTPRequest {
   }
 
   protected canBeIntercepted(): boolean {
-    return !this.url().startsWith('data:') && !this._fromMemoryCache;
+    return (
+      !this.url().startsWith('data:') &&
+      !this._fromMemoryCache &&
+      Boolean(this._interceptionId)
+    );
   }
 
   /**

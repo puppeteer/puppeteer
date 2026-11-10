@@ -7,7 +7,6 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {
-  concat,
   distinctUntilChanged,
   EMPTY,
   filter,
@@ -16,14 +15,10 @@ import {
   from,
   map,
   merge,
-  mergeMap,
-  mergeScan,
-  of,
   raceWith,
   ReplaySubject,
   startWith,
   switchMap,
-  take,
   takeUntil,
   timer,
   type Observable,
@@ -180,6 +175,16 @@ export interface Metrics {
    * Total JavaScript heap size, in bytes.
    */
   JSHeapTotalSize?: number;
+  /**
+   * The timestamp when the DOMContentLoaded event was fired, in monotonic
+   * time (seconds since an arbitrary point in the past).
+   */
+  DomContentLoaded?: number;
+  /**
+   * The timestamp when the navigation started, in monotonic time (seconds
+   * since an arbitrary point in the past).
+   */
+  NavigationStart?: number;
 }
 
 /**
@@ -858,36 +863,37 @@ export abstract class Page extends EventEmitter<PageEvents> {
   constructor(logger: Logger) {
     super(undefined, logger);
     this.logger = logger;
-    fromEmitterEvent(this, PageEvent.Request)
-      .pipe(
-        mergeMap(originalRequest => {
-          return concat(
-            of(1),
-            merge(
-              fromEmitterEvent(this, PageEvent.RequestFailed),
-              fromEmitterEvent(this, PageEvent.RequestFinished),
-              fromEmitterEvent(this, PageEvent.Response).pipe(
-                map(response => {
-                  return response.request();
-                }),
-              ),
-            ).pipe(
-              filter(request => {
-                return request.id === originalRequest.id;
-              }),
-              take(1),
-              map(() => {
-                return -1;
-              }),
-            ),
-          );
+    // Pending requests by id, so that each event is handled in O(1) instead of
+    // being checked against every request that is still in flight.
+    const pending = new Map<string, number>();
+    let inflight = 0;
+    merge(
+      fromEmitterEvent(this, PageEvent.Request).pipe(
+        map(request => {
+          pending.set(request.id, (pending.get(request.id) ?? 0) + 1);
+          return ++inflight;
         }),
-        mergeScan((acc, addend) => {
-          return of(acc + addend);
-        }, 0),
-        takeUntil(fromEmitterEvent(this, PageEvent.Close)),
-        startWith(0),
-      )
+      ),
+      merge(
+        fromEmitterEvent(this, PageEvent.RequestFailed),
+        fromEmitterEvent(this, PageEvent.RequestFinished),
+        fromEmitterEvent(this, PageEvent.Response).pipe(
+          map(response => {
+            return response.request();
+          }),
+        ),
+      ).pipe(
+        filter(request => {
+          return pending.has(request.id);
+        }),
+        map(request => {
+          inflight -= pending.get(request.id) ?? 0;
+          pending.delete(request.id);
+          return inflight;
+        }),
+      ),
+    )
+      .pipe(takeUntil(fromEmitterEvent(this, PageEvent.Close)), startWith(0))
       .subscribe(this.#inflight$);
   }
 
@@ -1876,6 +1882,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * - `JSHeapUsedSize` : Used JavaScript heap size, in bytes.
    *
    * - `JSHeapTotalSize` : Total JavaScript heap size, in bytes.
+   *
+   * - `DomContentLoaded` : The timestamp when the DOMContentLoaded event was
+   *   fired, in monotonic time (seconds).
+   *
+   * - `NavigationStart` : The timestamp when the navigation started, in
+   *   monotonic time (seconds).
    *
    * @remarks
    * All timestamps are in monotonic time: monotonically increasing time
@@ -3582,6 +3594,8 @@ export const supportedMetrics = new Set<string>([
   'TaskDuration',
   'JSHeapUsedSize',
   'JSHeapTotalSize',
+  'DomContentLoaded',
+  'NavigationStart',
 ]);
 
 /** @see https://w3c.github.io/webdriver-bidi/#normalize-rect */

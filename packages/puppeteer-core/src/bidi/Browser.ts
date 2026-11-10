@@ -28,6 +28,7 @@ import type {Target} from '../api/Target.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {SupportedWebDriverCapabilities} from '../common/ConnectOptions.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import type {DownloadBehavior} from '../common/DownloadBehavior.js';
 import {ProtocolError, UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
@@ -37,7 +38,7 @@ import {BidiBrowserContext} from './BrowserContext.js';
 import type {BidiConnection, CdpEvent} from './Connection.js';
 import type {Browser as BrowserCore} from './core/Browser.js';
 import {Session} from './core/Session.js';
-import type {UserContext} from './core/UserContext.js';
+import {UserContext} from './core/UserContext.js';
 import {BidiBrowserTarget} from './Target.js';
 
 /**
@@ -49,6 +50,7 @@ export interface BidiBrowserOptions {
   connection: BidiConnection;
   cdpConnection?: CdpConnection;
   defaultViewport: Viewport | null;
+  downloadBehavior?: DownloadBehavior;
   acceptInsecureCerts?: boolean;
   capabilities?: SupportedWebDriverCapabilities;
   networkEnabled: boolean;
@@ -102,6 +104,18 @@ export class BidiBrowser extends Browser {
       },
     });
 
+    // Console entries replayed from the WebDriver BiDi log event buffer on
+    // `session.subscribe`, arrive before any frame can listen to them.
+    // Collect them until the browser is initialized, so they can be re-emitted
+    // once the caller had a chance to add listeners.
+    const pendingConsoleEntries: Bidi.Log.Entry[] = [];
+    using sessionEmitter = new EventEmitter(session);
+    sessionEmitter.on('log.entryAdded', entry => {
+      if (entry.type === 'console') {
+        pendingConsoleEntries.push(entry);
+      }
+    });
+
     // Subscribe to all WebDriver BiDi events. Also subscribe to CDP events if CDP
     // connection is available.
     await session.subscribe(
@@ -143,11 +157,33 @@ export class BidiBrowser extends Browser {
 
     const browser = new BidiBrowser(session.browser, opts, opts.logger);
     browser.#initialize();
+    // From here on frames receive console entries directly, so stop
+    // collecting them to avoid delivering them twice.
+    sessionEmitter.removeAllListeners();
+    if (opts.downloadBehavior) {
+      await session.browser.setDownloadBehavior(opts.downloadBehavior, [
+        UserContext.DEFAULT,
+      ]);
+    }
+    if (pendingConsoleEntries.length) {
+      // The caller's continuation after `await puppeteer.connect()` runs in
+      // microtasks, so listeners it adds synchronously are in place when this
+      // macrotask runs. The logs will be replayed at the first async task.
+      setTimeout(() => {
+        if (!browser.connected) {
+          return;
+        }
+        for (const entry of pendingConsoleEntries) {
+          session.emit('log.entryAdded', entry);
+        }
+      }, 0);
+    }
     return browser;
   }
 
+  /** @internal */
   @bubble()
-  accessor #trustedEmitter = new EventEmitter<BrowserEvents>();
+  accessor trustedEmitter = new EventEmitter<BrowserEvents>();
 
   #process?: ChildProcess;
   #closeCallback?: BrowserCloseCallback;
@@ -185,8 +221,8 @@ export class BidiBrowser extends Browser {
     }
 
     this.#browserCore.once('disconnected', () => {
-      this.#trustedEmitter.emit(BrowserEvent.Disconnected, undefined);
-      this.#trustedEmitter.removeAllListeners();
+      this.trustedEmitter.emit(BrowserEvent.Disconnected, undefined);
+      this.trustedEmitter.removeAllListeners();
     });
     this.#process?.once('close', () => {
       this.#browserCore.dispose('Browser process exited.', true);
@@ -227,19 +263,19 @@ export class BidiBrowser extends Browser {
     browserContext.trustedEmitter.on(
       BrowserContextEvent.TargetCreated,
       target => {
-        this.#trustedEmitter.emit(BrowserEvent.TargetCreated, target);
+        this.trustedEmitter.emit(BrowserEvent.TargetCreated, target);
       },
     );
     browserContext.trustedEmitter.on(
       BrowserContextEvent.TargetChanged,
       target => {
-        this.#trustedEmitter.emit(BrowserEvent.TargetChanged, target);
+        this.trustedEmitter.emit(BrowserEvent.TargetChanged, target);
       },
     );
     browserContext.trustedEmitter.on(
       BrowserContextEvent.TargetDestroyed,
       target => {
-        this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
+        this.trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
       },
     );
 

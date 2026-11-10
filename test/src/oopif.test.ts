@@ -7,10 +7,19 @@
 import expect from 'expect';
 import type {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
+import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {setupSeparateTestBrowserHooks} from './mocha-utils.js';
-import {attachFrame, detachFrame, dumpFrames, navigateFrame} from './utils.js';
+import {
+  attachFrame,
+  detachFrame,
+  dumpFrames,
+  navigateFrame,
+  waitEvent,
+} from './utils.js';
 
 describe('OOPIF', function () {
   // We start a new browser instance for this test because we need the
@@ -711,6 +720,102 @@ describe('OOPIF', function () {
     await page.waitForSelector('iframe');
 
     await expect(testResponse!.text()).resolves.toMatch("I'm an OOPIF");
+  });
+
+  it('should report console messages from OOP iframes to the browser and context', async () => {
+    const {server, page, context, browser} = state;
+
+    await page.goto(server.EMPTY_PAGE);
+    const frame = await attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html',
+    );
+
+    const [browserMessage, contextMessage] = await Promise.all([
+      waitEvent<ConsoleMessage>(browser, 'console', message => {
+        return message.text() === 'from-oopif';
+      }),
+      waitEvent<ConsoleMessage>(context, 'console', message => {
+        return message.text() === 'from-oopif';
+      }),
+      frame.evaluate(() => {
+        console.log('from-oopif');
+      }),
+    ]);
+
+    expect(browserMessage).toBe(contextMessage);
+    expect(browserMessage.frame()).toBe(frame);
+    expect(browserMessage.page()).toBe(page);
+  });
+
+  it('should report requests from OOP iframes to the browser and context', async () => {
+    const {server, page, context, browser} = state;
+
+    await page.goto(server.EMPTY_PAGE);
+    const frame = await attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html',
+    );
+
+    const url = server.CROSS_PROCESS_PREFIX + '/one-style.css';
+    const [browserRequest, contextRequest] = await Promise.all([
+      waitEvent<HTTPRequest>(browser, 'request', request => {
+        return request.url() === url;
+      }),
+      waitEvent<HTTPRequest>(context, 'request', request => {
+        return request.url() === url;
+      }),
+      frame.evaluate(async (url: string) => {
+        await fetch(url, {cache: 'no-store'});
+      }, url),
+    ]);
+
+    expect(browserRequest).toBe(contextRequest);
+    expect(browserRequest.frame()).toBe(frame);
+    expect(browserRequest.page()).toBe(page);
+  });
+
+  it('should continue intercepted requests from workers in OOPIFs', async () => {
+    const {server, page} = state;
+
+    await page.goto(server.EMPTY_PAGE);
+    const workerPromise = waitEvent<WebWorker>(page, 'workercreated');
+    await attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/worker/worker.html',
+    );
+    const worker = await workerPromise;
+
+    await page.setRequestInterception(true);
+    const requests: HTTPRequest[] = [];
+    page.on('request', request => {
+      requests.push(request);
+      void request.continue();
+    });
+
+    // Requests from a worker in an OOPIF are paused on the OOPIF session, so
+    // continuing them on any other session leaves the fetch hanging.
+    const url = server.CROSS_PROCESS_PREFIX + '/empty.html';
+    const result = await worker.evaluate(async (url: string) => {
+      try {
+        await fetch(url, {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(5000),
+        });
+        return 'ok';
+      } catch {
+        return 'error';
+      }
+    }, url);
+
+    expect(result).toBe('ok');
+    const request = requests.find(request => {
+      return request.url() === url;
+    });
+    expect(request?.worker()).toBe(worker);
   });
 });
 

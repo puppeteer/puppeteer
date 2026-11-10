@@ -9,7 +9,8 @@ import * as Bidi from 'webdriver-bidi-protocol';
 
 import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {BluetoothEmulation} from '../api/BluetoothEmulation.js';
-import type {WindowId} from '../api/Browser.js';
+import {BrowserEvent, type WindowId} from '../api/Browser.js';
+import {BrowserContextEvent} from '../api/BrowserContext.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {BoundingBox} from '../api/ElementHandle.js';
@@ -43,6 +44,7 @@ import type {
 } from '../cdp/NetworkManager.js';
 import {Tracing} from '../cdp/Tracing.js';
 import type {WebMCP} from '../cdp/WebMCP.js';
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   CookiePartitionKey,
   Cookie,
@@ -230,6 +232,21 @@ export class BidiPage extends Page {
     return this.#browserContext;
   }
 
+  /**
+   * Emits the message on the page, then on the browser context and the
+   * browser, matching the CDP order.
+   *
+   * @internal
+   */
+  emitConsoleMessage(message: ConsoleMessage): void {
+    this.trustedEmitter.emit(PageEvent.Console, message);
+    this.#browserContext.trustedEmitter.emit(
+      BrowserContextEvent.Console,
+      message,
+    );
+    this.browser().trustedEmitter.emit(BrowserEvent.Console, message);
+  }
+
   override mainFrame(): BidiFrame {
     return this.#frame;
   }
@@ -376,7 +393,7 @@ export class BidiPage extends Page {
       coordinates: {
         latitude: options.latitude,
         longitude: options.longitude,
-        accuracy: options.accuracy,
+        accuracy,
       },
     });
   }
@@ -512,6 +529,7 @@ export class BidiPage extends Page {
       pageRanges: ranges,
       scale,
       preferCSSPageSize,
+      waitForFonts,
     } = parsePDFOptions(options, 'cm');
     const pageRanges = ranges
       ? ranges.split(',').map(range => {
@@ -519,15 +537,17 @@ export class BidiPage extends Page {
         })
       : [];
 
-    await firstValueFrom(
-      from(
-        this.mainFrame()
-          .isolatedRealm()
-          .evaluate(() => {
-            return document.fonts.ready;
-          }),
-      ).pipe(raceWith(timeout(ms))),
-    );
+    if (waitForFonts) {
+      await firstValueFrom(
+        from(
+          this.mainFrame()
+            .isolatedRealm()
+            .evaluate(() => {
+              return document.fonts.ready;
+            }),
+        ).pipe(raceWith(timeout(ms))),
+      );
+    }
 
     const data = await firstValueFrom(
       from(
@@ -667,7 +687,7 @@ export class BidiPage extends Page {
     return false;
   }
 
-  override async setCacheEnabled(enabled?: boolean): Promise<void> {
+  override async setCacheEnabled(enabled = true): Promise<void> {
     if (!this.#browserContext.browser().cdpSupported) {
       await this.#frame.browsingContext.setCacheBehavior(
         enabled ? 'default' : 'bypass',

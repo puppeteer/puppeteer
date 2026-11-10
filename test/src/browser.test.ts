@@ -5,8 +5,13 @@
  */
 
 import expect from 'expect';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
+import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
+import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
+import {isFavicon, waitEvent} from './utils.js';
 
 describe('Browser specs', function () {
   setupTestBrowserHooks();
@@ -245,6 +250,405 @@ describe('Browser specs', function () {
 
       // Cleanup.
       await browser.removeScreen(screenInfo.id);
+    });
+  });
+
+  describe('Browser.on("console")', function () {
+    it('should report console messages from pages', async () => {
+      const {browser, page} = await getTestState();
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(browser, 'console', message => {
+          return message.text() === 'from-page';
+        }),
+        page.evaluate(() => {
+          console.log('from-page');
+        }),
+      ]);
+
+      expect(message.type()).toBe('log');
+      expect(message.page()).toBe(page);
+      expect(message.frame()).toBe(page.mainFrame());
+      expect(message.worker()).toBeNull();
+    });
+
+    it('should report console messages from dedicated workers', async () => {
+      const {browser, page, context} = await getTestState();
+
+      const received = {
+        page: [] as ConsoleMessage[],
+        context: [] as ConsoleMessage[],
+        browser: [] as ConsoleMessage[],
+      };
+      const collect = (into: ConsoleMessage[]) => {
+        return (message: ConsoleMessage) => {
+          if (message.text() === 'from-worker') {
+            into.push(message);
+          }
+        };
+      };
+      page.on('console', collect(received.page));
+      context.on('console', collect(received.context));
+      const browserListener = collect(received.browser);
+      browser.on('console', browserListener);
+
+      try {
+        // `done` is logged after `from-worker`, so by the time it arrives every
+        // delivery of `from-worker` has been emitted.
+        const [worker] = await Promise.all([
+          waitEvent<WebWorker>(page, 'workercreated'),
+          waitEvent<ConsoleMessage>(browser, 'console', message => {
+            return message.text() === 'done';
+          }),
+          page.evaluate(() => {
+            return new Worker(
+              `data:text/javascript,console.log('from-worker');console.log('done')`,
+            );
+          }),
+        ]);
+
+        // Each level receives the same message exactly once.
+        expect(received.page).toHaveLength(1);
+        expect(received.context).toHaveLength(1);
+        expect(received.browser).toHaveLength(1);
+        const [message] = received.browser;
+        expect(received.page[0]).toBe(message);
+        expect(received.context[0]).toBe(message);
+
+        expect(message!.worker()).toBe(worker);
+        expect(message!.page()).toBeNull();
+        expect(message!.frame()).toBeNull();
+      } finally {
+        browser.off('console', browserListener);
+      }
+    });
+
+    it('should report console messages from service workers', async () => {
+      const {browser, page, server, context} = await getTestState();
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+      const target = await context.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        },
+        {timeout: 3000},
+      );
+      const worker = (await target.worker())!;
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(browser, 'console', message => {
+          return message.text() === 'from-service-worker';
+        }),
+        worker.evaluate(() => {
+          console.log('from-service-worker');
+        }),
+      ]);
+
+      expect(message.worker()).toBe(worker);
+      expect(message.page()).toBeNull();
+    });
+
+    it('should report console messages replayed when attaching after connect', async () => {
+      const {browser, page, server, puppeteer} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        console.log('logged-before-connect');
+      });
+
+      using remoteBrowser = await puppeteer.connect({
+        browserWSEndpoint: browser.wsEndpoint(),
+        protocol: browser.protocol,
+      });
+
+      // The listener is registered before any page is attached, so the
+      // messages replayed on attachment must not be dropped.
+      const messages: ConsoleMessage[] = [];
+      remoteBrowser.on('console', message => {
+        messages.push(message);
+      });
+      const remotePage = (await remoteBrowser.pages()).find(page => {
+        return page.url() === server.EMPTY_PAGE;
+      })!;
+
+      // Log a marker after attaching: once it arrives, any duplicate of the
+      // replayed message would have arrived too.
+      await Promise.all([
+        waitEvent<ConsoleMessage>(remoteBrowser, 'console', message => {
+          return message.text() === 'logged-after-connect';
+        }),
+        remotePage.evaluate(() => {
+          console.log('logged-after-connect');
+        }),
+      ]);
+
+      const replayed = messages.filter(message => {
+        return message.text() === 'logged-before-connect';
+      });
+      expect(replayed).toHaveLength(1);
+      expect(replayed[0]!.page()).toBe(remotePage);
+      expect(replayed[0]!.frame()).toBe(remotePage.mainFrame());
+    });
+  });
+
+  describe('Browser.on("request")', function () {
+    it('should report requests from pages', async () => {
+      const {browser, page, server} = await getTestState();
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'request', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(request.page()).toBe(page);
+      expect(request.frame()).toBe(page.mainFrame());
+    });
+
+    it('should emit context events before browser events', async () => {
+      const {browser, context, page, server} = await getTestState();
+
+      const order: string[] = [];
+      const record = (source: string) => {
+        return (request: HTTPRequest) => {
+          if (request.url() === server.EMPTY_PAGE) {
+            order.push(source);
+          }
+        };
+      };
+      const onBrowser = record('browser');
+      const onContext = record('context');
+      browser.on('request', onBrowser);
+      context.on('request', onContext);
+      try {
+        await page.goto(server.EMPTY_PAGE);
+
+        expect(order).toEqual(['context', 'browser']);
+      } finally {
+        browser.off('request', onBrowser);
+        context.off('request', onContext);
+      }
+    });
+
+    it('should report requests from dedicated workers', async () => {
+      const {browser, page, server} = await getTestState();
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'request', request => {
+          return request.url() === server.PREFIX + '/one-style.css';
+        }),
+        worker.evaluate((url: string) => {
+          return fetch(url);
+        }, server.PREFIX + '/one-style.css'),
+      ]);
+
+      expect(request.worker()).toBe(worker);
+      expect(request.page()).toBeNull();
+    });
+
+    it('should not interfere with request interception', async () => {
+      const {browser, page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue();
+      });
+
+      const requests: HTTPRequest[] = [];
+      const listener = (request: HTTPRequest) => {
+        if (request.url() === server.EMPTY_PAGE) {
+          requests.push(request);
+        }
+      };
+      browser.on('request', listener);
+      try {
+        const response = await page.goto(server.EMPTY_PAGE);
+
+        expect(response!.ok()).toBe(true);
+        expect(requests).toHaveLength(1);
+        expect(requests[0]!.page()).toBe(page);
+        expect(requests[0]!.isInterceptResolutionHandled()).toBe(true);
+      } finally {
+        browser.off('request', listener);
+      }
+    });
+  });
+
+  describe('Browser network events', function () {
+    it('should report responses from pages', async () => {
+      const {browser, page, server} = await getTestState();
+
+      const [response] = await Promise.all([
+        waitEvent<HTTPResponse>(browser, 'response', response => {
+          return response.url() === server.EMPTY_PAGE;
+        }),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(response.status()).toBe(200);
+      expect(response.request().page()).toBe(page);
+      expect(response.frame()).toBe(page.mainFrame());
+    });
+
+    it('should report finished requests from pages', async () => {
+      const {browser, page, server} = await getTestState();
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'requestfinished', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+
+      expect(request.page()).toBe(page);
+      expect(request.response()).toBeTruthy();
+    });
+
+    it('should report failed requests from pages', async () => {
+      const {browser, page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        if (request.url().endsWith('css')) {
+          void request.abort();
+        } else {
+          void request.continue();
+        }
+      });
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'requestfailed', request => {
+          return request.url().endsWith('one-style.css');
+        }),
+        page.goto(server.PREFIX + '/one-style.html'),
+      ]);
+
+      expect(request.page()).toBe(page);
+      expect(request.response()).toBeNull();
+      expect(request.failure()).toBeTruthy();
+    });
+
+    it('should report requests served from cache', async () => {
+      const {browser, page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/cached/one-script.html');
+      await new Promise(res => {
+        setTimeout(res, 1000);
+      });
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(browser, 'requestservedfromcache', request => {
+          return request.url().endsWith('one-script.js');
+        }),
+        page.reload(),
+      ]);
+
+      expect(request.page()).toBe(page);
+    });
+
+    it('should emit context events before browser events', async () => {
+      const {browser, context, page, server} = await getTestState();
+
+      const order = {response: [] as string[], requestfinished: [] as string[]};
+      const record = (
+        event: keyof typeof order,
+        source: 'context' | 'browser',
+      ) => {
+        return (data: HTTPRequest | HTTPResponse) => {
+          if (data.url() === server.EMPTY_PAGE) {
+            order[event].push(source);
+          }
+        };
+      };
+      const onContextResponse = record('response', 'context');
+      const onBrowserResponse = record('response', 'browser');
+      const onContextFinished = record('requestfinished', 'context');
+      const onBrowserFinished = record('requestfinished', 'browser');
+      context.on('response', onContextResponse);
+      browser.on('response', onBrowserResponse);
+      context.on('requestfinished', onContextFinished);
+      browser.on('requestfinished', onBrowserFinished);
+      try {
+        await Promise.all([
+          waitEvent<HTTPRequest>(browser, 'requestfinished', request => {
+            return request.url() === server.EMPTY_PAGE;
+          }),
+          page.goto(server.EMPTY_PAGE),
+        ]);
+
+        // Only the order across emitters is checked: the relative order of
+        // `response` and `requestfinished` is not guaranteed.
+        expect(order.response).toEqual(['context', 'browser']);
+        expect(order.requestfinished).toEqual(['context', 'browser']);
+      } finally {
+        context.off('response', onContextResponse);
+        browser.off('response', onBrowserResponse);
+        context.off('requestfinished', onContextFinished);
+        browser.off('requestfinished', onBrowserFinished);
+      }
+    });
+
+    it('should emit each event once per page event', async () => {
+      const {browser, page, server} = await getTestState();
+
+      server.setRedirect('/foo.html', '/empty.html');
+      const events = ['response', 'requestfinished'] as const;
+      const seen = {page: [] as string[], browser: [] as string[]};
+      const listeners = events.map(event => {
+        const onPage = (data: HTTPRequest | HTTPResponse) => {
+          if (!isFavicon(data)) {
+            seen.page.push(`${event}:${data.url()}`);
+          }
+        };
+        const onBrowser = (data: HTTPRequest | HTTPResponse) => {
+          if (!isFavicon(data)) {
+            seen.browser.push(`${event}:${data.url()}`);
+          }
+        };
+        page.on(event, onPage);
+        browser.on(event, onBrowser);
+        return {event, onPage, onBrowser};
+      });
+      try {
+        await page.goto(server.PREFIX + '/foo.html');
+
+        expect(seen.page.length).toBeGreaterThanOrEqual(3);
+        expect(seen.browser).toEqual(seen.page);
+      } finally {
+        for (const {event, onPage, onBrowser} of listeners) {
+          page.off(event, onPage);
+          browser.off(event, onBrowser);
+        }
+      }
+    });
+
+    it('should report responses from dedicated workers', async () => {
+      const {browser, page, server} = await getTestState();
+
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+      const url = server.PREFIX + '/one-style.css';
+      const [response, request] = await Promise.all([
+        waitEvent<HTTPResponse>(browser, 'response', response => {
+          return response.url() === url;
+        }),
+        waitEvent<HTTPRequest>(browser, 'requestfinished', request => {
+          return request.url() === url;
+        }),
+        worker.evaluate(async (url: string) => {
+          await (await fetch(url)).text();
+        }, url),
+      ]);
+
+      expect(response.request().worker()).toBe(worker);
+      expect(request.worker()).toBe(worker);
+      expect(request.page()).toBeNull();
     });
   });
 });

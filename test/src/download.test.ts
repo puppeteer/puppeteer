@@ -10,7 +10,7 @@ import {join} from 'node:path';
 
 import expect from 'expect';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitForFileExistence} from './utils.js';
 
 describe('Download', () => {
@@ -59,6 +59,29 @@ describe('Download', () => {
       await expect(
         waitForFileExistence(join(tempDir, 'download.txt')),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('Puppeteer.launch', () => {
+    it('should download to configured location in the default context', async () => {
+      const {browser, server, close} = await launch(
+        {
+          downloadBehavior: {
+            policy: 'allow',
+            downloadPath: tempDir,
+          },
+        },
+        {createPage: false},
+      );
+
+      try {
+        const page = await browser.newPage();
+        await page.goto(server.PREFIX + '/download.html');
+        await page.click('#download');
+        await waitForFileExistence(join(tempDir, 'download.txt'));
+      } finally {
+        await close();
+      }
     });
   });
 });

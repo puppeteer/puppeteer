@@ -15,6 +15,8 @@ import {typedArrayToBase64} from '../util/encoding.js';
 import type {CDPSession} from './CDPSession.js';
 import type {Frame} from './Frame.js';
 import type {HTTPResponse} from './HTTPResponse.js';
+import type {Page} from './Page.js';
+import type {WebWorker} from './WebWorker.js';
 
 /**
  * @public
@@ -61,7 +63,13 @@ export function headersInputToRecord(
 ): Record<string, string> {
   return Object.fromEntries(
     Object.entries(normalizeHeadersInput(headers)).map(([key, value]) => {
-      return [key, Array.isArray(value) ? value.join(', ') : value];
+      const normalizedValue = Array.isArray(value) ? value.join(', ') : value;
+      if (/[\r\n]/.test(key) || /[\r\n]/.test(normalizedValue)) {
+        throw new Error(
+          `Invalid header: CRLF characters are not allowed in header names or values (header: "${key}").`,
+        );
+      }
+      return [key, normalizedValue];
     }),
   );
 }
@@ -445,8 +453,23 @@ export abstract class HTTPRequest {
   abstract response(): HTTPResponse | null;
 
   /**
+   * The page that initiated the request, or null if navigating to
+   * error pages or the request is coming from a worker.
+   */
+  abstract page(): Page | null;
+
+  /**
+   * The worker that initiated the request, or null if the request
+   * was not initiated by a worker.
+   *
+   * @remarks
+   * Not supported with WebDriver BiDi.
+   */
+  abstract worker(): WebWorker | null;
+
+  /**
    * The frame that initiated the request, or null if navigating to
-   * error pages.
+   * error pages or the request is coming from a worker.
    */
   abstract frame(): Frame | null;
 

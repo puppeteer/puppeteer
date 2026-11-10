@@ -32,6 +32,18 @@ describe('console', function () {
     expect(await message.args()[1]!.jsonValue()).toEqual(5);
     expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
   });
+  it('should include null and undefined in text()', async () => {
+    const {page} = await getTestState();
+
+    const [message] = await Promise.all([
+      waitEvent<ConsoleMessage>(page, 'console'),
+      page.evaluate(() => {
+        return console.log('hello', null, undefined);
+      }),
+    ]);
+    expect(message.text()).toEqual('hello null undefined');
+    expect(message.args()).toHaveLength(3);
+  });
   it('should work for Error instances', async () => {
     const {page} = await getTestState();
 

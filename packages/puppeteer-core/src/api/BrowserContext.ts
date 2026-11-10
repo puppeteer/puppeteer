@@ -10,6 +10,7 @@ import {
   merge,
   raceWith,
 } from '../../third_party/rxjs/rxjs.js';
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Cookie,
   CookieData,
@@ -30,6 +31,8 @@ import type {
   PermissionState,
   WaitForTargetOptions,
 } from './Browser.js';
+import type {HTTPRequest} from './HTTPRequest.js';
+import type {HTTPResponse} from './HTTPResponse.js';
 import type {Page} from './Page.js';
 import type {Target} from './Target.js';
 
@@ -57,6 +60,116 @@ export const enum BrowserContextEvent {
    * when a page is closed. Contains a {@link Target} instance.
    */
   TargetDestroyed = 'targetdestroyed',
+  /**
+   * Emitted when JavaScript within any page or worker in the browser context
+   * calls one of the console API methods, e.g. `console.log` or
+   * `console.dir`. Contains a {@link ConsoleMessage} instance.
+   *
+   * @remarks
+   * Use {@link ConsoleMessage.page}, {@link ConsoleMessage.frame} or
+   * {@link ConsoleMessage.worker} to identify the originating context.
+   * Messages from workers have no page or frame: use
+   * {@link ConsoleMessage.worker} for them. Messages logged by the browser
+   * itself (e.g. network errors or violations) can have no page, frame or
+   * worker.
+   *
+   * Events are only delivered for pages and workers that Puppeteer has
+   * attached to, e.g. via {@link BrowserContext.pages} or
+   * {@link Target.page}. Registering the listener before attaching
+   * guarantees that console messages replayed by the browser on attachment
+   * are not lost.
+   *
+   * With WebDriver BiDi, console messages that the browser replays while
+   * connecting are delivered once, right after {@link Puppeteer.connect}
+   * resolves: register the listener before awaiting anything else, or they
+   * are missed. Replayed messages can be delivered after messages logged
+   * later.
+   *
+   * Service workers and shared workers are not attached automatically:
+   * their console messages are only delivered after {@link Target.worker}
+   * has been called for their target. With WebDriver BiDi, their console
+   * messages are not reported.
+   *
+   * The {@link ConsoleMessage.args | arguments} are shared with listeners
+   * registered on {@link Page}, {@link WebWorker} and {@link Browser}.
+   * Disposing them in one listener invalidates them for all other listeners.
+   *
+   * @experimental
+   */
+  Console = 'console',
+  /**
+   * Emitted when any page in the browser context issues a request. Contains
+   * a {@link HTTPRequest} instance.
+   *
+   * @remarks
+   * Use {@link HTTPRequest.page} or {@link HTTPRequest.frame} to identify
+   * the originating context. Requests from dedicated workers have no page
+   * or frame: use {@link HTTPRequest.worker} for them. Dedicated worker
+   * requests and {@link HTTPRequest.worker} are not supported with
+   * WebDriver BiDi.
+   *
+   * With CDP, events are only delivered for pages that have a {@link Page}
+   * instance, e.g. created via {@link BrowserContext.pages} or {@link Target.page}.
+   * Requests issued before the instance exists, such as the initial
+   * navigation of a popup, are not reported. With WebDriver BiDi, requests
+   * from all pages are reported. Requests from service workers and shared
+   * workers are not reported.
+   *
+   * These listeners only observe requests. Do not call
+   * `request.continue()`, `abort()` or `respond()` from them: they are not
+   * coordinated with page-level handlers (see
+   * {@link https://pptr.dev/guides/network-interception#cooperative-intercept-mode | cooperative intercept mode}).
+   * To intercept requests, use {@link Page.setRequestInterception} with a
+   * {@link PageEvent.Request} listener.
+   *
+   * @experimental
+   */
+  Request = 'request',
+  /**
+   * Emitted when a request issued by any page in the browser context is
+   * served from the memory cache. Contains a {@link HTTPRequest} instance.
+   *
+   * @remarks
+   * The same delivery rules as for {@link BrowserContextEvent.Request} apply.
+   *
+   * @experimental
+   */
+  RequestServedFromCache = 'requestservedfromcache',
+  /**
+   * Emitted when a response is received for a request issued by any page in
+   * the browser context. Contains a {@link HTTPResponse} instance.
+   *
+   * @remarks
+   * Use {@link HTTPResponse.request} to access the originating request. The
+   * same delivery rules as for {@link BrowserContextEvent.Request} apply.
+   *
+   * @experimental
+   */
+  Response = 'response',
+  /**
+   * Emitted when a request issued by any page in the browser context fails,
+   * for example by timing out. Contains a {@link HTTPRequest} instance.
+   *
+   * @remarks
+   * HTTP error responses, such as 404 or 503, are still successful responses
+   * from HTTP standpoint, so the request completes with
+   * {@link BrowserContextEvent.RequestFinished} and not with
+   * {@link BrowserContextEvent.RequestFailed}. The same delivery rules as
+   * for {@link BrowserContextEvent.Request} apply.
+   *
+   * @experimental
+   */
+  RequestFailed = 'requestfailed',
+  /**
+   * Emitted when a request issued by any page in the browser context
+   * finishes successfully. Contains a {@link HTTPRequest} instance.
+   *
+   * @remarks
+   * The same delivery rules as for {@link BrowserContextEvent.Request} apply.
+   *
+   * @experimental
+   */
+  RequestFinished = 'requestfinished',
 }
 
 /**
@@ -66,6 +179,12 @@ export interface BrowserContextEvents extends Record<EventType, unknown> {
   [BrowserContextEvent.TargetChanged]: Target;
   [BrowserContextEvent.TargetCreated]: Target;
   [BrowserContextEvent.TargetDestroyed]: Target;
+  [BrowserContextEvent.Console]: ConsoleMessage;
+  [BrowserContextEvent.Request]: HTTPRequest;
+  [BrowserContextEvent.RequestServedFromCache]: HTTPRequest;
+  [BrowserContextEvent.Response]: HTTPResponse;
+  [BrowserContextEvent.RequestFailed]: HTTPRequest;
+  [BrowserContextEvent.RequestFinished]: HTTPRequest;
 }
 
 /**

@@ -111,6 +111,49 @@ describe('Chrome install', () => {
     assert.strictEqual(fs.existsSync(expectedOutputPath), true);
   });
 
+  describe('if the buildId is already installed', () => {
+    beforeEach(() => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: testChromeBuildId,
+      });
+      fs.mkdirSync(path.dirname(executablePath), {recursive: true});
+      fs.writeFileSync(executablePath, '');
+    });
+
+    it('should record the buildIdAlias', async () => {
+      await install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: testChromeBuildId,
+        buildIdAlias: 'canary',
+      });
+      assert.strictEqual(
+        new Cache(tmpDir).resolveAlias(Browser.CHROME, 'canary'),
+        testChromeBuildId,
+      );
+    });
+
+    it('should update a buildIdAlias that points to another buildId', async () => {
+      const cache = new Cache(tmpDir);
+      cache.writeMetadata(Browser.CHROME, {aliases: {stable: '1.0.0.0'}});
+      await install({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        buildId: testChromeBuildId,
+        buildIdAlias: 'stable',
+      });
+      assert.strictEqual(
+        cache.resolveAlias(Browser.CHROME, 'stable'),
+        testChromeBuildId,
+      );
+    });
+  });
+
   it('should download a buildId that is a zip archive', async function () {
     this.timeout(60000);
     const expectedOutputPath = path.join(

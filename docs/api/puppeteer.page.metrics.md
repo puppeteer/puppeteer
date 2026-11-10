@@ -44,6 +44,10 @@ Promise&lt;[Metrics](./puppeteer.metrics.md)&gt;
 
 - `JSHeapTotalSize` : Total JavaScript heap size, in bytes.
 
+- `DomContentLoaded` : The timestamp when the DOMContentLoaded event was fired, in monotonic time (seconds).
+
+- `NavigationStart` : The timestamp when the navigation started, in monotonic time (seconds).
+
 ## Remarks
 
 All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.

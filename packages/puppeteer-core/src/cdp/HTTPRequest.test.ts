@@ -20,6 +20,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -45,6 +46,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -82,6 +84,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -120,6 +123,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -150,6 +154,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -184,6 +189,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -233,6 +239,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       'interceptionId',
       true,
       {
@@ -267,6 +274,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       undefined,
       false,
       {
@@ -305,6 +313,7 @@ describe('CdpHTTPRequest', () => {
     const request = new CdpHTTPRequest(
       client,
       frame,
+      null,
       undefined,
       false,
       {
