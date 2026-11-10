@@ -368,11 +368,7 @@ export class CdpPage extends Page {
     clientEmitter.on('Page.javascriptDialogOpening', this.#onDialog.bind(this));
     clientEmitter.on(
       'Runtime.exceptionThrown',
-      this.#handleException.bind(this),
-    );
-    clientEmitter.on(
-      'Runtime.exceptionThrown',
-      this.#onMainTargetException.bind(this),
+      this.#onExceptionThrown.bind(this),
     );
     clientEmitter.on(
       'Inspector.targetCrashed',
@@ -999,6 +995,11 @@ export class CdpPage extends Page {
       PageEvent.PageError,
       createClientError(exception.exceptionDetails),
     );
+  }
+
+  #onExceptionThrown(event: Protocol.Runtime.ExceptionThrownEvent): void {
+    this.#handleException(event);
+    this.#onMainTargetException(event);
   }
 
   #onMainTargetException(event: Protocol.Runtime.ExceptionThrownEvent): void {

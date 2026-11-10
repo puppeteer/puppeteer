@@ -118,8 +118,10 @@ export class CdpWebWorker extends WebWorker {
         this.#logger?.(DEBUG_PREFIXES.error)?.(err);
       }
     });
-    this.#client.on('Runtime.exceptionThrown', exceptionThrown);
-    this.#client.on('Runtime.exceptionThrown', this.#onException.bind(this));
+    this.#client.on('Runtime.exceptionThrown', event => {
+      exceptionThrown(event);
+      this.#onException(event);
+    });
     this.#client.once(CDPSessionEvent.Disconnected, () => {
       // The worker might be destroyed before its script loads (e.g. a 404
       // script), in which case `Inspector.workerScriptLoaded` never fires.
