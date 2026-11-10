@@ -460,6 +460,23 @@ describe('BrowserContext', function () {
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
       expect(await getPermission(page, 'midi')).toBe('prompt');
     });
+
+    it('should be reset by clearPermissionOverrides', async () => {
+      const {page, server, context} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {permission: {name: 'geolocation'}, state: 'granted'},
+        {permission: {name: 'midi'}, state: 'denied'},
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      expect(await getPermission(page, 'midi')).toBe('denied');
+
+      await context.clearPermissionOverrides();
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(page, 'midi')).toBe('prompt');
+    });
   });
 
   describe('BrowserContext.on("console")', function () {
