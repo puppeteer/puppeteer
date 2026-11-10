@@ -24,6 +24,7 @@ import {Deferred} from '../util/Deferred.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
+import {releaseObject} from './JSHandle.js';
 import type {NetworkManager} from './NetworkManager.js';
 import {createConsoleMessage, createRemoteException} from './utils.js';
 
@@ -43,6 +44,7 @@ export class CdpWebWorker extends WebWorker {
   readonly #id: string;
   readonly #targetType: TargetType;
   #logger: Logger;
+  #hasOwnerExceptionListeners: () => boolean;
   readonly #emitter: EventEmitter<WebWorkerEvents>;
   #workerLoaded = new Deferred<void>();
 
@@ -58,11 +60,15 @@ export class CdpWebWorker extends WebWorker {
     exceptionThrown: ExceptionThrownCallback,
     networkManager: NetworkManager | undefined,
     logger: Logger,
+    hasOwnerExceptionListeners: () => boolean = () => {
+      return false;
+    },
   ) {
     super(url);
     this.#id = targetId;
     this.#client = client;
     this.#logger = logger;
+    this.#hasOwnerExceptionListeners = hasOwnerExceptionListeners;
     this.#targetType = targetType;
     this.#world = new IsolatedWorld(
       this,
@@ -144,6 +150,17 @@ export class CdpWebWorker extends WebWorker {
 
   #onException(event: Protocol.Runtime.ExceptionThrownEvent): void {
     const details = event.exceptionDetails;
+    if (
+      this.listenerCount(WebWorkerEvent.Exception) === 0 &&
+      !this.#hasOwnerExceptionListeners()
+    ) {
+      // Nobody can use a handle, but the browser keeps the exception alive
+      // until it is released.
+      if (details.exception) {
+        void releaseObject(this.#client, details.exception, this.#logger);
+      }
+      return;
+    }
     // Disposed when this scope ends, i.e. right after dispatch. This is a no-op
     // if a listener called `move()` on the handle.
     using handle = details.exception?.objectId

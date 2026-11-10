@@ -401,6 +401,9 @@ export class CdpPage extends Page {
         this.#handleException.bind(this),
         this.#frameManager.networkManager,
         this.logger,
+        () => {
+          return this.listenerCount(PageEvent.Exception) > 0;
+        },
       );
       this.#workers.set(session.id(), worker);
       worker.internalEmitter.on(WebWorkerEvent.Console, message => {
@@ -1004,6 +1007,18 @@ export class CdpPage extends Page {
 
   #onMainTargetException(event: Protocol.Runtime.ExceptionThrownEvent): void {
     const details = event.exceptionDetails;
+    if (this.listenerCount(PageEvent.Exception) === 0) {
+      // Nobody can use a handle, but the browser keeps the exception alive
+      // until it is released.
+      if (details.exception) {
+        void releaseObject(
+          this.#primaryTargetClient,
+          details.exception,
+          this.logger,
+        );
+      }
+      return;
+    }
     // Disposed when this scope ends, i.e. right after dispatch. This is a no-op
     // if a listener called `move()` on the handle.
     using handle = this.#createExceptionHandle(details);
