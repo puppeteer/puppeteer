@@ -3,7 +3,7 @@
 ## Chrome
 
 Starting with v20.0.0 Puppeteer downloads and works with **[Chrome for Testing](https://github.com/GoogleChromeLabs/chrome-for-testing?tab=readme-ov-file#what-is-chrome-for-testing)**, which supports both headless and headful modes sharing the same code path in the browser.
-The old headless mode is now a separate program called **[chrome-headless-shell](https://developer.chrome.com/blog/chrome-headless-shell)** (use `headless: 'shell'` with Puppeteer).
+The old headless mode is now a separate program called **[chrome-headless-shell](https://developer.chrome.com/docs/automation-and-testing/headless-chrome-shell)** (use `headless: 'shell'` with Puppeteer).
 
 Prior to this version Puppeteer downloaded and worked with Chromium.
 
