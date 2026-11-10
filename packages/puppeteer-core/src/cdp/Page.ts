@@ -1006,11 +1006,7 @@ export class CdpPage extends Page {
     // Disposed when this scope ends, i.e. right after dispatch. This is a no-op
     // if a listener called `move()` on the handle.
     using handle = this.#createExceptionHandle(details);
-    try {
-      this.emit(PageEvent.Exception, createRemoteException(details, handle));
-    } catch (error) {
-      this.logger?.(DEBUG_PREFIXES.error)?.(error);
-    }
+    this.emit(PageEvent.Exception, createRemoteException(details, handle));
   }
 
   #createExceptionHandle(

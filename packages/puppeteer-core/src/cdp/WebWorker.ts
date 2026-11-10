@@ -147,15 +147,11 @@ export class CdpWebWorker extends WebWorker {
     using handle = details.exception?.objectId
       ? this.#world.createCdpHandle(details.exception)
       : undefined;
-    try {
-      const exception = createRemoteException(details, handle);
-      // Emitted internally first so that the page can forward it before the
-      // handle is disposed.
-      this.#emitter.emit(WebWorkerEvent.Exception, exception);
-      this.emit(WebWorkerEvent.Exception, exception);
-    } catch (err) {
-      this.#logger?.(DEBUG_PREFIXES.error)?.(err);
-    }
+    const exception = createRemoteException(details, handle);
+    // Emitted internally first so that the page can forward it before the
+    // handle is disposed.
+    this.#emitter.emit(WebWorkerEvent.Exception, exception);
+    this.emit(WebWorkerEvent.Exception, exception);
   }
 
   mainRealm(): Realm {
