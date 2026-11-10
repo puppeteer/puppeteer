@@ -46,6 +46,19 @@ describe('Target.createCDPSession', function () {
     context.off('targetcreated', handler);
   });
 
+  it('should keep the page when one of two concurrent sessions detaches', async () => {
+    const {context, page} = await getTestState();
+
+    const [first, second] = await Promise.all([
+      page.createCDPSession(),
+      page.createCDPSession(),
+    ]);
+    await second.detach();
+    await first.detach();
+
+    expect(await context.pages()).toContain(page);
+  });
+
   it('should send events', async () => {
     const {page, server} = await getTestState();
 
