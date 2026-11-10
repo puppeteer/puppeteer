@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.click
 
 # ElementHandle.click() method
 
-This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to click in the center of the element. If the element is detached from DOM, the method throws an error.
+This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to click in the center of the element. If the element is detached from DOM, the method throws an error. If another element covers the click point, the element is scrolled to the center of the viewport, and the method throws an error if the click point is still covered.
 
 ### Signature
 

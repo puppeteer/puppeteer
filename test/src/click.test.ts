@@ -455,6 +455,98 @@ describe('Page.click', function () {
       }),
     ).toBe(0);
   });
+  it('should throw when the element is still covered after scrolling', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+        }
+        #overlay {
+          position: fixed;
+          inset: 0;
+        }
+        #target {
+          position: absolute;
+          top: 200px;
+          left: 50px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <button id="target">target</button>
+      <div id="overlay"></div>
+      <script>
+        window.clicked = [];
+        document.addEventListener(
+          'click',
+          event => {
+            window.clicked.push(event.target.id);
+          },
+          true,
+        );
+      </script>
+    `);
+    await expect(page.click('#target')).rejects.toThrow(
+      'Node is covered by <div#overlay> at the click point',
+    );
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual([]);
+  });
+  it('should check the click point given by the offset', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+          height: 3000px;
+        }
+        #target {
+          position: absolute;
+          top: 200px;
+          left: 50px;
+          width: 200px;
+          height: 40px;
+        }
+        #overlay {
+          position: absolute;
+          top: 200px;
+          left: 140px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <button id="target">target</button>
+      <div id="overlay"></div>
+      <script>
+        window.clicked = [];
+        document.addEventListener(
+          'click',
+          event => {
+            window.clicked.push(event.target.id);
+          },
+          true,
+        );
+      </script>
+    `);
+    await using handle = await page.$('#target');
+    await handle!.click({offset: {x: 10, y: 10}});
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual(['target']);
+    await expect(handle!.click()).rejects.toThrow(
+      'Node is covered by <div#overlay> at the click point',
+    );
+  });
   it('should double click the button', async () => {
     const {page, server} = await getTestState();
 

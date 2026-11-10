@@ -763,6 +763,9 @@ export abstract class ElementHandle<
    * This method scrolls element into view if needed, and then
    * uses {@link Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
+   * If another element covers the click point, the element is scrolled to the
+   * center of the viewport, and the method throws an error if the click point
+   * is still covered.
    */
   @throwIfDisposed()
   @bindIsolatedHandle
@@ -771,7 +774,23 @@ export abstract class ElementHandle<
     options: Readonly<ClickOptions> = {},
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint(options.offset);
+    let {x, y} = await this.clickablePoint(options.offset);
+    if (await this.#getCoveringElement(x, y)) {
+      await this.evaluate(element => {
+        element.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          behavior: 'instant',
+        });
+      });
+      ({x, y} = await this.clickablePoint(options.offset));
+      const coveringElement = await this.#getCoveringElement(x, y);
+      if (coveringElement) {
+        throw new Error(
+          `Node is covered by ${coveringElement} at the click point`,
+        );
+      }
+    }
     try {
       await this.frame.page().mouse.click(x, y, options);
     } finally {
@@ -1174,6 +1193,39 @@ export abstract class ElementHandle<
     await this.frame.page().keyboard.press(key, options);
   }
 
+  /**
+   * Describes the element that would receive a click at the given
+   * coordinates instead of this element, or `null` if this element (or one
+   * of its descendants or ancestors) receives it.
+   */
+  async #getCoveringElement(
+    this: ElementHandle<Element>,
+    x: number,
+    y: number,
+  ): Promise<string | null> {
+    const frameOffset = await this.#getTopLeftCornerOfFrame();
+    if (!frameOffset) {
+      return null;
+    }
+    return await this.evaluate(
+      (element, x, y) => {
+        const root = element.getRootNode() as Document | ShadowRoot;
+        const topElement = root.elementFromPoint(x, y);
+        if (
+          !topElement ||
+          element.contains(topElement) ||
+          topElement.contains(element)
+        ) {
+          return null;
+        }
+        const id = topElement.id ? `#${topElement.id}` : '';
+        return `<${topElement.localName}${id}>`;
+      },
+      x - frameOffset.x,
+      y - frameOffset.y,
+    );
+  }
+
   async #clickableBox(): Promise<BoundingBox | null> {
     const boxes = await this.evaluate(element => {
       if (!(element instanceof Element)) {
@@ -1511,44 +1563,9 @@ export abstract class ElementHandle<
         threshold: 1,
       })
     ) {
-      if (!(await this.#isCovered())) {
-        return;
-      }
-      // The element is inside the viewport but something else, such as a
-      // sticky header, is on top of it. Bring it to the center of the viewport
-      // so that it is the element that receives the interaction.
-      await this.evaluate((element): void => {
-        element.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          behavior: 'instant',
-        });
-      });
       return;
     }
     await this.scrollIntoView();
-  }
-
-  /**
-   * Whether another element is on top of the center of this element.
-   */
-  async #isCovered(this: ElementHandle<Element>): Promise<boolean> {
-    return await this.evaluate(element => {
-      const rect = element.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) {
-        return false;
-      }
-      const root = element.getRootNode() as Document | ShadowRoot;
-      const topElement = root.elementFromPoint(
-        rect.left + rect.width / 2,
-        rect.top + rect.height / 2,
-      );
-      return (
-        topElement !== null &&
-        !element.contains(topElement) &&
-        !topElement.contains(element)
-      );
-    });
   }
 
   /**
