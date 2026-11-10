@@ -972,22 +972,22 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
               );
               document.head.appendChild(script);
             } else {
-              if (type === 'text/javascript' || type === 'module') {
-                const probe = document.createElement('script');
-                probe.text = 'document.currentScript.remove();';
-                document.head.appendChild(probe);
-                if (probe.isConnected) {
-                  probe.remove();
+              script.addEventListener('securitypolicyviolation', event => {
+                if (event.disposition === 'enforce') {
                   reject(
                     new Error(
-                      'Could not add script tag: inline scripts are not allowed in the frame',
+                      `Could not add script tag: the Content Security Policy blocked it (${event.effectiveDirective})`,
                     ),
                   );
-                  return;
                 }
-              }
+              });
               document.head.appendChild(script);
-              resolve(script);
+              const {port1, port2} = new MessageChannel();
+              port1.onmessage = () => {
+                port1.close();
+                resolve(script);
+              };
+              port2.postMessage(undefined);
             }
           });
         },
