@@ -88,6 +88,8 @@ page.on('exception', async exception => {
 
 Using the handle after an `await` without calling `move()` first will throw because the handle has already been disposed.
 
+The handle is shared by all listeners of the event: calling `move()` returns the same `JSHandle` instance in every listener, and disposing it invalidates it for all of them. If more than one listener needs the handle after the event, have only one of them call `move()` and dispose of it.
+
 </td></tr>
 <tr><td>
 
