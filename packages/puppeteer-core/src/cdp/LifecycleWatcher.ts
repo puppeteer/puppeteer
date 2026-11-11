@@ -100,12 +100,18 @@ export class LifecycleWatcher {
       return protocolEvent;
     });
 
-    signal?.addEventListener('abort', () => {
-      if (signal.reason instanceof Error) {
-        signal.reason.cause = this.#error;
-      }
-      this.#terminationDeferred.reject(signal.reason);
-    });
+    if (signal) {
+      const onAbort = () => {
+        if (signal.reason instanceof Error) {
+          signal.reason.cause = this.#error;
+        }
+        this.#terminationDeferred.reject(signal.reason);
+      };
+      signal.addEventListener('abort', onAbort, {once: true});
+      this.#subscriptions.defer(() => {
+        signal.removeEventListener('abort', onAbort);
+      });
+    }
 
     this.#frame = frame;
     this.#timeout = timeout;

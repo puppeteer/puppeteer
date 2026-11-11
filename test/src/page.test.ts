@@ -12,6 +12,7 @@ import expect from 'expect';
 import type {ElementHandle, Issue} from 'puppeteer';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
+import {FrameEvent} from 'puppeteer-core/internal/api/Frame.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
@@ -1549,6 +1550,20 @@ describe('Page', function () {
           return (error = error_);
         });
       expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should remove its listeners when it times out', async () => {
+      const {page, server} = await getTestState();
+
+      const imgPath = '/img.png';
+      server.setRoute(imgPath, () => {});
+      const frame = page.mainFrame();
+      const listeners = frame.listenerCount(FrameEvent.FrameDetached);
+      await expect(
+        page.setContent(html`<img src="${server.PREFIX + imgPath}"></img>`, {
+          timeout: 1,
+        }),
+      ).rejects.toBeInstanceOf(TimeoutError);
+      expect(frame.listenerCount(FrameEvent.FrameDetached)).toBe(listeners);
     });
     it('should respect default navigation timeout', async () => {
       const {page, server} = await getTestState();

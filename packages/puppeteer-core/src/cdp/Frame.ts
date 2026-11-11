@@ -176,26 +176,25 @@ export class CdpFrame extends Frame {
       waitUntil,
       timeout,
     );
-    let error = await Deferred.race([
-      navigate(
-        this.#client,
-        url,
-        referer,
-        referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined,
-        this._id,
-      ),
-      watcher.terminationPromise(),
-    ]);
-    if (!error) {
-      error = await Deferred.race([
-        watcher.terminationPromise(),
-        ensureNewDocumentNavigation
-          ? watcher.newDocumentNavigationPromise()
-          : watcher.sameDocumentNavigationPromise(),
-      ]);
-    }
-
     try {
+      let error = await Deferred.race([
+        navigate(
+          this.#client,
+          url,
+          referer,
+          referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined,
+          this._id,
+        ),
+        watcher.terminationPromise(),
+      ]);
+      if (!error) {
+        error = await Deferred.race([
+          watcher.terminationPromise(),
+          ensureNewDocumentNavigation
+            ? watcher.newDocumentNavigationPromise()
+            : watcher.sameDocumentNavigationPromise(),
+        ]);
+      }
       if (error) {
         throw error;
       }
@@ -256,14 +255,14 @@ export class CdpFrame extends Frame {
       timeout,
       signal,
     );
-    const error = await Deferred.race([
-      watcher.terminationPromise(),
-      ...(options.ignoreSameDocumentNavigation
-        ? []
-        : [watcher.sameDocumentNavigationPromise()]),
-      watcher.newDocumentNavigationPromise(),
-    ]);
     try {
+      const error = await Deferred.race([
+        watcher.terminationPromise(),
+        ...(options.ignoreSameDocumentNavigation
+          ? []
+          : [watcher.sameDocumentNavigationPromise()]),
+        watcher.newDocumentNavigationPromise(),
+      ]);
       if (error) {
         throw error;
       }
@@ -312,13 +311,16 @@ export class CdpFrame extends Frame {
       waitUntil,
       timeout,
     );
-    const error = await Deferred.race<void | Error | undefined>([
-      watcher.terminationPromise(),
-      watcher.lifecyclePromise(),
-    ]);
-    watcher.dispose();
-    if (error) {
-      throw error;
+    try {
+      const error = await Deferred.race<void | Error | undefined>([
+        watcher.terminationPromise(),
+        watcher.lifecyclePromise(),
+      ]);
+      if (error) {
+        throw error;
+      }
+    } finally {
+      watcher.dispose();
     }
   }
 
