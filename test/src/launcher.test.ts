@@ -679,6 +679,20 @@ describe('Launcher specs', function () {
           await close();
         }
       });
+      it('should not modify the connect options', async () => {
+        const {puppeteer, browser, close} = await launch({});
+        try {
+          const otherBrowser = await puppeteer.connect(
+            Object.freeze({
+              browserWSEndpoint: browser.wsEndpoint(),
+              protocol: browser.protocol,
+            }),
+          );
+          await otherBrowser.disconnect();
+        } finally {
+          await close();
+        }
+      });
       it('should be able to close remote browser', async () => {
         const {puppeteer, browser, close} = await launch({});
         try {
