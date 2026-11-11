@@ -263,6 +263,12 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       if (isErrorLike(error) && isTargetClosedError(error)) {
         return;
       }
+      // A pending Runtime.enable can still run later and report execution
+      // contexts that are dropped because the frame tree was not handled.
+      // Disabling the domain again lets the next initialization get them.
+      void client.send('Runtime.disable').catch(error => {
+        this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+      });
 
       throw error;
     }
