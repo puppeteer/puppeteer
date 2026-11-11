@@ -49,13 +49,6 @@
     "comment": "Origin (*) is not supported for setPermission in BiDi"
   },
   {
-    "testIdPattern": "[coverage.test] Coverage specs JSCoverage should not hang when there is a debugger statement",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": [],
-    "expectations": ["SKIP"],
-    "comment": "See https://crbug.com/990945"
-  },
-  {
     "testIdPattern": "[device-request-prompt.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -126,25 +119,11 @@
     "comment": "Not supported in WebDriver BiDi"
   },
   {
-    "testIdPattern": "[interventionHeaders.test] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "This is Chromium-specific test"
-  },
-  {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["pipe"],
     "expectations": ["SKIP"],
     "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch *",
-    "platforms": ["win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Puppeteer.launch tests fail with WebDriver BiDi on Windows CI. Skipped when BiDi CI jobs for Windows were enabled in https://github.com/puppeteer/puppeteer/pull/11578."
   },
   {
     "testIdPattern": "[network_restrictions.test] *",
@@ -362,6 +341,12 @@
     "parameters": ["chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "chrome-headless-shell does not support the Autofill CDP domain. Autofill works only in headful Chrome and new headless Chrome."
+  },
+  {
+    "testIdPattern": "[binding.test] CDP binding handle disposal should preserve handles returned by exposed functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[bluetooth-emulation.test] request prompt for emulated bluetooth device can be canceled",
@@ -620,13 +605,6 @@
     "comment": "Implementation in Firefox is not in stable yet"
   },
   {
-    "testIdPattern": "[input.test] input tests Page.waitForFileChooser*",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Implementation in Firefox is not in stable yet"
-  },
-  {
     "testIdPattern": "[jshandle.test] JSHandle JSHandle.jsonValue should not throw for circular objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
@@ -655,18 +633,17 @@
     "comment": "JSHandle.remoteObject() returns a CDP RemoteObject. BidiJSHandle.remoteObject() throws UnsupportedOperation in WebDriver BiDi."
   },
   {
-    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Browser.disconnect *",
-    "platforms": ["win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Firefox does not support multiple WebDriver BiDi sessions, and these tests connect a second client with puppeteer.connect (https://bugzilla.mozilla.org/show_bug.cgi?id=1862018). Skipped on Windows since the Windows BiDi CI jobs were enabled in https://github.com/puppeteer/puppeteer/pull/11578."
-  },
-  {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Multiple connections are not supported in Firefox, and to save CI time we skip these"
+  },
+  {
+    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[mouse.test] Mouse should not throw if buttons are pressed twice",
@@ -709,13 +686,6 @@
     "parameters": ["pipe"],
     "expectations": ["SKIP"],
     "comment": "Verifies URL blocklist enforcement when connecting to a browser via WebSocket, which is not applicable for pipe mode"
-  },
-  {
-    "testIdPattern": "[network_restrictions.test] Network Restrictions should not block chrome://version/ even if it matches blocklist",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome-headless-shell"],
-    "expectations": ["SKIP"],
-    "comment": "chrome:// urls are not supported by chrome-headless-shell"
   },
   {
     "testIdPattern": "[network_restrictions.test] Network Restrictions should throw an error when both blocklist and allowlist are specified",
@@ -899,13 +869,6 @@
     "comment": "BidiPage.setBypassCSP sends the CDP command Page.setBypassCSP. Firefox does not support CDP, and WebDriver BiDi has no command to bypass CSP."
   },
   {
-    "testIdPattern": "[page.test] Page Page.setGeolocation should work",
-    "platforms": ["win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "Suddenly started being flaky on Windows"
-  },
-  {
     "testIdPattern": "[page.test] Page Page.setJavaScriptEnabled setInterval should pause",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -997,25 +960,11 @@
     "comment": "https://github.com/w3c/webdriver-bidi/issues/508"
   },
   {
-    "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should intercept parallel fetches from a dedicated worker",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "BiDi does not intercept requests from dedicated workers"
-  },
-  {
     "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should work with keep alive redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["FAIL"],
     "comment": "crbug.com/469591372"
-  },
-  {
-    "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should work with worker",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"],
-    "comment": "Workers do not work in Firefox yet"
   },
   {
     "testIdPattern": "[screencast.test] Screencasts Page.screencast should validate options",
@@ -1025,17 +974,10 @@
   },
   {
     "testIdPattern": "[screenshot.test] Screenshots Cdp should work in \"fromSurface: false\" mode",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "The `fromSurface: false` option works only in headful mode, and chrome-headless-shell cannot capture a screenshot from the view. See https://github.com/puppeteer/puppeteer/pull/8496."
-  },
-  {
-    "testIdPattern": "[screenshot.test] Screenshots Cdp should work in \"fromSurface: false\" mode",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["headless"],
-    "expectations": ["SKIP"],
-    "comment": "The CDP `fromSurface: false` screenshot option works only in headful mode. The test was headful-only since it was added in https://github.com/puppeteer/puppeteer/pull/8496."
   },
   {
     "testIdPattern": "[screenshot.test] Screenshots Page.screenshot should get screenshot bigger than the viewport",
@@ -1134,13 +1076,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Firefox does not support HTTPResponse.securityDetails() with WebDriver BiDi. Puppeteer reads `goog:securityDetails` only when CDP is available, else it throws UnsupportedOperation. See https://github.com/puppeteer/puppeteer/pull/12736."
-  },
-  {
-    "testIdPattern": "[accessibility.test] Accessibility get snapshots while the tree is re-calculated",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Fails or hangs in Chrome with WebDriver BiDi: the test clicks the button and then times out in waitForSelector('aria/Hide'). Added in https://github.com/puppeteer/puppeteer/pull/10338."
   },
   {
     "testIdPattern": "[ariaqueryhandler.test] AriaQueryHandler queryAllArray $$eval should handle many elements",
@@ -1283,11 +1218,23 @@
     "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
   },
   {
+    "testIdPattern": "[devtools.test] DevTools browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[devtools.test] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "pipe"],
     "expectations": ["SKIP"],
     "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[devtools.test] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[dialog.test] Page.Events.Dialog should see dialogs handled by other connections",
@@ -1451,6 +1398,54 @@
     "comment": "In WebDriver BiDi, we cannot distinguish between about:blank and lazy-loading (paused) frames. See https://github.com/w3c/webdriver-bidi/issues/832"
   },
   {
+    "testIdPattern": "[input.test] input tests FileChooser.accept should accept single file",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[input.test] input tests FileChooser.accept should be able to read selected file",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[input.test] input tests FileChooser.accept should fail when accepting file chooser twice",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[input.test] input tests FileChooser.accept should not accept multiple files for single-file input",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[input.test] input tests FileChooser.cancel should fail when canceling file chooser twice",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[input.test] input tests FileChooser.isMultiple should work for \"multiple\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[input.test] input tests FileChooser.isMultiple should work for \"webkitdirectory\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[input.test] input tests FileChooser.isMultiple should work for single file pick",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[keyboard.test] Keyboard ElementHandle.press should not support |text| option",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
@@ -1535,11 +1530,16 @@
     "comment": "Flaky in Chrome over CDP when the test closes all pages and then connects. The flake has been in the expectations since the mocha test runner was added in https://github.com/puppeteer/puppeteer/pull/8866."
   },
   {
-    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support acceptInsecureCerts option",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "headless"],
-    "expectations": ["SKIP"],
-    "comment": "Started to flake on macos-15 (arm64)"
+    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",
@@ -1571,17 +1571,10 @@
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default arguments in Chrome",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox", "headful"],
     "expectations": ["SKIP"],
     "comment": "Test is testing chrome specific ignore and fails"
-  },
-  {
-    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch should have custom URL when launching browser",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "For some reason it times out on MacOS. Perhaps it's a bug in chromium-bidi"
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch should pass the timeout parameter to browser.waitForTarget",
@@ -1657,20 +1650,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "When navigating to a page with authentication the navigate command does not error and never resolves due to the auth dialog being shown https://github.com/w3c/webdriver-bidi/issues/719"
-  },
-  {
-    "testIdPattern": "[network.test] network Page.authenticate should not disable caching for script",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: Needs investigation, isCached is false for the script request handle via network interception"
-  },
-  {
-    "testIdPattern": "[network.test] network Page.authenticate should not disable caching for stylesheet",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Needs Firefox support for network events for cached stylesheets https://bugzilla.mozilla.org/show_bug.cgi?id=1879438"
   },
   {
     "testIdPattern": "[network.test] network raw network headers Cross-origin set-cookie",
@@ -1791,13 +1770,6 @@
     "comment": "The test uses page.createCDPSession() and CDP Target/Network commands. Firefox does not support CDP sessions over WebDriver BiDi."
   },
   {
-    "testIdPattern": "[oopif.test] OOPIF should keep track of a frames OOP state",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Failed previously and currently times out"
-  },
-  {
     "testIdPattern": "[oopif.test] OOPIF should load oopif iframes with subresources and request interception",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -1855,13 +1827,6 @@
   },
   {
     "testIdPattern": "[proxy.test] request proxy in incognito browser context should proxy requests when configured at context level",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["SKIP"],
-    "comment": "Windows version of Chrome has a long-standing bug"
-  },
-  {
-    "testIdPattern": "[proxy.test] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL", "PASS"],
@@ -1885,13 +1850,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "TODO: Needs support for file URIs in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1826210"
-  },
-  {
-    "testIdPattern": "[requestinterception-experimental.test] cooperative request interception Page.setRequestInterception should work with requests without networkId",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Test requires CDP"
   },
   {
     "testIdPattern": "[requestinterception-experimental.test] cooperative request interception Request.resourceType should work for document type",
@@ -1920,6 +1878,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "TODO: BiDi does not support custom errors - https://github.com/w3c/webdriver-bidi/issues/508"
+  },
+  {
+    "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should intercept parallel fetches from a dedicated worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "BiDi does not intercept requests from dedicated workers"
   },
   {
     "testIdPattern": "[requestinterception.test] request interception Page.setRequestInterception should work with file URLs",
@@ -2069,13 +2034,6 @@
     "comment": "Fails in Firefox BiDi: the recorded pointer and touch events do not match the events that the test expects. Added in https://github.com/puppeteer/puppeteer/pull/13231."
   },
   {
-    "testIdPattern": "[waittask.test] waittask specs protocol timeout *",
-    "platforms": ["darwin"],
-    "parameters": ["firefox", "headful", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "session.new before the test consistently times out on mac + headful since 147"
-  },
-  {
     "testIdPattern": "[webmcp.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless", "webDriverBiDiOnly"],
@@ -2091,6 +2049,24 @@
   },
   {
     "testIdPattern": "[worker.test] Workers should report errors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should retrieve body for main worker requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should work with console logs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should work with waitForNetworkIdle",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
