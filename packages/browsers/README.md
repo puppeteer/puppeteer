@@ -82,6 +82,20 @@ npx @puppeteer/browsers install chromedriver@116.0.5793.0
 npx puppeteer browsers install chrome --install-deps
 ```
 
+## Installation cache
+
+Downloads and extraction use a private directory for each installation attempt.
+The completed browser directory is published only after extraction succeeds and
+the expected executable file is present inside it. Each attempt extracts privately, and concurrent
+installers retain a completed existing installation. Existing
+installations without completion metadata remain supported.
+
+Interrupted processes can leave private `.install.*` directories, which later
+installs ignore. Staging does not serialize browser-wide alias and executable-path
+metadata updates, cache removal, or older installers that extract directly into
+the cache. Archive-only downloads publish complete files, but an unpacking install
+can still consume that archive, so its returned path is not reserved for the caller.
+
 ## Known limitations
 
 1. Launching the system browsers is only possible for Chrome/Chromium.
