@@ -37,7 +37,10 @@ describe('Workers', function () {
     });
     expect(result).toBe('worker function result');
 
-    await page.goto(server.EMPTY_PAGE);
+    await Promise.all([
+      waitEvent(page, 'workerdestroyed'),
+      page.goto(server.EMPTY_PAGE),
+    ]);
     expect(page.workers()).toHaveLength(0);
   });
 

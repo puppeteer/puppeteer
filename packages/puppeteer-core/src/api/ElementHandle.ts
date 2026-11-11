@@ -7,6 +7,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
+import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
@@ -417,8 +418,12 @@ export abstract class ElementHandle<
     selector: Selector,
     options?: QueryOptions,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    if (options?.isolate === false) {
-      return await this.#$$impl(selector);
+    const {updatedSelector, QueryHandler} =
+      getQueryHandlerAndSelector(selector);
+    if (options?.isolate === false || QueryHandler === ARIAQueryHandler) {
+      return await (AsyncIterableUtil.collect(
+        QueryHandler.queryAll(this, updatedSelector),
+      ) as Promise<Array<ElementHandle<NodeFor<Selector>>>>);
     }
     return await this.#$$(selector);
   }

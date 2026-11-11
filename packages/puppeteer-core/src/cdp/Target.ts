@@ -334,6 +334,9 @@ export class WorkerTarget extends CdpTarget {
           () => {} /* exceptionThrown */,
           undefined /* networkManager */,
           this.logger,
+          () => {
+            return this._targetManager().waitForSilentDetaches(this._targetId);
+          },
         );
         this.#bubbleConsoleMessages(worker);
         return worker;

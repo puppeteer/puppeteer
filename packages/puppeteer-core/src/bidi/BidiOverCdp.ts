@@ -7,8 +7,13 @@
 import {BidiMapper} from 'chromium-bidi';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {CDPEvents, CDPSession} from '../api/CDPSession.js';
+import {
+  CDPSessionEvent,
+  type CDPEvents,
+  type CDPSession,
+} from '../api/CDPSession.js';
 import type {Connection as CdpConnection} from '../cdp/Connection.js';
+import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import type {DebugPrefix, Logger} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import type {Handler} from '../common/EventEmitter.js';
@@ -30,14 +35,22 @@ export async function connectBidiOverCdp(
 
   const transportBiDi = new NoOpTransport();
   const cdpConnectionAdapter = new CdpConnectionAdapter(cdp);
-  const pptrTransport = {
+  let closed = false;
+  const closeResources = () => {
+    if (closed) {
+      return;
+    }
+    closed = true;
+    bidiServer.close();
+    cdpConnectionAdapter.close();
+  };
+  const pptrTransport: ConnectionTransport = {
     send(message: string): void {
       // Forwards a BiDi command sent by Puppeteer to the input of the BidiServer.
       transportBiDi.emitMessage(JSON.parse(message));
     },
     close(): void {
-      bidiServer.close();
-      cdpConnectionAdapter.close();
+      closeResources();
       cdp.dispose();
     },
     onmessage(_message: string): void {
@@ -46,7 +59,14 @@ export async function connectBidiOverCdp(
   };
   transportBiDi.on('bidiResponse', (message: object) => {
     // Forwards a BiDi event sent by BidiServer to Puppeteer.
-    pptrTransport.onmessage(JSON.stringify(message));
+    // Dispatch in setImmediate (matching PipeTransport and NodeWebSocketTransport)
+    // so microtasks from each BiDi message drain before the next message runs.
+    const raw = JSON.stringify(message);
+    setImmediate(() => {
+      if (!closed) {
+        pptrTransport.onmessage?.(raw);
+      }
+    });
   });
   const pptrBiDiConnection = new BidiConnection(
     cdp.url(),
@@ -64,6 +84,10 @@ export async function connectBidiOverCdp(
     undefined,
     bidiServerLogger,
   );
+  cdp.once(CDPSessionEvent.Disconnected, () => {
+    closeResources();
+    pptrTransport.onclose?.();
+  });
   return pptrBiDiConnection;
 }
 

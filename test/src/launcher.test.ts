@@ -21,7 +21,7 @@ import {getTestState, launch} from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
-const FIREFOX_TIMEOUT = 30_000;
+const FIREFOX_TIMEOUT = 60_000;
 
 describe('Launcher specs', function () {
   this.timeout(FIREFOX_TIMEOUT);
@@ -709,7 +709,12 @@ describe('Launcher specs', function () {
         }
       });
       it('should be able to connect to a browser with no page targets', async () => {
-        const {puppeteer, browser, close} = await launch({});
+        const {isChrome, isHeadless} = await getTestState({skipLaunch: true});
+        const {puppeteer, browser, close} = await launch(
+          !isHeadless && isChrome
+            ? {waitForInitialPage: false, args: ['--no-startup-window']}
+            : {},
+        );
 
         try {
           const pages = await browser.pages();

@@ -29,7 +29,7 @@ import {Connection} from '../cdp/Connection.js';
 import type {WsOptions} from '../common/ConnectOptions.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
-import {TimeoutError} from '../common/Errors.js';
+import {TimeoutError, UnsupportedOperation} from '../common/Errors.js';
 import type {SupportedBrowser} from '../common/SupportedBrowser.js';
 import {
   assertSupportedUrlRestrictions,
@@ -164,6 +164,12 @@ export abstract class BrowserLauncher {
       blocklist,
       protocol,
     });
+
+    if (protocol === 'webDriverBiDi' && options.targetFilter) {
+      throw new UnsupportedOperation(
+        'targetFilter is not supported with the WebDriver BiDi protocol',
+      );
+    }
 
     if (this.#browser === 'firefox' && protocol === 'cdp') {
       throw new Error('Connecting to Firefox using CDP is no longer supported');

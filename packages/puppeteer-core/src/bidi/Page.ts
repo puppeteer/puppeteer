@@ -518,6 +518,12 @@ export class BidiPage extends Page {
   }
 
   override async pdf(options: PDFOptions = {}): Promise<Uint8Array> {
+    if (options.tagged !== undefined) {
+      throw new UnsupportedOperation(`BiDi does not support 'tagged'.`);
+    }
+    if (options.outline !== undefined) {
+      throw new UnsupportedOperation(`BiDi does not support 'outline'.`);
+    }
     const {timeout: ms = this._timeoutSettings.timeout(), path = undefined} =
       options;
     const {

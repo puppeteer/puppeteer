@@ -69,7 +69,6 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
 import type {ScreenRecorder} from '../node/ScreenRecorder.js';
-import {guarded} from '../util/decorators.js';
 import {
   AsyncDisposableStack,
   asyncDisposeSymbol,
@@ -2932,9 +2931,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'},
   ): Promise<string>;
   async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
-  @guarded(function () {
-    return this.browser();
-  })
   async screenshot(
     userOptions: Readonly<ScreenshotOptions> = {},
   ): Promise<Uint8Array | string> {
