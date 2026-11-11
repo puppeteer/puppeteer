@@ -181,6 +181,6 @@ await chromeBrowser.close();
 
 ## See also
 
-- [WebDriver BiDi - The future of cross-browser automation](https://developer.chrome.com/articles/webdriver-bidi/)
+- [WebDriver BiDi - The future of cross-browser automation](https://developer.chrome.com/blog/webdriver-bidi)
 - [WebDriver BiDi: 2023 status update](https://developer.chrome.com/blog/webdriver-bidi-2023/)
 - [Puppeteer Support for the Cross-Browser WebDriver BiDi Standard](https://hacks.mozilla.org/2023/12/puppeteer-webdriver-bidi/)
