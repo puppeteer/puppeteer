@@ -98,4 +98,23 @@ describe('PuppeteerNode', () => {
       expect(args).toBeInstanceOf(Array);
     });
   });
+
+  describe('launch()', () => {
+    it('does not modify the options', async () => {
+      const puppeteer = new PuppeteerNode({
+        isPuppeteerCore: true,
+        configuration: () => {
+          return Promise.resolve({
+            cacheDirectory: tmpDir,
+          });
+        },
+      });
+      const executablePath = join(tmpDir, 'chrome');
+      await expect(
+        puppeteer.launch(Object.freeze({executablePath})),
+      ).rejects.toThrow(
+        `Browser was not found at the configured executablePath (${executablePath})`,
+      );
+    });
+  });
 });
