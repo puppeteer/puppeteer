@@ -142,7 +142,7 @@ as one from the
 
 :::
 
-See https://bit.ly/31yqMJR for more details.
+See the [Chromium LPAC file system permissions documentation](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/design/sandbox.md#lpac-file-system-permissions) for more details.
 
 ## Chrome doesn't launch on Linux
 
@@ -382,7 +382,7 @@ already have installed.
 Running Puppeteer smoothly on CircleCI requires the following steps:
 
 1. Start with a
-   [NodeJS image](https://circleci.com/docs/2.0/circleci-images/#nodejs) in your
+   [NodeJS image](https://circleci.com/docs/guides/execute/circleci-images/) in your
    config like so:
    ```yaml
    docker:
@@ -392,11 +392,11 @@ Running Puppeteer smoothly on CircleCI requires the following steps:
    ```
 1. Dependencies like `libXtst6` probably need to be installed via `apt-get`, so
    use the
-   [threetreeslight/puppeteer](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer)
+   [threetreeslight/puppeteer](https://circleci.com/developer/orbs/orb/threetreeslight/puppeteer)
    orb
-   ([instructions](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer#quick-start)),
+   ([instructions](https://circleci.com/developer/orbs/orb/threetreeslight/puppeteer)),
    or paste parts of its
-   [source](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer#orb-source)
+   [source](https://circleci.com/developer/orbs/orb/threetreeslight/puppeteer)
    into your own config.
 1. Lastly, if you’re using Puppeteer through Jest, then you may encounter an
    error spawning child processes:
@@ -755,7 +755,7 @@ https://timleland.com/headless-chrome-on-heroku/.
 
 ### Running Puppeteer on AWS Lambda
 
-AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html)
+AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 deployment package sizes to ~50MB. This presents challenges for running headless
 Chrome (and therefore Puppeteer) on Lambda. The community has put together a few
 resources that work around the issues:
@@ -769,7 +769,7 @@ and if you want to run Puppeteer tests in amazon-linux, follow these steps.
 
 1. To install Chromium, you have to first enable `amazon-linux-extras` which
    comes as part of
-   [EPEL (Extra Packages for Enterprise Linux)](https://aws.amazon.com/premiumsupport/knowledge-center/ec2-enable-epel/):
+   [EPEL (Extra Packages for Enterprise Linux)](https://repost.aws/knowledge-center/ec2-enable-epel):
 
    ```bash
    sudo amazon-linux-extras install epel -y
