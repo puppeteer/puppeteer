@@ -18,7 +18,8 @@ export const enum TargetManagerEvent {
   TargetAvailable = 'targetAvailable',
   TargetGone = 'targetGone',
   /**
-   * Emitted after a target has been initialized and whenever its URL changes.
+   * Emitted after a target has been initialized and whenever its URL or its
+   * subtype changes.
    */
   TargetChanged = 'targetChanged',
 }

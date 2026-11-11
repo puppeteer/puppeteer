@@ -277,17 +277,15 @@ export class CdpPage extends Page {
       this.#onDetachedFromTarget,
     );
 
+    this.#targetManager.on(
+      TargetManagerEvent.TargetChanged,
+      this.#onTargetChanged,
+    );
+
     void this.#tabTarget._isClosedDeferred
       .valueOrThrow()
       .then(() => {
-        this.#targetManager.off(
-          TargetManagerEvent.TargetGone,
-          this.#onDetachedFromTarget,
-        );
-        this.#tabTarget._removeTabPage(this);
-
-        this.emit(PageEvent.Close, undefined);
-        this.#closed = true;
+        this.#markClosed();
       })
       .catch(error => {
         this.logger?.(DEBUG_PREFIXES.error)?.(error);
@@ -296,6 +294,37 @@ export class CdpPage extends Page {
     this.#setupPrimaryTargetListeners();
     this.#attachExistingTargets();
   }
+
+  #markClosed(): void {
+    if (this.#closed) {
+      return;
+    }
+    this.#targetManager.off(
+      TargetManagerEvent.TargetGone,
+      this.#onDetachedFromTarget,
+    );
+    this.#targetManager.off(
+      TargetManagerEvent.TargetChanged,
+      this.#onTargetChanged,
+    );
+    this.#tabTarget._removeTabPage(this);
+
+    this.#closed = true;
+    this.emit(PageEvent.Close, undefined);
+  }
+
+  /**
+   * Closes the page when the browser discards its tab. The tab target stays,
+   * but the page target detaches. A detached page target alone does not close
+   * the page, because the primary target of a page can change, for example
+   * when a prerendered page activates. When the tab loads again, it gets a new
+   * page target and a new page.
+   */
+  #onTargetChanged = ({target}: {target: CdpTarget}): void => {
+    if (target === this.#tabTarget && target.isDiscarded()) {
+      this.#markClosed();
+    }
+  };
 
   #attachExistingTargets(): void {
     const queue = [];

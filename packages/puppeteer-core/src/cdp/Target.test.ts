@@ -43,6 +43,11 @@ class MockTransport implements ConnectionTransport {
   sentMessages: SentMessage[] = [];
   onBrowserAutoAttach?: () => void;
   /**
+   * Called before the response to `Target.setAutoAttach` for a session. The
+   * browser attaches the existing children of a target at this time.
+   */
+  onSessionAutoAttach?: (sessionId: string) => void;
+  /**
    * Returns an error message to make the command fail.
    */
   errorFor?: (msg: SentMessage) => string | undefined;
@@ -64,6 +69,9 @@ class MockTransport implements ConnectionTransport {
       }
       if (msg.method === 'Target.setAutoAttach' && !msg.sessionId) {
         this.onBrowserAutoAttach?.();
+      }
+      if (msg.method === 'Target.setAutoAttach' && msg.sessionId) {
+        this.onSessionAutoAttach?.(msg.sessionId);
       }
       let result: Record<string, unknown> = {};
       if (msg.method === 'Page.getFrameTree') {
@@ -181,20 +189,31 @@ function createHarness(
   };
 
   const attachTab = (id: string, url = 'https://example.com/') => {
+    const tab = attachTabWithoutPage(id, {url});
+    const page = attachChild(tab.tabSessionId, `page-${id}`, 'page', {url});
+    return {...tab, page};
+  };
+
+  /**
+   * Attaches a tab target without a page target, like Chrome does for a
+   * discarded tab.
+   */
+  const attachTabWithoutPage = (
+    id: string,
+    overrides: Partial<Protocol.Target.TargetInfo> = {},
+  ) => {
     const tabId = `tab-${id}`;
     const tabSessionId = `session-${tabId}`;
-    let tabInfo = makeTargetInfo(tabId, 'tab', {url});
+    let tabInfo = makeTargetInfo(tabId, 'tab', overrides);
     transport.emitEvent('Target.targetCreated', {targetInfo: tabInfo});
     transport.emitEvent('Target.attachedToTarget', {
       sessionId: tabSessionId,
       targetInfo: tabInfo,
       waitingForDebugger: false,
     });
-    const page = attachChild(tabSessionId, `page-${id}`, 'page', {url});
 
     return {
       tabSessionId,
-      page,
       update(changes: Partial<Protocol.Target.TargetInfo>) {
         tabInfo = {...tabInfo, ...changes};
         transport.emitEvent('Target.targetInfoChanged', {targetInfo: tabInfo});
@@ -213,6 +232,7 @@ function createHarness(
     flush,
     attachChild,
     attachTab,
+    attachTabWithoutPage,
     async attach() {
       await browser._attach(undefined);
       await flush();
@@ -489,5 +509,165 @@ describe('CdpTarget', function () {
     // The activated target creates a new page instead of the broken one.
     const page = (await findTarget(h, 'page-prerender').page())!;
     expect(page.viewport()).toEqual(viewport);
+  });
+
+  describe('discarded tabs', function () {
+    it('should not report targets as discarded by default', async () => {
+      const h = createHarness();
+      await h.attach();
+      h.attachTab('main');
+      await h.flush();
+
+      expect(findTarget(h, 'tab-main').isDiscarded()).toBe(false);
+      expect(findTarget(h, 'page-main').isDiscarded()).toBe(false);
+    });
+
+    it('should only report tab targets as discarded', async () => {
+      const h = createHarness();
+      await h.attach();
+      const tab = h.attachTab('main');
+      await h.flush();
+
+      tab.page.update({subtype: 'discarded'});
+      await h.flush();
+
+      expect(findTarget(h, 'page-main').isDiscarded()).toBe(false);
+    });
+
+    it('should report a tab as discarded when Chrome discards it', async () => {
+      const h = createHarness();
+      await h.attach();
+      const tab = h.attachTab('main');
+      await h.flush();
+      const page = (await findTarget(h, 'page-main').page())!;
+      const events = recordTargetEvents(h);
+
+      tab.page.detach();
+      tab.update({subtype: 'discarded'});
+      await h.flush();
+
+      // The order of the events is not defined.
+      expect(events.sort()).toEqual([
+        'targetchanged:tab-main',
+        'targetdestroyed:page-main',
+      ]);
+      const tabTarget = findTarget(h, 'tab-main');
+      expect(tabTarget.isDiscarded()).toBe(true);
+      expect(tabTarget.subtype()).toBe('discarded');
+      expect(page.isClosed()).toBe(true);
+      await expect(tabTarget.page()).resolves.toBeNull();
+      await expect(tabTarget.asPage()).rejects.toThrow(
+        'Cannot create a page for a discarded tab.',
+      );
+      await expect(h.browser.pages()).resolves.toEqual([]);
+    });
+
+    it('should close the page when the tab is discarded before its page target detaches', async () => {
+      const h = createHarness();
+      await h.attach();
+      const tab = h.attachTab('main');
+      await h.flush();
+      const page = (await findTarget(h, 'page-main').page())!;
+      let closeEvents = 0;
+      page.on('close', () => {
+        closeEvents++;
+      });
+
+      tab.update({subtype: 'discarded'});
+      await h.flush();
+
+      expect(page.isClosed()).toBe(true);
+      await expect(findTarget(h, 'tab-main').page()).resolves.toBeNull();
+      await expect(h.browser.pages()).resolves.toEqual([]);
+
+      tab.page.detach();
+      tab.close();
+      await h.flush();
+      expect(closeEvents).toBe(1);
+    });
+
+    it(
+      'should connect to a browser with a discarded tab',
+      {timeout: 5000},
+      async () => {
+        const h = createHarness();
+        // A discarded tab has no page target, so it attaches no child.
+        h.transport.onBrowserAutoAttach = () => {
+          h.attachTabWithoutPage('main', {subtype: 'discarded'});
+        };
+
+        await h.attach();
+
+        expect(targetIds(h.browser.targets())).toEqual(['tab-main']);
+        expect(findTarget(h, 'tab-main').isDiscarded()).toBe(true);
+        await expect(h.browser.pages()).resolves.toEqual([]);
+      },
+    );
+
+    it(
+      'should wait for the page of a loaded tab when Puppeteer connects',
+      {timeout: 5000},
+      async () => {
+        const h = createHarness();
+        h.transport.onBrowserAutoAttach = () => {
+          h.attachTabWithoutPage('main');
+        };
+        h.transport.onSessionAutoAttach = sessionId => {
+          if (sessionId === 'session-tab-main') {
+            h.attachChild(sessionId, 'page-main', 'page');
+          }
+        };
+
+        await h.attach();
+
+        expect(targetIds(h.browser.targets())).toEqual([
+          'tab-main',
+          'page-main',
+        ]);
+        const page = await findTarget(h, 'tab-main').page();
+        expect(page).not.toBeNull();
+        await expect(h.browser.pages()).resolves.toEqual([page]);
+      },
+    );
+
+    it('should report a tab that is discarded when Puppeteer attaches', async () => {
+      const h = createHarness();
+      await h.attach();
+      const events = recordTargetEvents(h);
+
+      h.attachTabWithoutPage('main', {subtype: 'discarded'});
+      await h.flush();
+
+      expect(events).toEqual(['targetcreated:tab-main']);
+      const tabTarget = findTarget(h, 'tab-main');
+      expect(tabTarget.isDiscarded()).toBe(true);
+      expect(tabTarget.url()).toBe('https://example.com/');
+      await expect(tabTarget.page()).resolves.toBeNull();
+      await expect(h.browser.pages()).resolves.toEqual([]);
+    });
+
+    it('should give a new page to a discarded tab that loads again', async () => {
+      const h = createHarness();
+      await h.attach();
+      const tab = h.attachTabWithoutPage('main', {subtype: 'discarded'});
+      await h.flush();
+      const events = recordTargetEvents(h);
+
+      h.attachChild(tab.tabSessionId, 'page-main', 'page');
+      tab.update({subtype: undefined});
+      await h.flush();
+
+      // The order of the events is not defined.
+      expect(events.sort()).toEqual([
+        'targetchanged:tab-main',
+        'targetcreated:page-main',
+      ]);
+      const tabTarget = findTarget(h, 'tab-main');
+      expect(tabTarget.isDiscarded()).toBe(false);
+      const page = (await tabTarget.page())!;
+      expect(page).not.toBeNull();
+      expect(page.target()).toBe(findTarget(h, 'page-main'));
+      await expect(h.browser.pages()).resolves.toEqual([page]);
+    });
   });
 });

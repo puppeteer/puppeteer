@@ -70,6 +70,20 @@
     "comment": "No DevTools in shell"
   },
   {
+    "testIdPattern": "[discardedTabs.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "CDP-specific: WebDriver BiDi has no tab targets."
+  },
+  {
+    "testIdPattern": "[discardedTabs.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "No extensions in chrome-headless-shell"
+  },
+  {
     "testIdPattern": "[drag-and-drop.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -535,6 +549,13 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "Firefox does not expose the DevTools front-end as a target. The test calls asPage() on a Chrome DevTools target of type 'other'."
+  },
+  {
+    "testIdPattern": "[discardedTabs.test] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: enable when Chrome reports the discarded subtype for tab targets (crrev.com/c/8757231, crrev.com/c/8774568)"
   },
   {
     "testIdPattern": "[drag-and-drop.test] Drag n' Drop should release the mouse button when the drop fails",

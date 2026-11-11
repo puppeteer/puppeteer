@@ -68,6 +68,10 @@ export class CdpBrowserContext extends BrowserContext {
           if (target.parent()?.type() === TargetType.TAB) {
             return false;
           }
+          if (target.isDiscarded()) {
+            // A discarded tab has no page until it loads again.
+            return false;
+          }
           const contentTarget =
             target.type() === TargetType.TAB
               ? target._primaryChildTarget()
