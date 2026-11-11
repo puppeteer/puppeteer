@@ -160,6 +160,13 @@ export class BidiFrame extends Frame {
         );
       });
     });
+    this.browsingContext.on('historyUpdated', () => {
+      this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
+      this.page().trustedEmitter.emit(
+        PageEvent.FrameNavigatedSameDocument,
+        this,
+      );
+    });
     this.browsingContext.on('load', () => {
       this.page().trustedEmitter.emit(PageEvent.Load, undefined);
     });

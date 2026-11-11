@@ -178,6 +178,42 @@ describe('Frame specs', function () {
       expect(navigatedFrames[0]).toBe(page.mainFrame());
       expect(navigatedFrames[0]!.url()).toBe(server.EMPTY_PAGE + '#foo');
     });
+    for (const method of ['pushState', 'replaceState'] as const) {
+      it(`should send "framenavigatedsamedocument" on history.${method}`, async () => {
+        const {page, server} = await getTestState();
+
+        await page.goto(server.EMPTY_PAGE);
+
+        const events: string[] = [];
+        const navigatedFrames: Frame[] = [];
+        page.on('framenavigated', () => {
+          events.push('framenavigated');
+        });
+        page.on('framenavigatedsamedocument', frame => {
+          events.push('framenavigatedsamedocument');
+          navigatedFrames.push(frame);
+        });
+        page.on('framenavigatednewdocument', () => {
+          events.push('framenavigatednewdocument');
+        });
+
+        await Promise.all([
+          waitEvent(page, 'framenavigatedsamedocument'),
+          page.evaluate(method => {
+            history[method]({}, '', '/history-api.html');
+          }, method),
+        ]);
+        expect(events).toEqual([
+          'framenavigated',
+          'framenavigatedsamedocument',
+        ]);
+        expect(navigatedFrames).toHaveLength(1);
+        expect(navigatedFrames[0]).toBe(page.mainFrame());
+        expect(navigatedFrames[0]!.url()).toBe(
+          server.PREFIX + '/history-api.html',
+        );
+      });
+    }
     it('should send "framenavigatednewdocument" for child frames', async () => {
       const {page, server} = await getTestState();
 
