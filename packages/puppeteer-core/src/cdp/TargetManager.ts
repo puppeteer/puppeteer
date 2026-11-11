@@ -566,6 +566,10 @@ export class TargetManager
       parentSession.target()._removeChildTarget(target);
     }
     this.#attachedTargetsByTargetId.delete(target._targetId);
+    if (target.type() === TargetType.TAB) {
+      // A tab that is gone never attaches a page target. Do not wait for it.
+      this.#finishInitializationIfReady(target._targetId);
+    }
     this.emit(TargetManagerEvent.TargetGone, target);
   };
 
