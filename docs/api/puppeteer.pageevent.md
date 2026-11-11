@@ -134,6 +134,44 @@ FrameNavigated
 
 Emitted when a frame is navigated to a new URL. Will contain a [Frame](./puppeteer.frame.md).
 
+**Remarks:**
+
+This event is emitted for both same-document navigations (for example, fragment navigations) and navigations to a new document. Use [PageEvent.FrameNavigatedSameDocument](./puppeteer.pageevent.md) or [PageEvent.FrameNavigatedNewDocument](./puppeteer.pageevent.md) to distinguish between the two.
+
+</td></tr>
+<tr><td>
+
+FrameNavigatedNewDocument
+
+</td><td>
+
+`"framenavigatednewdocument"`
+
+</td><td>
+
+Emitted when a frame is navigated to a new document. Will contain a [Frame](./puppeteer.frame.md).
+
+**Remarks:**
+
+Emitted after [PageEvent.FrameNavigated](./puppeteer.pageevent.md).
+
+</td></tr>
+<tr><td>
+
+FrameNavigatedSameDocument
+
+</td><td>
+
+`"framenavigatedsamedocument"`
+
+</td><td>
+
+Emitted when a frame navigates within the same document, for example, to a different fragment (`#hash`) or via the History API. Will contain a [Frame](./puppeteer.frame.md).
+
+**Remarks:**
+
+Emitted after [PageEvent.FrameNavigated](./puppeteer.pageevent.md).
+
 </td></tr>
 <tr><td>
 

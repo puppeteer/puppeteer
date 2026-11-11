@@ -154,7 +154,18 @@ export class BidiFrame extends Frame {
     this.browsingContext.on('navigation', navigation => {
       navigation.once('fragment', () => {
         this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
+        this.page().trustedEmitter.emit(
+          PageEvent.FrameNavigatedSameDocument,
+          this,
+        );
       });
+    });
+    this.browsingContext.on('historyUpdated', () => {
+      this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
+      this.page().trustedEmitter.emit(
+        PageEvent.FrameNavigatedSameDocument,
+        this,
+      );
     });
     this.browsingContext.on('load', () => {
       this.page().trustedEmitter.emit(PageEvent.Load, undefined);
@@ -163,6 +174,10 @@ export class BidiFrame extends Frame {
       this._hasStartedLoading = true;
       this.page().trustedEmitter.emit(PageEvent.DOMContentLoaded, undefined);
       this.page().trustedEmitter.emit(PageEvent.FrameNavigated, this);
+      this.page().trustedEmitter.emit(
+        PageEvent.FrameNavigatedNewDocument,
+        this,
+      );
     });
 
     this.browsingContext.on('userprompt', userPrompt => {

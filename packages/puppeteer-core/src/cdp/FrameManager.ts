@@ -520,6 +520,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     frame = await this._frameTree.waitForFrame(frameId);
     frame._navigated(framePayload);
     this.emit(FrameManagerEvent.FrameNavigated, frame);
+    this.emit(FrameManagerEvent.FrameNavigatedNewDocument, frame);
     frame.emit(FrameEvent.FrameNavigated, navigationType);
   }
 
@@ -564,9 +565,9 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return;
     }
     frame._navigatedWithinDocument(url);
-    this.emit(FrameManagerEvent.FrameNavigatedWithinDocument, frame);
     frame.emit(FrameEvent.FrameNavigatedWithinDocument, undefined);
     this.emit(FrameManagerEvent.FrameNavigated, frame);
+    this.emit(FrameManagerEvent.FrameNavigatedWithinDocument, frame);
     frame.emit(FrameEvent.FrameNavigated, 'Navigation');
   }
 
