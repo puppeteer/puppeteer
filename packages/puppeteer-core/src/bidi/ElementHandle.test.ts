@@ -25,11 +25,18 @@ const noopLogger = () => {
 function createTestRealms() {
   const cdpCalls: Array<{method: string; params: Record<string, unknown>}> = [];
   const disownedHandles: string[][] = [];
+  let callFunctionCount = 0;
 
   const frame = {
     _id: 'frame-1',
     timeoutSettings: new TimeoutSettings(),
     clearDocumentHandle() {},
+    mainRealm(): BidiFrameRealm {
+      return mainRealm;
+    },
+    isolatedRealm(): BidiFrameRealm {
+      return isolatedRealm;
+    },
     page() {
       return {
         browser() {
@@ -72,6 +79,7 @@ function createTestRealms() {
     return Object.assign(new EventEmitter(), {
       disposed: false,
       async callFunction(): Promise<Bidi.Script.EvaluateResult> {
+        callFunctionCount++;
         return {
           type: 'success',
           realm: 'realm-1',
@@ -89,9 +97,21 @@ function createTestRealms() {
     }) as unknown as WindowRealm;
   };
 
-  const realm1 = BidiFrameRealm.from(makeWindowRealm(), frame, noopLogger);
-  const realm2 = BidiFrameRealm.from(makeWindowRealm(), frame, noopLogger);
-  return {realm1, realm2, cdpCalls, disownedHandles};
+  const mainRealm = BidiFrameRealm.from(makeWindowRealm(), frame, noopLogger);
+  const isolatedRealm = BidiFrameRealm.from(
+    makeWindowRealm(),
+    frame,
+    noopLogger,
+  );
+  return {
+    realm1: mainRealm,
+    realm2: isolatedRealm,
+    cdpCalls,
+    disownedHandles,
+    getCallFunctionCount() {
+      return callFunctionCount;
+    },
+  };
 }
 
 describe('BidiElementHandle and BidiFrameRealm', () => {
@@ -152,6 +172,69 @@ describe('BidiElementHandle and BidiFrameRealm', () => {
     await expect(realm2.adoptHandle(liveHandle)).rejects.toThrow(
       'JSHandle is disposed',
     );
+  });
+
+  it('adopts handles with both handle and sharedId without a BiDi round trip or disowning source handle', async () => {
+    const {realm1, realm2, disownedHandles, getCallFunctionCount} =
+      createTestRealms();
+    const nodeWithHandle: Bidi.Script.NodeRemoteValue = {
+      type: 'node',
+      sharedId: 'shared-1',
+      handle: 'main-handle-1',
+      value: {nodeType: 1, childNodeCount: 0},
+    };
+
+    const mainHandle = BidiElementHandle.from(nodeWithHandle, realm1);
+    const adopted = await realm2.adoptHandle(mainHandle);
+
+    expect(getCallFunctionCount()).toBe(0);
+    expect(adopted.realm).toBe(realm2);
+    expect(adopted.id).toBeUndefined();
+    expect(adopted.remoteValue()).toEqual({
+      type: 'node',
+      sharedId: 'shared-1',
+      value: {nodeType: 1, childNodeCount: 0},
+    });
+
+    await adopted.dispose();
+    expect(disownedHandles).toEqual([]);
+    expect(mainHandle.disposed).toBe(false);
+
+    await mainHandle.dispose();
+    expect(disownedHandles).toEqual([['main-handle-1']]);
+  });
+
+  it('transfers isolated handles to main realm via sharedId with zero round trips while preserving isolatedHandle ownership', async () => {
+    const {realm1, realm2, cdpCalls, disownedHandles, getCallFunctionCount} =
+      createTestRealms();
+    const isolatedNode: Bidi.Script.NodeRemoteValue = {
+      type: 'node',
+      sharedId: 'shared-1',
+      handle: 'isolated-handle-1',
+      value: {nodeType: 1, childNodeCount: 0},
+    };
+
+    const isolatedHandle = BidiElementHandle.from(isolatedNode, realm2);
+    const mainHandle = await realm1.transferHandle(isolatedHandle);
+
+    expect(getCallFunctionCount()).toBe(0);
+    expect(disownedHandles).toEqual([]);
+    expect(mainHandle.realm).toBe(realm1);
+    expect(mainHandle.id).toBeUndefined();
+    expect(mainHandle.isolatedHandle).toBe(isolatedHandle);
+
+    // backendNodeId() reuses isolatedHandle.id without materializing a temporary handle
+    const backendId = await mainHandle.backendNodeId();
+    expect(backendId).toBe(42);
+    expect(getCallFunctionCount()).toBe(0);
+    expect(cdpCalls).toEqual([
+      {method: 'DOM.describeNode', params: {objectId: 'isolated-handle-1'}},
+    ]);
+
+    await mainHandle.dispose();
+    expect(mainHandle.disposed).toBe(true);
+    expect(isolatedHandle.disposed).toBe(true);
+    expect(disownedHandles).toEqual([['isolated-handle-1']]);
   });
 
   it('supports Accessibility.snapshot({root}) with sharedId-only handles', async () => {

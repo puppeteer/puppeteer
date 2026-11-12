@@ -220,10 +220,13 @@ export class IsolatedWorld extends Realm {
       backendNodeId: backendNodeId,
       executionContextId: context.id,
     });
-    return this.createCdpHandle(object) as JSHandle<Node>;
+    return this.createCdpHandle(object, backendNodeId) as JSHandle<Node>;
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
+    if (handle.disposed) {
+      throw new Error('JSHandle is disposed!');
+    }
     if (handle.realm === this) {
       // If the context has already adopted this handle, clone it so downstream
       // disposal doesn't become an issue.
@@ -231,10 +234,15 @@ export class IsolatedWorld extends Realm {
         return value;
       })) as unknown as T;
     }
-    const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: handle.id,
-    });
-    return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;
+    const backendNodeId =
+      handle instanceof CdpElementHandle
+        ? (handle.cachedBackendNodeId ?? (await handle.backendNodeId()))
+        : (
+            await this.client.send('DOM.describeNode', {
+              objectId: handle.id,
+            })
+          ).node.backendNodeId;
+    return (await this.adoptBackendNode(backendNodeId)) as T;
   }
 
   async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
@@ -245,13 +253,28 @@ export class IsolatedWorld extends Realm {
     if (handle.remoteObject().objectId === undefined) {
       return handle;
     }
-    const info = await this.client.send('DOM.describeNode', {
-      objectId: handle.remoteObject().objectId,
-    });
-    const newHandle = (await this.adoptBackendNode(
-      info.node.backendNodeId,
-    )) as T;
-    await handle.dispose();
+    if (handle.disposed) {
+      throw new Error('JSHandle is disposed!');
+    }
+    const backendNodeId =
+      handle instanceof CdpElementHandle
+        ? (handle.cachedBackendNodeId ?? (await handle.backendNodeId()))
+        : (
+            await this.client.send('DOM.describeNode', {
+              objectId: handle.remoteObject().objectId,
+            })
+          ).node.backendNodeId;
+    const newHandle = (await this.adoptBackendNode(backendNodeId)) as T;
+    if (
+      handle instanceof CdpElementHandle &&
+      newHandle instanceof CdpElementHandle &&
+      'isolatedRealm' in this.#frameOrWorker &&
+      handle.realm === this.#frameOrWorker.isolatedRealm()
+    ) {
+      newHandle.isolatedHandle = handle;
+    } else {
+      await handle.dispose();
+    }
     return newHandle;
   }
 
@@ -260,9 +283,29 @@ export class IsolatedWorld extends Realm {
    */
   createCdpHandle(
     remoteObject: Protocol.Runtime.RemoteObject,
+    backendNodeId?: Protocol.DOM.BackendNodeId,
   ): JSHandle | ElementHandle<Node> {
+    const resolvedBackendNodeId =
+      backendNodeId ??
+      (remoteObject.deepSerializedValue?.type === 'node'
+        ? (
+            remoteObject.deepSerializedValue.value as
+              | {
+                  backendNodeId?: Protocol.DOM.BackendNodeId;
+                }
+              | undefined
+          )?.backendNodeId
+        : undefined);
+    if ('deepSerializedValue' in remoteObject) {
+      delete remoteObject.deepSerializedValue;
+    }
     if (remoteObject.subtype === 'node') {
-      return new CdpElementHandle(this, remoteObject, this.#logger);
+      return new CdpElementHandle(
+        this,
+        remoteObject,
+        this.#logger,
+        resolvedBackendNodeId,
+      );
     }
     return new CdpJSHandle(this, remoteObject, this.#logger);
   }

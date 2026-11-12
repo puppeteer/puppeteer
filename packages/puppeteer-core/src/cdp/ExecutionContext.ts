@@ -406,6 +406,18 @@ export class ExecutionContext
         PuppeteerURL.INTERNAL_URL,
     );
 
+    const serializationOptions:
+      Protocol.Runtime.SerializationOptions | undefined =
+      !returnByValue && 'clearDocumentHandle' in this.#world.environment
+        ? {
+            serialization: 'deep',
+            maxDepth: 0,
+            additionalParameters: {
+              maxNodeDepth: 0,
+            },
+          }
+        : undefined;
+
     if (isString(pageFunction)) {
       const contextId = this.#id;
       const expression = pageFunction;
@@ -420,6 +432,7 @@ export class ExecutionContext
           returnByValue,
           awaitPromise: true,
           userGesture: true,
+          ...(serializationOptions ? {serializationOptions} : {}),
         })
         .catch(rewriteError);
 
@@ -465,6 +478,7 @@ export class ExecutionContext
         returnByValue,
         awaitPromise: true,
         userGesture: true,
+        ...(serializationOptions ? {serializationOptions} : {}),
       });
     } catch (error) {
       if (

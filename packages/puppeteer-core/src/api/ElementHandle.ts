@@ -145,9 +145,19 @@ export function bindIsolatedHandle<This extends ElementHandle<Node>>(
     if (this['isolatedHandle']) {
       adoptedThis = this['isolatedHandle'];
     } else {
-      this['isolatedHandle'] = adoptedThis = await this.frame
+      this['isolatedHandlePromise'] ??= this.frame
         .isolatedRealm()
-        .adoptHandle(this);
+        .adoptHandle(this)
+        .then(
+          handle => {
+            return (this['isolatedHandle'] = handle);
+          },
+          error => {
+            this['isolatedHandlePromise'] = undefined;
+            throw error;
+          },
+        );
+      adoptedThis = await this['isolatedHandlePromise'];
     }
     const result = await target.call(adoptedThis, ...args);
     // If the function returns `adoptedThis`, then we return `this`.
@@ -228,6 +238,11 @@ export abstract class ElementHandle<
    * trying to adopt it multiple times
    */
   isolatedHandle?: typeof this;
+
+  /**
+   * @internal
+   */
+  isolatedHandlePromise?: Promise<typeof this>;
 
   /**
    * @internal
@@ -344,7 +359,17 @@ export abstract class ElementHandle<
    * @internal
    */
   override async dispose(): Promise<void> {
-    await Promise.all([this.handle.dispose(), this.isolatedHandle?.dispose()]);
+    await Promise.all([
+      this.handle.dispose(),
+      (
+        this.isolatedHandle ??
+        (this.isolatedHandlePromise
+          ? await this.isolatedHandlePromise.catch(() => {
+              return undefined;
+            })
+          : undefined)
+      )?.dispose(),
+    ]);
   }
 
   /**

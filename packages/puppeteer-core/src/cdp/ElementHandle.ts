@@ -44,9 +44,23 @@ export class CdpElementHandle<
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
     logger: Logger,
+    backendNodeId?: Protocol.DOM.BackendNodeId,
   ) {
     super(new CdpJSHandle(world, remoteObject, logger), logger);
     this.#logger = logger;
+    this.#backendNodeId = backendNodeId;
+  }
+
+  /**
+   * @internal
+   */
+  get cachedBackendNodeId(): Protocol.DOM.BackendNodeId | undefined {
+    return (
+      this.#backendNodeId ??
+      (this.isolatedHandle instanceof CdpElementHandle
+        ? this.isolatedHandle.#backendNodeId
+        : undefined)
+    );
   }
 
   override get realm(): IsolatedWorld {
@@ -78,6 +92,7 @@ export class CdpElementHandle<
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
     });
+    this.#backendNodeId ??= nodeInfo.node.backendNodeId;
     if (typeof nodeInfo.node.frameId !== 'string') {
       return null;
     }
@@ -150,11 +165,7 @@ export class CdpElementHandle<
       return;
     }
 
-    const {
-      node: {backendNodeId},
-    } = await this.client.send('DOM.describeNode', {
-      objectId: this.id,
-    });
+    const backendNodeId = await this.backendNodeId();
     await this.client.send('DOM.setFileInputFiles', {
       objectId: this.id,
       files,
@@ -164,10 +175,7 @@ export class CdpElementHandle<
 
   @throwIfDisposed()
   override async autofill(data: AutofillData): Promise<void> {
-    const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: this.handle.id,
-    });
-    const fieldId = nodeInfo.node.backendNodeId;
+    const fieldId = await this.backendNodeId();
     const frameId = this.frame._id;
     await this.client.send('Autofill.trigger', {
       fieldId,
@@ -207,9 +215,12 @@ export class CdpElementHandle<
     });
   }
 
+  @throwIfDisposed()
   override async backendNodeId(): Promise<number> {
-    if (this.#backendNodeId) {
-      return this.#backendNodeId;
+    const cached = this.cachedBackendNodeId;
+    if (cached !== undefined) {
+      this.#backendNodeId = cached;
+      return cached;
     }
     const {node} = await this.client.send('DOM.describeNode', {
       objectId: this.handle.id,

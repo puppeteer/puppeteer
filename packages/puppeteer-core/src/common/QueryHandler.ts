@@ -153,14 +153,32 @@ export class QueryHandler {
     },
   ): Promise<ElementHandle<Node> | null> {
     let frame!: Frame;
-    using element = await (async () => {
+    using adoptedElement = await (async () => {
       if (!(_isElementHandle in elementOrFrame)) {
         frame = elementOrFrame;
         return;
       }
       frame = elementOrFrame.frame;
+      if (
+        elementOrFrame.realm === frame.isolatedRealm() ||
+        (elementOrFrame.isolatedHandle &&
+          !elementOrFrame.isolatedHandle.disposed)
+      ) {
+        return;
+      }
       return await frame.isolatedRealm().adoptHandle(elementOrFrame);
     })();
+    const getRoot = () => {
+      if (adoptedElement) {
+        return adoptedElement;
+      }
+      if (!(_isElementHandle in elementOrFrame)) {
+        return undefined;
+      }
+      return elementOrFrame.realm === frame.isolatedRealm()
+        ? elementOrFrame
+        : elementOrFrame.isolatedHandle;
+    };
 
     const {visible = false, hidden = false, timeout, signal} = options;
     const polling = visible || hidden ? PollingOptions.RAF : options.polling;
@@ -182,7 +200,7 @@ export class QueryHandler {
         },
         {
           polling,
-          root: element,
+          root: getRoot(),
           timeout,
           signal,
         },
@@ -191,7 +209,7 @@ export class QueryHandler {
         }),
         stringifyFunction(this._querySelector),
         selector,
-        element,
+        getRoot(),
         visible ? true : hidden ? false : undefined,
       );
 
@@ -202,7 +220,7 @@ export class QueryHandler {
       if (!(_isElementHandle in handle)) {
         return null;
       }
-      return await frame.mainRealm().transferHandle(handle);
+      return await frame.mainRealm().transferHandle(handle.move());
     } catch (error) {
       if (!isErrorLike(error)) {
         throw error;
