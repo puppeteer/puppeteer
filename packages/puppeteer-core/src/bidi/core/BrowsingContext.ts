@@ -301,6 +301,71 @@ export class BrowsingContext extends EventEmitter<{
 
       this.emit('navigation', this.#navigation);
     });
+    const activeInitialRequests = new Set<string>();
+    const replayingRequests = new Set<string>();
+    const earlyNetworkEvents = new Map<
+      string,
+      {
+        responseStarted?: Bidi.Network.ResponseStartedParameters;
+        responseCompleted?: Bidi.Network.ResponseCompletedParameters;
+        fetchError?: Bidi.Network.FetchErrorParameters;
+      }
+    >();
+    this.#disposables.defer(() => {
+      activeInitialRequests.clear();
+      replayingRequests.clear();
+      earlyNetworkEvents.clear();
+    });
+
+    sessionEmitter.on('network.responseStarted', event => {
+      if (
+        event.context !== this.id ||
+        event.redirectCount > 0 ||
+        replayingRequests.has(event.request.request)
+      ) {
+        return;
+      }
+      const id = event.request.request;
+      if (!activeInitialRequests.has(id)) {
+        const entry = earlyNetworkEvents.get(id) ?? {};
+        entry.responseStarted = event;
+        earlyNetworkEvents.set(id, entry);
+      }
+    });
+    sessionEmitter.on('network.responseCompleted', event => {
+      if (event.context !== this.id || event.redirectCount > 0) {
+        return;
+      }
+      const id = event.request.request;
+      if (replayingRequests.has(id)) {
+        activeInitialRequests.delete(id);
+        return;
+      }
+      if (!activeInitialRequests.has(id)) {
+        const entry = earlyNetworkEvents.get(id) ?? {};
+        entry.responseCompleted = event;
+        earlyNetworkEvents.set(id, entry);
+      } else {
+        activeInitialRequests.delete(id);
+      }
+    });
+    sessionEmitter.on('network.fetchError', event => {
+      if (event.context !== this.id || event.redirectCount > 0) {
+        return;
+      }
+      const id = event.request.request;
+      if (replayingRequests.has(id)) {
+        activeInitialRequests.delete(id);
+        return;
+      }
+      if (!activeInitialRequests.has(id)) {
+        const entry = earlyNetworkEvents.get(id) ?? {};
+        entry.fetchError = event;
+        earlyNetworkEvents.set(id, entry);
+      } else {
+        activeInitialRequests.delete(id);
+      }
+    });
     sessionEmitter.on('network.beforeRequestSent', event => {
       if (event.context !== this.id) {
         return;
@@ -308,11 +373,59 @@ export class BrowsingContext extends EventEmitter<{
       if (event.redirectCount > 0) {
         // Means the request is a redirect. This is handled in Request.
         // Or an Auth event was issued
+        activeInitialRequests.delete(event.request.request);
+        earlyNetworkEvents.delete(event.request.request);
         return;
       }
 
+      const id = event.request.request;
+      activeInitialRequests.add(id);
+
       const request = Request.from(this, event);
       this.emit('request', request);
+
+      const buffered = earlyNetworkEvents.get(id);
+      if (buffered) {
+        earlyNetworkEvents.delete(id);
+        replayingRequests.add(id);
+        // Yield microtasks so `page.on('request')` handlers queued via
+        // `enqueueInterceptAction` run before replayed response events.
+        void (async () => {
+          try {
+            for (let i = 0; i < 8; i++) {
+              await Promise.resolve();
+            }
+            if (this.disposed) {
+              return;
+            }
+            if (buffered.responseStarted) {
+              this.#session.emit(
+                'network.responseStarted',
+                buffered.responseStarted,
+              );
+            }
+            if (buffered.responseCompleted) {
+              await Promise.resolve();
+              if (this.disposed) {
+                return;
+              }
+              this.#session.emit(
+                'network.responseCompleted',
+                buffered.responseCompleted,
+              );
+            }
+            if (buffered.fetchError) {
+              await Promise.resolve();
+              if (this.disposed) {
+                return;
+              }
+              this.#session.emit('network.fetchError', buffered.fetchError);
+            }
+          } finally {
+            replayingRequests.delete(id);
+          }
+        })();
+      }
     });
 
     sessionEmitter.on('log.entryAdded', entry => {
