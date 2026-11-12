@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {getEventListeners} from 'node:events';
 import type {ServerResponse} from 'node:http';
 
 import expect from 'expect';
 import {type Frame, TimeoutError} from 'puppeteer';
+import {FrameEvent} from 'puppeteer-core/internal/api/Frame.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
@@ -274,6 +276,17 @@ describe('navigation', function () {
         });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should remove its listeners when the navigation times out', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/empty.html', () => {});
+      const frame = page.mainFrame();
+      const listeners = frame.listenerCount(FrameEvent.FrameDetached);
+      await expect(
+        page.goto(server.PREFIX + '/empty.html', {timeout: 1}),
+      ).rejects.toBeInstanceOf(TimeoutError);
+      expect(frame.listenerCount(FrameEvent.FrameDetached)).toBe(listeners);
     });
     it('should settle when the page navigates again while loading', async () => {
       const {page, server} = await getTestState();
@@ -867,6 +880,21 @@ describe('navigation', function () {
 
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
+    });
+    it('should remove the abort listener from the signal', async () => {
+      const {page, server} = await getTestState();
+
+      const abortController = new AbortController();
+      await Promise.all([
+        page.waitForNavigation({signal: abortController.signal}),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      await expect(
+        page.waitForNavigation({signal: abortController.signal, timeout: 1}),
+      ).rejects.toBeInstanceOf(TimeoutError);
+      expect(getEventListeners(abortController.signal, 'abort')).toHaveLength(
+        0,
+      );
     });
   });
 
