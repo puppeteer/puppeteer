@@ -244,6 +244,9 @@ describe('Target', function () {
       },
       {timeout: 3000},
     );
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready;
+    });
     const worker = (await target.worker())!;
 
     const onceDestroyed = new Promise(resolve => {
