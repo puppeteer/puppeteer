@@ -1734,6 +1734,22 @@ describe('Page', function () {
       ).rejects.toBeInstanceOf(TimeoutError);
       expect(frame.listenerCount(FrameEvent.FrameDetached)).toBe(listeners);
     });
+    it('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      const imgPath = '/img.png';
+      // stall for image
+      server.setRoute(imgPath, () => {});
+      const abortController = new AbortController();
+      const content = page.setContent(
+        html`<img src="${server.PREFIX + imgPath}"></img>`,
+        {signal: abortController.signal},
+      );
+      await server.waitForRequest(imgPath);
+
+      abortController.abort();
+      await expect(content).rejects.toThrow(/aborted/);
+    });
     it('should respect default navigation timeout', async () => {
       const {page, server} = await getTestState();
 

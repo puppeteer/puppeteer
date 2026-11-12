@@ -376,7 +376,7 @@ export class BidiFrame extends Frame {
         combineLatest([
           this.#waitForLoad$(options),
           this.#waitForNetworkIdle$(options),
-        ]),
+        ]).pipe(raceWith(fromAbortSignal(options.signal))),
       ),
     ]);
   }

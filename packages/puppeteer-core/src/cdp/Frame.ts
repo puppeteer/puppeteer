@@ -6,6 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
@@ -15,6 +16,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {fromAbortSignal} from '../common/util.js';
 import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -301,18 +303,22 @@ export class CdpFrame extends Frame {
     const {
       waitUntil = ['load'],
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+      signal,
     } = options;
 
     // We rely upon the fact that the document is reopened, which resets the
     // frame lifecycle with an "init" lifecycle event.
     // @see https://crrev.com/608658
-    await this.setFrameContent(html);
+    await firstValueFrom(
+      from(this.setFrameContent(html)).pipe(raceWith(fromAbortSignal(signal))),
+    );
 
     const watcher = new LifecycleWatcher(
       this._frameManager.networkManager,
       this,
       waitUntil,
       timeout,
+      signal,
     );
     try {
       const error = await Deferred.race<void | Error | undefined>([
