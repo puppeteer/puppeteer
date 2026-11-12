@@ -270,7 +270,7 @@ export class CdpFrame extends Frame {
         Error | HTTPResponse | null | undefined
       >([watcher.terminationPromise(), watcher.navigationResponse()]);
       if (result instanceof Error) {
-        throw error;
+        throw result;
       }
       return result || null;
     } finally {
