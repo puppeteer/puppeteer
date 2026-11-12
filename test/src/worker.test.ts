@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import type {JSHandle} from 'puppeteer-core/internal/api/JSHandle.js';
 import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 import {WebWorkerEvent} from 'puppeteer-core/internal/api/WebWorker.js';
@@ -105,6 +106,104 @@ describe('Workers', function () {
     const failedPromise = waitEvent<HTTPRequest>(
       page,
       'requestfailed',
+      failed => {
+        return failed === request;
+      },
+    );
+    await page.evaluate(() => {
+      (globalThis as any).worker.terminate();
+    });
+    await failedPromise;
+
+    expect(request.failure()).toEqual({errorText: 'net::ERR_ABORTED'});
+  });
+
+  it('should report network requests on the worker', async () => {
+    const {page, server} = await getTestState();
+
+    const [worker] = await Promise.all([
+      waitEvent<WebWorker>(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+    const url = server.PREFIX + '/one-style.css';
+    const [request, response, finished] = await Promise.all([
+      waitEvent<HTTPRequest>(worker, WebWorkerEvent.Request, request => {
+        return request.url() === url;
+      }),
+      waitEvent<HTTPResponse>(worker, WebWorkerEvent.Response, response => {
+        return response.url() === url;
+      }),
+      waitEvent<HTTPRequest>(
+        worker,
+        WebWorkerEvent.RequestFinished,
+        request => {
+          return request.url() === url;
+        },
+      ),
+      worker.evaluate(async (url: string) => {
+        await (await fetch(url)).text();
+      }, url),
+    ]);
+
+    expect(request.worker()).toBe(worker);
+    expect(request.frame()).toBeNull();
+    expect(request.page()).toBeNull();
+    expect(response.request()).toBe(request);
+    expect(response.status()).toBe(200);
+    expect(finished).toBe(request);
+  });
+
+  it('should report network requests on the worker only for its own requests', async () => {
+    const {page, server} = await getTestState();
+
+    const [worker] = await Promise.all([
+      waitEvent<WebWorker>(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+    const workerRequests: string[] = [];
+    worker.on(WebWorkerEvent.Request, request => {
+      workerRequests.push(request.url());
+    });
+
+    await Promise.all([
+      page.waitForRequest(server.EMPTY_PAGE),
+      page.evaluate((url: string) => {
+        return fetch(url);
+      }, server.EMPTY_PAGE),
+    ]);
+    const workerUrl = server.PREFIX + '/one-style.css';
+    await Promise.all([
+      waitEvent<HTTPRequest>(worker, WebWorkerEvent.RequestFinished),
+      worker.evaluate(async (url: string) => {
+        await (await fetch(url)).text();
+      }, workerUrl),
+    ]);
+
+    expect(workerRequests).toEqual([workerUrl]);
+  });
+
+  it('should report network requests as failed on the worker when the worker is terminated', async () => {
+    const {page, server} = await getTestState();
+
+    // Never responds, so the request stays pending until the worker dies.
+    server.setRoute('/hang', () => {});
+
+    const [worker] = await Promise.all([
+      waitEvent<WebWorker>(page, 'workercreated'),
+      page.goto(server.PREFIX + '/worker/worker.html'),
+    ]);
+    const requestPromise = waitEvent<HTTPRequest>(
+      worker,
+      WebWorkerEvent.Request,
+    );
+    await worker.evaluate((url: string) => {
+      void fetch(url);
+    }, server.PREFIX + '/hang');
+    const request = await requestPromise;
+
+    const failedPromise = waitEvent<HTTPRequest>(
+      worker,
+      WebWorkerEvent.RequestFailed,
       failed => {
         return failed === request;
       },
