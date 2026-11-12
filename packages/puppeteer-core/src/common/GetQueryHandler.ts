@@ -67,7 +67,10 @@ export function getQueryHandlerAndSelector(selector: string): {
     }
     return {
       updatedSelector: JSON.stringify(pSelector),
-      polling: hasAria ? PollingOptions.RAF : PollingOptions.MUTATION,
+      polling:
+        hasAria || hasPseudoClasses
+          ? PollingOptions.RAF
+          : PollingOptions.MUTATION,
       QueryHandler: PQueryHandler,
     };
   } catch {
