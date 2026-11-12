@@ -2865,5 +2865,24 @@ describe('Page', function () {
 
       expect(fs.statSync(file.filename).size).toBeGreaterThan(0);
     });
+
+    it('should record browser window', async () => {
+      using file = getUniqueVideoFilePlaceholder();
+
+      const {page} = await getTestState();
+
+      const recording = await page.record({
+        path: file.filename,
+        browserWindow: true,
+      });
+
+      await page.goto('data:text/html,<input>');
+      using input = await page.locator('input').waitHandle();
+      await input.type('ab', {delay: 100});
+
+      await recording.stop();
+
+      expect(fs.statSync(file.filename).size).toBeGreaterThan(0);
+    });
   });
 });

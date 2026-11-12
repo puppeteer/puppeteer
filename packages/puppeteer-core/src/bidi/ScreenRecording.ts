@@ -7,6 +7,7 @@
 import type {RecordOptions} from '../api/Page.js';
 import {ScreenRecording} from '../api/ScreenRecording.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {environment} from '../environment.js';
 import {guarded} from '../util/decorators.js';
 
@@ -38,6 +39,11 @@ export class BidiScreenRecording extends ScreenRecording {
    * @internal
    */
   override async _start(): Promise<void> {
+    if (this.options.browserWindow) {
+      throw new UnsupportedOperation(
+        '`browserWindow` is not supported in WebDriver BiDi.',
+      );
+    }
     const frameRate = this.options.frameRate ?? this.options.fps;
     const video =
       this.options.maxWidth !== undefined ||

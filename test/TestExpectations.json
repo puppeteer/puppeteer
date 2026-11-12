@@ -841,6 +841,13 @@
     "comment": "Screen recording is not supported in WebDriver BiDi in Chrome yet"
   },
   {
+    "testIdPattern": "[page.test] Page Page.record should record browser window",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "chrome-headless-shell does not support captureArea: 'browserWindow' (Chrome 159+). Chrome < 159 ignores the parameter, so the test passes there."
+  },
+  {
     "testIdPattern": "[page.test] Page Page.reload should enable or disable the cache based on reload params",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1810,6 +1817,13 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "script.callFunction on popup with rel=opener times out in Chrome WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.record should record browser window",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "The browserWindow option of Page.record is CDP-specific and throws UnsupportedOperation in WebDriver BiDi."
   },
   {
     "testIdPattern": "[page.test] Page Page.setJavaScriptEnabled should work",

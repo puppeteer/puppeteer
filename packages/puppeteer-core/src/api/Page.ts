@@ -507,6 +507,35 @@ export interface RecordOptions {
    * Frame rate in frames per second (alias for frameRate).
    */
   fps?: number;
+  /**
+   * Records the browser window that shows this page, instead of only the
+   * page's content area. The recording includes the browser UI, for example
+   * the tab strip and the omnibox. If DevTools is docked in the window, the
+   * recording also includes DevTools.
+   *
+   * Requires Chrome 159 or later. Not supported in WebDriver BiDi.
+   *
+   * @remarks
+   *
+   * - The recording shows what the window shows. If this page is not the
+   *   active tab of its window, the recording shows the active tab.
+   *
+   * - Chrome shows a screen sharing notification while it records. If the
+   *   user stops the capture from the notification, the video stops at that
+   *   point. {@link ScreenRecording.stop} still returns the video.
+   *
+   * - Not available in `chrome-headless-shell` (`headless: 'shell'`). In
+   *   `headless: true`, the recording uses the size of the browser window.
+   *   Use the `--window-size` argument to change it.
+   *
+   * - Chrome returns an error when the target is an undocked DevTools window
+   *   or when the `ScreenCaptureAllowed` policy blocks screen capture.
+   *
+   * - Audio (with `audio: true`) comes from this page only.
+   *
+   * @defaultValue `false`
+   */
+  browserWindow?: boolean;
 }
 
 /**
@@ -2790,6 +2819,9 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * API.
    *
    * Outputs mp4 video stream.
+   *
+   * To record the entire browser window instead of only the page, set
+   * {@link RecordOptions.browserWindow} to `true` (Chrome 159+).
    *
    * @example
    * Recording a {@link Page | page}:

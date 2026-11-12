@@ -155,6 +155,64 @@ describe('ScreenRecording', () => {
     await recording.stop();
   });
 
+  it('should send captureArea when browserWindow is true', async () => {
+    const client = new MockCDPSession();
+    const page = new MockPage(client);
+    const recording = await page.record({
+      browserWindow: true,
+      maxWidth: 1280,
+    });
+
+    expect(client.commands[0]).toEqual({
+      method: 'Page.startScreenRecording',
+      params: {
+        audio: undefined,
+        maxWidth: 1280,
+        maxHeight: undefined,
+        frameRate: undefined,
+        captureArea: 'browserWindow',
+      },
+    });
+
+    await recording.stop();
+  });
+
+  for (const browserWindow of [undefined, false]) {
+    it(`should not send captureArea when browserWindow is ${browserWindow}`, async () => {
+      const client = new MockCDPSession();
+      const page = new MockPage(client);
+      const recording = await page.record({browserWindow});
+
+      expect(client.commands[0]?.method).toBe('Page.startScreenRecording');
+      expect(client.commands[0]?.params).not.toHaveProperty('captureArea');
+
+      await recording.stop();
+    });
+  }
+
+  it('should propagate the start error for browserWindow', async () => {
+    const client = new MockCDPSession();
+    const originalSend = client.send.bind(client);
+    client.send = async (method: string, params?: unknown) => {
+      if (method === 'Page.startScreenRecording') {
+        client.commands.push({method, params});
+        throw new Error('Protocol error: Screen capture is not allowed');
+      }
+      return await originalSend(method, params);
+    };
+
+    const page = new MockPage(client);
+    await expect(page.record({browserWindow: true})).rejects.toThrow(
+      'Protocol error: Screen capture is not allowed',
+    );
+    // No recording was started, so nothing should be stopped or read.
+    expect(
+      client.commands.map(c => {
+        return c.method;
+      }),
+    ).toEqual(['Page.startScreenRecording']);
+  });
+
   it('should validate options', async () => {
     const client = new MockCDPSession();
     const page = new MockPage(client);
