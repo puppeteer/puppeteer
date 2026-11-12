@@ -36,7 +36,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #timeout: number;
   #sessions = new Map<string, CdpCDPSession>();
   #closed = false;
-  #manuallyAttached = new Set<string>();
+  #manuallyAttached = new Map<string, number>();
   #rejectEmulateNetworkConditionsCalls = false;
   #callbacks: CallbackRegistry;
   #rawErrors = false;
@@ -302,18 +302,31 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     isAutoAttachEmulated = true,
   ): Promise<CdpCDPSession> {
     if (!isAutoAttachEmulated) {
-      this.#manuallyAttached.add(targetInfo.targetId);
+      this.#manuallyAttached.set(
+        targetInfo.targetId,
+        (this.#manuallyAttached.get(targetInfo.targetId) ?? 0) + 1,
+      );
     }
-    const {sessionId} = await this.send('Target.attachToTarget', {
-      targetId: targetInfo.targetId,
-      flatten: true,
-    });
-    this.#manuallyAttached.delete(targetInfo.targetId);
-    const session = this.#sessions.get(sessionId);
-    if (!session) {
-      throw new Error('CDPSession creation failed.');
+    try {
+      const {sessionId} = await this.send('Target.attachToTarget', {
+        targetId: targetInfo.targetId,
+        flatten: true,
+      });
+      const session = this.#sessions.get(sessionId);
+      if (!session) {
+        throw new Error('CDPSession creation failed.');
+      }
+      return session;
+    } finally {
+      if (!isAutoAttachEmulated) {
+        const count = this.#manuallyAttached.get(targetInfo.targetId) ?? 0;
+        if (count <= 1) {
+          this.#manuallyAttached.delete(targetInfo.targetId);
+        } else {
+          this.#manuallyAttached.set(targetInfo.targetId, count - 1);
+        }
+      }
     }
-    return session;
   }
 
   /**
