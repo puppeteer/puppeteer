@@ -16,6 +16,8 @@ export type {Commands};
  */
 export type BidiEvents = {
   [K in Event['method']]: Extract<Event, {method: K}>['params'];
+} & {
+  closed: undefined;
 };
 
 /**

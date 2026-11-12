@@ -57,4 +57,53 @@ describe('WebDriver BiDi Connection', () => {
     connection.dispose();
     expect(transport.closed).toBeTruthy();
   });
+
+  it('emits closed once when transport closes or dispose is called', () => {
+    const transport = new TestConnectionTransport();
+    const connection = new BidiConnection(
+      'ws://127.0.0.1',
+      transport,
+      createIncrementalIdGenerator(),
+      0,
+      undefined,
+      () => {
+        return undefined;
+      },
+    );
+
+    let closedCount = 0;
+    connection.on('closed', () => {
+      closedCount++;
+    });
+
+    (transport as ConnectionTransport).onclose?.();
+    expect(closedCount).toBe(1);
+    expect(connection.closed).toBe(true);
+
+    connection.dispose();
+    expect(closedCount).toBe(1);
+  });
+
+  it('does not emit closed when unbind is called', () => {
+    const transport = new TestConnectionTransport();
+    const connection = new BidiConnection(
+      'ws://127.0.0.1',
+      transport,
+      createIncrementalIdGenerator(),
+      0,
+      undefined,
+      () => {
+        return undefined;
+      },
+    );
+
+    let closedCount = 0;
+    connection.on('closed', () => {
+      closedCount++;
+    });
+
+    connection.unbind();
+    expect(closedCount).toBe(0);
+    expect(transport.closed).toBe(false);
+  });
 });

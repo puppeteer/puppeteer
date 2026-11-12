@@ -79,7 +79,7 @@ export class BidiConnection
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);
-    this.#transport.onclose = this.unbind.bind(this);
+    this.#transport.onclose = this.#onClose.bind(this);
   }
 
   get closed(): boolean {
@@ -211,11 +211,19 @@ export class BidiConnection
     this.#callbacks.clear();
   }
 
+  #onClose(): void {
+    if (this.#closed) {
+      return;
+    }
+    this.unbind();
+    this.emit('closed', undefined);
+  }
+
   /**
    * Unbinds the connection and closes the transport.
    */
   dispose(): void {
-    this.unbind();
+    this.#onClose();
     this.#transport.close();
   }
 
