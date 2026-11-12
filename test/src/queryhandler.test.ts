@@ -455,6 +455,47 @@ describe('Query handler tests', function () {
       ).toBeTruthy();
     });
 
+    it('should query light DOM and slotted text of shadow hosts', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`
+        <main><h1>Cart</h1><my-button>Checkout</my-button></main>
+        <div id="wrap"
+          ><my-list><li>One</li><li>Two</li></my-list></div
+        >
+      `);
+
+      await page.evaluate(() => {
+        for (const h of document.querySelectorAll('my-button')) {
+          h.attachShadow({mode: 'open'}).innerHTML =
+            '<button><slot></slot></button>';
+        }
+        for (const h of document.querySelectorAll('my-list')) {
+          h.attachShadow({mode: 'open'}).innerHTML = '<ul><slot></slot></ul>';
+        }
+      });
+
+      const checkout = await page.$$eval('::-p-text(Checkout)', els => {
+        return els.map(e => {
+          return e.tagName.toLowerCase();
+        });
+      });
+      expect(checkout).toEqual(['my-button']);
+
+      const two = await page.$$eval('::-p-text(Two)', els => {
+        return els.map(e => {
+          return e.tagName.toLowerCase();
+        });
+      });
+      expect(two).toEqual(['li']);
+
+      const one = await page.$$eval('#wrap ::-p-text(One)', els => {
+        return els.map(e => {
+          return e.tagName.toLowerCase();
+        });
+      });
+      expect(one).toEqual(['li']);
+    });
+
     it('should work ARIA selectors', async () => {
       const {server, page} = await getTestState();
       await page.goto(`${server.PREFIX}/p-selectors.html`);
