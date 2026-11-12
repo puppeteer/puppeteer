@@ -32,6 +32,7 @@ import {
   fromAbortSignal,
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
+import {Mutex} from '../util/Mutex.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Extension} from './Extension.js';
@@ -615,6 +616,11 @@ export interface NetworkRestrictions {
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
   #logger: Logger;
+  /**
+   * If defined, indicates an ongoing screenshot operation.
+   */
+  #pageScreenshotMutex?: Mutex;
+  #screenshotOperationsCount = 0;
 
   /**
    * @internal
@@ -622,6 +628,39 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   constructor(logger: Logger) {
     super(undefined, logger);
     this.#logger = logger;
+  }
+
+  #acquireScreenshotMutex(
+    mutex: Mutex,
+  ): Promise<InstanceType<typeof Mutex.Guard>> {
+    this.#screenshotOperationsCount++;
+    return mutex.acquire(() => {
+      this.#screenshotOperationsCount--;
+      if (this.#screenshotOperationsCount === 0) {
+        // Remove the mutex to indicate no ongoing screenshot operation.
+        this.#pageScreenshotMutex = undefined;
+      }
+    });
+  }
+
+  /**
+   * @internal
+   */
+  _startScreenshot(): Promise<InstanceType<typeof Mutex.Guard>> {
+    const mutex = this.#pageScreenshotMutex || new Mutex();
+    this.#pageScreenshotMutex = mutex;
+    return this.#acquireScreenshotMutex(mutex);
+  }
+
+  /**
+   * @internal
+   */
+  _waitForScreenshotOperations():
+    Promise<InstanceType<typeof Mutex.Guard>> | undefined {
+    if (!this.#pageScreenshotMutex) {
+      return undefined;
+    }
+    return this.#acquireScreenshotMutex(this.#pageScreenshotMutex);
   }
 
   /**

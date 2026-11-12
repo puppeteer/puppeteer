@@ -70,7 +70,6 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
 import type {ScreenRecorder} from '../node/ScreenRecorder.js';
-import {guarded} from '../util/decorators.js';
 import {
   AsyncDisposableStack,
   asyncDisposeSymbol,
@@ -2958,7 +2957,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    *
-   * While a screenshot is being taken in a {@link BrowserContext}, the
+   * While a screenshot is being taken in a {@link Browser}, the
    * following methods will automatically wait for the screenshot to
    * finish to prevent interference with the screenshot process:
    * {@link BrowserContext.newPage}, {@link Browser.newPage},
@@ -2972,9 +2971,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'},
   ): Promise<string>;
   async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
-  @guarded(function () {
-    return this.browser();
-  })
   async screenshot(
     userOptions: Readonly<ScreenshotOptions> = {},
   ): Promise<Uint8Array | string> {
