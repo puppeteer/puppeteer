@@ -1,0 +1,9 @@
+{
+  "name": "Tab discard extension",
+  "version": "0.1",
+  "background": {
+    "service_worker": "index.js"
+  },
+  "permissions": ["tabs"],
+  "manifest_version": 3
+}

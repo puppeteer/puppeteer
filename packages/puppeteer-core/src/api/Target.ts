@@ -146,6 +146,27 @@ export abstract class Target {
   }
 
   /**
+   * Returns `true` if the target is a `"tab"` target and the browser
+   * discarded the tab to save memory.
+   *
+   * @remarks
+   *
+   * A discarded tab has no page target. {@link Target.page} returns `null`
+   * for it, {@link Target.asPage} throws, and {@link Browser.pages} does not
+   * include it. When the tab loads again, for example when the user selects
+   * it, the tab gets a new page target and Puppeteer emits `targetchanged`
+   * for the tab target.
+   *
+   * A {@link Page} that is open when its tab is discarded closes.
+   *
+   * Only supported for Chrome and the CDP protocol. With WebDriver BiDi,
+   * returns `false`.
+   */
+  isDiscarded(): boolean {
+    return false;
+  }
+
+  /**
    * Returns the target that Puppeteer attached this target through. For
    * example, the parent of a `"page"` target is the `"tab"` target of its tab.
    * Returns `undefined` for top-level targets, such as `"tab"` targets.

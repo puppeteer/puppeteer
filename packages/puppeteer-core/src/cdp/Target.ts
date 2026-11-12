@@ -88,6 +88,9 @@ export class CdpTarget extends Target {
 
   override async page(): Promise<Page | null> {
     if (this.type() === TargetType.TAB) {
+      if (this.isDiscarded()) {
+        return null;
+      }
       return (await this._primaryChildTarget()?.page()) ?? null;
     }
     return null;
@@ -95,6 +98,9 @@ export class CdpTarget extends Target {
 
   override async asPage(): Promise<Page> {
     if (this.type() === TargetType.TAB) {
+      if (this.isDiscarded()) {
+        throw new Error('Cannot create a page for a discarded tab.');
+      }
       // Force a page for the content of the tab, like asPage() does for
       // other targets. The child can be a target that page() ignores.
       const child = this._primaryChildTarget();
@@ -132,6 +138,10 @@ export class CdpTarget extends Target {
 
   override subtype(): string | undefined {
     return this.#targetInfo.subtype;
+  }
+
+  override isDiscarded(): boolean {
+    return this.type() === TargetType.TAB && this._subtype() === 'discarded';
   }
 
   override parent(): CdpTarget | undefined {

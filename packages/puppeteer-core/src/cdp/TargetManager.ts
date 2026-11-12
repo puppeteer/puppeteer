@@ -487,12 +487,22 @@ export class TargetManager
     // The browser might be shutting down here, so we
     // ignore potential errors.
     await Promise.all([
-      session.send('Target.setAutoAttach', {
-        waitForDebuggerOnStart: true,
-        flatten: true,
-        autoAttach: true,
-        filter: this.#discoveryFilter,
-      }),
+      session
+        .send('Target.setAutoAttach', {
+          waitForDebuggerOnStart: true,
+          flatten: true,
+          autoAttach: true,
+          filter: this.#discoveryFilter,
+        })
+        .finally(() => {
+          // The browser attaches the existing children of the target before
+          // it responds. A tab without a page, such as a discarded tab or a
+          // tab that session restore did not load yet, has no child to wait
+          // for.
+          if (targetInfo.type === 'tab') {
+            this.#finishInitializationIfReady(targetInfo.targetId);
+          }
+        }),
       this.#maybeSetupNetworkConditions(session, targetInfo),
       session.send('Runtime.runIfWaitingForDebugger'),
     ]).catch(error => {
