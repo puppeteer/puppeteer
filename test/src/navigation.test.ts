@@ -288,6 +288,20 @@ describe('navigation', function () {
       ).rejects.toBeInstanceOf(TimeoutError);
       expect(frame.listenerCount(FrameEvent.FrameDetached)).toBe(listeners);
     });
+    it('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      // Hang for request to the empty.html
+      server.setRoute('/empty.html', () => {});
+      const abortController = new AbortController();
+      const navigation = page.goto(server.PREFIX + '/empty.html', {
+        signal: abortController.signal,
+      });
+      await server.waitForRequest('/empty.html');
+
+      abortController.abort();
+      await expect(navigation).rejects.toThrow(/aborted/);
+    });
     it('should settle when the page navigates again while loading', async () => {
       const {page, server} = await getTestState();
 

@@ -152,6 +152,7 @@ export class CdpFrame extends Frame {
       referrerPolicy?: string;
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+      signal?: AbortSignal;
     } = {},
   ): Promise<HTTPResponse | null> {
     if (!this.page()._isUrlAllowed(url)) {
@@ -167,6 +168,7 @@ export class CdpFrame extends Frame {
       ],
       waitUntil = ['load'],
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+      signal,
     } = options;
 
     let ensureNewDocumentNavigation = false;
@@ -175,6 +177,7 @@ export class CdpFrame extends Frame {
       this,
       waitUntil,
       timeout,
+      signal,
     );
     try {
       let error = await Deferred.race([
