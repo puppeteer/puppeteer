@@ -439,7 +439,7 @@ describe('Screenshots', function () {
     it('should run in parallel with page.close()', async () => {
       const {browser} = await getTestState();
 
-      using context = await browser.createBrowserContext();
+      await using context = await browser.createBrowserContext();
 
       const page1 = await context.newPage();
       const page2 = await context.newPage();
