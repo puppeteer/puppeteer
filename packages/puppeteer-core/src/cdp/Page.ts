@@ -818,7 +818,7 @@ export class CdpPage extends Page {
         await this.#primaryTargetClient.send('Network.deleteCookies', {
           ...item,
           partitionKey: {
-            topLevelSite: url.origin.replace(`:${url.port}`, ''),
+            topLevelSite: `${url.protocol}//${url.hostname}`,
             hasCrossSiteAncestor: false,
           },
         });
