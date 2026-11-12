@@ -14,6 +14,8 @@ import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 
 import type {CDPSession} from './CDPSession.js';
+import type {HTTPRequest} from './HTTPRequest.js';
+import type {HTTPResponse} from './HTTPResponse.js';
 import type {Realm} from './Realm.js';
 
 /**
@@ -40,6 +42,41 @@ export enum WebWorkerEvent {
    * synchronously inside the listener to keep it alive.
    */
   Exception = 'exception',
+  /**
+   * Emitted when the worker issues a request. Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * CDP only. Listeners are bound to this worker instance: if the worker
+   * is terminated and restarted (e.g. an idle extension service worker), a
+   * new {@link WebWorker} is created and listeners must be re-attached.
+   *
+   * @experimental
+   */
+  Request = 'request',
+  /**
+   * Emitted when a request issued by the worker is served from cache.
+   *
+   * @experimental
+   */
+  RequestServedFromCache = 'requestservedfromcache',
+  /**
+   * Emitted when a response is received for a request issued by the worker.
+   *
+   * @experimental
+   */
+  Response = 'response',
+  /**
+   * Emitted when a request issued by the worker fails.
+   *
+   * @experimental
+   */
+  RequestFailed = 'requestfailed',
+  /**
+   * Emitted when a request issued by the worker finishes successfully.
+   *
+   * @experimental
+   */
+  RequestFinished = 'requestfinished',
 }
 
 /**
@@ -49,6 +86,11 @@ export interface WebWorkerEvents extends Record<EventType, unknown> {
   [WebWorkerEvent.Console]: ConsoleMessage;
   [WebWorkerEvent.Error]: Error;
   [WebWorkerEvent.Exception]: RemoteException;
+  [WebWorkerEvent.Request]: HTTPRequest;
+  [WebWorkerEvent.RequestServedFromCache]: HTTPRequest;
+  [WebWorkerEvent.Response]: HTTPResponse;
+  [WebWorkerEvent.RequestFailed]: HTTPRequest;
+  [WebWorkerEvent.RequestFinished]: HTTPRequest;
 }
 
 /**
