@@ -380,6 +380,48 @@ describe('Keyboard', function () {
       }),
     ).toBe('Keyup: Alt AltLeft []');
   });
+  it('should preserve modifier when one of multiple keys for the same modifier is released', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/keyboard.html');
+    const keyboard = page.keyboard;
+
+    await keyboard.down('ShiftLeft');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: Shift ShiftLeft [Shift]');
+
+    await keyboard.down('ShiftRight');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: Shift ShiftRight [Shift]');
+
+    await keyboard.up('ShiftRight');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: Shift ShiftRight [Shift]');
+
+    await keyboard.down('KeyA');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keydown: A KeyA [Shift]\ninput: A insertText false');
+    await keyboard.up('KeyA');
+
+    await keyboard.up('ShiftLeft');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      }),
+    ).toBe('Keyup: Shift ShiftLeft []');
+  });
   it('should send proper codes while typing', async () => {
     const {page, server} = await getTestState();
 

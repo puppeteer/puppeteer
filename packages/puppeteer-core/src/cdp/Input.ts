@@ -151,11 +151,24 @@ export class CdpKeyboard extends Keyboard {
     return description;
   }
 
+  #hasModifier(modifierBit: number): boolean {
+    for (const code of this.#pressedKeys) {
+      const def = _keyDefinitions[code as KeyInput];
+      if (def?.key && this.#modifierBit(def.key) === modifierBit) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   override async up(key: KeyInput): Promise<void> {
     const description = this.#keyDescriptionForString(key);
 
-    this._modifiers &= ~this.#modifierBit(description.key);
     this.#pressedKeys.delete(description.code);
+    const modifierBit = this.#modifierBit(description.key);
+    if (modifierBit && !this.#hasModifier(modifierBit)) {
+      this._modifiers &= ~modifierBit;
+    }
     await this.#client.send('Input.dispatchKeyEvent', {
       type: 'keyUp',
       modifiers: this._modifiers,
