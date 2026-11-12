@@ -6,6 +6,7 @@
 
 import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
 import {
+  defer,
   filter,
   from,
   fromEvent,
@@ -13,6 +14,7 @@ import {
   mergeMap,
   NEVER,
   Observable,
+  of,
   timer,
 } from '../../third_party/rxjs/rxjs.js';
 import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyfill.js';
@@ -462,7 +464,9 @@ export function fromAbortSignal(
   cause?: Error,
 ): Observable<never> {
   return signal
-    ? fromEvent(signal, 'abort').pipe(
+    ? defer(() => {
+        return signal.aborted ? of(undefined) : fromEvent(signal, 'abort');
+      }).pipe(
         map(() => {
           if (signal.reason instanceof Error) {
             signal.reason.cause = cause;
