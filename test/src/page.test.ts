@@ -271,7 +271,14 @@ describe('Page', function () {
         navigate = page.goto('about:crashcontent').catch(() => {});
       }
       const [error] = await Promise.all([
-        waitEvent<Error>(page, 'error'),
+        waitEvent<Error>(
+          page,
+          'error',
+          () => {
+            return true;
+          },
+          page.getDefaultTimeout(),
+        ),
         navigate,
       ]);
       expect(error.message).toBe('Page crashed!');

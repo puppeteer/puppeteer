@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -24,6 +25,16 @@ import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
+
+if (process.platform === 'linux') {
+  try {
+    // Prevent systemd-coredump / apport from compressing multi-GB renderer
+    // core dumps during intentional crash tests (e.g. chrome://crash).
+    execFileSync('prlimit', ['--core=0:', `--pid=${process.pid}`]);
+  } catch {
+    // Ignore if prlimit is unavailable.
+  }
+}
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

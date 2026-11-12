@@ -1777,13 +1777,6 @@
     "comment": "See https://github.com/puppeteer/puppeteer/issues/4840"
   },
   {
-    "testIdPattern": "[page.test] Page Page.Events.error should throw when page crashes",
-    "platforms": ["linux"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Flaky across all Linux Chrome/CDP environments"
-  },
-  {
     "testIdPattern": "[page.test] Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
