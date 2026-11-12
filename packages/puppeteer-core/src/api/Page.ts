@@ -48,6 +48,7 @@ import {
 } from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
+import type {RemoteException} from '../common/RemoteException.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {
   Awaitable,
@@ -576,6 +577,16 @@ export const enum PageEvent {
    * Emitted when the page crashes. Will contain an `Error`.
    */
   Error = 'error',
+  /**
+   * Emitted when an uncaught exception happens within the page or one of its
+   * dedicated workers. Contains a {@link RemoteException}.
+   *
+   * @remarks
+   * The {@link RemoteException.handle | handle} of the exception is disposed
+   * right after the event has been dispatched. Call `move()` on it
+   * synchronously inside the listener to keep it alive.
+   */
+  Exception = 'exception',
   /** Emitted when a frame is attached. Will contain a {@link Frame}. */
   FrameAttached = 'frameattached',
   /** Emitted when a frame is detached. Will contain a {@link Frame}. */
@@ -630,6 +641,8 @@ export const enum PageEvent {
   /**
    * Emitted when an uncaught exception happens within the page. Contains an
    * `Error` or data of type unknown.
+   *
+   * @deprecated Use {@link PageEvent.Exception} instead.
    */
   PageError = 'pageerror',
   /**
@@ -720,6 +733,7 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.DOMContentLoaded]: undefined;
   [PageEvent.Issue]: Issue;
   [PageEvent.Error]: Error;
+  [PageEvent.Exception]: RemoteException;
   [PageEvent.FrameAttached]: Frame;
   [PageEvent.FrameDetached]: Frame;
   [PageEvent.FrameNavigated]: Frame;

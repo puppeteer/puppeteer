@@ -9,6 +9,7 @@ import type {ServerResponse} from 'node:http';
 import expect from 'expect';
 import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
@@ -201,6 +202,35 @@ describe('Target', function () {
         return self.toString();
       }),
     ).toBe('[object ServiceWorkerGlobalScope]');
+  });
+
+  it('should emit exceptions on a service worker but not on the page', async () => {
+    const {page, server, context} = await getTestState();
+
+    await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+    const target = await context.waitForTarget(
+      target => {
+        return target.type() === 'service_worker';
+      },
+      {timeout: 3000},
+    );
+    const worker = (await target.worker())!;
+    const pageExceptions: RemoteException[] = [];
+    page.on('exception', exception => {
+      pageExceptions.push(exception);
+    });
+
+    const [exception] = await Promise.all([
+      waitEvent<RemoteException>(worker, 'exception'),
+      worker.evaluate(() => {
+        setTimeout(() => {
+          throw new Error('service worker error');
+        });
+      }),
+    ]);
+    expect(exception.text()).toContain('service worker error');
+    expect(pageExceptions).toHaveLength(0);
   });
 
   it('should close a service worker', async () => {

@@ -85,7 +85,7 @@ import {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
-import {MAIN_WORLD} from './IsolatedWorlds.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
 import type {NetworkConditions} from './NetworkManager.js';
 import {CdpScreenRecording} from './ScreenRecording.js';
@@ -97,6 +97,7 @@ import {
   convertConsoleMessageLevel,
   createClientError,
   createConsoleMessage,
+  createRemoteException,
   pageBindingInitString,
 } from './utils.js';
 import {WebMCP} from './WebMCP.js';
@@ -379,7 +380,7 @@ export class CdpPage extends Page {
     clientEmitter.on('Page.javascriptDialogOpening', this.#onDialog.bind(this));
     clientEmitter.on(
       'Runtime.exceptionThrown',
-      this.#handleException.bind(this),
+      this.#onExceptionThrown.bind(this),
     );
     clientEmitter.on(
       'Inspector.targetCrashed',
@@ -412,6 +413,9 @@ export class CdpPage extends Page {
         this.#handleException.bind(this),
         this.#frameManager.networkManager,
         this.logger,
+        () => {
+          return this.listenerCount(PageEvent.Exception) > 0;
+        },
       );
       this.#workers.set(session.id(), worker);
       worker.internalEmitter.on(WebWorkerEvent.Console, message => {
@@ -436,6 +440,9 @@ export class CdpPage extends Page {
         }
 
         this.#emitConsoleMessage(message);
+      });
+      worker.internalEmitter.on(WebWorkerEvent.Exception, exception => {
+        this.emit(PageEvent.Exception, exception);
       });
       this.emit(PageEvent.WorkerCreated, worker);
     }
@@ -1003,6 +1010,73 @@ export class CdpPage extends Page {
       PageEvent.PageError,
       createClientError(exception.exceptionDetails),
     );
+  }
+
+  #onExceptionThrown(event: Protocol.Runtime.ExceptionThrownEvent): void {
+    this.#handleException(event);
+    this.#onMainTargetException(event);
+  }
+
+  #onMainTargetException(event: Protocol.Runtime.ExceptionThrownEvent): void {
+    const details = event.exceptionDetails;
+    if (this.listenerCount(PageEvent.Exception) === 0) {
+      // Nobody can use a handle, but the browser keeps the exception alive
+      // until it is released.
+      if (details.exception) {
+        void releaseObject(
+          this.#primaryTargetClient,
+          details.exception,
+          this.logger,
+        );
+      }
+      return;
+    }
+    // Disposed when this scope ends, i.e. right after dispatch. This is a no-op
+    // if a listener called `move()` on the handle.
+    using handle = this.#createExceptionHandle(details);
+    this.emit(PageEvent.Exception, createRemoteException(details, handle));
+  }
+
+  #createExceptionHandle(
+    details: Protocol.Runtime.ExceptionDetails,
+  ): JSHandle | undefined {
+    const remoteObject = details.exception;
+    if (!remoteObject?.objectId) {
+      return;
+    }
+    const world = this.#findWorldByExecutionContextId(
+      details.executionContextId,
+    );
+    if (world) {
+      return world.createCdpHandle(remoteObject);
+    }
+    // We cannot bind the handle to a realm, but the remote object must still
+    // be released to avoid leaking it.
+    void releaseObject(this.#primaryTargetClient, remoteObject, this.logger);
+    return;
+  }
+
+  #findWorldByExecutionContextId(
+    executionContextId: number | undefined,
+  ): IsolatedWorld | undefined {
+    if (executionContextId === undefined) {
+      return;
+    }
+    for (const frame of this.#frameManager.frames()) {
+      // Execution context IDs are only unique per session.
+      if (frame.client !== this.#primaryTargetClient) {
+        continue;
+      }
+      for (const world of [
+        frame.worlds[MAIN_WORLD],
+        frame.worlds[PUPPETEER_WORLD],
+      ]) {
+        if (world.context?.id === executionContextId) {
+          return world;
+        }
+      }
+    }
+    return;
   }
 
   #onConsoleAPI(

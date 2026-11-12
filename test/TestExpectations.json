@@ -799,6 +799,55 @@
     "comment": "WebDriver BiDi has no event for a renderer crash. Only CdpPage emits the 'error' event ('Page crashed!'), so the test waits forever."
   },
   {
+    "testIdPattern": "[page.test] Page Page.Events.Exception should dispose the handle after dispatch if not moved",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Exception should expose the remote exception via a moved handle",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Exception should fall back to the exception location for syntax errors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "The exception event is not implemented for WebDriver BiDi yet."
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Exception should fire",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "The exception event is not implemented for WebDriver BiDi yet."
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Exception should fire for primitive values",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "The exception event is not implemented for WebDriver BiDi yet."
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Exception should fire together with pageerror",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "The exception event is not implemented for WebDriver BiDi yet."
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.Events.Exception should report the name and text as rendered by the browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "WebDriver BiDi log entries do not report the name of the exception, so RemoteException.name() is null."
+  },
+  {
     "testIdPattern": "[page.test] Page Page.Events.PageError should fire for all value types",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1055,6 +1104,27 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "BiDi does not support getting a Handle for log args"
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should emit exception events on the worker and the page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "The exception event is not implemented for WebDriver BiDi yet."
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should expose the remote exception via a moved handle",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should report each worker exception on the page exactly once",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "The exception event is not implemented for WebDriver BiDi yet."
   },
   {
     "testIdPattern": "[acceptInsecureCerts.test] acceptInsecureCerts Response.securityDetails Network redirects should report SecurityDetails",
@@ -1955,6 +2025,20 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Not supported in WebDriver BiDi. Puppeteer does not create targets for shared workers, so no 'shared_worker' target appears."
+  },
+  {
+    "testIdPattern": "[target.test] Target should emit exceptions on a service worker but not on the page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
+  },
+  {
+    "testIdPattern": "[target.test] Target should emit exceptions on a service worker but not on the page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
   },
   {
     "testIdPattern": "[target.test] Target should have an opener",

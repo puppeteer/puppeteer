@@ -29,6 +29,7 @@ export type * from './SupportedBrowser.js';
 export * from './PSelectorParser.js';
 export * from './Puppeteer.js';
 export * from './QueryHandler.js';
+export * from './RemoteException.js';
 export * from './ScriptInjector.js';
 export * from './SecurityDetails.js';
 export * from './TaskQueue.js';

@@ -65,4 +65,19 @@ Error
 </td><td>
 
 </td></tr>
+<tr><td>
+
+<span id="exception">exception</span>
+
+</td><td>
+
+</td><td>
+
+[RemoteException](./puppeteer.remoteexception.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
 </tbody></table>

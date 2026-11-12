@@ -98,6 +98,23 @@ Emitted when the page crashes. Will contain an `Error`.
 </td></tr>
 <tr><td>
 
+Exception
+
+</td><td>
+
+`"exception"`
+
+</td><td>
+
+Emitted when an uncaught exception happens within the page or one of its dedicated workers. Contains a [RemoteException](./puppeteer.remoteexception.md).
+
+**Remarks:**
+
+The [handle](./puppeteer.remoteexception.handle.md) of the exception is disposed right after the event has been dispatched. Call `move()` on it synchronously inside the listener to keep it alive.
+
+</td></tr>
+<tr><td>
+
 FrameAttached
 
 </td><td>
@@ -229,6 +246,10 @@ PageError
 </td><td>
 
 Emitted when an uncaught exception happens within the page. Contains an `Error` or data of type unknown.
+
+**Deprecated:**
+
+Use [PageEvent.Exception](./puppeteer.pageevent.md) instead.
 
 </td></tr>
 <tr><td>
