@@ -37,6 +37,7 @@ function createServiceWorkerTarget() {
     },
   };
   const closeTarget = sinon.stub().resolves();
+  const waitForSilentDetaches = sinon.stub().resolves();
   const target = new WorkerTarget(
     {
       targetId: 'target-id',
@@ -52,6 +53,7 @@ function createServiceWorkerTarget() {
       getAttachedSessions: () => {
         return [session as unknown as CdpCDPSession];
       },
+      waitForSilentDetaches,
     } as unknown as TargetManager,
     () => {
       return Promise.reject(new Error('Attach failed'));
@@ -60,7 +62,7 @@ function createServiceWorkerTarget() {
       return undefined;
     },
   );
-  return {target, session, send, closeTarget};
+  return {target, session, send, closeTarget, waitForSilentDetaches};
 }
 
 describe('WorkerTarget', function () {

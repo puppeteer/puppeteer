@@ -125,5 +125,30 @@ describe('Connection', () => {
       await manual;
       expect(connection.isAutoAttached(targetId)).toBe(true);
     });
+
+    it('should reference-count manual attaches across concurrent _createSession calls', async () => {
+      const {connection, transport} = createConnection();
+
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+
+      const session1Promise = connection._createSession({targetId}, false);
+      const session2Promise = connection._createSession({targetId}, false);
+
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+      expect(transport.sent).toHaveLength(2);
+
+      const [firstCommand, secondCommand] = transport.sent;
+
+      transport.acceptAttach(firstCommand!, 'session-1');
+      const session1 = await session1Promise;
+      expect(session1.id()).toBe('session-1');
+      // Second manual attach is still pending, so target remains manually attached.
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+
+      transport.acceptAttach(secondCommand!, 'session-2');
+      const session2 = await session2Promise;
+      expect(session2.id()).toBe('session-2');
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+    });
   });
 });

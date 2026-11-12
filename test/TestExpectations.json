@@ -1621,13 +1621,6 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
-    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should be able to connect to a browser with no page targets",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Flaky in Chrome over CDP when the test closes all pages and then connects. The flake has been in the expectations since the mocha test runner was added in https://github.com/puppeteer/puppeteer/pull/8866."
-  },
-  {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1645,13 +1638,6 @@
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "The WebDriver BiDi implementation does not support the targetFilter option of puppeteer.connect. Only the CDP Browser and TargetManager use targetFilter."
-  },
-  {
-    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["PASS", "TIMEOUT"],
-    "comment": "Flaky test needing investigation, seems to be Windows only."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
@@ -2210,13 +2196,6 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "chrome-headless-shell does not change document.visibilityState when bringToFront() activates a page. The test needs headful or new headless Chrome."
-  },
-  {
-    "testIdPattern": "[target.test] Target should close a service worker",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
-    "expectations": ["SKIP"],
-    "comment": "For some reason service_workers do not close in chrome-headless-shell"
   },
   {
     "testIdPattern": "[webExtension.test] webExtension can install and uninstall an extension",

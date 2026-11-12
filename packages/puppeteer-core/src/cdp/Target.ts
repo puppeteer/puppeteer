@@ -225,6 +225,12 @@ export class CdpTarget extends Target {
   }
 
   async #close(): Promise<void> {
+    if (this.#targetInfo.type === 'service_worker') {
+      // Wait for any concurrent auto-attached sessions on this service worker
+      // to finish detaching, then close the target and detach our sessions so
+      // the worker can stop cleanly.
+      await this._targetManager().waitForSilentDetaches(this._targetId);
+    }
     await (this.browser() as CdpBrowser)._closeTarget(this._targetId);
     if (this.#targetInfo.type === 'service_worker') {
       // Chrome reports a closed service worker as destroyed only after the
@@ -235,6 +241,7 @@ export class CdpTarget extends Target {
           return this.#detach(session);
         }),
       );
+      await this._targetManager().waitForSilentDetaches(this._targetId);
     }
     await this._isClosedDeferred.valueOrThrow();
   }

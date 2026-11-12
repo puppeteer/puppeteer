@@ -709,7 +709,12 @@ describe('Launcher specs', function () {
         }
       });
       it('should be able to connect to a browser with no page targets', async () => {
-        const {puppeteer, browser, close} = await launch({});
+        const {isChrome, isHeadless} = await getTestState({skipLaunch: true});
+        const {puppeteer, browser, close} = await launch(
+          !isHeadless && isChrome
+            ? {waitForInitialPage: false, args: ['--no-startup-window']}
+            : {},
+        );
 
         try {
           const pages = await browser.pages();
