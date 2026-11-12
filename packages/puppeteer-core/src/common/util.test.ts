@@ -8,7 +8,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {firstValueFrom, map, race, timer} from '../../third_party/rxjs/rxjs.js';
+import {NEVER, firstValueFrom, of, race} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 
 import {
@@ -169,24 +169,20 @@ describe('util', () => {
   });
 
   describe('fromAbortSignal', () => {
-    const pending = timer(50).pipe(
-      map(() => {
-        return 'pending' as const;
-      }),
-    );
-
     it('errors immediately if the signal is already aborted', async () => {
       const controller = new AbortController();
       controller.abort(new Error('aborted'));
       await expect(
-        firstValueFrom(race(fromAbortSignal(controller.signal), pending)),
+        firstValueFrom(
+          race(fromAbortSignal(controller.signal), of('pending' as const)),
+        ),
       ).rejects.toThrow('aborted');
     });
 
     it('errors if the signal is aborted after subscribing', async () => {
       const controller = new AbortController();
       const result = firstValueFrom(
-        race(fromAbortSignal(controller.signal), pending),
+        race(fromAbortSignal(controller.signal), NEVER),
       );
       controller.abort(new Error('aborted'));
       await expect(result).rejects.toThrow('aborted');
@@ -195,7 +191,9 @@ describe('util', () => {
     it('does not emit while the signal is not aborted', async () => {
       const controller = new AbortController();
       await expect(
-        firstValueFrom(race(fromAbortSignal(controller.signal), pending)),
+        firstValueFrom(
+          race(fromAbortSignal(controller.signal), of('pending' as const)),
+        ),
       ).resolves.toBe('pending');
     });
   });
