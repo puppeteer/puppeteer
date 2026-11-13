@@ -6,7 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CreatePageOptions} from '../api/Browser.js';
+import type {CreatePageOptions, TargetOptions} from '../api/Browser.js';
 import {
   WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
   type Permission,
@@ -52,8 +52,8 @@ export class CdpBrowserContext extends BrowserContext {
     return this.#id;
   }
 
-  override targets(): CdpTarget[] {
-    return this.#browser.targets().filter(target => {
+  override targets(options?: TargetOptions): CdpTarget[] {
+    return this.#browser.targets(options).filter(target => {
       return target.browserContext() === this;
     });
   }

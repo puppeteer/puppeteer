@@ -147,6 +147,27 @@ export interface PermissionDescriptor {
 export type PermissionState = 'granted' | 'denied' | 'prompt';
 
 /**
+ * @remarks
+ * Currently only supported for Chrome and the CDP protocol.
+ *
+ * @public
+ * @experimental
+ */
+export interface TargetOptions {
+  /**
+   * Whether to include targets for discarded tabs.
+   *
+   * @defaultValue `false`
+   *
+   * @remarks
+   * Currently only supported for Chrome and the CDP protocol.
+   *
+   * @experimental
+   */
+  includeDiscarded?: boolean;
+}
+
+/**
  * @public
  */
 export interface WaitForTargetOptions {
@@ -714,13 +735,16 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   ): Promise<void>;
 
   /**
-   * Gets all active {@link Target | targets}.
+   * Gets all active {@link Target | targets}, plus targets for discarded tabs
+   * when {@link TargetOptions.includeDiscarded} is `true`.
    *
    * In case of multiple {@link BrowserContext | browser contexts}, this returns
-   * all {@link Target | targets} in all
+   * all matching {@link Target | targets} in all
    * {@link BrowserContext | browser contexts}.
+   *
+   * @param options - Options to filter the returned targets.
    */
-  abstract targets(): Target[];
+  abstract targets(options?: TargetOptions): Target[];
 
   /**
    * Gets the {@link Target | target} associated with the

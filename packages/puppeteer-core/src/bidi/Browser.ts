@@ -8,7 +8,11 @@ import type {ChildProcess} from 'node:child_process';
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {BrowserEvents, CreatePageOptions} from '../api/Browser.js';
+import type {
+  BrowserEvents,
+  CreatePageOptions,
+  TargetOptions,
+} from '../api/Browser.js';
 import {
   Browser,
   BrowserEvent,
@@ -419,11 +423,11 @@ export class BidiBrowser extends Browser {
     await this.#browserCore.setClientWindowState(params);
   }
 
-  override targets(): Target[] {
+  override targets(options?: TargetOptions): Target[] {
     return [
       this.#target,
       ...this.browserContexts().flatMap(context => {
-        return context.targets();
+        return context.targets(options);
       }),
     ];
   }

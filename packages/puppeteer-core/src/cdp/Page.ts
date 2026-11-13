@@ -69,7 +69,7 @@ import {environment} from '../environment.js';
 import type {Realm} from '../index-browser.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
-import {AsyncDisposableStack} from '../util/disposable.js';
+import {AsyncDisposableStack, DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Binding} from './Binding.js';
@@ -130,22 +130,33 @@ export class CdpPage extends Page {
     logger: Logger,
   ): Promise<CdpPage> {
     const page = new CdpPage(client, target, logger);
-    await page.#initialize();
-    if (defaultViewport) {
-      try {
-        await page.setViewport(defaultViewport);
-      } catch (err) {
-        if (isErrorLike(err) && isTargetClosedError(err)) {
-          page.logger?.(DEBUG_PREFIXES.error)?.(err);
-        } else {
-          throw err;
+    try {
+      await page.#initialize();
+      if (defaultViewport) {
+        try {
+          await page.setViewport(defaultViewport);
+        } catch (err) {
+          if (isErrorLike(err) && isTargetClosedError(err)) {
+            page.logger?.(DEBUG_PREFIXES.error)?.(err);
+          } else {
+            throw err;
+          }
         }
       }
+      return page;
+    } catch (err) {
+      // Nobody can use the page, so remove its listeners.
+      page.#closed = true;
+      page.#subscriptions.dispose();
+      throw err;
     }
-    return page;
   }
 
   #closed = false;
+  /**
+   * Listeners that the page removes when it closes.
+   */
+  readonly #subscriptions = new DisposableStack();
   readonly #targetManager: TargetManager;
   readonly #cdpBluetoothEmulation: CdpBluetoothEmulation;
 
@@ -201,7 +212,9 @@ export class CdpPage extends Page {
       this.#primaryTargetClient.connection(),
     );
 
-    const frameManagerEmitter = new EventEmitter(this.#frameManager);
+    const frameManagerEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#frameManager),
+    );
     frameManagerEmitter.on(FrameManagerEvent.FrameAttached, frame => {
       this.emit(PageEvent.FrameAttached, frame);
     });
@@ -236,8 +249,8 @@ export class CdpPage extends Page {
       },
     );
 
-    const networkManagerEmitter = new EventEmitter(
-      this.#frameManager.networkManager,
+    const networkManagerEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#frameManager.networkManager),
     );
     networkManagerEmitter.on(NetworkManagerEvent.Request, request => {
       this.emit(PageEvent.Request, request);
@@ -271,32 +284,39 @@ export class CdpPage extends Page {
       this.browser().emit(BrowserEvent.RequestFinished, request);
     });
 
-    this.#tabTargetClient.on(
+    const tabTargetClientEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#tabTargetClient),
+    );
+    tabTargetClientEmitter.on(
       CDPSessionEvent.Swapped,
       this.#onActivation.bind(this),
     );
 
-    this.#tabTargetClient.on(
+    tabTargetClientEmitter.on(
       CDPSessionEvent.Ready,
       this.#onSecondaryTarget.bind(this),
     );
 
-    this.#targetManager.on(
+    const targetManagerEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#targetManager),
+    );
+    targetManagerEmitter.on(
       TargetManagerEvent.TargetGone,
       this.#onDetachedFromTarget,
     );
+    // Watch the primary page target instead of the tab target: a reloaded page
+    // target can attach before its tab clears the `discarded` subtype.
+    targetManagerEmitter.on(
+      TargetManagerEvent.TargetDiscarded,
+      this.#onTargetDiscarded,
+    );
+    if (this.#primaryTarget.isDiscarded()) {
+      queueMicrotask(this.#handleClose);
+    }
 
     void this.#tabTarget._isClosedDeferred
       .valueOrThrow()
-      .then(() => {
-        this.#targetManager.off(
-          TargetManagerEvent.TargetGone,
-          this.#onDetachedFromTarget,
-        );
-
-        this.emit(PageEvent.Close, undefined);
-        this.#closed = true;
-      })
+      .then(this.#handleClose)
       .catch(error => {
         this.logger?.(DEBUG_PREFIXES.error)?.(error);
       });
@@ -304,6 +324,34 @@ export class CdpPage extends Page {
     this.#setupPrimaryTargetListeners();
     this.#attachExistingTargets();
   }
+
+  #handleClose = (): void => {
+    if (this.#closed) {
+      return;
+    }
+    // The page can close before the worker sessions disconnect, for example
+    // when Chrome discards the tab. Fail the pending worker requests while the
+    // page still knows its workers and still forwards `requestfailed`.
+    for (const worker of this.#workers.values()) {
+      this.#frameManager.networkManager.releaseClient(worker.client);
+    }
+    this.#subscriptions.dispose();
+    this.#sessionCloseDeferred.reject(new TargetCloseError('Target closed'));
+
+    for (const [sessionId, worker] of Array.from(this.#workers.entries())) {
+      this.#workers.delete(sessionId);
+      this.emit(PageEvent.WorkerDestroyed, worker);
+    }
+
+    this.#closed = true;
+    this.emit(PageEvent.Close, undefined);
+  };
+
+  #onTargetDiscarded = (target: CdpTarget): void => {
+    if (target === this.#primaryTarget) {
+      this.#handleClose();
+    }
+  };
 
   #attachExistingTargets(): void {
     const queue = [];
@@ -335,6 +383,11 @@ export class CdpPage extends Page {
     this.#primaryTargetClient = newSession;
     this.#primaryTarget = newSession.target();
     assert(this.#primaryTarget, 'Missing target on swap');
+    // The activated target belongs to this page.
+    this.#primaryTarget.pagePromise = Promise.resolve(this);
+    if (this.#primaryTarget.isDiscarded()) {
+      this.#handleClose();
+    }
     this.#keyboard.updateClient(newSession);
     this.#mouse.updateClient(newSession);
     this.#touchscreen.updateClient(newSession);
@@ -366,7 +419,12 @@ export class CdpPage extends Page {
    * during a navigation to a prerended page.
    */
   #setupPrimaryTargetListeners() {
-    const clientEmitter = new EventEmitter(this.#primaryTargetClient);
+    if (this.#subscriptions.disposed) {
+      return;
+    }
+    const clientEmitter = this.#subscriptions.use(
+      new EventEmitter(this.#primaryTargetClient),
+    );
     clientEmitter.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
     clientEmitter.on(CDPSessionEvent.Disconnected, () => {
       this.#sessionCloseDeferred.reject(new TargetCloseError('Target closed'));
@@ -1462,6 +1520,11 @@ export class CdpPage extends Page {
   override async close(
     options: {runBeforeUnload?: boolean} = {runBeforeUnload: undefined},
   ): Promise<void> {
+    // The page target of a discarded tab no longer exists in the browser, and
+    // the page already emitted `close`.
+    if (this.#closed && this.#primaryTarget.isDiscarded()) {
+      return;
+    }
     using _guard = await this.browserContext().waitForScreenshotOperations();
     const connection = this.#primaryTargetClient.connection();
     assert(

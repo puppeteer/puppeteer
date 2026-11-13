@@ -4,7 +4,7 @@ sidebar_label: Target.page
 
 # Target.page() method
 
-If the target is not of type `"page"`, `"webview"` or `"background_page"`, returns `null`.
+If the target is not of type `"page"`, `"webview"` or `"background_page"`, or if the target is [discarded](./puppeteer.target.isdiscarded.md), returns `null`.
 
 ### Signature
 

@@ -1029,6 +1029,20 @@
     "comment": "not supported"
   },
   {
+    "testIdPattern": "[target.test] Target should hide discarded tabs by default and expose them with includeDiscarded",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[target.test] Target should hide discarded tabs by default and expose them with includeDiscarded",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "Extensions are not supported in shell mode."
+  },
+  {
     "testIdPattern": "[TargetManager.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -2025,6 +2039,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Not supported in WebDriver BiDi: BidiPageTarget.opener() throws UnsupportedOperation."
+  },
+  {
+    "testIdPattern": "[target.test] Target should hide discarded tabs by default and expose them with includeDiscarded",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Blocked on https://crrev.com/c/8619182 and https://crrev.com/c/8691309 rolling into Chrome"
   },
   {
     "testIdPattern": "[target.test] Target should report when a service worker is created and destroyed",
