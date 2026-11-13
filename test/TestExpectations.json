@@ -1071,13 +1071,6 @@
     "comment": "Firefox does not support HTTPResponse.securityDetails() with WebDriver BiDi. Puppeteer reads `goog:securityDetails` only when CDP is available, else it throws UnsupportedOperation. See https://github.com/puppeteer/puppeteer/pull/12736."
   },
   {
-    "testIdPattern": "[ariaqueryhandler.test] AriaQueryHandler queryAllArray $$eval should handle many elements",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS", "TIMEOUT"],
-    "comment": "times out flakily"
-  },
-  {
     "testIdPattern": "[ariaqueryhandler.test] AriaQueryHandler queryOne (Chromium web test) should find by role \"heading\"",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
