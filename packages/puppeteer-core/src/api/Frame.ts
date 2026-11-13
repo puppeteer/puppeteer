@@ -972,8 +972,22 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
               );
               document.head.appendChild(script);
             } else {
+              script.addEventListener('securitypolicyviolation', event => {
+                if (event.disposition === 'enforce') {
+                  reject(
+                    new Error(
+                      `Could not add script tag: the Content Security Policy blocked it (${event.effectiveDirective})`,
+                    ),
+                  );
+                }
+              });
               document.head.appendChild(script);
-              resolve(script);
+              const {port1, port2} = new MessageChannel();
+              port1.onmessage = () => {
+                port1.close();
+                resolve(script);
+              };
+              port2.postMessage(undefined);
             }
           });
         },

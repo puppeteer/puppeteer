@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import assert from 'node:assert';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import type {ServerResponse} from 'node:http';
 import path from 'node:path';
@@ -2142,13 +2143,72 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/csp.html');
-      let error!: Error;
-      await page
-        .addScriptTag({content: 'window.__injected = 35;'})
-        .catch(error_ => {
-          return (error = error_);
-        });
-      expect(error).toBeTruthy();
+      await expect(
+        page.addScriptTag({content: 'window.__injected = 35;'}),
+      ).rejects.toThrow('Content Security Policy');
+      expect(await page.evaluate('window.__injected')).toBe(undefined);
+    });
+
+    it('should throw for every JavaScript type on the CSP page', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/csp.html');
+      for (const type of [
+        'application/javascript',
+        'text/ecmascript',
+        'TEXT/JavaScript',
+        'module',
+      ]) {
+        await expect(
+          page.addScriptTag({content: 'window.__injected = 35;', type}),
+        ).rejects.toThrow('Content Security Policy');
+      }
+    });
+
+    it('should work with a hash-allowed script on the CSP page', async () => {
+      const {page, server} = await getTestState();
+
+      const content = 'window.__injected = 42;';
+      const hash = crypto.createHash('sha256').update(content).digest('base64');
+      server.setCSP('/empty.html', `script-src 'sha256-${hash}'`);
+      await page.goto(server.EMPTY_PAGE);
+      using scriptHandle = await page.addScriptTag({content});
+      expect(scriptHandle.asElement()).not.toBeNull();
+      expect(await page.evaluate('__injected')).toBe(42);
+    });
+
+    it('should work on a page with a report-only CSP', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/empty.html', (_req, res) => {
+        res.setHeader('Content-Type', 'text/html');
+        res.setHeader(
+          'Content-Security-Policy-Report-Only',
+          "script-src 'self'",
+        );
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      using scriptHandle = await page.addScriptTag({
+        content: 'window.__injected = 42;',
+      });
+      expect(scriptHandle.asElement()).not.toBeNull();
+      expect(await page.evaluate('__injected')).toBe(42);
+    });
+
+    it('should not throw when added with JSON content to the CSP page', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/csp.html');
+      using scriptHandle = await page.addScriptTag({
+        content: '{"injected": 35}',
+        type: 'application/json',
+      });
+      expect(
+        await scriptHandle.evaluate(script => {
+          return script.textContent;
+        }),
+      ).toBe('{"injected": 35}');
     });
 
     it('should throw when added with URL to the CSP page', async () => {
@@ -2868,7 +2928,9 @@ describe('Page', function () {
 
       const issuePromise = waitEvent<Issue>(page, 'issue');
 
-      await page.addScriptTag({content: 'console.log("CSP test")'});
+      await expect(
+        page.addScriptTag({content: 'console.log("CSP test")'}),
+      ).rejects.toThrow('Content Security Policy');
 
       const issue = await issuePromise;
       expect(issue).toBeTruthy();
@@ -2888,9 +2950,11 @@ describe('Page', function () {
       const frame = await page.waitForFrame(crossOriginUrl);
       expect(frame).toBeTruthy();
 
-      await frame.addScriptTag({
-        content: 'console.log("CSP test in iframe")',
-      });
+      await expect(
+        frame.addScriptTag({
+          content: 'console.log("CSP test in iframe")',
+        }),
+      ).rejects.toThrow('Content Security Policy');
 
       const issue = await issuePromise;
       expect(issue).toBeTruthy();
