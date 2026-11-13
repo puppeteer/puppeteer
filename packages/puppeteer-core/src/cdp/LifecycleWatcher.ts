@@ -9,6 +9,7 @@ import type Protocol from 'devtools-protocol';
 import {type Frame, FrameEvent} from '../api/Frame.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
+import {PageEvent} from '../api/Page.js';
 import type {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -135,6 +136,11 @@ export class LifecycleWatcher {
       this.#frameSwapped.bind(this),
     );
     frameEmitter.on(FrameEvent.FrameDetached, this.#onFrameDetached.bind(this));
+
+    const pageEmitter = this.#subscriptions.use(new EventEmitter(frame.page()));
+    pageEmitter.once(PageEvent.Error, error => {
+      this.#terminationDeferred.resolve(error);
+    });
 
     const networkManagerEmitter = this.#subscriptions.use(
       new EventEmitter(networkManager),
