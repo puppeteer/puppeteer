@@ -44,6 +44,10 @@ export class WebMCPTool extends EventEmitter<{
    */
   inputSchema?: object;
   /**
+   * Schema for the tool's output.
+   */
+  outputSchema?: object;
+  /**
    * Optional annotations for the tool.
    */
   annotations?: Protocol.WebMCP.Annotation;
@@ -69,6 +73,7 @@ export class WebMCPTool extends EventEmitter<{
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
+    this.outputSchema = tool.outputSchema;
     this.annotations = tool.annotations;
     this.frame = frame;
     this.#backendNodeId = tool.backendNodeId;
