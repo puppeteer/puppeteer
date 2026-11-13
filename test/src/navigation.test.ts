@@ -980,8 +980,9 @@ describe('navigation', function () {
       const navigation = page.goBack({signal: abortController.signal});
       await server.waitForRequest('/empty.html');
 
-      abortController.abort();
-      await expect(navigation).rejects.toThrow(/aborted/);
+      const reason = new Error('test abort reason');
+      abortController.abort(reason);
+      await expect(navigation).rejects.toBe(reason);
     });
     it('should error if no history is found', async () => {
       const {page} = await getTestState();
