@@ -344,6 +344,19 @@ describe('Cookie specs', () => {
       expect(cookies[0]!.session).toBe(true);
       expect(cookies[0]!.expires).toBe(-1);
     });
+    it('should set a cookie with a fractional |expires|', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const expires = Math.floor(Date.now() / 1000) + 24 * 60 * 60;
+      await page.setCookie({
+        name: 'expiring',
+        value: '123456',
+        expires: expires + 0.5,
+      });
+      const cookies = await page.cookies();
+      expect(cookies).toHaveLength(1);
+      expect(Math.floor(cookies[0]!.expires)).toBe(expires);
+    });
     it('should set cookie with reasonable defaults', async () => {
       const {page, server} = await getTestState();
 
