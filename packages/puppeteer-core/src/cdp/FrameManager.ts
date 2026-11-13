@@ -6,6 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {Browser} from '../api/Browser.js';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
@@ -270,6 +271,10 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
   page(): CdpPage {
     return this.#page;
+  }
+
+  browser(): Browser {
+    return this.#page.browser();
   }
 
   worker(client: CDPSession): WebWorker | null {

@@ -6,10 +6,11 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {Browser} from '../api/Browser.js';
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {headersInputToRecord, type HeadersInput} from '../api/HTTPRequest.js';
-import type {Credentials, Page} from '../api/Page.js';
+import type {Credentials} from '../api/Page.js';
 import type {WebWorker} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
@@ -74,7 +75,7 @@ export interface InternalNetworkConditions extends NetworkConditions {
 export interface FrameProvider {
   frame(id: string): Frame | null;
   worker(client: CDPSession): WebWorker | null;
-  page(): Page;
+  browser(): Browser;
 }
 
 /**
@@ -364,8 +365,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       return;
     }
     const userAgent =
-      this.#userAgent ??
-      (await this.#frameManager.page().browser().userAgent());
+      this.#userAgent ?? (await this.#frameManager.browser().userAgent());
     if (userAgent === undefined) {
       return;
     }

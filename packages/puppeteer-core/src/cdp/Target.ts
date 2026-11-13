@@ -15,7 +15,6 @@ import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
-import {UnsupportedOperation} from '../common/Errors.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -339,10 +338,8 @@ export class WorkerTarget extends CdpTarget {
             worker: c => {
               return c === client ? worker : null;
             },
-            page: () => {
-              throw new UnsupportedOperation(
-                'Worker network manager has no page',
-              );
+            browser: () => {
+              return this.browser();
             },
           },
           this.browser().isNetworkEnabled(),

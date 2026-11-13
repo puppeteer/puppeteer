@@ -204,6 +204,9 @@ describe('Workers', function () {
     const requestPromise = waitEvent<HTTPRequest>(
       worker,
       WebWorkerEvent.Request,
+      request => {
+        return request.url() === server.PREFIX + '/hang';
+      },
     );
     await worker.evaluate((url: string) => {
       void fetch(url);
@@ -223,6 +226,46 @@ describe('Workers', function () {
     await failedPromise;
 
     expect(request.failure()).toEqual({errorText: 'net::ERR_ABORTED'});
+  });
+
+  it('should report network requests on shared workers', async () => {
+    const {page, server, context} = await getTestState();
+
+    // Same-origin script, so the worker can fetch from the test server.
+    server.setRoute('/shared-network-worker.js', (_req, res) => {
+      res.setHeader('Content-Type', 'text/javascript');
+      res.end('');
+    });
+    const workerUrl = server.PREFIX + '/shared-network-worker.js';
+    await page.goto(server.EMPTY_PAGE);
+    const [target] = await Promise.all([
+      context.waitForTarget(target => {
+        return target.type() === 'shared_worker' && target.url() === workerUrl;
+      }),
+      page.evaluate((url: string) => {
+        (globalThis as any).sharedWorker = new SharedWorker(url);
+      }, workerUrl),
+    ]);
+    const worker = (await target.worker())!;
+
+    const url = server.PREFIX + '/one-style.css';
+    const [request, response] = await Promise.all([
+      waitEvent<HTTPRequest>(worker, WebWorkerEvent.Request, request => {
+        return request.url() === url;
+      }),
+      waitEvent<HTTPResponse>(worker, WebWorkerEvent.Response, response => {
+        return response.url() === url;
+      }),
+      worker.evaluate(async (url: string) => {
+        await (await fetch(url)).text();
+      }, url),
+    ]);
+
+    expect(request.worker()).toBe(worker);
+    expect(request.frame()).toBeNull();
+    expect(request.page()).toBeNull();
+    expect(response.request()).toBe(request);
+    expect(response.status()).toBe(200);
   });
 
   it('should emit created and destroyed events', async () => {

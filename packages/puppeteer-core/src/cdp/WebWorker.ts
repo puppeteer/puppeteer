@@ -146,6 +146,11 @@ export class CdpWebWorker extends WebWorker {
       return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
     if (networkManager) {
+      // Must run after addClient(): addClient() synchronously registers the
+      // manager's Disconnected listener, which emits RequestFailed for pending
+      // requests (NetworkManager#removeClient). #forwardNetworkEvents()
+      // registers a later Disconnected listener that stops forwarding, so the
+      // opposite order would drop those RequestFailed events.
       this.#forwardNetworkEvents(networkManager);
     }
     this.#client.send('Runtime.enable').catch((err: Error) => {
