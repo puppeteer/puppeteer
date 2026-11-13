@@ -739,6 +739,28 @@ export class TargetManager
     if (needsNetwork) {
       promises.push(session.send('Network.enable'));
     }
+    if (targetInfo.type === 'shared_worker') {
+      // Measured on Chrome 156: `Network.emulateNetworkConditionsByRule` is not
+      // enforced on a shared worker session when it is sent together with
+      // `Network.enable`, and when it is sent after the `Network.enable`
+      // response it can still miss requests made as the worker script starts.
+      // `Network.setBlockedURLs` blocked all of them, so the rules are also
+      // expressed as blocked URL patterns. The patterns are evaluated in order
+      // and a `block: false` entry wins over later entries, so the allowlist is
+      // the allowed patterns followed by a catch-all block. An empty list
+      // clears previously set patterns.
+      const urlPatterns: Protocol.Network.BlockPattern[] = [];
+      for (const item of this.#blocklist) {
+        urlPatterns.push({urlPattern: item.rule, block: true});
+      }
+      if (this.#allowlist.length > 0) {
+        for (const item of this.#allowlist) {
+          urlPatterns.push({urlPattern: item.rule, block: false});
+        }
+        urlPatterns.push({urlPattern: '*://*:*/*', block: true});
+      }
+      promises.push(session.send('Network.setBlockedURLs', {urlPatterns}));
+    }
     // When clearing network conditions (lists are empty), we must explicitly pass
     // `offline: false` to force CDP to clear any previously set global offline state.
     // When an allowlist is active, we must pass `undefined` to prevent globally
