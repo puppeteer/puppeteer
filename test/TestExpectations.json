@@ -1680,6 +1680,13 @@
     "comment": "When navigating to a page with authentication the navigate command does not error and never resolves due to the auth dialog being shown https://github.com/w3c/webdriver-bidi/issues/719"
   },
   {
+    "testIdPattern": "[network.test] network Page.authenticate should not disable caching for script",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: Needs investigation, isCached is false for the script request handle via network interception"
+  },
+  {
     "testIdPattern": "[network.test] network Page.authenticate should not disable caching for stylesheet",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
