@@ -164,6 +164,18 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     }
   }
 
+  /**
+   * Stops tracking `client` and fails the requests that its dedicated worker
+   * left pending. The page calls this method for its workers when it closes
+   * before their sessions disconnect (for example, when Chrome discards the
+   * tab), because the page no longer knows the workers after it closes.
+   */
+  releaseClient(client: CDPSession): void {
+    this.#removeClient(client).catch(error => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+    });
+  }
+
   async #removeClient(client: CDPSession) {
     this.#clients.get(client)?.dispose();
     this.#clients.delete(client);

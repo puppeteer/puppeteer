@@ -11,6 +11,7 @@ import type {
   Permission,
   PermissionDescriptor,
   PermissionState,
+  TargetOptions,
 } from '../api/Browser.js';
 import {WEB_PERMISSION_TO_PROTOCOL_PERMISSION} from '../api/Browser.js';
 import type {BrowserContextEvents} from '../api/BrowserContext.js';
@@ -190,7 +191,7 @@ export class BidiBrowserContext extends BrowserContext {
     return page;
   }
 
-  override targets(): Target[] {
+  override targets(_options?: TargetOptions): Target[] {
     return [...this.#targets.values()].flatMap(([target, frames]) => {
       return [target, ...frames.values()];
     });
