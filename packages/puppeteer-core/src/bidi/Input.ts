@@ -518,6 +518,8 @@ const getBidiButton = (button: MouseButton) => {
 export class BidiMouse extends Mouse {
   #page: BidiPage;
   #lastMovePoint: Point = {x: 0, y: 0};
+  #lastMoveId = 0;
+  #nextMoveId = 1;
 
   constructor(page: BidiPage) {
     super();
@@ -526,6 +528,7 @@ export class BidiMouse extends Mouse {
 
   override async reset(): Promise<void> {
     this.#lastMovePoint = {x: 0, y: 0};
+    this.#lastMoveId = this.#nextMoveId++;
     await this.#page.mainFrame().browsingContext.releaseActions();
   }
 
@@ -556,6 +559,7 @@ export class BidiMouse extends Mouse {
     });
     // https://w3c.github.io/webdriver-bidi/#command-input-performActions:~:text=input.PointerMoveAction%20%3D%20%7B%0A%20%20type%3A%20%22pointerMove%22%2C%0A%20%20x%3A%20js%2Dint%2C
     this.#lastMovePoint = to;
+    this.#lastMoveId = this.#nextMoveId++;
     await this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
@@ -600,11 +604,14 @@ export class BidiMouse extends Mouse {
     y: number,
     options: Readonly<BidiMouseClickOptions> = {},
   ): Promise<void> {
+    const to = {
+      x: Math.round(x),
+      y: Math.round(y),
+    };
     const actions: Bidi.Input.PointerSourceAction[] = [
       {
         type: ActionType.PointerMove,
-        x: Math.round(x),
-        y: Math.round(y),
+        ...to,
         origin: options.origin,
       },
     ];
@@ -627,6 +634,7 @@ export class BidiMouse extends Mouse {
       });
     }
     actions.push(pointerUpAction);
+    const moveId = this.#nextMoveId++;
     await this.#page.mainFrame().browsingContext.performActions([
       {
         type: SourceActionsType.Pointer,
@@ -634,6 +642,10 @@ export class BidiMouse extends Mouse {
         actions,
       },
     ]);
+    if (moveId > this.#lastMoveId) {
+      this.#lastMovePoint = to;
+      this.#lastMoveId = moveId;
+    }
   }
 
   override async wheel(
