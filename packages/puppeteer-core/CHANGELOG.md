@@ -1,5 +1,37 @@
 # Changelog
 
+## [25.18.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.17.0...puppeteer-core-v25.18.0) (2026-11-13)
+
+
+### 🎉 Features
+
+* add framenavigatedsamedocument and framenavigatednewdocument page events ([#15760](https://github.com/puppeteer/puppeteer/issues/15760)) ([5e2df24](https://github.com/puppeteer/puppeteer/commit/5e2df242533e35714c349d0d1755c6555a882ceb))
+* Implement RemoteException for WebDriver BiDi ([#15748](https://github.com/puppeteer/puppeteer/issues/15748)) ([e61ec75](https://github.com/puppeteer/puppeteer/commit/e61ec75722ad2c543a8ea1578a4f941e82ddf5a9))
+* introducing RemoteException for CDP ([#15729](https://github.com/puppeteer/puppeteer/issues/15729)) ([864c8bc](https://github.com/puppeteer/puppeteer/commit/864c8bceb98ac217bb8e816ea7bbe3a56810d68e))
+* roll to Firefox 160.0 ([#15763](https://github.com/puppeteer/puppeteer/issues/15763)) ([6a841e1](https://github.com/puppeteer/puppeteer/commit/6a841e16f7b883a0e775ebbd1179ab575f7f4785))
+
+
+### 🛠️ Fixes
+
+* **bidi:** reset setPermission overrides in clearPermissionOverrides ([#15754](https://github.com/puppeteer/puppeteer/issues/15754)) ([c3604cf](https://github.com/puppeteer/puppeteer/commit/c3604cf757ecca3facc23c831a7d08e1b11da323))
+* **cdp:** delete cookies from the page partition for default port pages ([#15790](https://github.com/puppeteer/puppeteer/issues/15790)) ([a246598](https://github.com/puppeteer/puppeteer/commit/a2465981c2618a829cd27b3cdfe046b3e5d0fc19))
+* **cdp:** honor the signal option in goto() ([#15785](https://github.com/puppeteer/puppeteer/issues/15785)) ([9fce0cb](https://github.com/puppeteer/puppeteer/commit/9fce0cb5eae0f292a9b6e824f0236cd624b186e3))
+* **cdp:** release navigation listeners after a timeout or abort ([#15769](https://github.com/puppeteer/puppeteer/issues/15769)) ([bf61b54](https://github.com/puppeteer/puppeteer/commit/bf61b54862bc2ad18882e08d0dab7309cf649db6))
+* dispose temporary CDP binding handles ([#15731](https://github.com/puppeteer/puppeteer/issues/15731)) ([768ab92](https://github.com/puppeteer/puppeteer/commit/768ab92a80aca010f0c90f0eb57fad3b46e15016))
+* do not modify the options passed to addStyleTag ([#15757](https://github.com/puppeteer/puppeteer/issues/15757)) ([b47386c](https://github.com/puppeteer/puppeteer/commit/b47386c451ad022b0644fc3fc9ecc0dbbab68a4b))
+* do not modify the options passed to launch and connect ([#15762](https://github.com/puppeteer/puppeteer/issues/15762)) ([8d24ee3](https://github.com/puppeteer/puppeteer/commit/8d24ee3a07162368aeaa4339720598937d2a1f4b))
+* honor an already aborted signal in waitForFunction() and navigation methods ([#15797](https://github.com/puppeteer/puppeteer/issues/15797)) ([12348e4](https://github.com/puppeteer/puppeteer/commit/12348e4e06f4b0d5e216be768226afc9903d2be2))
+* honor the signal option in setContent() ([#15789](https://github.com/puppeteer/puppeteer/issues/15789)) ([1eb68c1](https://github.com/puppeteer/puppeteer/commit/1eb68c114dcf92947681b51b2d3e669cd060af19))
+* **injected:** query light DOM of shadow hosts in text selector ([#15735](https://github.com/puppeteer/puppeteer/issues/15735)) ([#15739](https://github.com/puppeteer/puppeteer/issues/15739)) ([70669de](https://github.com/puppeteer/puppeteer/commit/70669de6034e5723630d23ce3c01f4498a92f13b))
+* reject immediately when the AbortSignal is already aborted ([#15792](https://github.com/puppeteer/puppeteer/issues/15792)) ([ec28111](https://github.com/puppeteer/puppeteer/commit/ec28111760387aa5e1d1f05c7514e0c143b64f71))
+* roll to Chrome 157.0.8103.78 ([#15771](https://github.com/puppeteer/puppeteer/issues/15771)) ([0d76771](https://github.com/puppeteer/puppeteer/commit/0d76771ce9454a88e84464b1eb03728dc952076f))
+* use RAF polling for P selectors with pseudo classes ([#15791](https://github.com/puppeteer/puppeteer/issues/15791)) ([3f86e0e](https://github.com/puppeteer/puppeteer/commit/3f86e0eb579acc07584a731c3821f7345fea1314))
+
+
+### 📄 Documentation
+
+* correct browser download environment variable comments ([#15744](https://github.com/puppeteer/puppeteer/issues/15744)) ([da01a54](https://github.com/puppeteer/puppeteer/commit/da01a54f9bafd05fceacb19847ff26c41d4ffaa8))
+
 ## [25.17.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.16.0...puppeteer-core-v25.17.0) (2026-11-10)
 
 
