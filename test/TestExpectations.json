@@ -633,6 +633,13 @@
     "comment": "JSHandle.remoteObject() returns a CDP RemoteObject. BidiJSHandle.remoteObject() throws UnsupportedOperation in WebDriver BiDi."
   },
   {
+    "testIdPattern": "[keyboard.test] Keyboard should trigger editing shortcuts automatically on macOS without commands option",
+    "platforms": ["darwin"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"],
+    "comment": "Blocked on Chromium issue https://g-issues.chromium.org/issues/585479192"
+  },
+  {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
