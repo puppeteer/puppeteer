@@ -40,4 +40,12 @@ describe('device request prompt', function () {
     abortController.abort();
     await expect(task).rejects.toThrow(/aborted/);
   });
+
+  it('rejects immediately when the signal is already aborted', async function () {
+    const {page} = state;
+
+    await expect(
+      page.waitForDevicePrompt({signal: AbortSignal.abort(), timeout: 1000}),
+    ).rejects.toThrow(/aborted/);
+  });
 });
