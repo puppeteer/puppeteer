@@ -47,6 +47,7 @@ export class CdpWebWorker extends WebWorker {
   #hasOwnerExceptionListeners: () => boolean;
   readonly #emitter: EventEmitter<WebWorkerEvents>;
   #workerLoaded = new Deferred<void>();
+  #waitForSilentDetaches?: () => Promise<void>;
 
   get internalEmitter(): EventEmitter<WebWorkerEvents> {
     return this.#emitter;
@@ -63,6 +64,7 @@ export class CdpWebWorker extends WebWorker {
     hasOwnerExceptionListeners: () => boolean = () => {
       return false;
     },
+    waitForSilentDetaches?: () => Promise<void>,
   ) {
     super(url);
     this.#id = targetId;
@@ -70,6 +72,7 @@ export class CdpWebWorker extends WebWorker {
     this.#logger = logger;
     this.#hasOwnerExceptionListeners = hasOwnerExceptionListeners;
     this.#targetType = targetType;
+    this.#waitForSilentDetaches = waitForSilentDetaches;
     this.#world = new IsolatedWorld(
       this,
       new TimeoutSettings(),
@@ -184,14 +187,22 @@ export class CdpWebWorker extends WebWorker {
   override async close(): Promise<void> {
     switch (this.#targetType) {
       case TargetType.SERVICE_WORKER: {
-        // For service workers we need to close the target and detach to allow
-        // the worker to stop.
+        // Wait for any concurrent auto-attached sessions on this service worker
+        // to finish detaching, then close the target and detach our session so
+        // the worker can stop cleanly.
+        await this.#waitForSilentDetaches?.();
         await this.client.connection()?.send('Target.closeTarget', {
           targetId: this.#id,
         });
-        await this.client.connection()?.send('Target.detachFromTarget', {
-          sessionId: this.client.id(),
-        });
+        await this.client
+          .connection()
+          ?.send('Target.detachFromTarget', {
+            sessionId: this.client.id(),
+          })
+          .catch(error => {
+            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+          });
+        await this.#waitForSilentDetaches?.();
         break;
       }
       case TargetType.SHARED_WORKER: {
