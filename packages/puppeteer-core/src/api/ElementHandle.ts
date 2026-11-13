@@ -7,9 +7,11 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {Frame} from '../api/Frame.js';
+import {ARIAQueryHandler} from '../common/AriaQueryHandler.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {LazyArg} from '../common/LazyArg.js';
+import type {QueryHandler} from '../common/QueryHandler.js';
 import type {
   AwaitableIterable,
   ElementFor,
@@ -417,10 +419,12 @@ export abstract class ElementHandle<
     selector: Selector,
     options?: QueryOptions,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    if (options?.isolate === false) {
-      return await this.#$$impl(selector);
+    const {updatedSelector, QueryHandler} =
+      getQueryHandlerAndSelector(selector);
+    if (options?.isolate === false || QueryHandler === ARIAQueryHandler) {
+      return await this.#$$impl(QueryHandler, updatedSelector);
     }
-    return await this.#$$(selector);
+    return await this.#$$(QueryHandler, updatedSelector);
   }
 
   /**
@@ -430,9 +434,10 @@ export abstract class ElementHandle<
    */
   @bindIsolatedHandle
   async #$$<Selector extends string>(
-    selector: Selector,
+    QueryHandlerClass: typeof QueryHandler,
+    updatedSelector: string,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return await this.#$$impl(selector);
+    return await this.#$$impl(QueryHandlerClass, updatedSelector);
   }
 
   /**
@@ -441,12 +446,11 @@ export abstract class ElementHandle<
    * @internal
    */
   async #$$impl<Selector extends string>(
-    selector: Selector,
+    QueryHandlerClass: typeof QueryHandler,
+    updatedSelector: string,
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    const {updatedSelector, QueryHandler} =
-      getQueryHandlerAndSelector(selector);
     return await (AsyncIterableUtil.collect(
-      QueryHandler.queryAll(this, updatedSelector),
+      QueryHandlerClass.queryAll(this, updatedSelector),
     ) as Promise<Array<ElementHandle<NodeFor<Selector>>>>);
   }
 
