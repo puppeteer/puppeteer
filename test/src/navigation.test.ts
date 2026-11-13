@@ -151,27 +151,6 @@ describe('navigation', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
-        window.addEventListener(
-          'beforeunload',
-          () => {
-            return history.replaceState(null, 'initial', window.location.href);
-          },
-          false,
-        );
-      });
-      await page.reload();
-      // Evaluate still works.
-      expect(
-        await page.evaluate(() => {
-          return 1;
-        }),
-      ).toBe(1);
-    });
-    it('should wait for the new document when reload causes history API in beforeunload', async () => {
-      const {page, server} = await getTestState();
-
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => {
         (globalThis as any).beforeReload = true;
         window.addEventListener('beforeunload', () => {
           history.replaceState({scroll: 0}, '', window.location.href);
@@ -184,6 +163,11 @@ describe('navigation', function () {
           return (globalThis as any).beforeReload;
         }),
       ).toBe(undefined);
+      expect(
+        await page.evaluate(() => {
+          return history.state;
+        }),
+      ).toEqual({scroll: 0});
     });
     it('should navigate to empty page with networkidle0', async () => {
       const {page, server} = await getTestState();
