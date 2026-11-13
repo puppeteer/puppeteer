@@ -36,16 +36,15 @@ export class InstalledBrowser {
     browser: Browser,
     buildId: string,
     platform: BrowserPlatform,
+    executablePath?: string,
   ) {
     this.#cache = cache;
     this.browser = browser;
     this.buildId = buildId;
     this.platform = platform;
-    this.executablePath = cache.computeExecutablePath({
-      browser,
-      buildId,
-      platform,
-    });
+    this.executablePath =
+      executablePath ??
+      cache.computeExecutablePath({browser, buildId, platform});
   }
 
   /**
