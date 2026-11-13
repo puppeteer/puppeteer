@@ -497,6 +497,10 @@ Gets all active [targets](./puppeteer.target.md).
 
 In case of multiple [browser contexts](./puppeteer.browsercontext.md), this returns all [targets](./puppeteer.target.md) in all [browser contexts](./puppeteer.browsercontext.md).
 
+**Remarks:**
+
+With CDP, this includes `"tab"` targets and targets with a [subtype](./puppeteer.target.subtype.md), such as prerendered pages.
+
 </td></tr>
 <tr><td>
 
@@ -563,6 +567,10 @@ The format of [Browser.version()](./puppeteer.browser.version.md) might change w
 Waits until a [target](./puppeteer.target.md) matching the given `predicate` appears and returns it.
 
 This will look all open [browser contexts](./puppeteer.browsercontext.md).
+
+**Remarks:**
+
+With CDP, a tab has a `"tab"` target and a `"page"` target with the same URL, and a prerendered page has a `"page"` target with the `"prerender"` [subtype](./puppeteer.target.subtype.md). Check the type and the subtype in the predicate, as the example shows.
 
 </td></tr>
 <tr><td>

@@ -16,6 +16,7 @@ import {FrameEvent} from 'puppeteer-core/internal/api/Frame.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {JSHandle} from 'puppeteer-core/internal/api/JSHandle.js';
 import type {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
+import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
 import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
@@ -2827,9 +2828,15 @@ describe('Page', function () {
       const {page, context} = await getTestState();
 
       const newPagePromise = new Promise<Page | null>(fulfill => {
-        return context.once('targetcreated', target => {
-          return fulfill(target.page());
-        });
+        const listener = (target: Target) => {
+          // The "tab" target is created before its "page" target.
+          if (target.type() !== 'page') {
+            return;
+          }
+          context.off('targetcreated', listener);
+          fulfill(target.page());
+        };
+        context.on('targetcreated', listener);
       });
       assert(page);
       await page.evaluate(() => {

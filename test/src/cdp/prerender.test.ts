@@ -7,9 +7,10 @@
 import {statSync} from 'node:fs';
 
 import expect from 'expect';
+import type {Target} from 'puppeteer-core/internal/api/Target.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
-import {getUniqueVideoFilePlaceholder} from '../utils.js';
+import {getUniqueVideoFilePlaceholder, waitEvent} from '../utils.js';
 
 describe('Prerender', function () {
   setupTestBrowserHooks();
@@ -28,6 +29,48 @@ describe('Prerender', function () {
         return document.querySelector('div')?.innerText;
       }),
     ).toBe('true');
+  });
+
+  it('reports the prerender target and keeps the page when it activates', async () => {
+    const {page, server, browser} = await getTestState();
+    await page.goto(server.PREFIX + '/prerender/index.html');
+    const initialTarget = page.target();
+
+    const prerenderTargetPromise = waitEvent<Target>(
+      browser,
+      'targetcreated',
+      target => {
+        return target.subtype() === 'prerender';
+      },
+    );
+    using button = await page.waitForSelector('button');
+    await button?.click();
+    const prerenderTarget = await prerenderTargetPromise;
+
+    expect(prerenderTarget.type()).toBe('page');
+    expect(prerenderTarget.parent()).toBe(initialTarget.parent());
+    expect(browser.targets()).toContain(prerenderTarget);
+    await expect(prerenderTarget.page()).resolves.toBeNull();
+    await expect(prerenderTarget.asPage()).rejects.toThrow(
+      'Cannot create a page for a prerender target.',
+    );
+
+    const changedTargetPromise = waitEvent<Target>(
+      browser,
+      'targetchanged',
+      target => {
+        return target === prerenderTarget;
+      },
+    );
+    using link = await page.waitForSelector('a');
+    await Promise.all([page.waitForNavigation(), link?.click()]);
+    await changedTargetPromise;
+
+    expect(prerenderTarget.subtype()).toBeUndefined();
+    expect(page.target()).toBe(prerenderTarget);
+    await expect(prerenderTarget.page()).resolves.toBe(page);
+    await expect(prerenderTarget.parent()!.page()).resolves.toBe(page);
+    expect(browser.targets()).not.toContain(initialTarget);
   });
 
   it('can navigate to a prerendered page via Locator', async () => {

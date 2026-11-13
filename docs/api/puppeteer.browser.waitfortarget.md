@@ -64,13 +64,21 @@ _(Optional)_
 
 Promise&lt;[Target](./puppeteer.target.md)&gt;
 
+## Remarks
+
+With CDP, a tab has a `"tab"` target and a `"page"` target with the same URL, and a prerendered page has a `"page"` target with the `"prerender"` [subtype](./puppeteer.target.subtype.md). Check the type and the subtype in the predicate, as the example shows.
+
 ## Example
 
 Finding a target for a page opened via `window.open`:
 
 ```ts
 await page.evaluate(() => window.open('https://www.example.com/'));
-const newWindowTarget = await browser.waitForTarget(
-  target => target.url() === 'https://www.example.com/',
-);
+const newWindowTarget = await browser.waitForTarget(target => {
+  return (
+    target.type() === 'page' &&
+    !target.subtype() &&
+    target.url() === 'https://www.example.com/'
+  );
+});
 ```

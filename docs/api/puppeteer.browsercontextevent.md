@@ -149,7 +149,7 @@ TargetChanged
 
 </td><td>
 
-Emitted when the url of a target inside the browser context changes. Contains a [Target](./puppeteer.target.md) instance.
+Emitted when the URL or the [subtype](./puppeteer.target.subtype.md) of a target inside the browser context changes. Contains a [Target](./puppeteer.target.md) instance.
 
 </td></tr>
 <tr><td>
@@ -165,6 +165,10 @@ TargetCreated
 Emitted when a target is created within the browser context, for example when a new page is opened by [window.open](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or by [browserContext.newPage](./puppeteer.browsercontext.newpage.md)
 
 Contains a [Target](./puppeteer.target.md) instance.
+
+**Remarks:**
+
+With CDP, this event is also emitted for `"tab"` targets and for targets with a [subtype](./puppeteer.target.subtype.md), such as prerendered pages.
 
 </td></tr>
 <tr><td>

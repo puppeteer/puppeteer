@@ -93,6 +93,19 @@ SHARED\_WORKER
 </td></tr>
 <tr><td>
 
+TAB
+
+</td><td>
+
+`"tab"`
+
+</td><td>
+
+A browser tab. With CDP, a tab target is the parent of the page target that shows the tab content.
+
+</td></tr>
+<tr><td>
+
 WEBVIEW
 
 </td><td>

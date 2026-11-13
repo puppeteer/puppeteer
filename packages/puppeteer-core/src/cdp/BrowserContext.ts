@@ -15,6 +15,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import type {Page} from '../api/Page.js';
+import {TargetType} from '../api/Target.js';
 import type {Cookie, CookieData} from '../common/Cookie.js';
 import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
@@ -62,10 +63,22 @@ export class CdpBrowserContext extends BrowserContext {
     const pages = await Promise.all(
       this.targets()
         .filter(target => {
+          // Each tab has one page, which the tab target returns. Do not list
+          // the children of a tab separately.
+          if (target.parent()?.type() === TargetType.TAB) {
+            return false;
+          }
+          const contentTarget =
+            target.type() === TargetType.TAB
+              ? target._primaryChildTarget()
+              : target;
+          if (!contentTarget) {
+            return false;
+          }
           return (
-            target.type() === 'page' ||
-            ((target.type() === 'other' || includeAll) &&
-              this.#browser._getIsPageTargetCallback()?.(target))
+            contentTarget.type() === 'page' ||
+            ((contentTarget.type() === 'other' || includeAll) &&
+              this.#browser._getIsPageTargetCallback()?.(contentTarget))
           );
         })
         .map(target => {

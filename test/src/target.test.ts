@@ -95,6 +95,10 @@ describe('Target', function () {
       context
         .waitForTarget(
           target => {
+            // A "tab" target can exist before its "page" target.
+            if (target.type() !== 'page') {
+              return false;
+            }
             return target.page().then(page => {
               return (
                 page!.url() === server.CROSS_PROCESS_PREFIX + '/empty.html'
@@ -320,13 +324,25 @@ describe('Target', function () {
       targetChanged = true;
     };
     context.on('targetchanged', listener);
-    const targetPromise = waitEvent<Target>(context, 'targetcreated');
+    // Each tab also has a "tab" target. This test checks page targets.
+    const isPageTarget = (target: Target) => {
+      return target.type() === 'page';
+    };
+    const targetPromise = waitEvent<Target>(
+      context,
+      'targetcreated',
+      isPageTarget,
+    );
     const newPagePromise = context.newPage();
     const target = await targetPromise;
     expect(target.url()).toBe('about:blank');
 
     const newPage = await newPagePromise;
-    const targetPromise2 = waitEvent<Target>(context, 'targetcreated');
+    const targetPromise2 = waitEvent<Target>(
+      context,
+      'targetcreated',
+      isPageTarget,
+    );
     const evaluatePromise = newPage.evaluate(() => {
       return window.open('about:blank');
     });
@@ -374,7 +390,9 @@ describe('Target', function () {
 
     await page.goto(server.EMPTY_PAGE);
     const [createdTarget] = await Promise.all([
-      waitEvent<Target>(context, 'targetcreated'),
+      waitEvent<Target>(context, 'targetcreated', target => {
+        return target.type() === 'page';
+      }),
       page.goto(server.PREFIX + '/popup/window-open.html'),
     ]);
     expect((await createdTarget.page())!.url()).toBe(
@@ -391,7 +409,11 @@ describe('Target', function () {
       let resolved = false;
       const targetPromise = browser.waitForTarget(
         target => {
-          return target.url() === server.EMPTY_PAGE;
+          return (
+            target.type() === 'page' &&
+            !target.subtype() &&
+            target.url() === server.EMPTY_PAGE
+          );
         },
         {timeout: 3000},
       );
