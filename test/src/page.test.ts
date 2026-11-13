@@ -899,6 +899,27 @@ describe('Page', function () {
 
       expect(error).toBe(false);
     });
+    it('should not wait for requests of the document the page navigated away from', async () => {
+      const {page, server} = await getTestState();
+
+      // Never responds, so the request is still pending when the page
+      // navigates away.
+      server.setRoute('/hang', () => {});
+      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.waitForRequest(server.PREFIX + '/hang'),
+        page.evaluate(() => {
+          void fetch('/hang').catch(() => {});
+        }),
+      ]);
+      await page.goto(server.PREFIX + '/title.html');
+
+      let error: Error | undefined;
+      await page.waitForNetworkIdle({timeout: 3000}).catch(error_ => {
+        return (error = error_);
+      });
+      expect(error).toBeUndefined();
+    });
     it('should work with delayed response', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);

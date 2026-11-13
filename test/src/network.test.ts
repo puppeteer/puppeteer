@@ -1058,6 +1058,31 @@ describe('network', function () {
       expect(failedRequests).toHaveLength(1);
       expect(failedRequests[0]!.failure()?.errorText).toBe('csp');
     });
+    it('Page.Events.RequestFailed for requests pending when the page navigates away', async () => {
+      const {page, server, isChrome} = await getTestState();
+
+      // Never responds, so the request is still pending when the page
+      // navigates away.
+      server.setRoute('/hang', () => {});
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        page.waitForRequest(server.PREFIX + '/hang'),
+        page.evaluate(() => {
+          void fetch('/hang').catch(() => {});
+        }),
+      ]);
+      const failedRequests: HTTPRequest[] = [];
+      page.on('requestfailed', failed => {
+        if (!isFavicon(failed)) {
+          failedRequests.push(failed);
+        }
+      });
+      await page.goto(server.PREFIX + '/title.html');
+      expect(failedRequests).toEqual([request]);
+      expect(request.failure()?.errorText).toBe(
+        isChrome ? 'net::ERR_ABORTED' : 'NS_BINDING_ABORTED',
+      );
+    });
     it('Page.Events.RequestFinished', async () => {
       const {page, server} = await getTestState();
 

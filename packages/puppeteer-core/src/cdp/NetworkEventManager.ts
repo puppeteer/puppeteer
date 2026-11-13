@@ -164,6 +164,45 @@ export class NetworkEventManager {
     return ids;
   }
 
+  /**
+   * Ids of the requests made for a frame's document that `matches` accepts,
+   * both the ones already emitted and the ones still waiting for more events.
+   * Worker requests have no document and are never included.
+   */
+  documentRequestIds(
+    matches: (
+      frameId: string,
+      loaderId: string,
+      isNavigationRequest: boolean,
+    ) => boolean,
+  ): Set<NetworkRequestId> {
+    const ids = new Set<NetworkRequestId>();
+    for (const [id, request] of this.#httpRequestsMap) {
+      const frameId = request.frame()?._id;
+      if (
+        frameId &&
+        request._loaderId &&
+        matches(frameId, request._loaderId, request.isNavigationRequest())
+      ) {
+        ids.add(id);
+      }
+    }
+    for (const [id, {event}] of this.#requestWillBeSentMap) {
+      if (
+        event.frameId &&
+        event.loaderId &&
+        matches(
+          event.frameId,
+          event.loaderId,
+          event.requestId === event.loaderId && event.type === 'Document',
+        )
+      ) {
+        ids.add(id);
+      }
+    }
+    return ids;
+  }
+
   requestExtraInfo(
     networkRequestId: NetworkRequestId,
   ): Protocol.Network.RequestWillBeSentExtraInfoEvent[] {

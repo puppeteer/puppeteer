@@ -32,12 +32,13 @@ function createNetworkManager(
   worker: (client: CDPSession) => WebWorker | null = () => {
     return null;
   },
+  frame: (id: string) => CdpFrame | null = () => {
+    return null;
+  },
 ) {
   return new NetworkManager(
     {
-      frame(): CdpFrame | null {
-        return null;
-      },
+      frame,
       worker,
       page() {
         return {
@@ -738,6 +739,138 @@ describe('NetworkManager', () => {
 
       expect(requests).toHaveLength(0);
       expect(failed).toHaveLength(0);
+    });
+  });
+
+  describe('requests of a replaced document', () => {
+    const requestWillBeSent = (
+      requestId: string,
+      loaderId: string,
+      frameId: string,
+      url: string,
+    ): Protocol.Network.RequestWillBeSentEvent => {
+      return {
+        requestId,
+        loaderId,
+        documentURL: 'http://localhost/page.html',
+        request: {
+          url,
+          method: 'GET',
+          headers: {},
+          mixedContentType: 'none',
+          initialPriority: 'High',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+          isSameSite: true,
+        },
+        timestamp: 1,
+        wallTime: 1,
+        initiator: {type: 'script'},
+        redirectHasExtraInfo: false,
+        type: requestId === loaderId ? 'Document' : 'Fetch',
+        frameId,
+        hasUserGesture: false,
+      };
+    };
+
+    const setup = async () => {
+      const mainFrame = {
+        _id: 'main',
+        parentFrame() {
+          return null;
+        },
+      } as unknown as CdpFrame;
+      const childFrame = {
+        _id: 'child',
+        parentFrame() {
+          return mainFrame;
+        },
+      } as unknown as CdpFrame;
+      const frames = new Map([
+        ['main', mainFrame],
+        ['child', childFrame],
+      ]);
+      const session = new MockCDPSession();
+      const manager = createNetworkManager(undefined, id => {
+        return frames.get(id) ?? null;
+      });
+      await manager.addClient(session);
+      const failed: string[] = [];
+      manager.on(NetworkManagerEvent.RequestFailed, (request: HTTPRequest) => {
+        failed.push(`${request.url()} ${request.failure()?.errorText}`);
+      });
+      const navigate = (frameId: string, loaderId: string) => {
+        session.emit('Page.frameNavigated', {
+          frame: {id: frameId, loaderId},
+          type: 'Navigation',
+        } as Protocol.Page.FrameNavigatedEvent);
+      };
+      return {manager, session, failed, navigate};
+    };
+
+    it('should fail pending requests of the previous document and its frames when the frame navigates', async () => {
+      const {manager, session, failed, navigate} = await setup();
+
+      session.emit(
+        'Network.requestWillBeSent',
+        requestWillBeSent('1', 'old', 'main', 'http://localhost/hang'),
+      );
+      session.emit(
+        'Network.requestWillBeSent',
+        requestWillBeSent(
+          '2',
+          'child',
+          'child',
+          'http://localhost/hang-in-frame',
+        ),
+      );
+      // The navigation request and a request of the new document.
+      session.emit(
+        'Network.requestWillBeSent',
+        requestWillBeSent('new', 'new', 'main', 'http://localhost/new.html'),
+      );
+      session.emit(
+        'Network.requestWillBeSent',
+        requestWillBeSent('3', 'new', 'main', 'http://localhost/early'),
+      );
+      // A navigation that started before the new document committed.
+      session.emit(
+        'Network.requestWillBeSent',
+        requestWillBeSent('next', 'next', 'main', 'http://localhost/next.html'),
+      );
+      expect(manager.inFlightRequestsCount()).toBe(5);
+
+      navigate('main', 'new');
+
+      expect(failed).toEqual([
+        'http://localhost/hang net::ERR_ABORTED',
+        'http://localhost/hang-in-frame net::ERR_ABORTED',
+      ]);
+      expect(manager.inFlightRequestsCount()).toBe(3);
+    });
+
+    it('should not fail pending requests of the parent frame when a child frame navigates', async () => {
+      const {manager, session, failed, navigate} = await setup();
+
+      session.emit(
+        'Network.requestWillBeSent',
+        requestWillBeSent('1', 'main', 'main', 'http://localhost/hang'),
+      );
+      session.emit(
+        'Network.requestWillBeSent',
+        requestWillBeSent(
+          '2',
+          'child',
+          'child',
+          'http://localhost/hang-in-frame',
+        ),
+      );
+
+      navigate('child', 'child-new');
+
+      expect(failed).toEqual([
+        'http://localhost/hang-in-frame net::ERR_ABORTED',
+      ]);
+      expect(manager.inFlightRequestsCount()).toBe(1);
     });
   });
 
