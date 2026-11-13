@@ -137,6 +137,7 @@ export abstract class BrowserLauncher {
       handleSIGINT = true,
       handleSIGTERM = true,
       handleSIGHUP = true,
+      handleExit = true,
       acceptInsecureCerts = false,
       networkEnabled = true,
       issuesEnabled = true,
@@ -220,6 +221,7 @@ export abstract class BrowserLauncher {
         handleSIGHUP,
         handleSIGTERM,
         handleSIGINT,
+        handleExit,
         dumpio,
         env,
         pipe: usePipe,
@@ -230,9 +232,13 @@ export abstract class BrowserLauncher {
       // Register after @puppeteer/browsers has installed its process-exit
       // dispatcher. That dispatcher kills the browser before this synchronous
       // fallback removes the profile directory.
-      removeTempUserDataDirOnExit = launchArgs.isTempUserDataDir
-        ? registerProcessExitCleanup(launchArgs.userDataDir, this.#logger)
-        : undefined;
+      // When the browser is meant to outlive the Node process, the
+      // temporary profile must not be removed on process exit: the browser
+      // is still using it.
+      removeTempUserDataDirOnExit =
+        launchArgs.isTempUserDataDir && handleExit
+          ? registerProcessExitCleanup(launchArgs.userDataDir, this.#logger)
+          : undefined;
     } catch (error) {
       removeTempUserDataDirOnExit?.();
       await this.cleanUserDataDir(launchArgs.userDataDir, {

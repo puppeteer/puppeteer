@@ -132,6 +132,29 @@ Absolute path to the browser's executable.
 </td></tr>
 <tr><td>
 
+<span id="handleexit">handleExit</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to kill the browser process when the Node process exits.
+
+When `false`, the browser process is left running after the Node process exits, so it can be connected to later via its WebSocket endpoint. The browser process and its stdio streams are unreferenced, allowing the Node process to exit naturally once it no longer needs the browser.
+
+</td><td>
+
+`true`.
+
+</td></tr>
+<tr><td>
+
 <span id="handlesighup">handleSIGHUP</span>
 
 </td><td>

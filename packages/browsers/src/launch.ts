@@ -186,6 +186,18 @@ export interface LaunchOptions {
    */
   handleSIGHUP?: boolean;
   /**
+   * Whether to kill the browser process when the Node process exits.
+   *
+   * When `false`, the browser process is left running after the Node
+   * process exits, so it can be connected to later via its WebSocket
+   * endpoint. The browser process and its stdio streams are unreferenced,
+   * allowing the Node process to exit naturally once it no longer needs
+   * the browser.
+   *
+   * @defaultValue `true`.
+   */
+  handleExit?: boolean;
+  /**
    * Whether to spawn process in the {@link https://nodejs.org/api/child_process.html#optionsdetached | detached}
    * mode.
    *
@@ -326,6 +338,7 @@ export class Process {
     opts.handleSIGINT ??= true;
     opts.handleSIGTERM ??= true;
     opts.handleSIGHUP ??= true;
+    opts.handleExit ??= true;
     // On non-windows platforms, `detached: true` makes child process a
     // leader of a new process group, making it possible to kill child
     // process tree with `.kill(-pid)` command. @see
@@ -372,7 +385,23 @@ export class Process {
       this.#browserProcess.stderr?.pipe(process.stderr);
       this.#browserProcess.stdout?.pipe(process.stdout);
     }
-    subscribeToProcessEvent('exit', this.#onDriverProcessExit);
+    if (opts.handleExit) {
+      subscribeToProcessEvent('exit', this.#onDriverProcessExit);
+    } else {
+      // Let the browser outlive the Node process: unreference the child
+      // process and its stdio streams so they don't keep the event loop
+      // alive after the browser is disconnected from.
+      this.#browserProcess.unref();
+      // The stdio streams are sockets at runtime, but their declared
+      // types do not expose `unref`.
+      for (const stream of [
+        this.#browserProcess.stdin,
+        this.#browserProcess.stdout,
+        this.#browserProcess.stderr,
+      ]) {
+        (stream as unknown as {unref?: () => void})?.unref?.();
+      }
+    }
     if (opts.handleSIGINT) {
       subscribeToProcessEvent('SIGINT', this.#onDriverProcessSignal);
     }
