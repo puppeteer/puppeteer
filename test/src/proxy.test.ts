@@ -14,7 +14,7 @@ import expect from 'expect';
 
 import {getTestState, launch} from './mocha-utils.js';
 
-let HOSTNAME = os.hostname();
+let HOSTNAME = os.hostname().toLowerCase();
 
 // Hostname might not be always accessible in environments other than GitHub
 // Actions. Therefore, we try to find an external IPv4 address to be used as a
@@ -50,41 +50,52 @@ describe('request proxy', () => {
     '--disable-features=NetworkTimeServiceQuerying,AimEnabled',
   ];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     proxiedRequestUrls = [];
 
-    proxyServer = http
-      .createServer((originalRequest, originalResponse) => {
-        // Ignore component update requests triggered on startup.
-        // See https://crbug.com/576202737.
-        if (
-          originalRequest.url &&
-          new URL(originalRequest.url).hostname === 'update.googleapis.com'
-        ) {
-          originalResponse.writeHead(404);
-          originalResponse.end();
-          return;
-        }
-        proxiedRequestUrls.push(originalRequest.url!);
+    proxyServer = http.createServer((originalRequest, originalResponse) => {
+      if (!originalRequest.url || !URL.canParse(originalRequest.url)) {
+        originalResponse.writeHead(400);
+        originalResponse.end();
+        return;
+      }
+      const parsedUrl = new URL(originalRequest.url);
+      // Ignore background browser requests (e.g. component updates, telemetry,
+      // captive portal checks) not targeting the test server.
+      // See https://crbug.com/576202737.
+      if (parsedUrl.hostname !== HOSTNAME) {
+        originalResponse.writeHead(404);
+        originalResponse.end();
+        return;
+      }
+      if (!parsedUrl.pathname.endsWith('/favicon.ico')) {
+        proxiedRequestUrls.push(originalRequest.url);
+      }
 
-        const proxyRequest = http.request(
-          originalRequest.url!,
-          {
-            method: originalRequest.method,
-            headers: originalRequest.headers,
-          },
-          proxyResponse => {
-            originalResponse.writeHead(
-              proxyResponse.statusCode as number,
-              proxyResponse.headers,
-            );
-            proxyResponse.pipe(originalResponse, {end: true});
-          },
-        );
+      const proxyRequest = http.request(
+        originalRequest.url,
+        {
+          method: originalRequest.method,
+          headers: originalRequest.headers,
+        },
+        proxyResponse => {
+          originalResponse.writeHead(
+            proxyResponse.statusCode as number,
+            proxyResponse.headers,
+          );
+          proxyResponse.pipe(originalResponse, {end: true});
+        },
+      );
+      proxyRequest.on('error', () => {
+        originalResponse.destroy();
+      });
 
-        originalRequest.pipe(proxyRequest, {end: true});
-      })
-      .listen();
+      originalRequest.pipe(proxyRequest, {end: true});
+    });
+
+    await new Promise<void>(resolve => {
+      proxyServer.listen(0, resolve);
+    });
 
     proxyServerUrl = `http://${HOSTNAME}:${
       (proxyServer.address() as AddressInfo).port

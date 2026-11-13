@@ -20,7 +20,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(async () => {
           // @ts-expect-error executed on the page
-          return await globalThis.waitForEvents;
+          return await globalThis.getEvents(5);
         }),
       ).toMatchObject([
         {
@@ -94,7 +94,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(async () => {
           // @ts-expect-error executed on the page
-          return await globalThis.waitForEvents;
+          return await globalThis.getEvents(6);
         }),
       ).toMatchObject([
         {
@@ -214,7 +214,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(async () => {
           // @ts-expect-error executed on the page
-          return await globalThis.waitForEvents;
+          return await globalThis.getEvents(12);
         }),
       ).toMatchObject([
         {
@@ -367,7 +367,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(async () => {
           // @ts-expect-error executed on the page
-          return await globalThis.waitForEvents;
+          return await globalThis.getEvents(6);
         }),
       ).toMatchObject([
         {
@@ -506,7 +506,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(async () => {
           // @ts-expect-error executed on the page
-          return await globalThis.waitForEvents;
+          return await globalThis.getEvents(12);
         }),
       ).toMatchObject([
         {
@@ -742,7 +742,7 @@ describe('Touchscreen', () => {
       expect(
         await page.evaluate(async () => {
           // @ts-expect-error executed on the page
-          return await globalThis.waitForEvents;
+          return await globalThis.getEvents(12);
         }),
       ).toMatchObject([
         {
