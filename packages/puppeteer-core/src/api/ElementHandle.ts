@@ -730,19 +730,30 @@ export abstract class ElementHandle<
   @throwIfDisposed()
   @bindIsolatedHandle
   async clickablePoint(offset?: Offset): Promise<Point> {
-    const box = await this.#clickableBox();
+    const {x, y} = await this.#clickablePoint(offset, false);
+    return {x, y};
+  }
+
+  async #clickablePoint(
+    offset: Offset | undefined,
+    checkCovered: boolean,
+  ): Promise<Point & {coveredBy: string | null}> {
+    const box = await this.#clickableBox(offset, checkCovered);
     if (!box) {
       throw new Error('Node is either not clickable or not an Element');
     }
+    const {coveredBy} = box;
     if (offset !== undefined) {
       return {
         x: box.x + offset.x,
         y: box.y + offset.y,
+        coveredBy,
       };
     }
     return {
       x: box.x + box.width / 2,
       y: box.y + box.height / 2,
+      coveredBy,
     };
   }
 
@@ -774,8 +785,8 @@ export abstract class ElementHandle<
     options: Readonly<ClickOptions> = {},
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
-    let {x, y} = await this.clickablePoint(options.offset);
-    if (await this.#getCoveringElement(x, y)) {
+    let {x, y, coveredBy} = await this.#clickablePoint(options.offset, true);
+    if (coveredBy) {
       await this.evaluate(element => {
         element.scrollIntoView({
           block: 'center',
@@ -783,12 +794,9 @@ export abstract class ElementHandle<
           behavior: 'instant',
         });
       });
-      ({x, y} = await this.clickablePoint(options.offset));
-      const coveringElement = await this.#getCoveringElement(x, y);
-      if (coveringElement) {
-        throw new Error(
-          `Node is covered by ${coveringElement} at the click point`,
-        );
+      ({x, y, coveredBy} = await this.#clickablePoint(options.offset, true));
+      if (coveredBy) {
+        throw new Error(`Node is covered by ${coveredBy} at the click point`);
       }
     }
     try {
@@ -1193,58 +1201,75 @@ export abstract class ElementHandle<
     await this.frame.page().keyboard.press(key, options);
   }
 
-  /**
-   * Describes the element that would receive a click at the given
-   * coordinates instead of this element, or `null` if this element (or one
-   * of its descendants or ancestors) receives it.
-   */
-  async #getCoveringElement(
-    this: ElementHandle<Element>,
-    x: number,
-    y: number,
-  ): Promise<string | null> {
-    const frameOffset = await this.#getTopLeftCornerOfFrame();
-    if (!frameOffset) {
-      return null;
-    }
-    return await this.evaluate(
-      (element, x, y) => {
+  async #clickableBox(
+    offset: Offset | undefined,
+    checkCovered: boolean,
+  ): Promise<(BoundingBox & {coveredBy: string | null}) | null> {
+    const boxes = await this.evaluate(
+      (element, offset, checkCovered) => {
+        if (!(element instanceof Element)) {
+          return null;
+        }
         const root = element.getRootNode() as Document | ShadowRoot;
-        const topElement = root.elementFromPoint(x, y);
-        if (
-          !topElement ||
-          element.contains(topElement) ||
-          topElement.contains(element)
-        ) {
-          return null;
-        }
-        // A click on the label of a control activates the control.
-        const labels = (element as Partial<HTMLInputElement>).labels;
-        if (
-          labels &&
-          [...labels].some(label => {
-            return label.contains(topElement);
-          })
-        ) {
-          return null;
-        }
-        const id = topElement.id ? `#${topElement.id}` : '';
-        return `<${topElement.localName}${id}>`;
+        const viewportWidth = document.documentElement.clientWidth;
+        const viewportHeight = document.documentElement.clientHeight;
+        return [...element.getClientRects()].map(rect => {
+          const box = {
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height,
+            coveredBy: null as string | null,
+          };
+          if (!checkCovered) {
+            return box;
+          }
+          // Describes the element that would receive a click at the click
+          // point of this rect instead of `element`. The point is computed the
+          // same way as in `clickablePoint`, from the rect clipped to the
+          // viewport of the element's frame.
+          const left = Math.max(rect.x, 0);
+          const top = Math.max(rect.y, 0);
+          const width = Math.max(
+            Math.min(rect.x + rect.width, viewportWidth) - left,
+            0,
+          );
+          const height = Math.max(
+            Math.min(rect.y + rect.height, viewportHeight) - top,
+            0,
+          );
+          if (width < 1 || height < 1) {
+            return box;
+          }
+          const topElement = root.elementFromPoint(
+            offset ? left + offset.x : left + width / 2,
+            offset ? top + offset.y : top + height / 2,
+          );
+          if (
+            !topElement ||
+            element.contains(topElement) ||
+            topElement.contains(element)
+          ) {
+            return box;
+          }
+          // A click on the label of a control activates the control.
+          const labels = (element as Partial<HTMLInputElement>).labels;
+          if (
+            labels &&
+            [...labels].some(label => {
+              return label.contains(topElement);
+            })
+          ) {
+            return box;
+          }
+          const id = topElement.id ? `#${topElement.id}` : '';
+          box.coveredBy = `<${topElement.localName}${id}>`;
+          return box;
+        });
       },
-      x - frameOffset.x,
-      y - frameOffset.y,
+      offset,
+      checkCovered,
     );
-  }
-
-  async #clickableBox(): Promise<BoundingBox | null> {
-    const boxes = await this.evaluate(element => {
-      if (!(element instanceof Element)) {
-        return null;
-      }
-      return [...element.getClientRects()].map(rect => {
-        return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
-      });
-    });
     if (!boxes?.length) {
       return null;
     }
@@ -1295,6 +1320,7 @@ export abstract class ElementHandle<
       y: box.y,
       height: box.height,
       width: box.width,
+      coveredBy: box.coveredBy,
     };
   }
 
