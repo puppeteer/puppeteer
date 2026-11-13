@@ -350,13 +350,66 @@ export class BidiFrameRealm extends BidiRealm {
   override async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
     if (
       handle instanceof BidiElementHandle &&
-      !handle.disposed &&
-      handle.handle.id === undefined &&
       handle.frame === this.environment
     ) {
-      return BidiElementHandle.from(handle.remoteValue(), this) as unknown as T;
+      if (handle.disposed) {
+        throw new Error('JSHandle is disposed!');
+      }
+      const sharedValue = extractSharedNodeValue(handle);
+      if (sharedValue !== undefined) {
+        return BidiElementHandle.from(
+          sharedValue,
+          this,
+          handle.cachedBackendNodeId,
+        ) as unknown as T;
+      }
     }
     return await super.adoptHandle(handle);
+  }
+
+  override async transferHandle<T extends JSHandle<Node>>(
+    handle: T,
+  ): Promise<T> {
+    if (handle.realm === this) {
+      return handle;
+    }
+    if (
+      handle instanceof BidiElementHandle &&
+      handle.frame === this.environment
+    ) {
+      if (handle.disposed) {
+        throw new Error('JSHandle is disposed!');
+      }
+      const sharedValue = extractSharedNodeValue(handle);
+      if (sharedValue !== undefined) {
+        const transferred = BidiElementHandle.from(
+          sharedValue,
+          this,
+          handle.cachedBackendNodeId,
+        );
+        if (handle.realm === this.environment.isolatedRealm()) {
+          transferred.isolatedHandle = handle;
+          return transferred as unknown as T;
+        }
+        if (handle.handle.id === undefined) {
+          if (
+            handle.isolatedHandle?.realm === this &&
+            !handle.isolatedHandle.disposed
+          ) {
+            const isolated = handle.isolatedHandle;
+            handle.isolatedHandle = undefined;
+            await handle.dispose();
+            return isolated as unknown as T;
+          }
+          await handle.dispose();
+          return transferred as unknown as T;
+        }
+      }
+      const transferredHandle = super.adoptHandle(handle);
+      await handle.dispose();
+      return await transferredHandle;
+    }
+    return await super.transferHandle(handle);
   }
 
   #bindingsInstalled = false;
@@ -420,10 +473,25 @@ export class BidiFrameRealm extends BidiRealm {
       this,
     );
     // We need the sharedId, so we perform the following to obtain it.
-    return await handle.evaluateHandle(element => {
+    using adopted = await handle.evaluateHandle(element => {
       return element;
     });
+    if (backendNodeId !== undefined && adopted instanceof BidiElementHandle) {
+      adopted.setCachedBackendNodeId(backendNodeId);
+    }
+    return adopted.move();
   }
+}
+
+function extractSharedNodeValue(
+  handle: BidiElementHandle<Node>,
+): Bidi.Script.NodeRemoteValue | undefined {
+  const remoteValue = handle.remoteValue();
+  if (remoteValue.type === 'node' && remoteValue.sharedId !== undefined) {
+    const {handle: _, ...sharedValue} = remoteValue;
+    return sharedValue;
+  }
+  return undefined;
 }
 
 /**

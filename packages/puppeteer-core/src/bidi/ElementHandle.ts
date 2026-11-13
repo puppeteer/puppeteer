@@ -32,14 +32,34 @@ export class BidiElementHandle<
   static from<ElementType extends Node = Element>(
     value: Bidi.Script.RemoteValue,
     realm: BidiFrameRealm,
+    backendNodeId?: number,
   ): BidiElementHandle<ElementType> {
-    return new BidiElementHandle(value, realm);
+    return new BidiElementHandle(value, realm, backendNodeId);
   }
 
   declare handle: BidiJSHandle<ElementType>;
 
-  constructor(value: Bidi.Script.RemoteValue, realm: BidiFrameRealm) {
+  constructor(
+    value: Bidi.Script.RemoteValue,
+    realm: BidiFrameRealm,
+    backendNodeId?: number,
+  ) {
     super(BidiJSHandle.from(value, realm), realm.logger);
+    this.#backendNodeId = backendNodeId;
+  }
+
+  /**
+   * @internal
+   */
+  get cachedBackendNodeId(): number | undefined {
+    return this.#backendNodeId;
+  }
+
+  /**
+   * @internal
+   */
+  setCachedBackendNodeId(backendNodeId: number): void {
+    this.#backendNodeId = backendNodeId;
   }
 
   override get realm(): BidiFrameRealm {
@@ -56,8 +76,11 @@ export class BidiElementHandle<
   }
 
   async #withObjectId<T>(fn: (objectId: string) => Promise<T>): Promise<T> {
-    if (this.handle.id !== undefined) {
-      return await fn(this.handle.id);
+    const objectId =
+      this.handle.id ??
+      (!this.isolatedHandle?.disposed ? this.isolatedHandle?.id : undefined);
+    if (objectId !== undefined) {
+      return await fn(objectId);
     }
     await using handle = await this.evaluateHandle(element => {
       return element;
