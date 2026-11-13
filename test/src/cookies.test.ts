@@ -873,5 +873,27 @@ describe('Cookie specs', () => {
       });
       expect(await page.cookies()).toHaveLength(0);
     });
+    it('should delete cookie from the page partition if the page uses the default port', async () => {
+      const {page} = await getTestState();
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({
+          status: 200,
+          contentType: 'text/html',
+          body: '<!DOCTYPE html>',
+        });
+      });
+      await page.goto('https://example.com/');
+      await page.setCookie({
+        url: 'https://example.com/',
+        name: 'partitionCookie',
+        value: 'partition',
+        secure: true,
+        partitionKey: 'https://example.com',
+      });
+      expect(await page.cookies()).toHaveLength(1);
+      await page.deleteCookie({name: 'partitionCookie'});
+      expect(await page.cookies()).toHaveLength(0);
+    });
   });
 });
