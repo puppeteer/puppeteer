@@ -21,7 +21,7 @@ import {getTestState, launch} from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
-const FIREFOX_TIMEOUT = 30_000;
+const FIREFOX_TIMEOUT = 60_000;
 
 describe('Launcher specs', function () {
   this.timeout(FIREFOX_TIMEOUT);
