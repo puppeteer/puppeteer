@@ -88,10 +88,14 @@
   },
   "peerDependencies": {
     "proxy-agent": ">=8.0.1",
+    "xz-decompress": "^0.2.0",
     "yauzl": "^2.10.0 || ^3.4.0"
   },
   "peerDependenciesMeta": {
     "proxy-agent": {
+      "optional": true
+    },
+    "xz-decompress": {
       "optional": true
     },
     "yauzl": {
@@ -102,6 +106,7 @@
     "proxy-agent": ">=8.0.1",
     "@types/yargs": "17.0.35",
     "@types/yauzl": "3.4.0",
+    "xz-decompress": "^0.2.0",
     "yauzl": "^2.10.0 || ^3.4.0"
   }
 }
