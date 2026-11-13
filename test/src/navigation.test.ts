@@ -302,6 +302,26 @@ describe('navigation', function () {
       abortController.abort();
       await expect(navigation).rejects.toThrow(/aborted/);
     });
+    it('should not navigate when the signal is already aborted', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      let requested = false;
+      server.setRoute('/title.html', (_req, res) => {
+        requested = true;
+        res.end();
+      });
+      await expect(
+        page.goto(server.PREFIX + '/title.html', {
+          signal: AbortSignal.abort(),
+        }),
+      ).rejects.toThrow(/aborted/);
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
+      expect(requested).toBe(false);
+      expect(page.url()).toBe(server.EMPTY_PAGE);
+    });
     it('should settle when the page navigates again while loading', async () => {
       const {page, server} = await getTestState();
 
@@ -895,6 +915,13 @@ describe('navigation', function () {
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
     });
+    it('should reject at once when the signal is already aborted', async () => {
+      const {page} = await getTestState();
+
+      await expect(
+        page.waitForNavigation({signal: AbortSignal.abort()}),
+      ).rejects.toThrow(/aborted/);
+    });
     it('should remove the abort listener from the signal', async () => {
       const {page, server} = await getTestState();
 
@@ -927,6 +954,19 @@ describe('navigation', function () {
       response = (await page.goForward())!;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('/grid.html');
+    });
+    it('should not go back when the signal is already aborted', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.goto(server.PREFIX + '/grid.html');
+      await expect(page.goBack({signal: AbortSignal.abort()})).rejects.toThrow(
+        /aborted/,
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
+      expect(page.url()).toBe(server.PREFIX + '/grid.html');
     });
     it('should error if no history is found', async () => {
       const {page} = await getTestState();
@@ -1100,6 +1140,23 @@ describe('navigation', function () {
           return (globalThis as any)._foo;
         }),
       ).toBe(undefined);
+    });
+    it('should not reload when the signal is already aborted', async () => {
+      const {page, server} = await getTestState();
+
+      let requests = 0;
+      server.setRoute('/empty.html', (_req, res) => {
+        requests++;
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      await expect(page.reload({signal: AbortSignal.abort()})).rejects.toThrow(
+        /aborted/,
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
+      expect(requests).toBe(1);
     });
   });
 });

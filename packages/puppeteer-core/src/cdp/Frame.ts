@@ -172,6 +172,7 @@ export class CdpFrame extends Frame {
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
       signal,
     } = options;
+    signal?.throwIfAborted();
 
     let ensureNewDocumentNavigation = false;
     const watcher = new LifecycleWatcher(
@@ -305,6 +306,7 @@ export class CdpFrame extends Frame {
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
       signal,
     } = options;
+    signal?.throwIfAborted();
 
     // We rely upon the fact that the document is reopened, which resets the
     // frame lifecycle with an "init" lifecycle event.

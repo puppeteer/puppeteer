@@ -71,6 +71,11 @@ export class WaitTask<T = unknown> {
     }
     this.#args = args;
 
+    if (this.#signal?.aborted) {
+      void this.terminate(this.#signal.reason);
+      return;
+    }
+
     this.#world.taskManager.add(this);
 
     if (options.timeout) {

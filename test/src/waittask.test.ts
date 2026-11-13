@@ -375,6 +375,18 @@ describe('waittask specs', function () {
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
     });
+    it('should reject at once when the signal is already aborted', async () => {
+      const {page} = await getTestState();
+
+      await expect(
+        page.waitForFunction(
+          () => {
+            return false;
+          },
+          {signal: AbortSignal.abort()},
+        ),
+      ).rejects.toThrow(/aborted/);
+    });
     it('can start multiple tasks without node warnings', async () => {
       const {page} = await getTestState();
       let warning: Error | undefined;
