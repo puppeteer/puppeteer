@@ -106,6 +106,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     ['Network.loadingFinished', this.#onLoadingFinished],
     ['Network.loadingFailed', this.#onLoadingFailed],
     ['Network.responseReceivedExtraInfo', this.#onResponseReceivedExtraInfo],
+    ['Page.frameNavigated', this.#onFrameNavigated],
     [CDPSessionEvent.Disconnected, this.#removeClient],
   ] as const;
 
@@ -181,18 +182,59 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
         this.#networkEventManager.forgetRequest(requestId);
         this.#networkEventManager.forget(requestId);
       } else {
-        this.#abortPendingWorkerRequest(requestId);
+        this.#abortPendingRequest(requestId);
       }
+    }
+  }
+
+  #onFrameNavigated(
+    _client: CDPSession,
+    event: Protocol.Page.FrameNavigatedEvent,
+  ): void {
+    const {id: navigatedFrameId, loaderId} = event.frame;
+    const navigatedFrame = this.#frameManager.frame(navigatedFrameId);
+    if (!navigatedFrame) {
+      return;
+    }
+    const isReplaced = (
+      frameId: string,
+      requestLoaderId: string,
+      isNavigationRequest: boolean,
+    ) => {
+      if (requestLoaderId === loaderId) {
+        return false;
+      }
+      if (frameId === navigatedFrameId) {
+        // A navigation of the frame that is still in flight can be for a
+        // document that commits later.
+        return !isNavigationRequest;
+      }
+      // The documents of the child frames are gone too. The child frames are
+      // not detached yet at this point.
+      let frame = this.#frameManager.frame(frameId)?.parentFrame();
+      while (frame) {
+        if (frame === navigatedFrame) {
+          return true;
+        }
+        frame = frame.parentFrame();
+      }
+      return false;
+    };
+    for (const requestId of this.#networkEventManager.documentRequestIds(
+      isReplaced,
+    )) {
+      this.#abortPendingRequest(requestId);
     }
   }
 
   /**
    * Chrome does not send `Network.loadingFailed` or `Network.loadingFinished`
    * for requests that are still pending when a dedicated worker is
-   * terminated. Fail them so that listeners observe the end of the request
-   * and they no longer count as in flight (e.g. for `waitForNetworkIdle`).
+   * terminated, or when their document is replaced by a navigation. Fail them
+   * so that listeners observe the end of the request and they no longer count
+   * as in flight (e.g. for `waitForNetworkIdle`).
    */
-  #abortPendingWorkerRequest(requestId: string): void {
+  #abortPendingRequest(requestId: string): void {
     const request = this.#networkEventManager.getRequest(requestId);
     if (!request) {
       // The request was never surfaced (e.g. still waiting for

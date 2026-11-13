@@ -1652,6 +1652,13 @@
     "comment": "Flaky on Windows in Chrome over CDP. Added in https://github.com/puppeteer/puppeteer/pull/9088."
   },
   {
+    "testIdPattern": "[network.test] network Network Events Page.Events.RequestFailed for requests pending when the page navigates away",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome does not report requests that are still pending when their document is replaced, and WebDriver BiDi does not emit network.fetchError for them"
+  },
+  {
     "testIdPattern": "[network.test] network Network Events should fire events in proper order",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
@@ -1859,6 +1866,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "Chrome-specific test"
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.waitForNetworkIdle should not wait for requests of the document the page navigated away from",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome does not report requests that are still pending when their document is replaced, and WebDriver BiDi does not emit network.fetchError for them"
   },
   {
     "testIdPattern": "[proxy.test] request proxy in incognito browser context should proxy requests when configured at context level",
