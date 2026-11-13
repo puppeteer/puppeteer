@@ -168,9 +168,10 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     this.#clients.get(client)?.dispose();
     this.#clients.delete(client);
 
-    // Only dedicated workers leave requests pending when their session goes
-    // away. The worker is still known here: the session is closed before the
-    // page handles the target detaching.
+    // Only worker sessions (dedicated workers tracked by the page, and
+    // service/shared workers with their own manager) leave requests pending
+    // when their session goes away. The worker is still known here: the
+    // session is closed before its owner handles the target detaching.
     if (!this.#frameManager.worker(client)) {
       return;
     }

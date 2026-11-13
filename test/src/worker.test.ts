@@ -173,13 +173,22 @@ describe('Workers', function () {
     ]);
     const workerUrl = server.PREFIX + '/one-style.css';
     await Promise.all([
-      waitEvent<HTTPRequest>(worker, WebWorkerEvent.RequestFinished),
+      waitEvent<HTTPRequest>(
+        worker,
+        WebWorkerEvent.RequestFinished,
+        request => {
+          return request.url() === workerUrl;
+        },
+      ),
       worker.evaluate(async (url: string) => {
         await (await fetch(url)).text();
       }, workerUrl),
     ]);
 
-    expect(workerRequests).toEqual([workerUrl]);
+    // Not an exact match: the worker's own script request may still be
+    // reported after the listener is attached.
+    expect(workerRequests).toContain(workerUrl);
+    expect(workerRequests).not.toContain(server.EMPTY_PAGE);
   });
 
   it('should report network requests as failed on the worker when the worker is terminated', async () => {

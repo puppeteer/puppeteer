@@ -361,28 +361,34 @@ describe('extensions', function () {
   });
 
   describe('service worker network events', function () {
+    let extensionId: string | undefined;
+
+    afterEach(async () => {
+      if (extensionId) {
+        await state.browser.uninstallExtension(extensionId);
+        extensionId = undefined;
+      }
+    });
+
     async function installAndGetWorker() {
       const {browser} = state;
-      const extensionId = await browser.installExtension(extensionPath);
+      const id = await browser.installExtension(extensionPath);
+      extensionId = id;
       const target = await browser.waitForTarget(target => {
-        return (
-          target.url().includes(extensionId) &&
-          target.type() === 'service_worker'
-        );
+        return target.url().includes(id) && target.type() === 'service_worker';
       });
-      const worker = (await target.worker())!;
-      return {extensionId, worker};
+      return (await target.worker())!;
     }
 
     it('should report network requests on the service worker', async () => {
-      const {browser, server} = state;
+      const {server} = state;
       // The service worker runs on a chrome-extension:// origin.
       server.setRoute('/cors.json', (_req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Content-Type', 'application/json');
         res.end('{}');
       });
-      const {extensionId, worker} = await installAndGetWorker();
+      const worker = await installAndGetWorker();
       const url = server.PREFIX + '/cors.json';
 
       const [request, response, finished] = await Promise.all([
@@ -410,16 +416,14 @@ describe('extensions', function () {
       expect(response.request()).toBe(request);
       expect(response.status()).toBe(200);
       expect(finished).toBe(request);
-
-      await browser.uninstallExtension(extensionId);
     });
 
     it('should report failed network requests on the service worker', async () => {
-      const {browser, server} = state;
+      const {server} = state;
       server.setRoute('/fail', (req, _res) => {
         req.socket.destroy();
       });
-      const {extensionId, worker} = await installAndGetWorker();
+      const worker = await installAndGetWorker();
       const url = server.PREFIX + '/fail';
 
       const [failed] = await Promise.all([
@@ -437,16 +441,16 @@ describe('extensions', function () {
 
       expect(failed.worker()).toBe(worker);
       expect(failed.failure()?.errorText).toBeTruthy();
-
-      await browser.uninstallExtension(extensionId);
     });
 
     it('should not allow intercepting service worker requests', async () => {
-      const {browser, server} = state;
-      const {extensionId, worker} = await installAndGetWorker();
+      const {server} = state;
+      const worker = await installAndGetWorker();
 
       const [request] = await Promise.all([
-        waitEvent<HTTPRequest>(worker, WebWorkerEvent.Request),
+        waitEvent<HTTPRequest>(worker, WebWorkerEvent.Request, request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
         worker.evaluate(async (url: string) => {
           await fetch(url).catch(() => {});
         }, server.EMPTY_PAGE),
@@ -455,8 +459,6 @@ describe('extensions', function () {
       await expect(request.continue()).rejects.toThrow(
         'Request Interception is not enabled!',
       );
-
-      await browser.uninstallExtension(extensionId);
     });
   });
 });

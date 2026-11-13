@@ -86,7 +86,13 @@ Request
 
 **Remarks:**
 
-CDP only. Listeners are bound to this worker instance: if the worker is terminated and restarted (e.g. an idle extension service worker), a new [WebWorker](./puppeteer.webworker.md) is created and listeners must be re-attached.
+Only supported with CDP. With WebDriver BiDi these events are never emitted.
+
+For service workers and shared workers, network events are only delivered once a [WebWorker](./puppeteer.webworker.md) instance exists, i.e. after [Target.worker()](./puppeteer.target.worker.md) has been called. Requests issued before that, such as requests made while a service worker starts up, are not reported.
+
+Listeners are bound to this worker instance: if the worker is terminated and restarted (e.g. an idle extension service worker), a new [WebWorker](./puppeteer.webworker.md) is created and listeners must be re-attached.
+
+Requests issued by service workers and shared workers cannot be intercepted: `request.continue()`, `abort()` and `respond()` throw.
 
 </td></tr>
 <tr><td>
@@ -99,7 +105,11 @@ RequestFailed
 
 </td><td>
 
-**_(Experimental)_** Emitted when a request issued by the worker fails.
+**_(Experimental)_** Emitted when a request issued by the worker fails. Contains a [HTTPRequest](./puppeteer.httprequest.md).
+
+**Remarks:**
+
+The same delivery rules as for [WebWorkerEvent.Request](./puppeteer.webworkerevent.md) apply.
 
 </td></tr>
 <tr><td>
@@ -112,7 +122,11 @@ RequestFinished
 
 </td><td>
 
-**_(Experimental)_** Emitted when a request issued by the worker finishes successfully.
+**_(Experimental)_** Emitted when a request issued by the worker finishes successfully. Contains a [HTTPRequest](./puppeteer.httprequest.md).
+
+**Remarks:**
+
+The same delivery rules as for [WebWorkerEvent.Request](./puppeteer.webworkerevent.md) apply.
 
 </td></tr>
 <tr><td>
@@ -125,7 +139,11 @@ RequestServedFromCache
 
 </td><td>
 
-**_(Experimental)_** Emitted when a request issued by the worker is served from cache.
+**_(Experimental)_** Emitted when a request issued by the worker is served from cache. Contains a [HTTPRequest](./puppeteer.httprequest.md).
+
+**Remarks:**
+
+The same delivery rules as for [WebWorkerEvent.Request](./puppeteer.webworkerevent.md) apply.
 
 </td></tr>
 <tr><td>
@@ -138,7 +156,11 @@ Response
 
 </td><td>
 
-**_(Experimental)_** Emitted when a response is received for a request issued by the worker.
+**_(Experimental)_** Emitted when a response is received for a request issued by the worker. Contains a [HTTPResponse](./puppeteer.httpresponse.md).
+
+**Remarks:**
+
+The same delivery rules as for [WebWorkerEvent.Request](./puppeteer.webworkerevent.md) apply.
 
 </td></tr>
 </tbody></table>
