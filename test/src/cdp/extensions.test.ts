@@ -8,10 +8,14 @@ import assert from 'node:assert';
 import path from 'node:path';
 
 import expect from 'expect';
+import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import type {Target} from 'puppeteer-core/internal/api/Target.js';
+import {WebWorkerEvent} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+import {waitEvent} from '../utils.js';
 
 const extensionWithPagePath = path.join(
   import.meta.dirname,
@@ -354,6 +358,108 @@ describe('extensions', function () {
     await context.close();
     const targets = browser.targets();
     assertNoServiceWorkerReported(targets, extensionId);
+  });
+
+  describe('service worker network events', function () {
+    let extensionId: string | undefined;
+
+    afterEach(async () => {
+      if (extensionId) {
+        await state.browser.uninstallExtension(extensionId);
+        extensionId = undefined;
+      }
+    });
+
+    async function installAndGetWorker() {
+      const {browser} = state;
+      const id = await browser.installExtension(extensionPath);
+      extensionId = id;
+      const target = await browser.waitForTarget(target => {
+        return target.url().includes(id) && target.type() === 'service_worker';
+      });
+      return (await target.worker())!;
+    }
+
+    it('should report network requests on the service worker', async () => {
+      const {server} = state;
+      // The service worker runs on a chrome-extension:// origin.
+      server.setRoute('/cors.json', (_req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Content-Type', 'application/json');
+        res.end('{}');
+      });
+      const worker = await installAndGetWorker();
+      const url = server.PREFIX + '/cors.json';
+
+      const [request, response, finished] = await Promise.all([
+        waitEvent<HTTPRequest>(worker, WebWorkerEvent.Request, request => {
+          return request.url() === url;
+        }),
+        waitEvent<HTTPResponse>(worker, WebWorkerEvent.Response, response => {
+          return response.url() === url;
+        }),
+        waitEvent<HTTPRequest>(
+          worker,
+          WebWorkerEvent.RequestFinished,
+          request => {
+            return request.url() === url;
+          },
+        ),
+        worker.evaluate(async (url: string) => {
+          await (await fetch(url)).text();
+        }, url),
+      ]);
+
+      expect(request.worker()).toBe(worker);
+      expect(request.frame()).toBeNull();
+      expect(request.page()).toBeNull();
+      expect(response.request()).toBe(request);
+      expect(response.status()).toBe(200);
+      expect(finished).toBe(request);
+    });
+
+    it('should report failed network requests on the service worker', async () => {
+      const {server} = state;
+      server.setRoute('/fail', (req, _res) => {
+        req.socket.destroy();
+      });
+      const worker = await installAndGetWorker();
+      const url = server.PREFIX + '/fail';
+
+      const [failed] = await Promise.all([
+        waitEvent<HTTPRequest>(
+          worker,
+          WebWorkerEvent.RequestFailed,
+          request => {
+            return request.url() === url;
+          },
+        ),
+        worker.evaluate(async (url: string) => {
+          await fetch(url).catch(() => {});
+        }, url),
+      ]);
+
+      expect(failed.worker()).toBe(worker);
+      expect(failed.failure()?.errorText).toBeTruthy();
+    });
+
+    it('should not allow intercepting service worker requests', async () => {
+      const {server} = state;
+      const worker = await installAndGetWorker();
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(worker, WebWorkerEvent.Request, request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+        worker.evaluate(async (url: string) => {
+          await fetch(url).catch(() => {});
+        }, server.EMPTY_PAGE),
+      ]);
+
+      await expect(request.continue()).rejects.toThrow(
+        'Request Interception is not enabled!',
+      );
+    });
   });
 });
 

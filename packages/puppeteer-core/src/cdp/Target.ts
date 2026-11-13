@@ -19,6 +19,7 @@ import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
 import type {CdpCDPSession} from './CdpSession.js';
+import {NetworkManager} from './NetworkManager.js';
 import {CdpPage} from './Page.js';
 import type {TargetManager} from './TargetManager.js';
 import {CdpWebWorker} from './WebWorker.js';
@@ -326,13 +327,31 @@ export class WorkerTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        const worker = new CdpWebWorker(
+        // Service and shared workers are not owned by a page, so they get
+        // their own network manager that only tracks this worker's session.
+        let worker: CdpWebWorker | null = null;
+        const networkManager = new NetworkManager(
+          {
+            frame: () => {
+              return null;
+            },
+            worker: c => {
+              return c === client ? worker : null;
+            },
+            browser: () => {
+              return this.browser();
+            },
+          },
+          this.browser().isNetworkEnabled(),
+          this.logger,
+        );
+        worker = new CdpWebWorker(
           client,
           this._getTargetInfo().url,
           this._targetId,
           this.type(),
           () => {} /* exceptionThrown */,
-          undefined /* networkManager */,
+          networkManager,
           this.logger,
         );
         this.#bubbleConsoleMessages(worker);

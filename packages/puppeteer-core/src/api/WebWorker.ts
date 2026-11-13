@@ -14,6 +14,8 @@ import type {EvaluateFunc, HandleFor} from '../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 
 import type {CDPSession} from './CDPSession.js';
+import type {HTTPRequest} from './HTTPRequest.js';
+import type {HTTPResponse} from './HTTPResponse.js';
 import type {Realm} from './Realm.js';
 
 /**
@@ -40,6 +42,69 @@ export enum WebWorkerEvent {
    * synchronously inside the listener to keep it alive.
    */
   Exception = 'exception',
+  /**
+   * Emitted when the worker issues a request. Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * Only supported with CDP. With WebDriver BiDi these events are never
+   * emitted.
+   *
+   * For service workers and shared workers, network events are only
+   * delivered once a {@link WebWorker} instance exists, i.e. after
+   * {@link Target.worker} has been called. Requests issued before that,
+   * such as requests made while a service worker starts up, are not
+   * reported.
+   *
+   * Listeners are bound to this worker instance: if the worker is terminated
+   * and restarted (e.g. an idle extension service worker), a new
+   * {@link WebWorker} is created and listeners must be re-attached.
+   *
+   * Requests issued by service workers and shared workers cannot be
+   * intercepted: `request.continue()`, `abort()` and `respond()` throw.
+   *
+   * @experimental
+   */
+  Request = 'request',
+  /**
+   * Emitted when a request issued by the worker is served from cache.
+   * Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * The same delivery rules as for {@link WebWorkerEvent.Request} apply.
+   *
+   * @experimental
+   */
+  RequestServedFromCache = 'requestservedfromcache',
+  /**
+   * Emitted when a response is received for a request issued by the worker.
+   * Contains a {@link HTTPResponse}.
+   *
+   * @remarks
+   * The same delivery rules as for {@link WebWorkerEvent.Request} apply.
+   *
+   * @experimental
+   */
+  Response = 'response',
+  /**
+   * Emitted when a request issued by the worker fails. Contains a
+   * {@link HTTPRequest}.
+   *
+   * @remarks
+   * The same delivery rules as for {@link WebWorkerEvent.Request} apply.
+   *
+   * @experimental
+   */
+  RequestFailed = 'requestfailed',
+  /**
+   * Emitted when a request issued by the worker finishes successfully.
+   * Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * The same delivery rules as for {@link WebWorkerEvent.Request} apply.
+   *
+   * @experimental
+   */
+  RequestFinished = 'requestfinished',
 }
 
 /**
@@ -49,6 +114,11 @@ export interface WebWorkerEvents extends Record<EventType, unknown> {
   [WebWorkerEvent.Console]: ConsoleMessage;
   [WebWorkerEvent.Error]: Error;
   [WebWorkerEvent.Exception]: RemoteException;
+  [WebWorkerEvent.Request]: HTTPRequest;
+  [WebWorkerEvent.RequestServedFromCache]: HTTPRequest;
+  [WebWorkerEvent.Response]: HTTPResponse;
+  [WebWorkerEvent.RequestFailed]: HTTPRequest;
+  [WebWorkerEvent.RequestFinished]: HTTPRequest;
 }
 
 /**
