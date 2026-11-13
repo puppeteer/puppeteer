@@ -64,7 +64,7 @@ number
 
 </td><td>
 
-Longitude between `-180` and `180`.
+Latitude between `-90` and `90`.
 
 </td><td>
 
@@ -81,7 +81,7 @@ number
 
 </td><td>
 
-Latitude between `-90` and `90`.
+Longitude between `-180` and `180`.
 
 </td><td>
 
