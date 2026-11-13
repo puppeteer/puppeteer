@@ -526,6 +526,108 @@ describe('Evaluation specs', function () {
         b: undefined,
       });
     });
+    it('should return typed arrays as typed arrays', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(() => {
+        return new Uint8Array([1, 2, 3]);
+      });
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(Array.from(result)).toEqual([1, 2, 3]);
+    });
+    it('should keep the type of typed arrays', async () => {
+      const {page} = await getTestState();
+
+      const float32 = await page.evaluate(() => {
+        return new Float32Array([1.5, -2.25]);
+      });
+      expect(float32).toBeInstanceOf(Float32Array);
+      expect(Array.from(float32)).toEqual([1.5, -2.25]);
+
+      const int16 = await page.evaluate(() => {
+        return new Int16Array([-1, 32767]);
+      });
+      expect(int16).toBeInstanceOf(Int16Array);
+      expect(Array.from(int16)).toEqual([-1, 32767]);
+
+      const bigint64 = await page.evaluate(() => {
+        return new BigInt64Array([BigInt(-1), BigInt('4611686018427387904')]);
+      });
+      expect(bigint64).toBeInstanceOf(BigInt64Array);
+      expect(Array.from(bigint64)).toEqual([
+        BigInt(-1),
+        BigInt('4611686018427387904'),
+      ]);
+    });
+    it('should return the viewed range of a typed array', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(() => {
+        const bytes = new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]);
+        return new Uint8Array(bytes.buffer, 2, 4);
+      });
+      expect(Array.from(result)).toEqual([2, 3, 4, 5]);
+    });
+    it('should return ArrayBuffers', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(() => {
+        return new Uint8Array([7, 8, 9]).buffer;
+      });
+      expect(result).toBeInstanceOf(ArrayBuffer);
+      expect(Array.from(new Uint8Array(result))).toEqual([7, 8, 9]);
+    });
+    it('should return DataViews', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(() => {
+        return new DataView(new Uint8Array([1, 2, 3]).buffer, 1);
+      });
+      expect(result).toBeInstanceOf(DataView);
+      expect(result.byteLength).toBe(2);
+      expect(result.getUint8(0)).toBe(2);
+    });
+    it('should return typed arrays from promises', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(async () => {
+        await new Promise(resolve => {
+          return setTimeout(resolve, 1);
+        });
+        return new Uint8Array([4, 5]);
+      });
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(Array.from(result)).toEqual([4, 5]);
+    });
+    it('should return typed arrays from handles', async () => {
+      const {page} = await getTestState();
+
+      using handle = await page.evaluateHandle(() => {
+        return new Uint8Array([1, 2]);
+      });
+      const fromHandle = await handle.evaluate(array => {
+        return array;
+      });
+      expect(fromHandle).toBeInstanceOf(Uint8Array);
+      expect(Array.from(fromHandle)).toEqual([1, 2]);
+      const jsonValue = await handle.jsonValue();
+      expect(jsonValue).toBeInstanceOf(Uint8Array);
+      expect(Array.from(jsonValue)).toEqual([1, 2]);
+    });
+    it('should transfer large typed arrays', async () => {
+      const {page} = await getTestState();
+
+      const result = await page.evaluate(() => {
+        const bytes = new Uint8Array(4 * 1024 * 1024);
+        bytes[0] = 1;
+        bytes[bytes.length - 1] = 2;
+        return bytes;
+      });
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result.length).toBe(4 * 1024 * 1024);
+      expect(result[0]).toBe(1);
+      expect(result[result.length - 1]).toBe(2);
+    });
   });
 
   describe('Page.evaluateOnNewDocument', function () {

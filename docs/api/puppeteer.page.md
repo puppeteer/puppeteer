@@ -681,6 +681,8 @@ Evaluates a function in the page's context and returns the result.
 
 If the function passed to `page.evaluate` returns a Promise, the function will wait for the promise to resolve and return its value.
 
+A typed array, `ArrayBuffer` or `DataView` returned by the function is transferred as binary data and comes back with the same type. Other return values are serialized as JSON, so a typed array nested inside a returned object or array is not transferred this way.
+
 </td></tr>
 <tr><td>
 
