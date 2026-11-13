@@ -1056,12 +1056,15 @@ export class BidiPage extends Page {
   ): Promise<HTTPResponse | null> {
     options.signal?.throwIfAborted();
     const controller = new AbortController();
+    const signal = options.signal
+      ? AbortSignal.any([options.signal, controller.signal])
+      : controller.signal;
 
     try {
       const [response] = await Promise.all([
         this.waitForNavigation({
           ...options,
-          signal: controller.signal,
+          signal,
         }),
         this.#frame.browsingContext.traverseHistory(delta),
       ]);
