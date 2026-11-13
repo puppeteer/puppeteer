@@ -595,6 +595,33 @@ describe('Keyboard', function () {
     await textarea.press('NumpadSubtract');
     expect(await page.evaluate('keyLocation')).toBe(3);
   });
+  it('should specify location on keyup', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.evaluate(() => {
+      window.addEventListener(
+        'keyup',
+        event => {
+          return ((globalThis as any).keyLocation = event.location);
+        },
+        true,
+      );
+    });
+    using textarea = (await page.$('textarea'))!;
+
+    await textarea.press('Digit5');
+    expect(await page.evaluate('keyLocation')).toBe(0);
+
+    await textarea.press('ControlLeft');
+    expect(await page.evaluate('keyLocation')).toBe(1);
+
+    await textarea.press('ControlRight');
+    expect(await page.evaluate('keyLocation')).toBe(2);
+
+    await textarea.press('NumpadSubtract');
+    expect(await page.evaluate('keyLocation')).toBe(3);
+  });
   it('should throw on unknown keys', async () => {
     const {page} = await getTestState();
 
