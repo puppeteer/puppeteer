@@ -177,6 +177,13 @@ describe('input tests', function () {
       expect(fileChooser1 === fileChooser2).toBe(true);
     });
 
+    it('should reject immediately when the signal is already aborted', async () => {
+      const {page} = await getTestState();
+
+      await expect(
+        page.waitForFileChooser({signal: AbortSignal.abort(), timeout: 1000}),
+      ).rejects.toThrow(/aborted/);
+    });
     it('should be able to abort', async () => {
       const {page} = await getTestState();
 

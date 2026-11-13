@@ -733,6 +733,8 @@ export class BidiPage extends Page {
   override async waitForFileChooser(
     options: WaitTimeoutOptions = {},
   ): Promise<FileChooser> {
+    options.signal?.throwIfAborted();
+
     const {timeout = this._timeoutSettings.timeout()} = options;
     const deferred = Deferred.create<FileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
