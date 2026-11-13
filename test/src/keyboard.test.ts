@@ -89,6 +89,34 @@ describe('Keyboard', function () {
       }),
     ).toBe('hellohello');
   });
+  it('should trigger editing shortcuts automatically on macOS without commands option', async () => {
+    const {page, server} = await getTestState();
+    if (os.platform() !== 'darwin') {
+      return;
+    }
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.type('textarea', 'puppeteer');
+
+    await page.keyboard.down('Meta');
+    await page.keyboard.press('a');
+    await page.keyboard.up('Meta');
+
+    await page.keyboard.down('Meta');
+    await page.keyboard.press('c');
+    await page.keyboard.up('Meta');
+
+    await page.keyboard.down('Meta');
+    await page.keyboard.press('v');
+    await page.keyboard.press('v');
+    await page.keyboard.up('Meta');
+
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('textarea')!.value;
+      }),
+    ).toBe('puppeteerpuppeteer');
+  });
   it('should send a character with ElementHandle.press', async () => {
     const {page, server} = await getTestState();
 
