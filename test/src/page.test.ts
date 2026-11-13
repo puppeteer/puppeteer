@@ -1750,6 +1750,17 @@ describe('Page', function () {
       abortController.abort();
       await expect(content).rejects.toThrow(/aborted/);
     });
+    it('should not set the content when the signal is already aborted', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(htmlRaw`<div>before</div>`);
+      await expect(
+        page.setContent(htmlRaw`<div>after</div>`, {
+          signal: AbortSignal.abort(),
+        }),
+      ).rejects.toThrow(/aborted/);
+      expect(await page.content()).toContain('<div>before</div>');
+    });
     it('should respect default navigation timeout', async () => {
       const {page, server} = await getTestState();
 

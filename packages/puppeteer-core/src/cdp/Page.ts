@@ -1178,6 +1178,7 @@ export class CdpPage extends Page {
   }
 
   override async reload(options?: ReloadOptions): Promise<HTTPResponse | null> {
+    options?.signal?.throwIfAborted();
     const [result] = await Promise.all([
       this.waitForNavigation({
         ...options,
@@ -1211,6 +1212,7 @@ export class CdpPage extends Page {
     delta: number,
     options: WaitForOptions,
   ): Promise<HTTPResponse | null> {
+    options.signal?.throwIfAborted();
     const history = await this.#primaryTargetClient.send(
       'Page.getNavigationHistory',
     );

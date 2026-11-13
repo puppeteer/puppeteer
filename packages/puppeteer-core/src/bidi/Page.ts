@@ -331,6 +331,7 @@ export class BidiPage extends Page {
   override async reload(
     options: ReloadOptions = {},
   ): Promise<BidiHTTPResponse | null> {
+    options.signal?.throwIfAborted();
     const [response] = await Promise.all([
       this.#frame.waitForNavigation(options),
       this.#frame.browsingContext.reload({
@@ -1053,6 +1054,7 @@ export class BidiPage extends Page {
     delta: number,
     options: WaitForOptions,
   ): Promise<HTTPResponse | null> {
+    options.signal?.throwIfAborted();
     const controller = new AbortController();
 
     try {

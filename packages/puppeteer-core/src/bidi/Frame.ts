@@ -326,6 +326,7 @@ export class BidiFrame extends Frame {
     url: string,
     options: GoToOptions = {},
   ): Promise<BidiHTTPResponse | null> {
+    options.signal?.throwIfAborted();
     const [response] = await Promise.all([
       this.waitForNavigation(options),
       // Some implementations currently only report errors when the
@@ -370,6 +371,7 @@ export class BidiFrame extends Frame {
     html: string,
     options: SetContentWaitForOptions = {},
   ): Promise<void> {
+    options.signal?.throwIfAborted();
     await Promise.all([
       this.setFrameContent(html),
       firstValueFrom(
