@@ -153,14 +153,16 @@ async function extractTar(
       },
     )
       .once('error', handleError(decompressUtilityName))
-      .once('exit', code => {
+      .once('exit', (code, signal) => {
         logger?.(DEBUG_PREFIXES.fileUtil)?.(
           `${decompressUtilityName} exited, code=${code}`,
         );
         if (code !== 0) {
+          const reason =
+            code === null ? `signal ${signal}` : `exit code ${code}`;
           reject(
             new Error(
-              `\`${decompressUtilityName}\` failed to unpack ${tarPath} (exit code ${code})`,
+              `\`${decompressUtilityName}\` failed to unpack ${tarPath} (${reason})`,
             ),
           );
           return;
