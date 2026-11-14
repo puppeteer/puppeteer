@@ -156,6 +156,23 @@ describe('BrowserContext', function () {
     await context.close();
   });
 
+  it('should be able to abort waiting for a target', async () => {
+    const {context} = await getTestState();
+
+    const abortController = new AbortController();
+    const task = context.waitForTarget(
+      () => {
+        return false;
+      },
+      {
+        signal: abortController.signal,
+      },
+    );
+
+    abortController.abort();
+    await expect(task).rejects.toThrow(/aborted/);
+  });
+
   it('should isolate localStorage and cookies', async () => {
     const {browser, server} = await getTestState({
       skipContextCreation: true,
