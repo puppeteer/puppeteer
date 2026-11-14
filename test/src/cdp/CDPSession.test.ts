@@ -57,6 +57,11 @@ describe('Target.createCDPSession', function () {
     await first.detach();
 
     expect(await context.pages()).toContain(page);
+    expect(
+      await page.evaluate(() => {
+        return 1;
+      }),
+    ).toBe(1);
   });
 
   it('should send events', async () => {
