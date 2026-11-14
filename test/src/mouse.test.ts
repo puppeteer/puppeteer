@@ -222,6 +222,70 @@ describe('Mouse', function () {
       height: 230,
     });
   });
+  it('should send mouse wheel events at the position of the last click', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/wheel.html');
+    using elem = (await page.$('div'))!;
+    const boundingBoxBefore = (await elem.boundingBox())!;
+
+    await page.mouse.click(
+      boundingBoxBefore.x + boundingBoxBefore.width / 2,
+      boundingBoxBefore.y + boundingBoxBefore.height / 2,
+    );
+
+    await page.mouse.wheel({deltaY: -100});
+    const boundingBoxAfter = await elem.boundingBox();
+    expect(boundingBoxAfter).toMatchObject({
+      width: 230,
+      height: 230,
+    });
+  });
+  it('should send mouse wheel events at the position of the last of two clicks made in parallel', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const position = page.evaluate(() => {
+      return new Promise(resolve => {
+        window.addEventListener(
+          'wheel',
+          event => {
+            resolve([event.clientX, event.clientY]);
+          },
+          {
+            once: true,
+          },
+        );
+      });
+    });
+    await Promise.all([page.mouse.click(100, 100), page.mouse.click(200, 300)]);
+    await page.mouse.wheel({deltaY: 100});
+    expect(await position).toEqual([200, 300]);
+  });
+  it('should send mouse wheel events at the position of a move made in parallel with a click', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const position = page.evaluate(() => {
+      return new Promise(resolve => {
+        window.addEventListener(
+          'wheel',
+          event => {
+            resolve([event.clientX, event.clientY]);
+          },
+          {
+            once: true,
+          },
+        );
+      });
+    });
+    await Promise.all([
+      page.mouse.click(100, 100, {delay: 100}),
+      page.mouse.move(200, 300),
+    ]);
+    await page.mouse.wheel({deltaY: 100});
+    expect(await position).toEqual([200, 300]);
+  });
   it('should set ctrlKey on the wheel event', async () => {
     const {page, server, isFirefox} = await getTestState();
     await page.goto(server.EMPTY_PAGE);
@@ -266,6 +330,60 @@ describe('Mouse', function () {
       [180, 260],
       [200, 300],
     ]);
+  });
+  it('should tween mouse movement from the position of the last click', async () => {
+    const {page} = await getTestState();
+
+    await page.mouse.click(100, 100);
+    await page.evaluate(() => {
+      (globalThis as any).result = [];
+      document.addEventListener('mousemove', event => {
+        (globalThis as any).result.push([event.clientX, event.clientY]);
+      });
+    });
+    await page.mouse.move(200, 300, {steps: 5});
+    expect(await page.evaluate('result')).toEqual([
+      [120, 140],
+      [140, 180],
+      [160, 220],
+      [180, 260],
+      [200, 300],
+    ]);
+  });
+  it('should move in parallel with a click outside of the viewport', async () => {
+    const {page} = await getTestState();
+
+    await page.mouse.move(100, 100);
+    await page.evaluate(() => {
+      (globalThis as any).result = [];
+      document.addEventListener('mousemove', event => {
+        (globalThis as any).result.push([event.clientX, event.clientY]);
+      });
+    });
+    await Promise.all([
+      page.mouse.click(5000, 5000).catch(() => {}),
+      page.mouse.move(200, 300, {steps: 2}),
+    ]);
+    const result = (await page.evaluate('result')) as number[][];
+    expect(result[result.length - 1]).toEqual([200, 300]);
+  });
+  it('should move after clicks outside of the viewport made in parallel', async () => {
+    const {page} = await getTestState();
+
+    await page.mouse.move(100, 100);
+    await Promise.all([
+      page.mouse.click(5000, 5000).catch(() => {}),
+      page.mouse.click(6000, 6000).catch(() => {}),
+    ]);
+    await page.evaluate(() => {
+      (globalThis as any).result = [];
+      document.addEventListener('mousemove', event => {
+        (globalThis as any).result.push([event.clientX, event.clientY]);
+      });
+    });
+    await page.mouse.move(200, 300, {steps: 2});
+    const result = (await page.evaluate('result')) as number[][];
+    expect(result[result.length - 1]).toEqual([200, 300]);
   });
   // @see https://crbug.com/929806
   it('should work with mobile viewports and cross process navigations', async () => {
