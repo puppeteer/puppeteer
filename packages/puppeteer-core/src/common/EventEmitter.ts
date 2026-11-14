@@ -63,6 +63,8 @@ export class EventEmitter<
 > implements CommonEventEmitter<EventsWithWildcard<Events>> {
   #emitter: Emitter<EventsWithWildcard<Events>> | EventEmitter<Events>;
   #handlers = new Map<keyof Events | '*', any[]>();
+  // Maps the handlers registered by `once` to the handlers passed to it.
+  #onceHandlers = new WeakMap<object, unknown>();
   #logger?: Logger;
 
   /**
@@ -125,7 +127,14 @@ export class EventEmitter<
       this.#handlers.delete(type);
       return this;
     }
-    const index = handlers.lastIndexOf(handler);
+    let index = handlers.length - 1;
+    while (
+      index > -1 &&
+      handlers[index] !== handler &&
+      this.#onceHandlers.get(handlers[index]) !== handler
+    ) {
+      index--;
+    }
     if (index > -1) {
       this.#emitter.off(type, ...handlers.splice(index, 1));
     }
@@ -165,7 +174,12 @@ export class EventEmitter<
       this.off(type, onceHandler);
     };
 
-    return this.on(type, onceHandler);
+    this.on(type, onceHandler);
+    // Subclasses can register a wrapper of `onceHandler` in `on`, so map the
+    // handler that was registered last.
+    const handlers = this.#handlers.get(type)!;
+    this.#onceHandlers.set(handlers[handlers.length - 1], handler);
+    return this;
   }
 
   /**
