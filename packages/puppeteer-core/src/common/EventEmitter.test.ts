@@ -72,6 +72,25 @@ describe('EventEmitter', () => {
         const returnValue = emitter.off('foo', listener);
         expect(returnValue).toBe(emitter);
       });
+
+      it(`${methodName}: removes a listener added with once`, () => {
+        const listener = sinon.spy();
+        emitter.once('foo', listener);
+        emitter.off('foo', listener);
+        expect(emitter.listenerCount('foo')).toEqual(0);
+        emitter.emit('foo', undefined);
+        expect(listener.callCount).toEqual(0);
+      });
+
+      it(`${methodName}: removes only the last added registration of a listener`, () => {
+        const listener = sinon.spy();
+        emitter.on('foo', listener);
+        emitter.once('foo', listener);
+        emitter.off('foo', listener);
+        emitter.emit('foo', undefined);
+        emitter.emit('foo', undefined);
+        expect(listener.callCount).toEqual(2);
+      });
     };
     offTests('off');
   });

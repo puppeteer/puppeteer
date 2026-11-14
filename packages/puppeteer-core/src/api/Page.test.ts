@@ -105,4 +105,39 @@ describe('Page', function () {
       expect(timeDelta).toBeLessThan(100);
     });
   });
+
+  describe('off', function () {
+    it('should remove a request listener added with once', async () => {
+      const page = new MockPage();
+      const requests: HTTPRequest[] = [];
+      const listener = (request: HTTPRequest) => {
+        requests.push(request);
+      };
+      const listenerCount = page.listenerCount(PageEvent.Request);
+
+      page.once(PageEvent.Request, listener);
+      page.off(PageEvent.Request, listener);
+      page.emit(PageEvent.Request, new MockHTTPRequest('1'));
+
+      expect(requests).toEqual([]);
+      expect(page.listenerCount(PageEvent.Request)).toEqual(listenerCount);
+    });
+
+    it('should call a request listener added with once only once', async () => {
+      const page = new MockPage();
+      const requests: HTTPRequest[] = [];
+      const listener = (request: HTTPRequest) => {
+        requests.push(request);
+      };
+      const listenerCount = page.listenerCount(PageEvent.Request);
+
+      page.once(PageEvent.Request, listener);
+      const request1 = new MockHTTPRequest('1');
+      page.emit(PageEvent.Request, request1);
+      page.emit(PageEvent.Request, new MockHTTPRequest('2'));
+
+      expect(requests).toEqual([request1]);
+      expect(page.listenerCount(PageEvent.Request)).toEqual(listenerCount);
+    });
+  });
 });
