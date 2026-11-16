@@ -326,12 +326,12 @@ export class WorkerTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
+        // Service and shared workers create their own NetworkManager.
         const worker = new CdpWebWorker(
           client,
           this,
           () => {} /* exceptionThrown */,
           this.logger,
-          undefined, // Service and Shared workers create their own NetworkManager
         );
         this.#bubbleConsoleMessages(worker);
         return worker;
