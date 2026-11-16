@@ -6,6 +6,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
+import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {Realm} from '../api/Realm.js';
 import {TargetType} from '../api/Target.js';
 import {
@@ -17,6 +18,7 @@ import type {Logger} from '../common/Debug.js';
 import {DEBUG_PREFIXES} from '../common/Debug.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
+import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../index-browser.js';
 import {Deferred} from '../util/Deferred.js';
@@ -25,7 +27,8 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
-import type {NetworkManager} from './NetworkManager.js';
+import {NetworkManager} from './NetworkManager.js';
+import type {CdpTarget} from './Target.js';
 import {createConsoleMessage, createRemoteException} from './utils.js';
 
 /**
@@ -54,22 +57,20 @@ export class CdpWebWorker extends WebWorker {
 
   constructor(
     client: CDPSession,
-    url: string,
-    targetId: string,
-    targetType: TargetType,
+    target: CdpTarget,
     exceptionThrown: ExceptionThrownCallback,
-    networkManager: NetworkManager | undefined,
     logger: Logger,
+    networkManager?: NetworkManager,
     hasOwnerExceptionListeners: () => boolean = () => {
       return false;
     },
   ) {
-    super(url);
-    this.#id = targetId;
+    super(target.url());
+    this.#id = target._targetId;
     this.#client = client;
     this.#logger = logger;
     this.#hasOwnerExceptionListeners = hasOwnerExceptionListeners;
-    this.#targetType = targetType;
+    this.#targetType = target.type();
     this.#world = new IsolatedWorld(
       this,
       new TimeoutSettings(),
@@ -139,12 +140,86 @@ export class CdpWebWorker extends WebWorker {
       this.#world.dispose();
     });
 
+    const netManager =
+      networkManager ?? this.#createOwnNetworkManager(target, logger);
     // This might fail if the target is closed before we receive all execution contexts.
-    networkManager?.addClient(this.#client).catch((err: Error) => {
+    netManager.addClient(this.#client).catch((err: Error) => {
       return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
+    // Must run after addClient(): addClient() synchronously registers the
+    // manager's Disconnected listener, which emits RequestFailed for pending
+    // requests (NetworkManager#removeClient). #forwardNetworkEvents()
+    // registers a later Disconnected listener that stops forwarding, so the
+    // opposite order would drop those RequestFailed events.
+    this.#forwardNetworkEvents(netManager);
     this.#client.send('Runtime.enable').catch((err: Error) => {
       return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
+    });
+  }
+
+  /**
+   * Network manager for workers that are not owned by a page (service and
+   * shared workers). It only tracks this worker's session.
+   */
+  #createOwnNetworkManager(target: CdpTarget, logger: Logger): NetworkManager {
+    return new NetworkManager(
+      {
+        frame: () => {
+          return null;
+        },
+        worker: client => {
+          return client === this.#client ? this : null;
+        },
+        browser: () => {
+          return target.browser();
+        },
+      },
+      target.browser().isNetworkEnabled(),
+      logger,
+    );
+  }
+
+  /**
+   * Utility method to check if the request is owned by the current WebWorker
+   */
+  #isOwn(request: HTTPRequest): boolean {
+    return request.worker() === this;
+  }
+
+  /**
+   * Re-emits network events that belong to this worker. The network manager
+   * may be shared with a page (dedicated workers), so events are filtered by
+   * `request.worker()`.
+   */
+  #forwardNetworkEvents(networkManager: NetworkManager): void {
+    const emitter = new EventEmitter(networkManager);
+    emitter.on(NetworkManagerEvent.Request, request => {
+      if (this.#isOwn(request)) {
+        this.emit(WebWorkerEvent.Request, request);
+      }
+    });
+    emitter.on(NetworkManagerEvent.RequestServedFromCache, request => {
+      if (this.#isOwn(request)) {
+        this.emit(WebWorkerEvent.RequestServedFromCache, request);
+      }
+    });
+    emitter.on(NetworkManagerEvent.Response, response => {
+      if (this.#isOwn(response.request())) {
+        this.emit(WebWorkerEvent.Response, response);
+      }
+    });
+    emitter.on(NetworkManagerEvent.RequestFailed, request => {
+      if (this.#isOwn(request)) {
+        this.emit(WebWorkerEvent.RequestFailed, request);
+      }
+    });
+    emitter.on(NetworkManagerEvent.RequestFinished, request => {
+      if (this.#isOwn(request)) {
+        this.emit(WebWorkerEvent.RequestFinished, request);
+      }
+    });
+    this.#client.once(CDPSessionEvent.Disconnected, () => {
+      emitter.removeAllListeners();
     });
   }
 
