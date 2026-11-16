@@ -611,6 +611,26 @@ export class CdpPage extends Page {
     } catch (error) {
       this.#fileChooserDeferreds.delete(deferred);
       throw error;
+    } finally {
+      // Once nobody is waiting anymore, stop intercepting so that file choosers
+      // opened later (e.g. by a user of a headful browser) are shown again.
+      if (this.#fileChooserDeferreds.size === 0) {
+        await this.#disableFileChooserInterception();
+      }
+    }
+  }
+
+  async #disableFileChooserInterception(): Promise<void> {
+    try {
+      await this.#primaryTargetClient.send(
+        'Page.setInterceptFileChooserDialog',
+        {
+          enabled: false,
+        },
+      );
+    } catch (err) {
+      // If the session is gone, the interception went away with it.
+      this.logger?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 

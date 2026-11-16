@@ -605,6 +605,13 @@
     "comment": "Implementation in Firefox is not in stable yet"
   },
   {
+    "testIdPattern": "[input.test] input tests Page.waitForFileChooser should stop intercepting file choosers *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "These tests observe Page.fileChooserOpened on the CDP session of CdpPage, which is not the session that intercepts file choosers in WebDriver BiDi."
+  },
+  {
     "testIdPattern": "[jshandle.test] JSHandle JSHandle.jsonValue should not throw for circular objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp"],
