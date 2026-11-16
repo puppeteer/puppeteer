@@ -403,16 +403,15 @@ export class CdpPage extends Page {
 
   #onAttachedToTarget = (session: CDPSession) => {
     assert(session instanceof CdpCDPSession);
-    this.#frameManager.onAttachedToTarget(session.target());
-    if (session.target()._getTargetInfo().type === 'worker') {
+    const target = session.target();
+    this.#frameManager.onAttachedToTarget(target);
+    if (target._getTargetInfo().type === 'worker') {
       const worker = new CdpWebWorker(
         session,
-        session.target().url(),
-        session.target()._targetId,
-        session.target().type(),
+        target,
         this.#handleException.bind(this),
-        this.#frameManager.networkManager,
         this.logger,
+        this.#frameManager.networkManager,
         () => {
           return this.listenerCount(PageEvent.Exception) > 0;
         },

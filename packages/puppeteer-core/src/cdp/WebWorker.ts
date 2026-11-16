@@ -27,7 +27,8 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
-import type {NetworkManager} from './NetworkManager.js';
+import {NetworkManager} from './NetworkManager.js';
+import type {CdpTarget} from './Target.js';
 import {createConsoleMessage, createRemoteException} from './utils.js';
 
 /**
@@ -56,22 +57,20 @@ export class CdpWebWorker extends WebWorker {
 
   constructor(
     client: CDPSession,
-    url: string,
-    targetId: string,
-    targetType: TargetType,
+    target: CdpTarget,
     exceptionThrown: ExceptionThrownCallback,
-    networkManager: NetworkManager | undefined,
     logger: Logger,
+    networkManager?: NetworkManager,
     hasOwnerExceptionListeners: () => boolean = () => {
       return false;
     },
   ) {
-    super(url);
-    this.#id = targetId;
+    super(target.url());
+    this.#id = target._targetId;
     this.#client = client;
     this.#logger = logger;
     this.#hasOwnerExceptionListeners = hasOwnerExceptionListeners;
-    this.#targetType = targetType;
+    this.#targetType = target.type();
     this.#world = new IsolatedWorld(
       this,
       new TimeoutSettings(),
@@ -141,21 +140,43 @@ export class CdpWebWorker extends WebWorker {
       this.#world.dispose();
     });
 
+    const netManager =
+      networkManager ?? this.#createOwnNetworkManager(target, logger);
     // This might fail if the target is closed before we receive all execution contexts.
-    networkManager?.addClient(this.#client).catch((err: Error) => {
+    netManager.addClient(this.#client).catch((err: Error) => {
       return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
-    if (networkManager) {
-      // Must run after addClient(): addClient() synchronously registers the
-      // manager's Disconnected listener, which emits RequestFailed for pending
-      // requests (NetworkManager#removeClient). #forwardNetworkEvents()
-      // registers a later Disconnected listener that stops forwarding, so the
-      // opposite order would drop those RequestFailed events.
-      this.#forwardNetworkEvents(networkManager);
-    }
+    // Must run after addClient(): addClient() synchronously registers the
+    // manager's Disconnected listener, which emits RequestFailed for pending
+    // requests (NetworkManager#removeClient). #forwardNetworkEvents()
+    // registers a later Disconnected listener that stops forwarding, so the
+    // opposite order would drop those RequestFailed events.
+    this.#forwardNetworkEvents(netManager);
     this.#client.send('Runtime.enable').catch((err: Error) => {
       return this.#logger?.(DEBUG_PREFIXES.error)?.(err);
     });
+  }
+
+  /**
+   * Network manager for workers that are not owned by a page (service and
+   * shared workers). It only tracks this worker's session.
+   */
+  #createOwnNetworkManager(target: CdpTarget, logger: Logger): NetworkManager {
+    return new NetworkManager(
+      {
+        frame: () => {
+          return null;
+        },
+        worker: client => {
+          return client === this.#client ? this : null;
+        },
+        browser: () => {
+          return target.browser();
+        },
+      },
+      target.browser().isNetworkEnabled(),
+      logger,
+    );
   }
 
   /**
