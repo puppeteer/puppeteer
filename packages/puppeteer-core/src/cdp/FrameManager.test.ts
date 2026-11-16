@@ -9,6 +9,7 @@ import {describe, it} from 'node:test';
 import expect from 'expect';
 
 import type {CDPSessionEvents} from '../api/CDPSession.js';
+import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 
@@ -389,6 +390,25 @@ describe('FrameManager', () => {
   });
 
   describe('iframe targets', () => {
+    it('should ignore a closed target if the frame changes its session during a call', async () => {
+      const {frameManager, pageSession, oopifSession, oopifTarget, detach} =
+        await setup();
+      const method = 'Page.addScriptToEvaluateOnNewDocument';
+      pageSession.responses[method] = {identifier: '1'};
+      let closeTarget!: (error: Error) => void;
+      oopifSession.responses[method] = new Promise((_, reject) => {
+        closeTarget = reject;
+      });
+
+      const result = frameManager.evaluateOnNewDocument('1');
+      await tick();
+      detach(oopifTarget);
+      expect(frameManager.frame(OOPIF_FRAME_ID)!.client).toBe(pageSession);
+      closeTarget(new TargetCloseError('Target closed'));
+
+      expect(await result).toEqual({identifier: '1'});
+    });
+
     it('should use the parent frame from the target info', async () => {
       const {frameManager, attach} = await setup();
       const session = createIframeSession(

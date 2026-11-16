@@ -54,9 +54,10 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   _frameTree = new FrameTree<CdpFrame>();
 
   /**
-   * Set of frame IDs stored to indicate if a frame has received a
-   * frameNavigated event so that frame tree responses could be ignored as the
-   * frameNavigated event usually contains the latest information.
+   * For each session, the IDs of the frames that have received a
+   * frameNavigated event on that session. The frame tree response of the
+   * session is ignored for these frames because the frameNavigated event
+   * usually contains the latest information.
    */
   #frameNavigatedReceived = new WeakMap<CDPSession, Set<string>>();
 
@@ -474,6 +475,18 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     if (frame) {
       // The frame is in the same process as its parent frame again or it is
       // about to be removed.
+      //
+      // If an OOP iframe becomes a normal iframe again, Chrome removes the
+      // target when the navigation is ready to commit. The session of the
+      // parent frame reports Page.frameAttached, Page.frameNavigated and
+      // Runtime.executionContextCreated for the frame after the commit.
+      // Thus, the frame must belong to the session of the parent frame
+      // before these events arrive. The events that the session of the
+      // parent frame reports for the frame while the target is attached are
+      // not handled.
+      //
+      // If an OOP iframe is removed, Page.frameDetached arrives before the
+      // target is gone, and the frame is not known here.
       this.#updateClients(frame);
     }
   }
@@ -578,12 +591,12 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     let frame = this.frame(frameId);
     if (frame) {
       // The session of a known frame only changes when the target manager
-      // reports that the target of the frame is attached or gone.
+      // reports that the target of the frame is attached or gone. If an OOP
+      // iframe becomes a normal iframe again, its target is gone before this
+      // event arrives (see onDetachedFromTarget).
       return;
     }
 
-    parentFrameId =
-      this.#parentFrameId(session, frameId, parentFrameId) ?? parentFrameId;
     const parentFrame = this.frame(parentFrameId);
     const targetSession = this.#targetSession(frameId);
     if (
@@ -615,7 +628,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     const frameId = framePayload.id;
 
     let frame = this._frameTree.getById(frameId);
-    const isMainFrame = !framePayload.parentId && !frame?._parentId;
+    const isMainFrame = !framePayload.parentId;
 
     // A frame navigation is reported on the session of the frame. A new main
     // frame is reported on the session of the page.
