@@ -122,10 +122,7 @@ class HashVerifier {
   }
 }
 
-/**
- * @internal
- */
-export function downloadFile(
+function downloadFileAttempt(
   url: URL,
   destinationPath: string,
   progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
@@ -222,6 +219,35 @@ export function downloadFile(
       reject(error);
     }
   });
+}
+
+/**
+ * @internal
+ */
+export async function downloadFile(
+  url: URL,
+  destinationPath: string,
+  progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
+  expectedHash?: string,
+  retry = 0,
+): Promise<void> {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await downloadFileAttempt(
+        url,
+        destinationPath,
+        progressCallback,
+        expectedHash,
+      );
+    } catch (error) {
+      if (attempt < retry) {
+        attempt++;
+        continue;
+      }
+      throw error;
+    }
+  }
 }
 
 export async function getJSON(url: URL): Promise<unknown> {

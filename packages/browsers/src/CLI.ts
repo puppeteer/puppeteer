@@ -39,6 +39,7 @@ interface InstallArgs {
   baseUrl?: string;
   installDeps?: boolean;
   format: string;
+  retry?: number;
 }
 
 function isValidBrowser(browser: unknown): browser is Browser {
@@ -321,6 +322,11 @@ export class CLI {
               type: 'boolean',
               desc: 'Whether to attempt installing system dependencies (only supported on Linux, requires root privileges).',
               default: false,
+            })
+            .option('retry', {
+              type: 'number',
+              desc: 'Number of times to retry downloading browser archive on failure.',
+              default: 0,
             })
             .option('format', {
               type: 'string',
@@ -648,6 +654,7 @@ export class CLI {
             ? originalBuildId
             : undefined,
         installDeps: args.installDeps,
+        retry: args.retry,
       });
     } catch (error) {
       if (!(error instanceof IncompleteInstallationError)) {

@@ -205,6 +205,24 @@ describe('CLI', function () {
       `Expected the output to not mention the clear command but got "${output}"`,
     );
   });
+
+  it('accepts --retry option on install command', async () => {
+    const output = await runAndCaptureFailure(new CLI(tmpDir), [
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `chrome@${testChromeBuildId}`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+      '--base-url=http://localhost:1',
+      '--retry=2',
+    ]);
+
+    assert.ok(
+      output.includes('All providers failed'),
+      `Expected failure from unreachable host, got: "${output}"`,
+    );
+  });
 });
 
 // Yargs logs the error and exits the process, so both have to be captured.

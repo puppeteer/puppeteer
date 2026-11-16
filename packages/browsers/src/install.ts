@@ -116,6 +116,12 @@ export interface InstallOptions {
    * If omitted, the download proceeds without integrity verification.
    */
   expectedHash?: string;
+  /**
+   * Number of retries to attempt if downloading the browser archive fails.
+   *
+   * @defaultValue `0`
+   */
+  retry?: number;
 
   /**
    * Custom provider implementation for alternative download sources.
@@ -436,6 +442,7 @@ async function installUrl(
       archivePath,
       downloadProgressCallback,
       options.expectedHash,
+      options.retry,
     );
     debugTimeEnd('download', logger);
     return archivePath;
@@ -495,6 +502,7 @@ async function installUrl(
           archivePath,
           downloadProgressCallback,
           options.expectedHash,
+          options.retry,
         );
       } finally {
         debugTimeEnd('download', logger);

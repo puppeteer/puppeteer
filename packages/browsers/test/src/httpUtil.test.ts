@@ -350,4 +350,99 @@ describe('downloadFile', function () {
     );
     assert.ok(fs.existsSync(destPath));
   });
+
+  it('retries download when previous attempts fail', async () => {
+    let attempts = 0;
+    const retryServer = http.createServer((_req, res) => {
+      attempts++;
+      if (attempts === 1) {
+        res.writeHead(500);
+        res.end('internal server error');
+        return;
+      }
+      res.writeHead(200, {'Content-Length': String(testContent.length)});
+      res.end(testContent);
+    });
+    await new Promise<void>(resolve => {
+      retryServer.listen(0, '127.0.0.1', resolve);
+    });
+    const port = (retryServer.address() as {port: number}).port;
+    const retryUrl = new URL(`http://127.0.0.1:${port}/retry-test`);
+    const destPath = path.join(tmpDir, 'retry-download.bin');
+
+    try {
+      await downloadFile(retryUrl, destPath, undefined, undefined, 1);
+      assert.strictEqual(attempts, 2);
+      assert.ok(fs.existsSync(destPath));
+      assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+    } finally {
+      await new Promise<void>(resolve => {
+        retryServer.close(() => {
+          return resolve();
+        });
+      });
+    }
+  });
+
+  it('rejects when all retries are exhausted', async () => {
+    let attempts = 0;
+    const failServer = http.createServer((_req, res) => {
+      attempts++;
+      res.writeHead(500);
+      res.end('fail');
+    });
+    await new Promise<void>(resolve => {
+      failServer.listen(0, '127.0.0.1', resolve);
+    });
+    const port = (failServer.address() as {port: number}).port;
+    const failUrl = new URL(`http://127.0.0.1:${port}/fail-test`);
+    const destPath = path.join(tmpDir, 'fail-download.bin');
+
+    try {
+      await assert.rejects(
+        () => {
+          return downloadFile(failUrl, destPath, undefined, undefined, 2);
+        },
+        (err: Error) => {
+          assert.ok(err.message.includes('server returned code 500'));
+          return true;
+        },
+      );
+      assert.strictEqual(attempts, 3);
+    } finally {
+      await new Promise<void>(resolve => {
+        failServer.close(() => {
+          return resolve();
+        });
+      });
+    }
+  });
+
+  it('does not retry when retry is omitted or zero', async () => {
+    let attempts = 0;
+    const singleServer = http.createServer((_req, res) => {
+      attempts++;
+      res.writeHead(500);
+      res.end('fail');
+    });
+    await new Promise<void>(resolve => {
+      singleServer.listen(0, '127.0.0.1', resolve);
+    });
+    const port = (singleServer.address() as {port: number}).port;
+    const singleUrl = new URL(`http://127.0.0.1:${port}/single-test`);
+    const destPath = path.join(tmpDir, 'single-download.bin');
+
+    try {
+      await assert.rejects(() => {
+        return downloadFile(singleUrl, destPath);
+      });
+      assert.strictEqual(attempts, 1);
+    } finally {
+      await new Promise<void>(resolve => {
+        singleServer.close(() => {
+          return resolve();
+        });
+      });
+    }
+  });
 });
