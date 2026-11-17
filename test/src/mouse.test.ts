@@ -266,8 +266,34 @@ describe('Mouse', function () {
     const {page, server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const position = page.evaluate(() => {
-      return new Promise(resolve => {
+    await page.evaluate(() => {
+      (globalThis as any).positions = new Promise(resolve => {
+        const positions: number[][] = [];
+        window.addEventListener('wheel', event => {
+          positions.push([event.clientX, event.clientY]);
+          if (positions.length === 2) {
+            resolve(positions);
+          }
+        });
+      });
+    });
+    await Promise.all([
+      page.mouse.click(100, 100, {delay: 100}),
+      page.mouse.move(200, 300),
+      page.mouse.wheel({deltaY: 100}),
+    ]);
+    await page.mouse.wheel({deltaY: 100});
+    expect(await page.evaluate('positions')).toEqual([
+      [200, 300],
+      [200, 300],
+    ]);
+  });
+  it('should send mouse wheel events at the position of a click made in parallel', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    await page.evaluate(() => {
+      (globalThis as any).position = new Promise(resolve => {
         window.addEventListener(
           'wheel',
           event => {
@@ -280,11 +306,10 @@ describe('Mouse', function () {
       });
     });
     await Promise.all([
-      page.mouse.click(100, 100, {delay: 100}),
-      page.mouse.move(200, 300),
+      page.mouse.click(100, 100),
+      page.mouse.wheel({deltaY: 100}),
     ]);
-    await page.mouse.wheel({deltaY: 100});
-    expect(await position).toEqual([200, 300]);
+    expect(await page.evaluate('position')).toEqual([100, 100]);
   });
   it('should set ctrlKey on the wheel event', async () => {
     const {page, server, isFirefox} = await getTestState();
@@ -350,10 +375,9 @@ describe('Mouse', function () {
       [200, 300],
     ]);
   });
-  it('should move in parallel with a click outside of the viewport', async () => {
+  it('should tween mouse movement from the position of a click made in parallel', async () => {
     const {page} = await getTestState();
 
-    await page.mouse.move(100, 100);
     await page.evaluate(() => {
       (globalThis as any).result = [];
       document.addEventListener('mousemove', event => {
@@ -361,14 +385,40 @@ describe('Mouse', function () {
       });
     });
     await Promise.all([
-      page.mouse.click(5000, 5000).catch(() => {}),
-      page.mouse.move(200, 300, {steps: 2}),
+      page.mouse.click(100, 100),
+      page.mouse.move(200, 300, {steps: 5}),
     ]);
-    const result = (await page.evaluate('result')) as number[][];
-    expect(result[result.length - 1]).toEqual([200, 300]);
+    expect(await page.evaluate('result')).toEqual([
+      [100, 100],
+      [120, 140],
+      [140, 180],
+      [160, 220],
+      [180, 260],
+      [200, 300],
+    ]);
+  });
+  it('should move after a move made in parallel with a click outside of the viewport', async () => {
+    const {page} = await getTestState();
+
+    await page.mouse.move(100, 100);
+    await Promise.all([
+      page.mouse.click(5000, 5000).catch(() => {}),
+      page.mouse.move(200, 300),
+    ]);
+    await page.evaluate(() => {
+      (globalThis as any).result = [];
+      document.addEventListener('mousemove', event => {
+        (globalThis as any).result.push([event.clientX, event.clientY]);
+      });
+    });
+    await page.mouse.move(300, 500, {steps: 2});
+    expect(await page.evaluate('result')).toEqual([
+      [250, 400],
+      [300, 500],
+    ]);
   });
   it('should move after clicks outside of the viewport made in parallel', async () => {
-    const {page} = await getTestState();
+    const {page, isFirefox} = await getTestState();
 
     await page.mouse.move(100, 100);
     await Promise.all([
@@ -382,8 +432,14 @@ describe('Mouse', function () {
       });
     });
     await page.mouse.move(200, 300, {steps: 2});
-    const result = (await page.evaluate('result')) as number[][];
-    expect(result[result.length - 1]).toEqual([200, 300]);
+    expect(await page.evaluate('result')).toEqual(
+      isFirefox
+        ? [
+            [150, 200],
+            [200, 300],
+          ]
+        : [[200, 300]],
+    );
   });
   // @see https://crbug.com/929806
   it('should work with mobile viewports and cross process navigations', async () => {

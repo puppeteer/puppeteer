@@ -520,10 +520,16 @@ export class BidiMouse extends Mouse {
   #lastMovePoint: Point = {x: 0, y: 0};
   #lastMoveId = 0;
   #nextMoveId = 1;
+  #clicks = new Map<number, Point>();
 
   constructor(page: BidiPage) {
     super();
     this.#page = page;
+  }
+
+  get #position(): Point {
+    const id = Math.max(this.#lastMoveId, ...this.#clicks.keys());
+    return this.#clicks.get(id) ?? this.#lastMovePoint;
   }
 
   override async reset(): Promise<void> {
@@ -537,7 +543,7 @@ export class BidiMouse extends Mouse {
     y: number,
     options: Readonly<BidiMouseMoveOptions> = {},
   ): Promise<void> {
-    const from = this.#lastMovePoint;
+    const from = this.#position;
     const to = {
       x: Math.round(x),
       y: Math.round(y),
@@ -635,16 +641,23 @@ export class BidiMouse extends Mouse {
     }
     actions.push(pointerUpAction);
     const moveId = this.#nextMoveId++;
-    await this.#page.mainFrame().browsingContext.performActions([
-      {
-        type: SourceActionsType.Pointer,
-        id: InputId.Mouse,
-        actions,
-      },
-    ]);
-    if (moveId > this.#lastMoveId) {
-      this.#lastMovePoint = to;
-      this.#lastMoveId = moveId;
+    if (options.origin === undefined || options.origin === 'viewport') {
+      this.#clicks.set(moveId, to);
+    }
+    try {
+      await this.#page.mainFrame().browsingContext.performActions([
+        {
+          type: SourceActionsType.Pointer,
+          id: InputId.Mouse,
+          actions,
+        },
+      ]);
+      if (this.#clicks.has(moveId) && moveId > this.#lastMoveId) {
+        this.#lastMovePoint = to;
+        this.#lastMoveId = moveId;
+      }
+    } finally {
+      this.#clicks.delete(moveId);
     }
   }
 
@@ -658,7 +671,7 @@ export class BidiMouse extends Mouse {
         actions: [
           {
             type: ActionType.Scroll,
-            ...(this.#lastMovePoint ?? {
+            ...(this.#position ?? {
               x: 0,
               y: 0,
             }),
