@@ -333,7 +333,10 @@ export class BidiPage extends Page {
   ): Promise<BidiHTTPResponse | null> {
     options.signal?.throwIfAborted();
     const [response] = await Promise.all([
-      this.#frame.waitForNavigation(options),
+      this.#frame.waitForNavigation({
+        ...options,
+        ignoreSameDocumentNavigation: true,
+      }),
       this.#frame.browsingContext.reload({
         ignoreCache: options.ignoreCache ? true : undefined,
       }),

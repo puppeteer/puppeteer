@@ -397,11 +397,15 @@ export class BidiFrame extends Frame {
       combineLatest([
         race(
           fromEmitterEvent(this.browsingContext, 'navigation'),
-          fromEmitterEvent(this.browsingContext, 'historyUpdated').pipe(
-            map(() => {
-              return null;
-            }),
-          ),
+          ...(options.ignoreSameDocumentNavigation
+            ? []
+            : [
+                fromEmitterEvent(this.browsingContext, 'historyUpdated').pipe(
+                  map(() => {
+                    return null;
+                  }),
+                ),
+              ]),
         )
           .pipe(first())
           .pipe(

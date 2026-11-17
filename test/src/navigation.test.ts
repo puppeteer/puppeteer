@@ -153,21 +153,23 @@ describe('navigation', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
-        window.addEventListener(
-          'beforeunload',
-          () => {
-            return history.replaceState(null, 'initial', window.location.href);
-          },
-          false,
-        );
+        (globalThis as any).beforeReload = true;
+        window.addEventListener('beforeunload', () => {
+          history.replaceState({scroll: 0}, '', window.location.href);
+        });
       });
-      await page.reload();
-      // Evaluate still works.
+      const response = await page.reload();
+      expect(response!.ok()).toBe(true);
       expect(
         await page.evaluate(() => {
-          return 1;
+          return (globalThis as any).beforeReload;
         }),
-      ).toBe(1);
+      ).toBe(undefined);
+      expect(
+        await page.evaluate(() => {
+          return history.state;
+        }),
+      ).toEqual({scroll: 0});
     });
     it('should navigate to empty page with networkidle0', async () => {
       const {page, server} = await getTestState();
