@@ -1205,6 +1205,10 @@ export abstract class ElementHandle<
     offset: Offset | undefined,
     checkCovered: boolean,
   ): Promise<(BoundingBox & {coveredBy: string | null}) | null> {
+    // The covered check is only reliable when the click point is computed in
+    // the frame of the element itself. For elements in child frames the point
+    // is also clipped by the parent frames, which is not known here.
+    const shouldCheckCovered = checkCovered && !this.frame.parentFrame();
     const boxes = await this.evaluate(
       (element, offset, checkCovered) => {
         if (!(element instanceof Element)) {
@@ -1213,67 +1217,91 @@ export abstract class ElementHandle<
         const root = element.getRootNode() as Document | ShadowRoot;
         const viewportWidth = document.documentElement.clientWidth;
         const viewportHeight = document.documentElement.clientHeight;
-        return [...element.getClientRects()].map(rect => {
-          const box = {
-            x: rect.x,
-            y: rect.y,
-            width: rect.width,
-            height: rect.height,
-            coveredBy: null as string | null,
-          };
-          if (!checkCovered) {
-            return box;
+        // Walks the flat tree, i.e. through slots and shadow hosts.
+        const isFlatTreeAncestor = (ancestor: Node, node: Node): boolean => {
+          let current: Node | null = node;
+          while (current) {
+            if (current === ancestor) {
+              return true;
+            }
+            current =
+              current instanceof ShadowRoot
+                ? current.host
+                : ((current instanceof Element ? current.assignedSlot : null) ??
+                  current.parentNode);
           }
-          // Describes the element that would receive a click at the click
-          // point of this rect instead of `element`. The point is computed the
-          // same way as in `clickablePoint`, from the rect clipped to the
-          // viewport of the element's frame.
-          const left = Math.max(rect.x, 0);
-          const top = Math.max(rect.y, 0);
+          return false;
+        };
+        const boxes: Array<{
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          coveredBy: string | null;
+        }> = [];
+        for (const rect of element.getClientRects()) {
+          // Clip the rect to the viewport of the frame of the element. The
+          // click point and the covered check are computed from this box.
+          const x = Math.max(rect.x, 0);
+          const y = Math.max(rect.y, 0);
           const width = Math.max(
-            Math.min(rect.x + rect.width, viewportWidth) - left,
+            Math.min(rect.x + rect.width, viewportWidth) - x,
             0,
           );
           const height = Math.max(
-            Math.min(rect.y + rect.height, viewportHeight) - top,
+            Math.min(rect.y + rect.height, viewportHeight) - y,
             0,
           );
-          if (width < 1 || height < 1) {
-            return box;
+          const box: (typeof boxes)[number] = {
+            x,
+            y,
+            width,
+            height,
+            coveredBy: null,
+          };
+          boxes.push(box);
+          if (!checkCovered || width < 1 || height < 1) {
+            continue;
           }
           const topElement = root.elementFromPoint(
-            offset ? left + offset.x : left + width / 2,
-            offset ? top + offset.y : top + height / 2,
+            offset ? x + offset.x : x + width / 2,
+            offset ? y + offset.y : y + height / 2,
           );
           if (
             !topElement ||
-            element.contains(topElement) ||
-            topElement.contains(element)
+            isFlatTreeAncestor(element, topElement) ||
+            isFlatTreeAncestor(topElement, element)
           ) {
-            return box;
+            continue;
           }
-          // A click on the label of a control activates the control.
-          const labels = (element as Partial<HTMLInputElement>).labels;
+          // A click on a label activates its control and the other way round.
           if (
-            labels &&
-            [...labels].some(label => {
+            element instanceof HTMLLabelElement &&
+            element.control === topElement
+          ) {
+            continue;
+          }
+          if (
+            element instanceof HTMLElement &&
+            'labels' in element &&
+            element.labels instanceof NodeList &&
+            [...element.labels].some(label => {
               return label.contains(topElement);
             })
           ) {
-            return box;
+            continue;
           }
           const id = topElement.id ? `#${topElement.id}` : '';
           box.coveredBy = `<${topElement.localName}${id}>`;
-          return box;
-        });
+        }
+        return boxes;
       },
       offset,
-      checkCovered,
+      shouldCheckCovered,
     );
     if (!boxes?.length) {
       return null;
     }
-    await this.#intersectBoundingBoxesWithFrame(boxes);
     let frame = this.frame;
     let parentFrame: Frame | null | undefined;
     while ((parentFrame = frame?.parentFrame())) {
