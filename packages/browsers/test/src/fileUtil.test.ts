@@ -226,13 +226,18 @@ describe('fileUtil', function () {
 
   for (const extension of ['tar.xz', 'tar.bz2']) {
     it(`rejects a corrupted ${extension}`, async () => {
-      // Drop the end of the stream so that the decompressor writes the data
-      // it could decode and then fails.
+      // Cut the archive where the decompressor writes part of the tar and then
+      // fails: in the middle of the xz data, and before the end of the bzip2
+      // stream (bzip2 writes nothing when its only block is cut in the middle).
       const archive = fs.readFileSync(
         path.join(fixturesPath, `test.${extension}`),
       );
+      const length =
+        extension === 'tar.xz'
+          ? Math.floor(archive.length / 2)
+          : archive.length - 4;
       const archivePath = path.join(tmpDir, `corrupted.${extension}`);
-      fs.writeFileSync(archivePath, archive.subarray(0, archive.length - 4));
+      fs.writeFileSync(archivePath, archive.subarray(0, length));
       const outputPath = path.join(tmpDir, 'output');
       await assert.rejects(
         unpackArchive(archivePath, outputPath),
