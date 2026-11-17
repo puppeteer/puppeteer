@@ -1285,7 +1285,10 @@ export function convertCookiesSameSiteCdpToBiDi(
 export function convertCookiesExpiryCdpToBiDi(
   expiry: number | undefined,
 ): number | undefined {
-  return [undefined, -1].includes(expiry) ? undefined : expiry;
+  if (expiry === undefined || expiry === -1) {
+    return undefined;
+  }
+  return Math.floor(expiry);
 }
 
 export function convertCookiesPartitionKeyFromPuppeteerToBiDi(
