@@ -59,6 +59,14 @@ describe('Chromium', () => {
       relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
       path.join('chrome-win', 'chrome.exe'),
     );
+    assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.WIN32, '591400'),
+      path.join('chrome-win32', 'chrome.exe'),
+    );
+    assert.strictEqual(
+      relativeExecutablePath(BrowserPlatform.WIN64, '591400'),
+      path.join('chrome-win32', 'chrome.exe'),
+    );
   });
 
   it('should compare versions', async () => {

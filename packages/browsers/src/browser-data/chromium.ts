@@ -58,7 +58,7 @@ export function resolveDownloadPath(
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _buildId: string,
+  buildId: string,
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:
@@ -75,7 +75,7 @@ export function relativeExecutablePath(
       return path.join('chrome-linux', 'chrome');
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
-      return path.join('chrome-win', 'chrome.exe');
+      return path.join(archive(platform, buildId), 'chrome.exe');
   }
 }
 export async function resolveBuildId(
