@@ -1812,6 +1812,20 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
+    "testIdPattern": "[oopif.test] OOPIF should evaluate in OOP iframes that become normal iframes again",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "With WebDriver BiDi in Chrome, the Frame is detached or its browsing context is not found after the frame moves to a different process."
+  },
+  {
+    "testIdPattern": "[oopif.test] OOPIF should evaluate in OOP iframes that navigate themselves to become normal iframes again",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "With WebDriver BiDi in Chrome, the Frame is detached or its browsing context is not found after the frame moves to a different process."
+  },
+  {
     "testIdPattern": "[oopif.test] OOPIF should evaluate on a page with a PDF viewer",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

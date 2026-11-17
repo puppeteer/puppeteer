@@ -86,6 +86,66 @@ describe('OOPIF', function () {
     await navigateFrame(page, 'frame1', server.EMPTY_PAGE);
     expect(page.frames()).toHaveLength(2);
   });
+
+  it('should evaluate in OOP iframes that become normal iframes again', async () => {
+    const {server, page} = state;
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame(frame => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    const frame = await framePromise;
+    const crossProcessUrl = server.CROSS_PROCESS_PREFIX + '/empty.html';
+
+    await navigateFrame(page, 'frame1', crossProcessUrl);
+    expect(
+      await frame.evaluate(() => {
+        return location.href;
+      }),
+    ).toBe(crossProcessUrl);
+
+    await navigateFrame(page, 'frame1', server.EMPTY_PAGE);
+    expect(frame.url()).toBe(server.EMPTY_PAGE);
+    expect(
+      await frame.evaluate(() => {
+        return location.href;
+      }),
+    ).toBe(server.EMPTY_PAGE);
+  });
+
+  it('should evaluate in OOP iframes that navigate themselves to become normal iframes again', async () => {
+    const {server, page} = state;
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame(frame => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    const frame = await framePromise;
+    await navigateFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html',
+    );
+
+    await Promise.all([
+      frame.waitForNavigation(),
+      frame.evaluate(url => {
+        setTimeout(() => {
+          location.assign(url);
+        }, 0);
+      }, server.EMPTY_PAGE),
+    ]);
+
+    expect(frame.url()).toBe(server.EMPTY_PAGE);
+    expect(
+      await frame.evaluate(() => {
+        return location.href;
+      }),
+    ).toBe(server.EMPTY_PAGE);
+    expect(page.frames()).toHaveLength(2);
+  });
   it('should support frames within OOP frames', async () => {
     const {server, page} = state;
 
