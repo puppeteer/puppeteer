@@ -8,7 +8,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "wireit",
-    "clean": "../clean.mjs"
+    "clean": "node ../clean.mjs"
   },
   "wireit": {
     "build": {
