@@ -19,7 +19,12 @@ import type {
 } from '../common/Cookie.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
-import {fromEmitterEvent, filterAsync, timeout} from '../common/util.js';
+import {
+  fromAbortSignal,
+  fromEmitterEvent,
+  filterAsync,
+  timeout,
+} from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
 import {Mutex} from '../util/Mutex.js';
 
@@ -299,13 +304,16 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
     predicate: (x: Target) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {},
   ): Promise<Target> {
-    const {timeout: ms = 30000} = options;
+    const {timeout: ms = 30000, signal} = options;
     return await firstValueFrom(
       merge(
         fromEmitterEvent(this, BrowserContextEvent.TargetCreated),
         fromEmitterEvent(this, BrowserContextEvent.TargetChanged),
         from(this.targets()),
-      ).pipe(filterAsync(predicate), raceWith(timeout(ms))),
+      ).pipe(
+        filterAsync(predicate),
+        raceWith(fromAbortSignal(signal), timeout(ms)),
+      ),
     );
   }
 
