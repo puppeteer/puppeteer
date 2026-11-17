@@ -138,4 +138,43 @@ describe('ChromeLauncher', () => {
     ).toHaveLength(1);
     expect(args).toContain('--no-sandbox');
   });
+
+  describe('computeLaunchArguments', () => {
+    const compute = (args: string[]) => {
+      const launcher = new ChromeLauncher({} as any, () => {
+        return undefined;
+      });
+      return launcher.computeLaunchArguments({
+        args,
+        ignoreDefaultArgs: true,
+        executablePath: process.execPath,
+      });
+    };
+
+    it('reads the user data directory from the argument', async () => {
+      const result = await compute(['--user-data-dir=/tmp/profile']);
+
+      expect(result.userDataDir).toBe('/tmp/profile');
+      expect(result.isTempUserDataDir).toBe(false);
+      expect(result.args).toContain('--user-data-dir=/tmp/profile');
+    });
+
+    it('keeps an equals sign in the user data directory', async () => {
+      const result = await compute(['--user-data-dir=/tmp/profile=1']);
+
+      expect(result.userDataDir).toBe('/tmp/profile=1');
+    });
+
+    it('keeps every equals sign in the user data directory', async () => {
+      const result = await compute(['--user-data-dir=/tmp/a=b=c']);
+
+      expect(result.userDataDir).toBe('/tmp/a=b=c');
+    });
+
+    it('rejects a user data directory argument without a value', async () => {
+      await expect(compute(['--user-data-dir'])).rejects.toThrow(
+        '`--user-data-dir` is malformed',
+      );
+    });
+  });
 });
