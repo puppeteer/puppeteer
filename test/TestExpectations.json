@@ -119,6 +119,13 @@
     "comment": "Not supported in WebDriver BiDi"
   },
   {
+    "testIdPattern": "[input.test] input tests Page.waitForFileChooser should stop intercepting file choosers *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "These tests observe Page.fileChooserOpened on the CDP session of CdpPage, which is not the session that intercepts file choosers in WebDriver BiDi."
+  },
+  {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["pipe"],
