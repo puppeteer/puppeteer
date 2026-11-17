@@ -619,7 +619,7 @@ export class BidiFrame extends Frame {
 
     return this.page().waitForNetworkIdle$({
       idleTime: 500,
-      timeout: options.timeout ?? this.timeoutSettings.timeout(),
+      timeout: options.timeout ?? this.timeoutSettings.navigationTimeout(),
       concurrency,
     });
   }

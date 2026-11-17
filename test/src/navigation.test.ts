@@ -408,6 +408,16 @@ describe('navigation', function () {
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
     });
+    it('should prioritize default navigation timeout over default timeout with networkidle0', async () => {
+      const {page, server} = await getTestState();
+
+      page.setDefaultTimeout(1);
+      page.setDefaultNavigationTimeout(0);
+      const response = (await page.goto(server.EMPTY_PAGE, {
+        waitUntil: 'networkidle0',
+      }))!;
+      expect(response.ok()).toBe(true);
+    });
     it('should disable timeout when its set to 0', async () => {
       const {page, server} = await getTestState();
 
