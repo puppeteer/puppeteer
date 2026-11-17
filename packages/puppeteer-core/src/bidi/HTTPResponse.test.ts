@@ -65,4 +65,27 @@ describe('BidiHTTPResponse', () => {
     const response = BidiHTTPResponse.from(data, request, false);
     expect(response.headers()['cache-control']).toBe('no-cache, no-store');
   });
+
+  it('should return a remote address on every call', () => {
+    const request = {
+      response() {
+        return undefined;
+      },
+      frame() {
+        return undefined;
+      },
+    } as unknown as BidiHTTPRequest;
+    const data = {
+      url: 'http://localhost/',
+      protocol: 'http/1.1',
+      status: 200,
+      statusText: 'OK',
+      fromCache: false,
+      headers: [],
+    } as unknown as Bidi.Network.ResponseData;
+
+    const response = BidiHTTPResponse.from(data, request, false);
+    expect(response.remoteAddress()).toEqual({ip: '', port: -1});
+    expect(response.remoteAddress()).toEqual({ip: '', port: -1});
+  });
 });
