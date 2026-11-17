@@ -968,6 +968,22 @@ describe('navigation', function () {
       });
       expect(page.url()).toBe(server.PREFIX + '/grid.html');
     });
+    it('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setCacheEnabled(false);
+      await page.goto(server.EMPTY_PAGE);
+      await page.goto(server.PREFIX + '/grid.html');
+      // Hang for the request going back makes.
+      server.setRoute('/empty.html', () => {});
+      const abortController = new AbortController();
+      const navigation = page.goBack({signal: abortController.signal});
+      await server.waitForRequest('/empty.html');
+
+      const reason = new Error('test abort reason');
+      abortController.abort(reason);
+      await expect(navigation).rejects.toBe(reason);
+    });
     it('should error if no history is found', async () => {
       const {page} = await getTestState();
       let error: Error | undefined;
