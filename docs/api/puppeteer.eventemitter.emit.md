@@ -55,6 +55,8 @@ event
 
 </td><td>
 
+any data you'd like to emit with the event
+
 </td></tr>
 </tbody></table>
 

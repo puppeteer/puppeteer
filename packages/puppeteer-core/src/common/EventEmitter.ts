@@ -136,7 +136,7 @@ export class EventEmitter<
    * Emit an event and call any associated listeners.
    *
    * @param type - the event you'd like to emit
-   * @param eventData - any data you'd like to emit with the event
+   * @param event - any data you'd like to emit with the event
    * @returns `true` if there are any listeners, `false` if there are not.
    */
   emit<Key extends keyof EventsWithWildcard<Events>>(
