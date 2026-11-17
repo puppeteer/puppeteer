@@ -147,6 +147,13 @@
     "comment": "CDP-specific feature, not supported in WebDriver BiDi"
   },
   {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions * should fail fetch requests from a shared worker to *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome drops Network.emulateNetworkConditionsByRule for shared workers attached before they start, so their requests bypass the blocklist and allowlist. Fixed in Chromium by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
+  },
+  {
     "testIdPattern": "[network.test] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],

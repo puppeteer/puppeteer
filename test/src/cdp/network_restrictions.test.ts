@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
+import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 
 import {
@@ -15,6 +16,44 @@ import {
   setupTestBrowserHooks,
 } from '../mocha-utils.js';
 import {attachFrame, html, waitEvent} from '../utils.js';
+
+/**
+ * Starts a shared worker from a blob URL and returns a function that makes the
+ * worker fetch the given URL. The fetch uses `no-cors` mode so that
+ * cross-origin requests succeed unless they are blocked. It resolves to `null`
+ * when the fetch succeeded and to the error message otherwise.
+ */
+async function startSharedWorker(page: Page) {
+  await page.evaluate(() => {
+    const source = `onconnect = event => {
+      const port = event.ports[0];
+      port.onmessage = async message => {
+        try {
+          await fetch(message.data, {mode: 'no-cors'});
+          port.postMessage(null);
+        } catch (error) {
+          port.postMessage(error.message);
+        }
+      };
+    };`;
+    const worker = new SharedWorker(
+      URL.createObjectURL(new Blob([source], {type: 'text/javascript'})),
+    );
+    (window as any).sharedWorkerFetch = (url: string) => {
+      return new Promise<string | null>(resolve => {
+        worker.port.onmessage = event => {
+          resolve(event.data);
+        };
+        worker.port.postMessage(url);
+      });
+    };
+  });
+  return async (url: string): Promise<string | null> => {
+    return await page.evaluate(url => {
+      return (window as any).sharedWorkerFetch(url) as Promise<string | null>;
+    }, url);
+  };
+}
 
 describe('Network Restrictions', function () {
   setupTestBrowserHooks();
@@ -81,6 +120,24 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
 
       expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should fail fetch requests from a shared worker to URLs in the blocklist', async () => {
+      const {page, server} = state;
+
+      await page.goto(server.PREFIX + '/title.html');
+      const fetchFromSharedWorker = await startSharedWorker(page);
+
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/empty.html',
+        ),
+      ).toContain('Failed to fetch');
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/title.html',
+        ),
+      ).toBeNull();
     });
 
     it('should fail service worker registration for blocklisted script URLs', async () => {
@@ -382,6 +439,24 @@ describe('Network Restrictions', function () {
       const content = await page.content();
       expect(finalUrl).not.toBe(blockedUrl);
       expect(content).not.toContain('Woof-Woof');
+    });
+
+    it('should fail fetch requests from a shared worker to URLs not in the allowlist', async () => {
+      const {page, server} = state;
+
+      await page.goto(server.PREFIX + '/empty.html');
+      const fetchFromSharedWorker = await startSharedWorker(page);
+
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/title.html',
+        ),
+      ).toContain('Failed to fetch');
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/empty.html',
+        ),
+      ).toBeNull();
     });
 
     it('should fail fetch requests to URLs not in the allowlist', async () => {
@@ -1054,6 +1129,32 @@ describe('Network Restrictions', function () {
 
       await browser.restrictNetwork(null);
       expect(await canFetch()).toBe(true);
+    });
+
+    it('applies and clears restrictions on an already-running shared worker', async () => {
+      const {page, server, browser} = await getTestState();
+      const blockedUrl = server.CROSS_PROCESS_PREFIX + '/empty.html';
+
+      await page.goto(server.PREFIX + '/title.html');
+      const fetchFromSharedWorker = await startSharedWorker(page);
+
+      expect(await fetchFromSharedWorker(blockedUrl)).toBeNull();
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+      expect(await fetchFromSharedWorker(blockedUrl)).toContain(
+        'Failed to fetch',
+      );
+
+      await browser.restrictNetwork({allowlist: ['*://*:*/empty.html']});
+      expect(await fetchFromSharedWorker(blockedUrl)).toBeNull();
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/title.html',
+        ),
+      ).toContain('Failed to fetch');
+
+      await browser.restrictNetwork(null);
+      expect(await fetchFromSharedWorker(blockedUrl)).toBeNull();
     });
 
     it('applies and clears restrictions on an already-running service worker', async () => {
