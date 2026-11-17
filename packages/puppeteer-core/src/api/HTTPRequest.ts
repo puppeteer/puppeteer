@@ -223,6 +223,11 @@ export abstract class HTTPRequest {
     requestOverrides: ContinueRequestOverridesInternal;
     response: Partial<ResponseForRequestInternal> | null;
     abortReason: Protocol.Network.ErrorReason | null;
+    /**
+     * The priority of the resolution that provided `requestOverrides`,
+     * `response` and `abortReason` respectively.
+     */
+    payloadPriorities: Partial<Record<ActionResult, number>>;
   } = {
     enabled: false,
     handled: false,
@@ -233,6 +238,7 @@ export abstract class HTTPRequest {
     requestOverrides: {},
     response: null,
     abortReason: null,
+    payloadPriorities: {},
   };
 
   /**
@@ -270,7 +276,7 @@ export abstract class HTTPRequest {
   }
 
   /**
-   * The most recent reason for aborting the request
+   * The reason for aborting the request that was given the highest priority
    */
   abortErrorReason(): Protocol.Network.ErrorReason | null {
     return this.interception.abortReason;
@@ -541,6 +547,30 @@ export abstract class HTTPRequest {
     assert(this.interception.enabled, 'Request Interception is not enabled!');
     assert(!this.interception.handled, 'Request is already handled!');
   }
+
+  /**
+   * In Cooperative Intercept Mode, an action takes its payload (the overrides
+   * of `continue()`, the response of `respond()` or the error reason of
+   * `abort()`) from the call with the highest priority, or from the latest of
+   * the calls that share that priority.
+   *
+   * @returns `false` if a call with a higher priority has already provided the
+   * payload of the action.
+   *
+   * @internal
+   */
+  protected claimInterceptionPayload(
+    action: ActionResult,
+    priority: number,
+  ): boolean {
+    const current = this.interception.payloadPriorities[action];
+    if (current !== undefined && priority < current) {
+      return false;
+    }
+    this.interception.payloadPriorities[action] = priority;
+    return true;
+  }
+
   /**
    * @internal
    */
@@ -593,7 +623,9 @@ export abstract class HTTPRequest {
     if (priority === undefined) {
       return await this._continue(normalizedOverrides);
     }
-    this.interception.requestOverrides = normalizedOverrides;
+    if (this.claimInterceptionPayload('continue', priority)) {
+      this.interception.requestOverrides = normalizedOverrides;
+    }
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority
@@ -667,7 +699,9 @@ export abstract class HTTPRequest {
     if (priority === undefined) {
       return await this._respond(normalizedResponse);
     }
-    this.interception.response = normalizedResponse;
+    if (this.claimInterceptionPayload('respond', priority)) {
+      this.interception.response = normalizedResponse;
+    }
     if (
       this.interception.resolutionState.priority === undefined ||
       priority > this.interception.resolutionState.priority
@@ -714,7 +748,9 @@ export abstract class HTTPRequest {
     if (priority === undefined) {
       return await this._abort(errorReason);
     }
-    this.interception.abortReason = errorReason;
+    if (this.claimInterceptionPayload('abort', priority)) {
+      this.interception.abortReason = errorReason;
+    }
     if (
       this.interception.resolutionState.priority === undefined ||
       priority >= this.interception.resolutionState.priority

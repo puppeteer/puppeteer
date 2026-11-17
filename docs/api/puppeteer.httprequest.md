@@ -110,7 +110,7 @@ To use this, request interception should be enabled with [Page.setRequestInterce
 
 </td><td>
 
-The most recent reason for aborting the request
+The reason for aborting the request that was given the highest priority
 
 </td></tr>
 <tr><td>
