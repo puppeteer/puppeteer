@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.18.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.18.0...puppeteer-core-v25.18.1) (2026-11-17)
+
+
+### 🛠️ Fixes
+
+* **bidi:** wait for the new document in page.reload() ([#15746](https://github.com/puppeteer/puppeteer/issues/15746)) ([50c848e](https://github.com/puppeteer/puppeteer/commit/50c848efca0e24746905ae1364be4b2625213002))
+* fix the pre-release job and verify its output in CI ([#15822](https://github.com/puppeteer/puppeteer/issues/15822)) ([bc66e28](https://github.com/puppeteer/puppeteer/commit/bc66e288d334a268d4132705254a93628d8d74d5))
+
 ## [25.18.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.17.0...puppeteer-core-v25.18.0) (2026-11-17)
 
 
