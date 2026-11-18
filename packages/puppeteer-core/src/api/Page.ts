@@ -779,7 +779,7 @@ export interface ReloadOptions extends WaitForOptions {
   /**
    * If set to true, the browser caches are ignored for the page reload.
    *
-   * @defaultValue true
+   * @defaultValue false
    * @public
    */
   ignoreCache?: boolean;
