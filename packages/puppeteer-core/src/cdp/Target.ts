@@ -15,9 +15,11 @@ import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
+import type {CdpBrowser} from './Browser.js';
 import type {CdpCDPSession} from './CdpSession.js';
 import {CdpPage} from './Page.js';
 import type {TargetManager} from './TargetManager.js';
@@ -202,6 +204,15 @@ export class CdpTarget extends Target {
       .find(target => {
         return (target as CdpTarget)._targetId === openerId;
       });
+  }
+
+  override async close(): Promise<void> {
+    // Chrome closes the whole page when it closes the target of a frame.
+    if (this.#targetInfo.type === 'iframe') {
+      throw new UnsupportedOperation();
+    }
+    await (this.browser() as CdpBrowser)._closeTarget(this._targetId);
+    await this._isClosedDeferred.valueOrThrow();
   }
 
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {

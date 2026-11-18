@@ -11,8 +11,8 @@ import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
-import {waitEvent} from './utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
+import {attachFrame, waitEvent} from './utils.js';
 
 describe('Target', function () {
   setupTestBrowserHooks();
@@ -382,6 +382,97 @@ describe('Target', function () {
     );
     expect(createdTarget.opener()).toBe(page.target());
     expect(page.target().opener()).toBeUndefined();
+  });
+
+  describe('Target.close', () => {
+    it('should close the target', async () => {
+      const {context} = await getTestState();
+      const page = await context.newPage();
+      const target = page.target();
+      const targetDestroyed = waitEvent(
+        context,
+        'targetdestroyed',
+        destroyed => {
+          return destroyed === target;
+        },
+      );
+
+      await target.close();
+
+      expect(context.targets()).not.toContain(target);
+      expect(await targetDestroyed).toBe(target);
+      expect(await context.pages()).not.toContain(page);
+    });
+
+    it('should close a page target without creating its page', async () => {
+      const {browser, close} = await launch({protocolTimeout: 3000});
+      try {
+        const page = await browser.newPage();
+        const [target] = await Promise.all([
+          browser.waitForTarget(target => {
+            return target.opener() === page.target();
+          }),
+          page.evaluate(() => {
+            window.open('about:blank', 'popup');
+          }),
+        ]);
+        // The alert blocks creating a page for the popup until the protocol
+        // timeout, so closing the target must not create one.
+        const session = await target.createCDPSession();
+        await session.send('Page.enable');
+        await Promise.all([
+          waitEvent(session, 'Page.javascriptDialogOpening'),
+          page.evaluate(() => {
+            const popup = window.open('', 'popup')!;
+            popup.setTimeout(() => {
+              popup.alert('blocked');
+            }, 0);
+          }),
+        ]);
+
+        await target.close();
+
+        expect(browser.targets()).not.toContain(target);
+      } finally {
+        await close();
+      }
+    });
+
+    it('should throw if the target does not support closing', async () => {
+      const {browser, close} = await launch({});
+      try {
+        await expect(browser.target().close()).rejects.toThrow();
+        expect(browser.connected).toBe(true);
+      } finally {
+        await close();
+      }
+    });
+
+    it('should not close the page through the target of a frame', async () => {
+      const {browser, server, close} = await launch({
+        args: ['--site-per-process'],
+      });
+      try {
+        const page = await browser.newPage();
+        await page.goto(server.EMPTY_PAGE);
+        const frameUrl = server.CROSS_PROCESS_PREFIX + '/empty.html';
+        await attachFrame(page, 'frame1', frameUrl);
+        const target = await browser.waitForTarget(target => {
+          return target.url() === frameUrl;
+        });
+
+        await expect(target.close()).rejects.toThrow();
+
+        expect(page.isClosed()).toBe(false);
+        expect(
+          await page.evaluate(() => {
+            return document.querySelectorAll('iframe').length;
+          }),
+        ).toBe(1);
+      } finally {
+        await close();
+      }
+    });
   });
 
   describe('Browser.waitForTarget', () => {

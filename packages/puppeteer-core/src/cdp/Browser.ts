@@ -314,6 +314,10 @@ export class CdpBrowser extends BrowserBase {
     this.#contexts.delete(contextId);
   }
 
+  async _closeTarget(targetId: string): Promise<void> {
+    await this.#connection.send('Target.closeTarget', {targetId});
+  }
+
   #createTarget = (
     targetInfo: Protocol.Target.TargetInfo,
     session?: CdpCDPSession,
