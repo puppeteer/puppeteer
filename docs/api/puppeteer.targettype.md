@@ -93,6 +93,19 @@ SHARED\_WORKER
 </td></tr>
 <tr><td>
 
+TAB
+
+</td><td>
+
+`"tab"`
+
+</td><td>
+
+**_(Experimental)_**
+
+</td></tr>
+<tr><td>
+
 WEBVIEW
 
 </td><td>

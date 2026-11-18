@@ -6,7 +6,11 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import {BrowserEvent, type Browser} from '../api/Browser.js';
+import {
+  BrowserEvent,
+  type Browser,
+  type TargetOptions,
+} from '../api/Browser.js';
 import {
   BrowserContextEvent,
   type BrowserContext,
@@ -42,13 +46,27 @@ export class CdpTarget extends Target {
   #sessionFactory:
     ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined;
   #logger: Logger;
+  #discarded = false;
   #childTargets = new Set<CdpTarget>();
+  /**
+   * Child targets that detached from this tab while it was active and left it
+   * without a primary (non-speculative) child. Chrome can detach the page
+   * targets of a tab before it reports the `discarded` subtype, so these
+   * targets are marked as discarded when this tab becomes discarded. A new
+   * child target clears this set.
+   *
+   * A page target that detached for another reason and had no replacement is
+   * also marked as discarded if the tab is discarded later. This only changes
+   * `isDiscarded()` of a target that is already gone, but it makes sure that
+   * the page of a discarded tab always closes.
+   */
+  #detachedChildTargets = new Set<CdpTarget>();
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
   _asPagePromise?: Promise<Page>;
   /** @internal */
-  pagePromise?: Promise<Page>;
+  pagePromise?: Promise<Page | null>;
 
   /**
    * To initialize the target for use, call initialize.
@@ -77,9 +95,26 @@ export class CdpTarget extends Target {
     }
   }
 
+  #throwIfDiscarded(): void {
+    if (this.isDiscarded()) {
+      throw new Error('Cannot create a page for a discarded target.');
+    }
+  }
+
   override async asPage(): Promise<Page> {
+    this.#throwIfDiscarded();
+    if (this.type() === TargetType.TAB) {
+      throw new Error('Cannot create a page for a tab target.');
+    }
     if (this.pagePromise) {
-      const page = await this.pagePromise;
+      let page: Page | null;
+      try {
+        page = await this.pagePromise;
+      } catch (error) {
+        this.#throwIfDiscarded();
+        throw error;
+      }
+      this.#throwIfDiscarded();
       if (page) {
         return page;
       }
@@ -91,10 +126,19 @@ export class CdpTarget extends Target {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
+        this.#throwIfDiscarded();
         return CdpPage._create(client, this, null, this.#logger);
       });
     }
-    return (await this._asPagePromise) ?? null;
+    let page: Page;
+    try {
+      page = await this._asPagePromise;
+    } catch (error) {
+      this.#throwIfDiscarded();
+      throw error;
+    }
+    this.#throwIfDiscarded();
+    return page;
   }
 
   _subtype(): string | undefined {
@@ -111,11 +155,48 @@ export class CdpTarget extends Target {
   }
 
   _addChildTarget(target: CdpTarget): void {
+    this.#detachedChildTargets.clear();
     this.#childTargets.add(target);
   }
 
   _removeChildTarget(target: CdpTarget): void {
-    this.#childTargets.delete(target);
+    if (!this.#childTargets.delete(target)) {
+      return;
+    }
+    if (this.type() !== TargetType.TAB || this.isDiscarded()) {
+      return;
+    }
+    // A prerender activation detaches the old primary page target. If Chrome
+    // activates the prerendered target first, that target has no subtype
+    // anymore and this check skips the detach. If Chrome detaches the old
+    // target first, the prerendered target still has its subtype and the old
+    // target is recorded here. `TargetManager` then calls
+    // `_clearDetachedChildTargets()` when the prerendered target becomes
+    // primary.
+    const hasPrimaryChild = Array.from(this.#childTargets).some(child => {
+      return !child._subtype();
+    });
+    if (!hasPrimaryChild) {
+      this.#detachedChildTargets.add(target);
+    }
+  }
+
+  /**
+   * Returns and forgets the child targets that detached without a
+   * replacement since the last child target attached.
+   */
+  _takeDetachedChildTargets(): CdpTarget[] {
+    const targets = Array.from(this.#detachedChildTargets);
+    this.#detachedChildTargets.clear();
+    return targets;
+  }
+
+  /**
+   * Forgets the child targets that detached without a replacement, for
+   * example when a prerendered child target replaces them.
+   */
+  _clearDetachedChildTargets(): void {
+    this.#detachedChildTargets.clear();
   }
 
   _childTargets(): ReadonlySet<CdpTarget> {
@@ -204,6 +285,24 @@ export class CdpTarget extends Target {
       });
   }
 
+  override isDiscarded(): boolean {
+    if (this.type() === TargetType.TAB) {
+      return this._subtype() === 'discarded';
+    }
+    // Non-tab targets only become discarded when their tab transitions from
+    // active to discarded (see `_onDiscarded`). A target that attaches to a
+    // tab after that transition belongs to the reloaded tab.
+    return this.#discarded;
+  }
+
+  _onDiscarded(): void {
+    if (this.type() !== TargetType.TAB) {
+      this.#discarded = true;
+    }
+    this.pagePromise = undefined;
+    this._asPagePromise = undefined;
+  }
+
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
     this.#targetInfo = targetInfo;
     this._checkIfInitialized();
@@ -213,8 +312,19 @@ export class CdpTarget extends Target {
     this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
   }
 
-  _isTargetExposed(): boolean {
-    return this.type() !== TargetType.TAB && !this._subtype();
+  _isTargetExposed(options?: TargetOptions): boolean {
+    if (this.type() === TargetType.TAB) {
+      // Expose a discarded tab only while it has no active child target. A
+      // reloaded child can attach before the tab clears its discarded subtype.
+      return Boolean(
+        options?.includeDiscarded &&
+        this.isDiscarded() &&
+        Array.from(this.#childTargets).every(child => {
+          return child.isDiscarded();
+        }),
+      );
+    }
+    return !this._subtype() && !this.isDiscarded();
   }
 
   protected _checkIfInitialized(): void {
@@ -265,11 +375,13 @@ export class PageTarget extends CdpTarget {
           return true;
         }
         const openerPage = await opener.pagePromise;
-        if (!openerPage.listenerCount(PageEvent.Popup)) {
+        if (!openerPage || !openerPage.listenerCount(PageEvent.Popup)) {
           return true;
         }
         const popupPage = await this.page();
-        openerPage.emit(PageEvent.Popup, popupPage);
+        if (popupPage) {
+          openerPage.emit(PageEvent.Popup, popupPage);
+        }
         return true;
       })
       .catch(error => {
@@ -279,6 +391,9 @@ export class PageTarget extends CdpTarget {
   }
 
   override async page(): Promise<Page | null> {
+    if (this.isDiscarded() || this.type() === TargetType.TAB) {
+      return null;
+    }
     if (!this.pagePromise) {
       const session = this._session();
       this.pagePromise = (
@@ -286,6 +401,9 @@ export class PageTarget extends CdpTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
+        if (this.isDiscarded()) {
+          return null;
+        }
         return CdpPage._create(
           client,
           this,
@@ -294,7 +412,18 @@ export class PageTarget extends CdpTarget {
         );
       });
     }
-    return (await this.pagePromise) ?? null;
+    try {
+      const page = (await this.pagePromise) ?? null;
+      if (this.isDiscarded()) {
+        return null;
+      }
+      return page;
+    } catch (error) {
+      if (this.isDiscarded()) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   override _checkIfInitialized(): void {

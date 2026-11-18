@@ -1,0 +1,9 @@
+{
+  "name": "Discard tab test extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

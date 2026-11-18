@@ -7,6 +7,7 @@
 import {statSync} from 'node:fs';
 
 import expect from 'expect';
+import type {Target} from 'puppeteer-core/internal/api/Target.js';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
 import {getUniqueVideoFilePlaceholder} from '../utils.js';
@@ -28,6 +29,40 @@ describe('Prerender', function () {
         return document.querySelector('div')?.innerText;
       }),
     ).toBe('true');
+  });
+
+  it('emits targetcreated for the activated prerendered page', async () => {
+    const {page, server, browser} = await getTestState();
+    await page.goto(server.PREFIX + '/prerender/index.html');
+    const initialTarget = page.target();
+
+    using button = await page.waitForSelector('button');
+    await button?.click();
+
+    const createdTargets: Target[] = [];
+    const changedTargets: Target[] = [];
+    browser.on('targetcreated', target => {
+      createdTargets.push(target);
+    });
+    browser.on('targetchanged', target => {
+      changedTargets.push(target);
+    });
+
+    using link = await page.waitForSelector('a');
+    await Promise.all([page.waitForNavigation(), link?.click()]);
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('div')?.innerText;
+      }),
+    ).toBe('true');
+
+    const activatedTarget = page.target();
+    expect(activatedTarget).not.toBe(initialTarget);
+    expect(createdTargets).toContain(activatedTarget);
+    expect(changedTargets).not.toContain(activatedTarget);
+    expect(browser.targets()).toContain(activatedTarget);
+    expect(browser.targets()).not.toContain(initialTarget);
+    await expect(activatedTarget.page()).resolves.toBe(page);
   });
 
   it('can navigate to a prerendered page via Locator', async () => {

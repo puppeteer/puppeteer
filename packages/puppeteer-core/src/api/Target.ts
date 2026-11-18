@@ -24,7 +24,7 @@ export enum TargetType {
   WEBVIEW = 'webview',
   OTHER = 'other',
   /**
-   * @internal
+   * @experimental
    */
   TAB = 'tab',
 }
@@ -51,16 +51,19 @@ export abstract class Target {
 
   /**
    * If the target is not of type `"page"`, `"webview"` or `"background_page"`,
-   * returns `null`.
+   * or if the target is {@link Target.isDiscarded | discarded}, returns `null`.
    */
   async page(): Promise<Page | null> {
     return null;
   }
 
   /**
-   * Forcefully creates a page for a target of any type. It is useful if you
+   * Forcefully creates a page for an arbitrary target. It is useful if you
    * want to handle a CDP target of type `other` as a page. If you deal with a
    * regular page target, use {@link Target.page}.
+   *
+   * @throws Throws if the target is {@link Target.isDiscarded | discarded} or
+   * of type {@link TargetType.TAB | "tab"}.
    */
   abstract asPage(): Promise<Page>;
 
@@ -94,4 +97,33 @@ export abstract class Target {
    * Get the target that opened this target. Top-level targets return `null`.
    */
   abstract opener(): Target | undefined;
+
+  /**
+   * Checks whether this target is discarded.
+   *
+   * @remarks
+   * A target of type {@link TargetType.TAB | "tab"} is discarded while
+   * Chrome keeps its tab discarded. A target of type
+   * {@link TargetType.PAGE | "page"} is discarded if Chrome closed it because
+   * it discarded the tab of the target. When Chrome reloads a discarded tab, it
+   * creates new targets that are not discarded.
+   *
+   * Targets inside a page, such as out-of-process iframes and dedicated
+   * workers, close together with the page. Do not use this method to find out
+   * why such a target closed: it can return `false` for them even if Chrome
+   * discarded their tab.
+   *
+   * The value of a closed target can change from `false` to `true` after the
+   * {@link BrowserEvent.TargetDestroyed | targetdestroyed} event, because Chrome
+   * can close the target before it reports that the tab is discarded. In rare
+   * cases, a target that closed for another reason, with no target to replace
+   * it, is also reported as discarded if Chrome discards its tab later.
+   *
+   * Currently only supported for Chrome and the CDP protocol.
+   *
+   * @experimental
+   */
+  isDiscarded(): boolean {
+    return false;
+  }
 }

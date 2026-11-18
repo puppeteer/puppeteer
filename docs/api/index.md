@@ -1521,6 +1521,19 @@ WebDriver BiDi capabilities that are not set by Puppeteer itself.
 </td></tr>
 <tr><td>
 
+<span id="targetoptions">[TargetOptions](./puppeteer.targetoptions.md)</span>
+
+</td><td>
+
+**_(Experimental)_**
+
+**Remarks:**
+
+Currently only supported for Chrome and the CDP protocol.
+
+</td></tr>
+<tr><td>
+
 <span id="touchhandle">[TouchHandle](./puppeteer.touchhandle.md)</span>
 
 </td><td>
