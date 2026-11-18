@@ -186,15 +186,15 @@ export class WaitTask<T = unknown> {
     }
   }
 
-  async terminate(error?: Error): Promise<void> {
+  async terminate(error?: unknown): Promise<void> {
     this.#world.taskManager.delete(this);
 
     this.#signal?.removeEventListener('abort', this.#onAbortSignal);
 
     clearTimeout(this.#timeout);
 
-    if (error && !this.#result.finished()) {
-      this.#result.reject(error);
+    if (error !== undefined && !this.#result.finished()) {
+      this.#result.reject(error as Error);
     }
 
     if (this.#poller) {

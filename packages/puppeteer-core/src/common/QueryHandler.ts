@@ -204,6 +204,9 @@ export class QueryHandler {
       }
       return await frame.mainRealm().transferHandle(handle);
     } catch (error) {
+      if (signal?.aborted && Object.is(error, signal.reason)) {
+        throw error;
+      }
       if (!isErrorLike(error)) {
         throw error;
       }
