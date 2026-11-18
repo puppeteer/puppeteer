@@ -13,7 +13,9 @@ import {
   headersInputToRecord,
   HTTPRequest,
   normalizeHeadersInput,
+  type ContinueRequestOverrides,
   type HeadersInput,
+  type ResponseForRequest,
 } from './HTTPRequest.js';
 
 describe('HTTPRequest', () => {
@@ -199,6 +201,101 @@ describe('HTTPRequest', () => {
       expect(fetchRequest.bodyUsed).toBe(false);
       expect(fetchRequest.headers.get('content-length')).toBeFalsy();
       expect(testRequest.contentCalls).toBe(0);
+    });
+  });
+
+  describe('Cooperative Intercept Mode', () => {
+    // @ts-expect-error we don't need to implement all the methods
+    class TestRequest extends HTTPRequest {
+      resolution: unknown;
+
+      constructor() {
+        super();
+        this.interception.enabled = true;
+      }
+
+      override canBeIntercepted(): boolean {
+        return true;
+      }
+
+      override async _continue(
+        overrides: ContinueRequestOverrides,
+      ): Promise<void> {
+        this.resolution = {action: 'continue', overrides};
+      }
+
+      override async _respond(
+        response: Partial<ResponseForRequest>,
+      ): Promise<void> {
+        this.resolution = {action: 'respond', response};
+      }
+
+      override async _abort(errorReason: string | null): Promise<void> {
+        this.resolution = {action: 'abort', errorReason};
+      }
+    }
+
+    it('should continue with the overrides of the highest priority', async () => {
+      const request = new TestRequest();
+      await request.continue({headers: {foo: 'high'}}, 1);
+      await request.continue({headers: {foo: 'low'}}, 0);
+      await request.finalizeInterceptions();
+
+      expect(request.resolution).toEqual({
+        action: 'continue',
+        overrides: {headers: {foo: 'high'}},
+      });
+    });
+
+    it('should respond with the response of the highest priority', async () => {
+      const request = new TestRequest();
+      await request.respond({body: 'high'}, 1);
+      await request.respond({body: 'low'}, 0);
+      await request.finalizeInterceptions();
+
+      expect(request.resolution).toEqual({
+        action: 'respond',
+        response: {body: 'high'},
+      });
+    });
+
+    it('should abort with the error reason of the highest priority', async () => {
+      const request = new TestRequest();
+      await request.abort('blockedbyclient', 1);
+      await request.abort('timedout', 0);
+      await request.finalizeInterceptions();
+
+      expect(request.resolution).toEqual({
+        action: 'abort',
+        errorReason: 'BlockedByClient',
+      });
+    });
+
+    it('should use the latest of the resolutions with the same priority', async () => {
+      const request = new TestRequest();
+      await request.respond({body: 'first'}, 0);
+      await request.respond({body: 'second'}, 0);
+      await request.finalizeInterceptions();
+
+      expect(request.resolution).toEqual({
+        action: 'respond',
+        response: {body: 'second'},
+      });
+    });
+
+    it('should keep the response of a lower priority for a later respond', async () => {
+      const request = new TestRequest();
+      await request.continue({}, 1);
+      await request.respond({body: 'low'}, 0);
+      expect(request.responseForRequest()).toEqual({body: 'low'});
+
+      await request.respond(request.responseForRequest()!, 2);
+      await request.finalizeInterceptions();
+
+      expect(request.resolution).toEqual({
+        action: 'respond',
+        response: {body: 'low'},
+      });
     });
   });
 
