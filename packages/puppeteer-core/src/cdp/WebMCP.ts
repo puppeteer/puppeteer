@@ -304,6 +304,14 @@ export class WebMCP extends EventEmitter<{
   };
 
   #onToolInvoked = (event: Protocol.WebMCP.ToolInvokedEvent) => {
+    // TODO: Remove this temporary patch from the `browserWindow` screen
+    // recording change. It only exists so that the build passes with
+    // devtools-protocol 0.0.1734725, in which `toolName` is optional. Fix this
+    // properly (for example with a lookup by `toolId`) as part of the protocol
+    // roll.
+    if (event.toolName === undefined) {
+      return;
+    }
     const tool = this.#tools.get(event.frameId)?.get(event.toolName);
     if (!tool) {
       return;

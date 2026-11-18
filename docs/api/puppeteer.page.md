@@ -1016,6 +1016,8 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 
 Outputs mp4 video stream.
 
+To record the entire browser window instead of only the page, set [RecordOptions.browserWindow](./puppeteer.recordoptions.md#browserwindow) to `true` (Chrome 159+).
+
 </td></tr>
 <tr><td>
 

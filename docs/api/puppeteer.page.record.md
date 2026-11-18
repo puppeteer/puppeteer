@@ -8,6 +8,8 @@ Records this [page](./puppeteer.page.md) using the Chrome DevTools Protocol [Pag
 
 Outputs mp4 video stream.
 
+To record the entire browser window instead of only the page, set [RecordOptions.browserWindow](./puppeteer.recordoptions.md#browserwindow) to `true` (Chrome 159+).
+
 ### Signature
 
 ```typescript

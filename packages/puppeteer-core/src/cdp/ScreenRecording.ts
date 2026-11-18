@@ -45,6 +45,11 @@ export class CdpScreenRecording extends ScreenRecording {
       maxWidth: this.options.maxWidth,
       maxHeight: this.options.maxHeight,
       frameRate,
+      // Only send `captureArea` when it is necessary, so that the request
+      // does not change for Chrome versions before 159.
+      ...(this.options.browserWindow
+        ? {captureArea: 'browserWindow' as const}
+        : {}),
     })) as {stream: string};
     this.#streamHandle = result.stream;
   }

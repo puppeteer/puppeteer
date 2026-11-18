@@ -9,6 +9,7 @@ import {afterEach, beforeEach, describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {environment} from '../environment.js';
 import {asyncDisposeSymbol} from '../util/disposable.js';
@@ -162,6 +163,16 @@ describe('BidiScreenRecording', () => {
     });
 
     await recording.stop();
+  });
+
+  it('should reject browserWindow as unsupported', async () => {
+    const context = new MockBrowsingContext();
+    const page = new MockBidiPage(context);
+
+    await expect(page.record({browserWindow: true})).rejects.toThrow(
+      UnsupportedOperation,
+    );
+    expect(context.commands).toEqual([]);
   });
 
   it('should validate options', async () => {
