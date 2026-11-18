@@ -11,6 +11,7 @@ import type {TargetFilterCallback} from '../api/Browser.js';
 import type {NetworkRestrictions} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
+import {TargetType} from '../api/Target.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {assertSupportedUrlRestrictions} from '../common/util.js';
@@ -38,7 +39,11 @@ function isPageTargetBecomingPrimary(
   target: CdpTarget,
   newTargetInfo: Protocol.Target.TargetInfo,
 ): boolean {
-  return Boolean(target._subtype()) && !newTargetInfo.subtype;
+  return (
+    target.type() === TargetType.PAGE &&
+    Boolean(target._subtype()) &&
+    !newTargetInfo.subtype
+  );
 }
 
 /**
