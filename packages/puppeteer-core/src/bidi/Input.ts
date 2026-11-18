@@ -6,7 +6,6 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {Point} from '../api/ElementHandle.js';
 import {
   Keyboard,
   Mouse,
@@ -23,6 +22,7 @@ import {
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {TouchError} from '../common/Errors.js';
+import {MouseStateTracker} from '../common/MouseStateTracker.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 
 import type {BidiPage} from './Page.js';
@@ -517,25 +517,18 @@ const getBidiButton = (button: MouseButton) => {
  */
 export class BidiMouse extends Mouse {
   #page: BidiPage;
-  #lastMovePoint: Point = {x: 0, y: 0};
-  #lastMoveId = 0;
-  #nextMoveId = 1;
-  #clicks = new Map<number, Point>();
+  #state = new MouseStateTracker();
 
   constructor(page: BidiPage) {
     super();
     this.#page = page;
   }
 
-  get #position(): Point {
-    const id = Math.max(this.#lastMoveId, ...this.#clicks.keys());
-    return this.#clicks.get(id) ?? this.#lastMovePoint;
-  }
-
   override async reset(): Promise<void> {
-    this.#lastMovePoint = {x: 0, y: 0};
-    this.#lastMoveId = this.#nextMoveId++;
-    await this.#page.mainFrame().browsingContext.releaseActions();
+    await this.#state.withTransaction(updateState => {
+      updateState({position: {x: 0, y: 0}});
+      return this.#page.mainFrame().browsingContext.releaseActions();
+    });
   }
 
   override async move(
@@ -543,7 +536,7 @@ export class BidiMouse extends Mouse {
     y: number,
     options: Readonly<BidiMouseMoveOptions> = {},
   ): Promise<void> {
-    const from = this.#position;
+    const from = this.#state.position;
     const to = {
       x: Math.round(x),
       y: Math.round(y),
@@ -564,15 +557,16 @@ export class BidiMouse extends Mouse {
       origin: options.origin,
     });
     // https://w3c.github.io/webdriver-bidi/#command-input-performActions:~:text=input.PointerMoveAction%20%3D%20%7B%0A%20%20type%3A%20%22pointerMove%22%2C%0A%20%20x%3A%20js%2Dint%2C
-    this.#lastMovePoint = to;
-    this.#lastMoveId = this.#nextMoveId++;
-    await this.#page.mainFrame().browsingContext.performActions([
-      {
-        type: SourceActionsType.Pointer,
-        id: InputId.Mouse,
-        actions,
-      },
-    ]);
+    await this.#state.withTransaction(updateState => {
+      updateState({position: to});
+      return this.#page.mainFrame().browsingContext.performActions([
+        {
+          type: SourceActionsType.Pointer,
+          id: InputId.Mouse,
+          actions,
+        },
+      ]);
+    });
   }
 
   override async down(options: Readonly<MouseOptions> = {}): Promise<void> {
@@ -640,25 +634,18 @@ export class BidiMouse extends Mouse {
       });
     }
     actions.push(pointerUpAction);
-    const moveId = this.#nextMoveId++;
-    if (options.origin === undefined || options.origin === 'viewport') {
-      this.#clicks.set(moveId, to);
-    }
-    try {
-      await this.#page.mainFrame().browsingContext.performActions([
+    await this.#state.withTransaction(updateState => {
+      if (options.origin === undefined || options.origin === 'viewport') {
+        updateState({position: to});
+      }
+      return this.#page.mainFrame().browsingContext.performActions([
         {
           type: SourceActionsType.Pointer,
           id: InputId.Mouse,
           actions,
         },
       ]);
-      if (this.#clicks.has(moveId) && moveId > this.#lastMoveId) {
-        this.#lastMovePoint = to;
-        this.#lastMoveId = moveId;
-      }
-    } finally {
-      this.#clicks.delete(moveId);
-    }
+    });
   }
 
   override async wheel(
@@ -671,10 +658,7 @@ export class BidiMouse extends Mouse {
         actions: [
           {
             type: ActionType.Scroll,
-            ...(this.#position ?? {
-              x: 0,
-              y: 0,
-            }),
+            ...this.#state.position,
             deltaX: options.deltaX ?? 0,
             deltaY: options.deltaY ?? 0,
           },

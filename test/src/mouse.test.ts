@@ -441,6 +441,27 @@ describe('Mouse', function () {
         : [[200, 300]],
     );
   });
+  it('should move from the last position after a move outside of the viewport', async () => {
+    const {page, isFirefox} = await getTestState();
+
+    await page.mouse.move(100, 100);
+    await page.mouse.move(5000, 5000).catch(() => {});
+    await page.evaluate(() => {
+      (globalThis as any).result = [];
+      document.addEventListener('mousemove', event => {
+        (globalThis as any).result.push([event.clientX, event.clientY]);
+      });
+    });
+    await page.mouse.move(200, 300, {steps: 2});
+    expect(await page.evaluate('result')).toEqual(
+      isFirefox
+        ? [
+            [150, 200],
+            [200, 300],
+          ]
+        : [[200, 300]],
+    );
+  });
   // @see https://crbug.com/929806
   it('should work with mobile viewports and cross process navigations', async () => {
     const {page, server} = await getTestState();
