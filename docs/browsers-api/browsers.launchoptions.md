@@ -271,4 +271,29 @@ If provided, the process will be killed when the signal is aborted.
 </td><td>
 
 </td></tr>
+<tr><td>
+
+<span id="windowshide">windowsHide</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to spawn process with the [windowsHide](https://nodejs.org/api/child_process.html#child_processspawncommand-args-options) option. It only has an effect on Windows.
+
+**Remarks:**
+
+Set it to `false` when launching a headful browser. `windowsHide` also hides the first window that the browser shows, and Chrome cannot show it again when it is launched with `--window-size` or `--window-position`.
+
+</td><td>
+
+`true`
+
+</td></tr>
 </tbody></table>
