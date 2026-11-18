@@ -2086,13 +2086,6 @@
     "comment": "chrome-headless-shell does not change document.visibilityState when bringToFront() activates a page. The test needs headful or new headless Chrome."
   },
   {
-    "testIdPattern": "[page.test] Page Page.resize should resize the browser window to fit page content when fullscreen",
-    "platforms": ["darwin"],
-    "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "After chrome 152 this test is broken. a bug to headless chrome was open here: b/549573183"
-  },
-  {
     "testIdPattern": "[target.test] Target should close a service worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],

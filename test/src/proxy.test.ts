@@ -61,7 +61,9 @@ describe('request proxy', () => {
       }
       const parsedUrl = new URL(originalRequest.url);
       // Ignore background browser requests (e.g. component updates, telemetry,
-      // captive portal checks) not targeting the test server.
+      // captive portal checks) not targeting the test server. Tests in this
+      // suite must target `HOSTNAME` (e.g. via `getEmptyPageUrl(server)`), as
+      // requests to any other host return 404.
       // See https://crbug.com/576202737.
       if (parsedUrl.hostname !== HOSTNAME) {
         originalResponse.writeHead(404);

@@ -20,27 +20,34 @@
     <button>Click target</button>
     <script>
       const allEvents = [];
-      let checkEvents;
+      const listeners = new Set();
 
       function recordEvent(data) {
         allEvents.push(data);
-        checkEvents?.();
+        for (const listener of listeners) {
+          listener();
+        }
       }
 
       globalThis.getEvents = expectedCount => {
         return new Promise(resolve => {
-          let timeout;
+          let debounceTimeout;
+          let maxTimeout;
+          const finish = () => {
+            clearTimeout(debounceTimeout);
+            clearTimeout(maxTimeout);
+            listeners.delete(scheduleResolve);
+            resolve(allEvents);
+          };
           const scheduleResolve = () => {
-            clearTimeout(timeout);
+            clearTimeout(debounceTimeout);
             if (allEvents.length < expectedCount) {
               return;
             }
-            timeout = setTimeout(() => {
-              checkEvents = undefined;
-              resolve(allEvents);
-            }, 50);
+            debounceTimeout = setTimeout(finish, 50);
           };
-          checkEvents = scheduleResolve;
+          maxTimeout = setTimeout(finish, 1000);
+          listeners.add(scheduleResolve);
           scheduleResolve();
         });
       };

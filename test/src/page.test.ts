@@ -2905,8 +2905,16 @@ describe('Page', function () {
             return document.visibilityState;
           }
           await new Promise<void>(resolve => {
+            const timeout = window.setTimeout(() => {
+              document.removeEventListener(
+                'visibilitychange',
+                onVisibilityChange,
+              );
+              resolve();
+            }, 3_000);
             const onVisibilityChange = () => {
               if (document.visibilityState === expected) {
+                window.clearTimeout(timeout);
                 document.removeEventListener(
                   'visibilitychange',
                   onVisibilityChange,
@@ -2962,6 +2970,38 @@ describe('Page', function () {
       args: ['--screen-info={3840x2160}'],
     });
 
+    const waitForResize = (
+      page: Page,
+      contentWidth: number,
+      contentHeight: number,
+    ) => {
+      return page.evaluate(
+        (width, height) => {
+          return new Promise<void>(resolve => {
+            let timeout = 0;
+            const finish = () => {
+              window.clearTimeout(timeout);
+              window.removeEventListener('resize', check);
+              resolve();
+            };
+            const check = () => {
+              if (
+                window.innerWidth === width &&
+                window.innerHeight === height
+              ) {
+                finish();
+              }
+            };
+            timeout = window.setTimeout(finish, 3_000);
+            window.addEventListener('resize', check);
+            check();
+          });
+        },
+        contentWidth,
+        contentHeight,
+      );
+    };
+
     it('should resize the browser window to fit page content', async () => {
       const {context} = state;
 
@@ -2972,25 +3012,7 @@ describe('Page', function () {
 
       const contentWidth = 500;
       const contentHeight = 400;
-      const resized = page.evaluate(
-        (width, height) => {
-          return new Promise<void>(resolve => {
-            const check = () => {
-              if (
-                window.innerWidth === width &&
-                window.innerHeight === height
-              ) {
-                window.removeEventListener('resize', check);
-                resolve();
-              }
-            };
-            window.addEventListener('resize', check);
-            check();
-          });
-        },
-        contentWidth,
-        contentHeight,
-      );
+      const resized = waitForResize(page, contentWidth, contentHeight);
       await page.resize({contentWidth, contentHeight});
       await resized;
 
@@ -3018,25 +3040,7 @@ describe('Page', function () {
 
       const contentWidth = 500;
       const contentHeight = 400;
-      const resized = page.evaluate(
-        (width, height) => {
-          return new Promise<void>(resolve => {
-            const check = () => {
-              if (
-                window.innerWidth === width &&
-                window.innerHeight === height
-              ) {
-                window.removeEventListener('resize', check);
-                resolve();
-              }
-            };
-            window.addEventListener('resize', check);
-            check();
-          });
-        },
-        contentWidth,
-        contentHeight,
-      );
+      const resized = waitForResize(page, contentWidth, contentHeight);
       await page.resize({contentWidth, contentHeight});
       await resized;
 
