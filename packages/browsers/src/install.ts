@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import {spawnSync} from 'node:child_process';
 import {existsSync, readFileSync} from 'node:fs';
-import {mkdir, unlink} from 'node:fs/promises';
+import {mkdir, mkdtemp, rename, rm} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -22,6 +22,12 @@ import {DefaultProvider} from './DefaultProvider.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
+import {
+  publishArchive,
+  publishInstallation,
+  readInstallationMarker,
+  writeInstallationMarker,
+} from './installStaging.js';
 import {ProgressBar} from './ProgressBar.js';
 import type {BrowserProvider} from './provider.js';
 
@@ -158,8 +164,8 @@ export interface InstallOptions {
 }
 
 /**
- * Thrown when an installation folder is present but does not hold a browser
- * that can be launched.
+ * Thrown when an existing installation has no valid executable or its
+ * completion metadata cannot be validated.
  *
  * @internal
  */
@@ -429,16 +435,23 @@ async function installUrl(
     if (existsSync(archivePath)) {
       return archivePath;
     }
-    logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
-    debugTime('download');
-    await downloadFile(
-      url,
-      archivePath,
-      downloadProgressCallback,
-      options.expectedHash,
-    );
-    debugTimeEnd('download', logger);
-    return archivePath;
+    const attempt = await mkdtemp(path.join(browserRoot, '.install.'));
+    try {
+      const stagedArchive = path.join(attempt, archiveName);
+      logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
+      debugTime('download');
+      await downloadFile(
+        url,
+        stagedArchive,
+        downloadProgressCallback,
+        options.expectedHash,
+      );
+      debugTimeEnd('download', logger);
+      await publishArchive(stagedArchive, archivePath);
+      return archivePath;
+    } finally {
+      await removeInstallAttempt(attempt, logger);
+    }
   }
 
   // Get executable path from provider once (used for both cached and new installations)
@@ -451,48 +464,79 @@ async function installUrl(
     `Using executable path from provider: ${relativeExecutablePath}`,
   );
 
-  const installedBrowser = new InstalledBrowser(
-    cache,
-    options.browser,
-    options.buildId,
-    options.platform,
-  );
-
-  // Write metadata for the installation (only for non-default providers)
-  if (!(provider instanceof DefaultProvider)) {
-    cache.writeExecutablePath(
-      options.browser,
-      options.platform,
-      options.buildId,
-      relativeExecutablePath,
-    );
-  }
-
-  try {
-    if (existsSync(outputPath)) {
-      if (!existsSync(installedBrowser.executablePath)) {
-        throw new IncompleteInstallationError(
-          `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing. ` +
-            `An earlier install of this build probably did not finish. ` +
-            `Delete ${outputPath} and install the browser again.`,
+  const finishInstallation = async (): Promise<InstalledBrowser> => {
+    let marker;
+    try {
+      marker = await readInstallationMarker(outputPath);
+    } catch (error) {
+      throw new IncompleteInstallationError(
+        `The browser folder (${outputPath}) has invalid installation metadata or an invalid executable.`,
+        {cause: error},
+      );
+    }
+    if (marker && !marker.defaultProvider) {
+      const executablePath = marker.executablePath;
+      if (
+        cache.readExecutablePath(
+          options.browser,
+          options.platform!,
+          options.buildId,
+        ) !== executablePath
+      ) {
+        cache.writeExecutablePath(
+          options.browser,
+          options.platform!,
+          options.buildId,
+          executablePath,
         );
       }
-      writeBuildIdAlias(installedBrowser, options.buildIdAlias);
-      await runSetup(installedBrowser, logger);
-      if (options.installDeps) {
-        await installDeps(installedBrowser, logger);
-      }
-      return installedBrowser;
     }
+    const installedBrowser = new InstalledBrowser(
+      cache,
+      options.browser,
+      options.buildId,
+      options.platform!,
+      marker ? path.join(outputPath, marker.executablePath) : undefined,
+    );
+    if (!existsSync(installedBrowser.executablePath)) {
+      throw new IncompleteInstallationError(
+        `The browser folder (${outputPath}) exists but the executable (${installedBrowser.executablePath}) is missing. ` +
+          `An earlier install of this build probably did not finish. ` +
+          `Delete ${outputPath} and install the browser again.`,
+      );
+    }
+    writeBuildIdAlias(installedBrowser, options.buildIdAlias);
+    await runSetup(installedBrowser, logger);
+    if (options.installDeps) {
+      await installDeps(installedBrowser, logger);
+    }
+    return installedBrowser;
+  };
 
-    // Check if archive already exists (e.g., from a custom provider)
-    if (!existsSync(archivePath)) {
+  if (existsSync(outputPath)) {
+    return await finishInstallation();
+  }
+
+  const attempt = await mkdtemp(path.join(browserRoot, '.install.'));
+  const stagedArchive = path.join(attempt, archiveName);
+  const stagedOutput = path.join(attempt, 'browser');
+  try {
+    let claimedArchive = false;
+    try {
+      await rename(archivePath, stagedArchive);
+      claimedArchive = true;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error;
+      }
+    }
+    if (!claimedArchive) {
       logger?.(DEBUG_PREFIXES.install)?.(`Downloading binary from ${url}`);
       try {
         debugTime('download');
         await downloadFile(
           url,
-          archivePath,
+          stagedArchive,
           downloadProgressCallback,
           options.expectedHash,
         );
@@ -501,31 +545,41 @@ async function installUrl(
       }
     } else {
       logger?.(DEBUG_PREFIXES.install)?.(
-        `Using existing archive at ${archivePath}`,
+        `Using existing archive at ${stagedArchive}`,
       );
     }
 
     logger?.(DEBUG_PREFIXES.install)?.(
-      `Installing ${archivePath} to ${outputPath}`,
+      `Installing ${stagedArchive} to ${stagedOutput}`,
     );
     try {
       debugTime('extract');
-      await unpackArchive(archivePath, outputPath, options.logger);
+      await unpackArchive(stagedArchive, stagedOutput, options.logger);
     } finally {
       debugTimeEnd('extract', logger);
     }
 
-    writeBuildIdAlias(installedBrowser, options.buildIdAlias);
-
-    await runSetup(installedBrowser, logger);
-    if (options.installDeps) {
-      await installDeps(installedBrowser, logger);
-    }
-    return installedBrowser;
+    await writeInstallationMarker(stagedOutput, {
+      version: 1,
+      executablePath: relativeExecutablePath,
+      defaultProvider: provider instanceof DefaultProvider,
+    });
+    await publishInstallation(stagedOutput, outputPath);
+    return await finishInstallation();
   } finally {
-    if (existsSync(archivePath)) {
-      await unlink(archivePath);
-    }
+    await removeInstallAttempt(attempt, logger);
+  }
+}
+
+async function removeInstallAttempt(attempt: string, logger?: Logger) {
+  try {
+    await rm(attempt, {recursive: true, force: true});
+  } catch (error) {
+    try {
+      logger?.(DEBUG_PREFIXES.install)?.(
+        `Could not remove installation staging directory ${attempt}: ${error}`,
+      );
+    } catch {}
   }
 }
 
