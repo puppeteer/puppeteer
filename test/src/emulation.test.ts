@@ -23,6 +23,28 @@ describe('Emulation', () => {
       await page.setViewport({width: 123, height: 456});
       expect(page.viewport()).toEqual({width: 123, height: 456});
     });
+    it('should keep a copy of the viewport that was set', async () => {
+      const {page} = await getTestState();
+
+      const viewport = {width: 123, height: 456};
+      await page.setViewport(viewport);
+      viewport.width = 789;
+      expect(page.viewport()).toEqual({width: 123, height: 456});
+      expect(
+        await page.evaluate(() => {
+          return window.innerWidth;
+        }),
+      ).toBe(123);
+    });
+    it('should return a copy of the viewport', async () => {
+      const {page} = await getTestState();
+
+      page.viewport()!.width = 123;
+      expect(page.viewport()).toEqual({width: 800, height: 600});
+      await page.setViewport({width: 400, height: 300});
+      page.viewport()!.width = 123;
+      expect(page.viewport()).toEqual({width: 400, height: 300});
+    });
     it('should support mobile emulation', async () => {
       const {page, server} = await getTestState();
 
@@ -211,6 +233,20 @@ describe('Emulation', () => {
       await page.goto('about:blank');
       await page.emulate(KnownDevices['iPhone 13']);
       await page.emulate(KnownDevices['iPad Pro landscape']);
+    });
+
+    it('should not change the device descriptor', async () => {
+      const {page} = await getTestState();
+
+      const original = {...iPhone.viewport};
+      try {
+        await page.emulate(iPhone);
+        page.viewport()!.isLandscape = true;
+        expect(iPhone.viewport).toEqual(original);
+      } finally {
+        // Undo any change so that later tests see the real device.
+        Object.assign(iPhone.viewport, original);
+      }
     });
 
     it('should support clicking', async () => {
