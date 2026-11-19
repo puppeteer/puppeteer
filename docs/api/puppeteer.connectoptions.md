@@ -88,6 +88,10 @@ The feature works while Puppeteer is attached to the CDP targets. It intercepts 
 
 To enforce the patterns for requests made by service workers (including requests they forward on behalf of controlled pages), Puppeteer stays attached to every service worker while this option is set. As a consequence, the browser never idle-terminates service workers.
 
+The allowlist does not apply to WebTransport and to TURN over TCP at this time. The browser opens WebTransport connections to URLs that do not match a pattern in the allowlist. The browser also opens TCP connections to TURN servers that are not in the allowlist.
+
+The allowlist blocks all WebRTC traffic over UDP. WebRTC peers do not connect and the browser does not send UDP requests to STUN and TURN servers. A pattern in the allowlist cannot allow this traffic.
+
 Cannot be used along with [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist).
 
 </td><td>
@@ -122,6 +126,8 @@ Currently only supported for Chrome.
 The feature works while Puppeteer is attached to the CDP targets. It intercepts requests in the network service in Chrome. Chrome may perform some network access in other ways or some web features may omit the network service. The feature is meant as an additional guardrails to LLM-based usage under Puppeteer control and not a complete network sandbox. For complete network sandboxing, we recommend using container/OS-level sandbox mechanism.
 
 To enforce the patterns for requests made by service workers (including requests they forward on behalf of controlled pages), Puppeteer stays attached to every service worker while this option is set. As a consequence, the browser never idle-terminates service workers.
+
+The blocklist does not apply to WebTransport and WebRTC at this time. The browser opens WebTransport connections to URLs that match a blocked pattern. The browser also connects WebRTC peers and sends requests to STUN and TURN servers (over UDP and TCP) on blocked hosts. Patterns such as `stun:*` and `turn:*` do not block these requests.
 
 Cannot be used along with [ConnectOptions.allowlist](./puppeteer.connectoptions.md#allowlist).
 

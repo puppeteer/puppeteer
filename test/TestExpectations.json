@@ -154,6 +154,13 @@
     "comment": "Chrome drops Network.emulateNetworkConditionsByRule for shared workers attached before they start, so their requests bypass the blocklist and allowlist. Fixed in Chromium by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
   },
   {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions WebRTC and WebTransport blocklist *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome applies only the global rule (empty urlPattern) of Network.emulateNetworkConditionsByRule to p2p connections. The blocklist has no global rule, so the browser sends WebTransport packets and WebRTC STUN and TURN requests to hosts in the blocklist."
+  },
+  {
     "testIdPattern": "[network.test] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -713,6 +720,20 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions WebRTC and WebTransport allowlist should not send WebRTC TURN requests over TCP to hosts not in the allowlist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to TURN over TCP, so the browser opens TCP connections to TURN servers that are not in the allowlist."
+  },
+  {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions WebRTC and WebTransport allowlist should not send WebTransport packets to hosts not in the allowlist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to WebTransport, so the browser sends QUIC packets to hosts that are not in the allowlist."
   },
   {
     "testIdPattern": "[network.test] network Network Events Page.Events.RequestFailed for blocked requests",
