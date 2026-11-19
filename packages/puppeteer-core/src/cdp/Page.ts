@@ -576,6 +576,8 @@ export class CdpPage extends Page {
   override async waitForFileChooser(
     options: WaitTimeoutOptions = {},
   ): Promise<FileChooser> {
+    options.signal?.throwIfAborted();
+
     const needsEnable = this.#fileChooserDeferreds.size === 0;
     const {timeout = this._timeoutSettings.timeout()} = options;
     const deferred = Deferred.create<FileChooser>({

@@ -122,6 +122,27 @@ describe('DeviceRequestPrompt', function () {
       expect(prompt).toBeTruthy();
     });
 
+    it('should reject immediately when the signal is already aborted', async () => {
+      const client = new MockCDPSession();
+      const timeoutSettings = new TimeoutSettings();
+      const manager = new CdpDeviceRequestPromptManager(
+        client,
+        timeoutSettings,
+      );
+      let sent = 0;
+      client.send = async () => {
+        sent++;
+      };
+
+      await expect(
+        manager.waitForDevicePrompt({
+          signal: AbortSignal.abort(),
+          timeout: 1000,
+        }),
+      ).rejects.toThrow(/aborted/);
+      expect(sent).toBe(0);
+    });
+
     it('should return the same prompt when there are many watchdogs simultaneously', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
@@ -200,6 +221,24 @@ describe('DeviceRequestPrompt', function () {
   });
 
   describe('DeviceRequestPrompt.waitForDevice', function () {
+    it('should reject immediately when the signal is already aborted', async () => {
+      const client = new MockCDPSession();
+      const timeoutSettings = new TimeoutSettings();
+      const prompt = new CdpDeviceRequestPrompt(client, timeoutSettings, {
+        id: '00000000000000000000000000000000',
+        devices: [],
+      });
+
+      await expect(
+        prompt.waitForDevice(
+          () => {
+            return true;
+          },
+          {signal: AbortSignal.abort(), timeout: 1000},
+        ),
+      ).rejects.toThrow(/aborted/);
+    });
+
     it('should return first matching device', async () => {
       const client = new MockCDPSession();
       const timeoutSettings = new TimeoutSettings();
