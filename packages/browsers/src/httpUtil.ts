@@ -140,23 +140,9 @@ function isTransientError(error: unknown): boolean {
   if (error instanceof DownloadError) {
     return error.isTransient;
   }
-  if (error instanceof TypeError) {
-    return false;
-  }
   if (error && typeof error === 'object') {
     const code = (error as NodeJS.ErrnoException).code;
     if (code) {
-      const nonTransientCodes = new Set([
-        'ENOSPC',
-        'EACCES',
-        'EPERM',
-        'EISDIR',
-        'EROFS',
-        'ENOENT',
-      ]);
-      if (nonTransientCodes.has(code)) {
-        return false;
-      }
       const transientCodes = new Set([
         'ECONNRESET',
         'ETIMEDOUT',
@@ -265,7 +251,6 @@ function downloadFileAttempt(
             try {
               verifier.verify(url, destinationPath, expectedHash);
             } catch (err) {
-              cleanup();
               reject(err);
               return;
             }

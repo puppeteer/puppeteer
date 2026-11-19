@@ -384,6 +384,39 @@ describe('downloadFile', function () {
     }
   });
 
+  it('retries download on connection reset', async () => {
+    let connections = 0;
+    const resetServer = http.createServer((_req, res) => {
+      res.writeHead(200, {'Content-Length': String(testContent.length)});
+      res.end(testContent);
+    });
+    resetServer.on('connection', socket => {
+      connections++;
+      if (connections === 1) {
+        socket.destroy();
+      }
+    });
+    await new Promise<void>(resolve => {
+      resetServer.listen(0, '127.0.0.1', resolve);
+    });
+    const port = (resetServer.address() as {port: number}).port;
+    const resetUrl = new URL(`http://127.0.0.1:${port}/reset-test`);
+    const destPath = path.join(tmpDir, 'reset-download.bin');
+
+    try {
+      await downloadFile(resetUrl, destPath, undefined, undefined, 1, 0);
+      assert.strictEqual(connections, 2);
+      assert.ok(fs.existsSync(destPath));
+      assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
+    } finally {
+      await new Promise<void>(resolve => {
+        resetServer.close(() => {
+          return resolve();
+        });
+      });
+    }
+  });
+
   it('rejects when all retries are exhausted', async () => {
     let attempts = 0;
     const failServer = http.createServer((_req, res) => {
