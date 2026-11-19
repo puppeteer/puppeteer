@@ -158,7 +158,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["FAIL"],
-    "comment": "Chrome applies only the global rule (empty urlPattern) of Network.emulateNetworkConditionsByRule to p2p connections. The blocklist has no global rule, so the browser sends WebTransport packets and WebRTC STUN and TURN requests to hosts in the blocklist."
+    "comment": "Chrome applies only the global rule (empty urlPattern) of Network.emulateNetworkConditionsByRule to p2p connections. The blocklist has no global rule, so the browser sends WebTransport packets and WebRTC STUN and TURN requests to hosts in the blocklist. WebTransport is already fixed in Chromium. Narrow this expectation to the WebRTC tests once the pinned Chrome version includes the fix."
   },
   {
     "testIdPattern": "[network.test] network Page.setBypassServiceWorker *",
@@ -733,7 +733,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["FAIL"],
-    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to WebTransport, so the browser sends QUIC packets to hosts that are not in the allowlist."
+    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to WebTransport, so the browser sends QUIC packets to hosts that are not in the allowlist. WebTransport is already fixed in Chromium. Remove once the pinned Chrome version includes the fix."
   },
   {
     "testIdPattern": "[network.test] network Network Events Page.Events.RequestFailed for blocked requests",

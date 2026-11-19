@@ -281,7 +281,7 @@ async function sendsTraffic(
   }
 }
 
-describe.only('Network Restrictions', function () {
+describe('Network Restrictions', function () {
   setupTestBrowserHooks();
 
   describe('blocklist validation', () => {
