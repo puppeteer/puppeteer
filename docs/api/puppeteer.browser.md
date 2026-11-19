@@ -421,6 +421,8 @@ Currently only supported for Chrome and the CDP protocol.
 
 Targets that are already on a blocked URL when `restrictNetwork` is called will remain attached and stay on the blocked page. This is a behavior difference compared to launching the browser with network restrictions, where such targets are detached immediately upon initial attach.
 
+The restrictions have the same WebTransport and WebRTC limitations as [ConnectOptions.blocklist](./puppeteer.connectoptions.md#blocklist) and [ConnectOptions.allowlist](./puppeteer.connectoptions.md#allowlist).
+
 </td></tr>
 <tr><td>
 
