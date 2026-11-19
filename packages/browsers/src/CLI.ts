@@ -325,8 +325,19 @@ export class CLI {
             })
             .option('retry', {
               type: 'number',
-              desc: 'Number of times to retry downloading browser archive on failure.',
+              desc: 'Number of times to retry downloading the browser archive on transient failures (HTTP 408, 429, 5xx, or network errors, with 1s–10s exponential backoff).',
               default: 0,
+            })
+            .check(argv => {
+              if (
+                argv.retry !== undefined &&
+                (!Number.isInteger(argv.retry) || argv.retry < 0)
+              ) {
+                throw new Error(
+                  'Invalid --retry value: must be a non-negative integer',
+                );
+              }
+              return true;
             })
             .option('format', {
               type: 'string',

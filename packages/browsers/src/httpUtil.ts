@@ -5,7 +5,7 @@
  */
 
 import {createHash} from 'node:crypto';
-import {createWriteStream, unlinkSync} from 'node:fs';
+import {createWriteStream, unlinkSync, type WriteStream} from 'node:fs';
 import * as http from 'node:http';
 import * as https from 'node:https';
 import {URL, urlToHttpOptions} from 'node:url';
@@ -122,6 +122,59 @@ class HashVerifier {
   }
 }
 
+class DownloadError extends Error {
+  isTransient: boolean;
+
+  constructor(
+    message: string,
+    isTransient: boolean,
+    options?: {cause?: unknown},
+  ) {
+    super(message, options);
+    this.name = 'DownloadError';
+    this.isTransient = isTransient;
+  }
+}
+
+function isTransientError(error: unknown): boolean {
+  if (error instanceof DownloadError) {
+    return error.isTransient;
+  }
+  if (error instanceof TypeError) {
+    return false;
+  }
+  if (error && typeof error === 'object') {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code) {
+      const nonTransientCodes = new Set([
+        'ENOSPC',
+        'EACCES',
+        'EPERM',
+        'EISDIR',
+        'EROFS',
+        'ENOENT',
+      ]);
+      if (nonTransientCodes.has(code)) {
+        return false;
+      }
+      const transientCodes = new Set([
+        'ECONNRESET',
+        'ETIMEDOUT',
+        'ECONNREFUSED',
+        'EAI_AGAIN',
+        'ENOTFOUND',
+        'EPIPE',
+        'EHOSTUNREACH',
+        'ENETUNREACH',
+      ]);
+      if (transientCodes.has(code)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function downloadFileAttempt(
   url: URL,
   destinationPath: string,
@@ -133,22 +186,37 @@ function downloadFileAttempt(
     let totalBytes: number | undefined;
     const verifier = expectedHash ? new HashVerifier() : null;
 
+    let file: WriteStream | undefined;
+    let fileClosed = false;
+    let fileClosePromise: Promise<void> | undefined;
+
     const cleanup = (): void => {
       try {
         unlinkSync(destinationPath);
       } catch {}
     };
 
+    const cleanupAndReject = async (err: Error): Promise<void> => {
+      if (file && !fileClosed && fileClosePromise) {
+        file.destroy();
+        await fileClosePromise;
+      }
+      cleanup();
+      reject(err);
+    };
+
     const downloadError = (cause?: Error): Error => {
       const options = cause ? {cause} : undefined;
       if (totalBytes === undefined) {
-        return new Error(
+        return new DownloadError(
           `Download failed: connection closed before the download completed. URL: ${url}`,
+          true,
           options,
         );
       }
-      return new Error(
+      return new DownloadError(
         `Download failed: expected ${totalBytes} bytes, received ${downloadedBytes} bytes. URL: ${url}`,
+        true,
         options,
       );
     };
@@ -156,21 +224,37 @@ function downloadFileAttempt(
     try {
       const request = await httpRequest(url, 'GET', response => {
         if (response.statusCode !== 200) {
-          const error = new Error(
+          const isTransient =
+            response.statusCode === 408 ||
+            response.statusCode === 429 ||
+            (response.statusCode !== undefined &&
+              response.statusCode >= 500 &&
+              response.statusCode < 600);
+          const error = new DownloadError(
             `Download failed: server returned code ${response.statusCode}. URL: ${url}`,
+            isTransient,
           );
           // consume response data to free up memory
           response.resume();
-          reject(error);
+          void cleanupAndReject(error);
           return;
         }
-        const file = createWriteStream(destinationPath);
+        file = createWriteStream(destinationPath);
+        fileClosePromise = new Promise<void>(res => {
+          file!.on('close', () => {
+            fileClosed = true;
+            res();
+          });
+        });
+
         let error: Error | undefined;
         const failDownload = (downloadError: Error): void => {
           error ??= downloadError;
           response.destroy();
-          file.destroy();
+          file?.destroy();
         };
+
+        file.on('error', failDownload);
         file.on('close', () => {
           if (error) {
             cleanup();
@@ -181,13 +265,14 @@ function downloadFileAttempt(
             try {
               verifier.verify(url, destinationPath, expectedHash);
             } catch (err) {
+              cleanup();
               reject(err);
               return;
             }
           }
           return resolve();
         });
-        file.on('error', failDownload);
+
         const contentLength = Number.parseInt(
           response.headers['content-length'] ?? '',
           10,
@@ -212,11 +297,11 @@ function downloadFileAttempt(
         });
         response.pipe(file);
       });
-      request.on('error', error => {
-        return reject(error);
+      request.on('error', async error => {
+        await cleanupAndReject(error);
       });
     } catch (error) {
-      reject(error);
+      await cleanupAndReject(error as Error);
     }
   });
 }
@@ -230,6 +315,7 @@ export async function downloadFile(
   progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
   expectedHash?: string,
   retry = 0,
+  retryDelay = 1000,
 ): Promise<void> {
   let attempt = 0;
   while (true) {
@@ -241,8 +327,20 @@ export async function downloadFile(
         expectedHash,
       );
     } catch (error) {
+      if (!isTransientError(error)) {
+        throw error;
+      }
       if (attempt < retry) {
         attempt++;
+        const backoff =
+          retryDelay > 0
+            ? Math.min(retryDelay * Math.pow(2, attempt - 1), 10000)
+            : 0;
+        if (backoff > 0) {
+          await new Promise(resolve => {
+            setTimeout(resolve, backoff);
+          });
+        }
         continue;
       }
       throw error;

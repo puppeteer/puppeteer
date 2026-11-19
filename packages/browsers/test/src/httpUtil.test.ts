@@ -371,7 +371,7 @@ describe('downloadFile', function () {
     const destPath = path.join(tmpDir, 'retry-download.bin');
 
     try {
-      await downloadFile(retryUrl, destPath, undefined, undefined, 1);
+      await downloadFile(retryUrl, destPath, undefined, undefined, 1, 0);
       assert.strictEqual(attempts, 2);
       assert.ok(fs.existsSync(destPath));
       assert.deepStrictEqual(fs.readFileSync(destPath), testContent);
@@ -401,7 +401,7 @@ describe('downloadFile', function () {
     try {
       await assert.rejects(
         () => {
-          return downloadFile(failUrl, destPath, undefined, undefined, 2);
+          return downloadFile(failUrl, destPath, undefined, undefined, 2, 0);
         },
         (err: Error) => {
           assert.ok(err.message.includes('server returned code 500'));
@@ -412,6 +412,47 @@ describe('downloadFile', function () {
     } finally {
       await new Promise<void>(resolve => {
         failServer.close(() => {
+          return resolve();
+        });
+      });
+    }
+  });
+
+  it('does not retry non-transient failures such as HTTP 404', async () => {
+    let attempts = 0;
+    const notFoundServer = http.createServer((_req, res) => {
+      attempts++;
+      res.writeHead(404);
+      res.end('not found');
+    });
+    await new Promise<void>(resolve => {
+      notFoundServer.listen(0, '127.0.0.1', resolve);
+    });
+    const port = (notFoundServer.address() as {port: number}).port;
+    const notFoundUrl = new URL(`http://127.0.0.1:${port}/not-found-test`);
+    const destPath = path.join(tmpDir, 'not-found-download.bin');
+
+    try {
+      await assert.rejects(
+        () => {
+          return downloadFile(
+            notFoundUrl,
+            destPath,
+            undefined,
+            undefined,
+            3,
+            0,
+          );
+        },
+        (err: Error) => {
+          assert.ok(err.message.includes('server returned code 404'));
+          return true;
+        },
+      );
+      assert.strictEqual(attempts, 1);
+    } finally {
+      await new Promise<void>(resolve => {
+        notFoundServer.close(() => {
           return resolve();
         });
       });
