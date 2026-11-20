@@ -2006,6 +2006,13 @@
     "comment": "CDP specific issue, maybe we can support it from BiDi+"
   },
   {
+    "testIdPattern": "[requestinterception.test] request interception Request.continue should amend post data to an empty string",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"],
+    "comment": "Firefox hangs when continueRequest changes the length of the request body"
+  },
+  {
     "testIdPattern": "[requestinterception.test] request interception Request.resourceType should work for document type",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

@@ -981,6 +981,23 @@ describe('request interception', function () {
       ]);
       expect(await serverRequest.postBody).toBe('🐶');
     });
+    it('should amend post data to an empty string', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue({postData: ''});
+      });
+      const [serverRequest] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => {
+          return fetch('/sleep.zzz', {method: 'POST', body: '🐦'});
+        }),
+      ]);
+      expect(await serverRequest.postBody).toBe('');
+    });
     it('should amend both post data and method on navigation', async () => {
       const {page, server} = await getTestState();
 
