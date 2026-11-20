@@ -255,13 +255,7 @@ export class Accessibility {
     );
     let backendNodeId: number | undefined;
     if (root) {
-      const {node} = await this.#realm.environment.client.send(
-        'DOM.describeNode',
-        {
-          objectId: root.id,
-        },
-      );
-      backendNodeId = node.backendNodeId;
+      backendNodeId = await root.backendNodeId();
     }
     const defaultRoot = AXNode.createTree(this.#realm, nodes);
     const populateIframes = async (root: AXNode): Promise<void> => {
