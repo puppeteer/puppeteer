@@ -152,8 +152,8 @@ export abstract class Keyboard {
    * To press a special key, like `Control` or `ArrowDown`,
    * use {@link Keyboard.press}.
    *
-   * Modifier keys DO NOT effect `keyboard.type`.
-   * Holding down `Shift` will not type the text in upper case.
+   * Modifier keys DO influence `keyboard.type`, the same as {@link Keyboard.press}.
+   * Holding down `Shift` will type the text in upper case.
    *
    * @example
    *
