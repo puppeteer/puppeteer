@@ -161,6 +161,13 @@
     "comment": "Chrome applies only the global rule (empty urlPattern) of Network.emulateNetworkConditionsByRule to p2p connections. The blocklist has no global rule, so the browser sends WebTransport packets and WebRTC STUN and TURN requests to hosts in the blocklist. WebTransport is already fixed in Chromium. Narrow this expectation to the WebRTC tests once the pinned Chrome version includes the fix."
   },
   {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions WebSocket * should fail WebSocket connections from a shared worker to *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome does not apply launch-time rules of Network.emulateNetworkConditionsByRule to shared workers, so their WebSocket connections bypass the blocklist and allowlist. The fetch tests for shared workers fail in the same way. Fixed in Chromium by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
+  },
+  {
     "testIdPattern": "[network.test] network Page.setBypassServiceWorker *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
