@@ -72,6 +72,25 @@ describe('EventEmitter', () => {
         const returnValue = emitter.off('foo', listener);
         expect(returnValue).toBe(emitter);
       });
+
+      it(`${methodName}: removes a listener added with once`, () => {
+        const listener = sinon.spy();
+        emitter.once('foo', listener);
+        emitter.off('foo', listener);
+        expect(emitter.listenerCount('foo')).toEqual(0);
+        emitter.emit('foo', undefined);
+        expect(listener.callCount).toEqual(0);
+      });
+
+      it(`${methodName}: removes only the last added registration of a listener`, () => {
+        const listener = sinon.spy();
+        emitter.on('foo', listener);
+        emitter.once('foo', listener);
+        emitter.off('foo', listener);
+        emitter.emit('foo', undefined);
+        emitter.emit('foo', undefined);
+        expect(listener.callCount).toEqual(2);
+      });
     };
     offTests('off');
   });
@@ -100,6 +119,53 @@ describe('EventEmitter', () => {
       emitter.emit('foo', data);
       expect(listener.callCount).toEqual(1);
       expect(listener.firstCall.args).toEqual(['foo', data]);
+    });
+
+    it('does not throw if a subclass on() registers no handler', () => {
+      class NoopEmitter extends EventEmitter<Record<string, unknown>> {
+        override on(): this {
+          return this;
+        }
+      }
+      const emitter = new NoopEmitter();
+      const listener = sinon.spy();
+      expect(() => {
+        emitter.once('foo', listener);
+      }).not.toThrow();
+      expect(emitter.listenerCount('foo')).toEqual(0);
+    });
+
+    it('maps the handler even if a subclass overrides listenerCount()', () => {
+      class CountingEmitter extends EventEmitter<Record<string, unknown>> {
+        override listenerCount(): number {
+          return 42;
+        }
+      }
+      const emitter = new CountingEmitter();
+      const listener = sinon.spy();
+      emitter.once('foo', listener);
+      emitter.off('foo', listener);
+      emitter.emit('foo', undefined);
+      expect(listener.callCount).toEqual(0);
+    });
+
+    it('does not map a handler if a subclass on() registers more than one', () => {
+      const extra = sinon.spy();
+      class DoubleEmitter extends EventEmitter<Record<string, unknown>> {
+        override on(
+          ...args: Parameters<EventEmitter<Record<string, unknown>>['on']>
+        ): this {
+          super.on(...args);
+          return super.on(args[0], extra);
+        }
+      }
+      const emitter = new DoubleEmitter();
+      const listener = sinon.spy();
+      emitter.once('foo', listener);
+      emitter.off('foo', listener);
+      expect(emitter.listenerCount('foo')).toEqual(2);
+      emitter.emit('foo', undefined);
+      expect(extra.callCount).toEqual(1);
     });
   });
 

@@ -1009,13 +1009,30 @@ export abstract class Page extends EventEmitter<PageEvents> {
       eventData: K extends '*' ? PageEvents[keyof PageEvents] : never,
     ) => void,
   ): this {
-    if (type === PageEvent.Request) {
-      handler =
-        (this.#requestHandlers.get(
-          handler as (
-            event: EventsWithWildcard<PageEvents>[PageEvent.Request],
-          ) => void,
-        ) as (event: EventsWithWildcard<PageEvents>[K]) => void) || handler;
+    // For `request` listeners, a handler that was passed to `on()` is matched
+    // through its `#requestHandlers` wrapper first. So after
+    // `on('request', h)`, `once('request', h)` and `off('request', h)`, the
+    // `on()` registration is removed first, even though it was added earlier.
+    // This differs from `EventEmitter.off()`, which removes the most recently
+    // added registration.
+    if (type === PageEvent.Request && handler !== undefined) {
+      const requestHandler = handler as (
+        event: EventsWithWildcard<PageEvents>[PageEvent.Request],
+      ) => void;
+      const wrapper = this.#requestHandlers.get(requestHandler);
+      if (wrapper !== undefined) {
+        const listenerCount = this.listenerCount(type);
+        super.off(
+          type,
+          wrapper as (event: EventsWithWildcard<PageEvents>[K]) => void,
+        );
+        if (this.listenerCount(type) < listenerCount) {
+          return this;
+        }
+        // The wrapper is no longer registered, so drop the stale entry and
+        // fall back to `handler`, which matches listeners added with `once`.
+        this.#requestHandlers.delete(requestHandler);
+      }
     }
     return super.off(type, handler);
   }
