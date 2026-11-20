@@ -5,14 +5,22 @@
  */
 
 import type {ServerResponse} from 'node:http';
+import path from 'node:path';
 
 import expect from 'expect';
 import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 
-import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
+
+const discardTabExtensionPath = path.join(
+  import.meta.dirname,
+  '..',
+  'assets',
+  'discard-tab-extension',
+);
 
 describe('Target', function () {
   setupTestBrowserHooks();
@@ -32,6 +40,15 @@ describe('Target', function () {
     expect(page3).toBe(page);
 
     await page.close();
+  });
+
+  it('Target.isDiscarded() should return false for active targets', async () => {
+    const {page, browser, context} = await getTestState();
+    const target = page.target();
+
+    expect(target.isDiscarded()).toBe(false);
+    expect(browser.targets({includeDiscarded: true})).toContain(target);
+    expect(context.targets({includeDiscarded: true})).toContain(target);
   });
 
   it('Browser.targets should return all of the targets', async () => {
@@ -455,5 +472,101 @@ describe('Target', function () {
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
     });
+  });
+
+  it('should hide discarded tabs by default and expose them with includeDiscarded', async () => {
+    const {browser, server, close} = await launch(
+      {
+        enableExtensions: true,
+        args: ['--enable-features=AllowDevtoolsConnectedDiscard'],
+      },
+      {createContext: false},
+    );
+    try {
+      const extensionId = await browser.installExtension(
+        discardTabExtensionPath,
+      );
+      const serviceWorkerTarget = await browser.waitForTarget(target => {
+        return (
+          target.type() === 'service_worker' &&
+          target.url().includes(extensionId)
+        );
+      });
+      const worker = (await serviceWorkerTarget.worker())!;
+
+      // `chrome.tabs.query({url})` matches URL patterns against the URL
+      // without its fragment, so the two pages need distinct paths.
+      const discardUrl = server.EMPTY_PAGE;
+      const activeUrl = `${server.PREFIX}/title.html`;
+
+      const pageToDiscard = await browser.newPage();
+      await pageToDiscard.goto(discardUrl);
+      const targetToDiscard = pageToDiscard.target();
+      expect(targetToDiscard.isDiscarded()).toBe(false);
+
+      const activePage = await browser.newPage();
+      await activePage.goto(activeUrl);
+
+      const [_, destroyedTarget] = await Promise.all([
+        waitEvent(pageToDiscard, 'close'),
+        waitEvent<Target>(browser, 'targetdestroyed', (target: Target) => {
+          return target.url() === discardUrl;
+        }),
+        worker.evaluate(async url => {
+          const chromeApi = (globalThis as any).chrome;
+          const [tab] = await chromeApi.tabs.query({url});
+          await chromeApi.tabs.discard(tab.id);
+        }, discardUrl),
+      ]);
+
+      expect(destroyedTarget.isDiscarded()).toBe(true);
+      expect(pageToDiscard.isClosed()).toBe(true);
+      expect(
+        browser.targets().some(target => {
+          return target.url() === discardUrl;
+        }),
+      ).toBe(false);
+      expect(
+        (await browser.pages()).some(page => {
+          return page.url() === discardUrl;
+        }),
+      ).toBe(false);
+
+      const discardedTargets = browser
+        .targets({includeDiscarded: true})
+        .filter(target => {
+          return target.url() === discardUrl;
+        });
+      expect(discardedTargets).toHaveLength(1);
+      const discardedTarget = discardedTargets[0]!;
+      expect(discardedTarget.type()).toBe('tab');
+      expect(discardedTarget.isDiscarded()).toBe(true);
+      await expect(discardedTarget.page()).resolves.toBeNull();
+      await expect(discardedTarget.asPage()).rejects.toThrow(
+        'Cannot create a page for a discarded target.',
+      );
+
+      const [reloadedTarget] = await Promise.all([
+        browser.waitForTarget(target => {
+          return target.url() === discardUrl;
+        }),
+        worker.evaluate(async url => {
+          const chromeApi = (globalThis as any).chrome;
+          const [tab] = await chromeApi.tabs.query({url});
+          await chromeApi.tabs.reload(tab.id);
+        }, discardUrl),
+      ]);
+
+      expect(reloadedTarget.type()).toBe('page');
+      expect(reloadedTarget.isDiscarded()).toBe(false);
+      expect(destroyedTarget.isDiscarded()).toBe(true);
+      await expect(destroyedTarget.page()).resolves.toBeNull();
+      expect(browser.targets()).toContain(reloadedTarget);
+      const reloadedPage = await reloadedTarget.page();
+      expect(reloadedPage).not.toBeNull();
+      expect(reloadedPage).not.toBe(pageToDiscard);
+    } finally {
+      await close();
+    }
   });
 });

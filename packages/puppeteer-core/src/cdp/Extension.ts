@@ -79,7 +79,7 @@ export class CdpExtension extends Extension {
         try {
           return await target.asPage();
         } catch (err) {
-          if (this.#canIgnoreError(err)) {
+          if (target.isDiscarded() || this.#canIgnoreError(err)) {
             this.#logger?.(DEBUG_PREFIXES.error)?.(err);
             return null;
           }
