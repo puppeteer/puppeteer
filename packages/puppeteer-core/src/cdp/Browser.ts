@@ -317,6 +317,7 @@ export class CdpBrowser extends BrowserBase {
   #createTarget = (
     targetInfo: Protocol.Target.TargetInfo,
     session?: CdpCDPSession,
+    parentSession?: CdpCDPSession,
   ) => {
     const {browserContextId} = targetInfo;
     const context =
@@ -331,6 +332,7 @@ export class CdpBrowser extends BrowserBase {
     const createSession = (isAutoAttachEmulated: boolean) => {
       return this.#connection._createSession(targetInfo, isAutoAttachEmulated);
     };
+    const parentTarget = parentSession?.target();
     const otherTarget = new OtherTarget(
       targetInfo,
       session,
@@ -338,7 +340,14 @@ export class CdpBrowser extends BrowserBase {
       this.#targetManager,
       createSession,
       this.logger,
+      parentTarget,
     );
+    // A tab target is never a page target, even if its URL is a DevTools URL
+    // or the isPageTarget callback accepts it. CdpTarget.page() returns the
+    // page of the tab.
+    if (targetInfo.type === 'tab') {
+      return otherTarget;
+    }
     if (targetInfo.url && isDevToolsPageTarget(targetInfo.url)) {
       return new DevToolsTarget(
         targetInfo,
@@ -348,6 +357,7 @@ export class CdpBrowser extends BrowserBase {
         createSession,
         this.#defaultViewport ?? null,
         this.logger,
+        parentTarget,
       );
     }
     if (this.#isPageTargetCallback(otherTarget)) {
@@ -359,6 +369,7 @@ export class CdpBrowser extends BrowserBase {
         createSession,
         this.#defaultViewport ?? null,
         this.logger,
+        parentTarget,
       );
     }
     if (
@@ -372,6 +383,7 @@ export class CdpBrowser extends BrowserBase {
         this.#targetManager,
         createSession,
         this.logger,
+        parentTarget,
       );
     }
     return otherTarget;
@@ -379,9 +391,8 @@ export class CdpBrowser extends BrowserBase {
 
   #onAttachedToTarget = async (target: CdpTarget) => {
     if (
-      target._isTargetExposed() &&
       (await target._initializedDeferred.valueOrThrow()) ===
-        InitializationStatus.SUCCESS
+      InitializationStatus.SUCCESS
     ) {
       this.emit(BrowserEvent.TargetCreated, target);
       target.browserContext().emit(BrowserContextEvent.TargetCreated, target);
@@ -392,9 +403,8 @@ export class CdpBrowser extends BrowserBase {
     target._initializedDeferred.resolve(InitializationStatus.ABORTED);
     target._isClosedDeferred.resolve();
     if (
-      target._isTargetExposed() &&
       (await target._initializedDeferred.valueOrThrow()) ===
-        InitializationStatus.SUCCESS
+      InitializationStatus.SUCCESS
     ) {
       this.emit(BrowserEvent.TargetDestroyed, target);
       target.browserContext().emit(BrowserContextEvent.TargetDestroyed, target);
@@ -598,9 +608,8 @@ export class CdpBrowser extends BrowserBase {
       );
     }
     // `PWA.launch` resolves with the id of the launched *tab* target (see the
-    // CDP `PWA.LaunchResponse` docs). Tab targets sit above page targets in the
-    // target hierarchy and are not exposed through `browser.targets()`, so the
-    // returned id can't be awaited directly.
+    // CDP `PWA.LaunchResponse` docs). The page target of the tab can attach
+    // after the tab target, so wait for the page target directly.
     const {targetId: tabTargetId} = await this.#connection.send('PWA.launch', {
       manifestId: options.manifestId,
       url: options.url,
@@ -683,7 +692,6 @@ export class CdpBrowser extends BrowserBase {
       this.#targetManager.getAvailableTargets().values(),
     ).filter(target => {
       return (
-        target._isTargetExposed() &&
         target._initializedDeferred.value() === InitializationStatus.SUCCESS
       );
     });

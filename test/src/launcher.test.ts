@@ -13,6 +13,7 @@ import type {TLSSocket} from 'node:tls';
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import type {BidiBrowser} from 'puppeteer-core/internal/bidi/Browser.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
@@ -760,7 +761,9 @@ describe('Launcher specs', function () {
       it('should support targetFilter option in puppeteer.launch', async () => {
         const {browser, close} = await launch({
           targetFilter: target => {
-            return target.type() !== 'page';
+            // With CDP, the page target of a tab attaches through its "tab"
+            // target. Filter out both.
+            return target.type() !== 'page' && target.type() !== 'tab';
           },
           waitForInitialPage: false,
         });
@@ -861,9 +864,16 @@ describe('Launcher specs', function () {
           });
           const [page1, page2] = await Promise.all([
             new Promise<Page | null>(x => {
-              return browserOne.once('targetcreated', target => {
+              const listener = (target: Target) => {
+                // With CDP, the "tab" target is created before its "page"
+                // target.
+                if (target.type() !== 'page') {
+                  return;
+                }
+                browserOne.off('targetcreated', listener);
                 x(target.page());
-              });
+              };
+              browserOne.on('targetcreated', listener);
             }),
             browserTwo.newPage(),
           ]);
@@ -972,14 +982,21 @@ describe('Launcher specs', function () {
 
       try {
         const events: string[] = [];
+        // With CDP, each tab also has a "tab" target. Check the page target.
         browser.on('targetcreated', target => {
-          events.push('CREATED: ' + target.url());
+          if (target.type() === 'page') {
+            events.push('CREATED: ' + target.url());
+          }
         });
         browser.on('targetchanged', target => {
-          events.push('CHANGED: ' + target.url());
+          if (target.type() === 'page') {
+            events.push('CHANGED: ' + target.url());
+          }
         });
         browser.on('targetdestroyed', target => {
-          events.push('DESTROYED: ' + target.url());
+          if (target.type() === 'page') {
+            events.push('DESTROYED: ' + target.url());
+          }
         });
         const page = await browser.newPage();
         await page.goto(server.EMPTY_PAGE);
