@@ -1,0 +1,807 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 12,
+    "passes": 0,
+    "pending": 0,
+    "failures": 12,
+    "start": "2026-11-20T19:37:54.336Z",
+    "end": "2026-11-20T19:38:18.913Z",
+    "duration": 24577
+  },
+  "tests": [
+    {
+      "title": "should enforce blocklist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 455,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 445,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 467,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 458,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 474,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 482,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 488,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 471,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 462,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 460,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 465,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 783,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "should enforce blocklist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 455,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 445,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 467,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 458,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 474,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 482,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 488,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 471,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 462,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 460,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 465,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 783,
+      "currentRetry": 3,
+      "err": {
+        "stack": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true\n    at Context.<anonymous> (file:///tmp/tmpr1cgrbc3/work/test/src/cdp/network_restrictions.test.ts:470:47)",
+        "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+        "matcherResult": {
+          "actual": true,
+          "expected": false,
+          "message": "expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true",
+          "name": "toBe",
+          "pass": false
+        },
+        "multiple": [
+          {
+            "matcherResult": "[object Object]",
+            "multiple": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: false\nReceived: true"
+          }
+        ]
+      }
+    }
+  ],
+  "passes": [],
+  "parameters": [
+    "chrome",
+    "headless",
+    "cdp"
+  ],
+  "platform": "linux",
+  "date": "2026-11-20T19:38:18.931Z",
+  "updates": [
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with default",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with interception",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with authentication",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with network disabled",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with local iframe",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with OOPIF",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with default",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with interception",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with authentication",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with network disabled",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with local iframe",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    },
+    {
+      "expectation": {
+        "testIdPattern": "[network_restrictions.test] Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with OOPIF",
+        "platforms": [
+          "linux"
+        ],
+        "parameters": [
+          "chrome",
+          "headless",
+          "cdp"
+        ],
+        "expectations": [
+          "FAIL"
+        ]
+      },
+      "action": "add"
+    }
+  ]
+}

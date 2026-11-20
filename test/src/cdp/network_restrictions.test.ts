@@ -384,6 +384,115 @@ function webSocketUrl(server: TestServer, path: string): string {
 describe('Network Restrictions', function () {
   setupTestBrowserHooks();
 
+  describe('AudioWorklet', () => {
+    for (const restriction of ['blocklist', 'allowlist'] as const) {
+      for (const mode of [
+        'default',
+        'interception',
+        'authentication',
+        'network disabled',
+        'local iframe',
+        'OOPIF',
+      ]) {
+        it(`should enforce ${restriction} for audio worklet modules with ${mode}`, async () => {
+          const {server} = await getTestState();
+          const conditions = {
+            [restriction]:
+              restriction === 'blocklist'
+                ? ['*://*:*/blocked-worklet.js']
+                : ['*://localhost:*/*', '*://*:*/empty.html'],
+          };
+          const {page, browser, close} = await launch(
+            {
+              ...conditions,
+              networkEnabled: mode !== 'network disabled',
+            },
+            {createContext: true},
+          );
+          try {
+            let blockedRequests = 0;
+            for (const path of ['/allowed-worklet.js', '/blocked-worklet.js']) {
+              server.setRoute(path, (_req, res) => {
+                if (path === '/blocked-worklet.js') {
+                  blockedRequests++;
+                }
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                res.setHeader('Content-Type', 'text/javascript');
+                res.end(`registerProcessor('test', class extends AudioWorkletProcessor {
+                process() { return true; }
+              });`);
+              });
+            }
+            const blockedUrl =
+              server.CROSS_PROCESS_PREFIX + '/blocked-worklet.js';
+            server.setRedirect('/redirect-worklet.js', blockedUrl);
+            await page.goto(server.EMPTY_PAGE);
+            if (mode === 'interception') {
+              await page.setRequestInterception(true);
+              page.on('request', request => {
+                void request.continue();
+              });
+            }
+            if (mode === 'authentication') {
+              server.setAuth('/allowed-worklet.js', 'user', 'pass');
+              await page.authenticate({username: 'user', password: 'pass'});
+            }
+            const frame =
+              mode === 'local iframe' || mode === 'OOPIF'
+                ? await attachFrame(
+                    page,
+                    'worklet-frame',
+                    (mode === 'OOPIF'
+                      ? server.CROSS_PROCESS_PREFIX
+                      : server.PREFIX) + '/empty.html',
+                  )
+                : page.mainFrame();
+            const canLoad = async (url: string) => {
+              return await frame.evaluate(async url => {
+                const context = new AudioContext();
+                try {
+                  await context.audioWorklet.addModule(url);
+                  new AudioWorkletNode(context, 'test');
+                  return true;
+                } catch {
+                  return false;
+                } finally {
+                  await context.close();
+                }
+              }, url);
+            };
+            expect(await canLoad(server.PREFIX + '/allowed-worklet.js')).toBe(
+              true,
+            );
+            if (mode === 'authentication') {
+              await page.authenticate(null);
+            }
+            expect(await canLoad(blockedUrl)).toBe(false);
+            expect(await canLoad(server.PREFIX + '/redirect-worklet.js')).toBe(
+              false,
+            );
+            expect(blockedRequests).toBe(0);
+
+            // Disabling user interception must leave restrictions in effect.
+            if (mode === 'interception') {
+              await page.setRequestInterception(false);
+              expect(await canLoad(blockedUrl)).toBe(false);
+              expect(blockedRequests).toBe(0);
+            }
+            await browser.restrictNetwork(null);
+            expect(await canLoad(blockedUrl)).toBe(true);
+            expect(blockedRequests).toBe(1);
+            await browser.restrictNetwork(conditions);
+            expect(await canLoad(blockedUrl)).toBe(false);
+            expect(blockedRequests).toBe(1);
+          } finally {
+            await close();
+          }
+        });
+      }
+    }
+  });
+
   describe('blocklist validation', () => {
     const state = setupSeparateTestBrowserHooks({
       blocklist: [

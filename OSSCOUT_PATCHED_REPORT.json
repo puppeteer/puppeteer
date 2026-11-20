@@ -1,0 +1,241 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 12,
+    "passes": 12,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-11-20T19:41:32.370Z",
+    "end": "2026-11-20T19:41:39.244Z",
+    "duration": 6874
+  },
+  "tests": [
+    {
+      "title": "should enforce blocklist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 522,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 577,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 517,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 504,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 527,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 557,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 556,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 486,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 493,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 512,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 548,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 533,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "should enforce blocklist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 522,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 577,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 517,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 504,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 527,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce blocklist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce blocklist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 557,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with default",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with default",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 556,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with interception",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with interception",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 486,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with authentication",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with authentication",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 493,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with network disabled",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with network disabled",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 512,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with local iframe",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with local iframe",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 548,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should enforce allowlist for audio worklet modules with OOPIF",
+      "fullTitle": "Network Restrictions AudioWorklet should enforce allowlist for audio worklet modules with OOPIF",
+      "file": "/tmp/tmpr1cgrbc3/work/test/build/cdp/network_restrictions.test.js",
+      "duration": 533,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ],
+  "parameters": [
+    "chrome",
+    "headless",
+    "cdp"
+  ],
+  "platform": "linux",
+  "date": "2026-11-20T19:41:39.261Z"
+}
