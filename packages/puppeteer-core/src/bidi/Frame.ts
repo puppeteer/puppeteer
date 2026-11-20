@@ -397,11 +397,15 @@ export class BidiFrame extends Frame {
       combineLatest([
         race(
           fromEmitterEvent(this.browsingContext, 'navigation'),
-          fromEmitterEvent(this.browsingContext, 'historyUpdated').pipe(
-            map(() => {
-              return null;
-            }),
-          ),
+          ...(options.ignoreSameDocumentNavigation
+            ? []
+            : [
+                fromEmitterEvent(this.browsingContext, 'historyUpdated').pipe(
+                  map(() => {
+                    return null;
+                  }),
+                ),
+              ]),
         )
           .pipe(first())
           .pipe(
@@ -615,7 +619,7 @@ export class BidiFrame extends Frame {
 
     return this.page().waitForNetworkIdle$({
       idleTime: 500,
-      timeout: options.timeout ?? this.timeoutSettings.timeout(),
+      timeout: options.timeout ?? this.timeoutSettings.navigationTimeout(),
       concurrency,
     });
   }

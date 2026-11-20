@@ -171,6 +171,9 @@ Intercept Mode:
   ultimately aborted/responded/continued according to which resolution was given
   the highest priority.
 - In the event of a tie, `abort` > `respond` > `continue`.
+- The overrides of `continue`, the response of `respond` and the error code of
+  `abort` are each taken from the call of that kind with the highest priority,
+  or from the latest one if several calls of that kind share that priority.
 
 For standardization, when specifying a Cooperative Intercept Mode priority use
 `0` or `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY` (exported from `HTTPRequest`)

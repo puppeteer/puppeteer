@@ -59,7 +59,7 @@ Protocol.Emulation.UserAgentMetadata
 
 </td><td>
 
-_(Optional)_
+_(Optional)_ Specific user agent client hint data to use in this page
 
 </td></tr>
 </tbody></table>

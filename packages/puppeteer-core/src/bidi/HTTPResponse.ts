@@ -10,7 +10,6 @@ import type {Frame} from '../api/Frame.js';
 import {HTTPResponse, type RemoteAddress} from '../api/HTTPResponse.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {SecurityDetails} from '../common/SecurityDetails.js';
-import {invokeAtMostOnceForArguments} from '../util/decorators.js';
 import {normalizeHeaderValue} from '../util/httpUtils.js';
 
 import type {BidiHTTPRequest} from './HTTPRequest.js';
@@ -79,7 +78,6 @@ export class BidiHTTPResponse extends HTTPResponse {
     emitResponse(page, this);
   }
 
-  @invokeAtMostOnceForArguments
   override remoteAddress(): RemoteAddress {
     return {
       ip: '',

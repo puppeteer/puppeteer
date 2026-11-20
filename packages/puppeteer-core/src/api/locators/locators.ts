@@ -926,7 +926,7 @@ export class FunctionLocator<T> extends Locator<T> {
   }
 
   override _clone(): FunctionLocator<T> {
-    return new FunctionLocator(this.#pageOrFrame, this.#func);
+    return new FunctionLocator(this.#pageOrFrame, this.#func).copyOptions(this);
   }
 
   _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>> {

@@ -39,14 +39,10 @@ function createNetworkManager(
         return null;
       },
       worker,
-      page() {
+      browser() {
         return {
-          browser() {
-            return {
-              userAgent() {
-                return 'user-agent';
-              },
-            };
+          userAgent() {
+            return 'user-agent';
           },
         } as any;
       },
@@ -3045,7 +3041,7 @@ describe('NetworkManager', () => {
       }).rejects.toThrow();
     });
 
-    it('should not throw if page().browser().userAgent() throws', async () => {
+    it('should not throw if browser().userAgent() throws', async () => {
       const mockCDPSession = new MockCDPSession();
       const manager = new NetworkManager(
         {
@@ -3055,14 +3051,10 @@ describe('NetworkManager', () => {
           worker(): null {
             return null;
           },
-          page() {
+          browser() {
             return {
-              browser() {
-                return {
-                  userAgent() {
-                    throw new TargetCloseError('Target closed');
-                  },
-                };
+              userAgent() {
+                throw new TargetCloseError('Target closed');
               },
             } as any;
           },

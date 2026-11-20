@@ -1252,5 +1252,41 @@ describe('Locator', function () {
         }),
       ).resolves.toEqual(true);
     });
+    it('should preserve timeout across clone, map, and filter', async () => {
+      const {page} = await getTestState();
+      const locator = page
+        .locator(() => {
+          return false;
+        })
+        .setTimeout(100);
+      expect(locator.clone().timeout).toBe(100);
+      expect(
+        locator.map(value => {
+          return value;
+        }).timeout,
+      ).toBe(100);
+      expect(
+        locator.filter(value => {
+          return Boolean(value);
+        }).timeout,
+      ).toBe(100);
+    });
+    it('should preserve options across chained setters', async () => {
+      const {page} = await getTestState();
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(html`<button disabled>test</button>`);
+      let willClick = false;
+      await page
+        .locator(() => {
+          return document.querySelector('button')!;
+        })
+        .setWaitForEnabled(false)
+        .setTimeout(2000)
+        .on(LocatorEvent.Action, () => {
+          willClick = true;
+        })
+        .click();
+      expect(willClick).toBe(true);
+    });
   });
 });

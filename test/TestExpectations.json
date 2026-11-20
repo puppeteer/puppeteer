@@ -119,6 +119,13 @@
     "comment": "Not supported in WebDriver BiDi"
   },
   {
+    "testIdPattern": "[input.test] input tests Page.waitForFileChooser should stop intercepting file choosers *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "These tests observe Page.fileChooserOpened on the CDP session of CdpPage, which is not the session that intercepts file choosers in WebDriver BiDi."
+  },
+  {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["pipe"],
@@ -138,6 +145,20 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "CDP-specific feature, not supported in WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions * should fail fetch requests from a shared worker to *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome drops Network.emulateNetworkConditionsByRule for shared workers attached before they start, so their requests bypass the blocklist and allowlist. Fixed in Chromium by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
+  },
+  {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions WebRTC and WebTransport blocklist *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome applies only the global rule (empty urlPattern) of Network.emulateNetworkConditionsByRule to p2p connections. The blocklist has no global rule, so the browser sends WebTransport packets and WebRTC STUN and TURN requests to hosts in the blocklist. WebTransport is already fixed in Chromium. Narrow this expectation to the WebRTC tests once the pinned Chrome version includes the fix."
   },
   {
     "testIdPattern": "[network.test] network Page.setBypassServiceWorker *",
@@ -633,6 +654,13 @@
     "comment": "JSHandle.remoteObject() returns a CDP RemoteObject. BidiJSHandle.remoteObject() throws UnsupportedOperation in WebDriver BiDi."
   },
   {
+    "testIdPattern": "[keyboard.test] Keyboard should trigger editing shortcuts automatically on macOS without commands option",
+    "platforms": ["darwin"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"],
+    "comment": "Blocked on Chromium issue https://issues.chromium.org/issues/585479192"
+  },
+  {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -692,6 +720,20 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions WebRTC and WebTransport allowlist should not send WebRTC TURN requests over TCP to hosts not in the allowlist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to TURN over TCP, so the browser opens TCP connections to TURN servers that are not in the allowlist."
+  },
+  {
+    "testIdPattern": "[network_restrictions.test] Network Restrictions WebRTC and WebTransport allowlist should not send WebTransport packets to hosts not in the allowlist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to WebTransport, so the browser sends QUIC packets to hosts that are not in the allowlist. WebTransport is already fixed in Chromium. Remove once the pinned Chrome version includes the fix."
   },
   {
     "testIdPattern": "[network.test] network Network Events Page.Events.RequestFailed for blocked requests",
@@ -1796,6 +1838,20 @@
     "parameters": ["chrome", "pipe"],
     "expectations": ["SKIP"],
     "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[oopif.test] OOPIF should evaluate in OOP iframes that become normal iframes again",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "With WebDriver BiDi in Chrome, the Frame is detached or its browsing context is not found after the frame moves to a different process."
+  },
+  {
+    "testIdPattern": "[oopif.test] OOPIF should evaluate in OOP iframes that navigate themselves to become normal iframes again",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "With WebDriver BiDi in Chrome, the Frame is detached or its browsing context is not found after the frame moves to a different process."
   },
   {
     "testIdPattern": "[oopif.test] OOPIF should evaluate on a page with a PDF viewer",

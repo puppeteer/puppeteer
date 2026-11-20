@@ -31,12 +31,12 @@
     "react": "19.3.1",
     "react-cookie-consent": "10.0.2",
     "react-dom": "19.3.1",
-    "semver": "7.8.5"
+    "semver": "7.8.6"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@swc/core": "1.16.21"
+    "@swc/core": "1.16.22"
   },
   "browserslist": {
     "production": [

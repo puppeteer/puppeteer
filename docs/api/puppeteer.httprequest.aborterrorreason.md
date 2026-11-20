@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.abortErrorReason
 
 # HTTPRequest.abortErrorReason() method
 
-The most recent reason for aborting the request
+The reason for aborting the request that was given the highest priority
 
 ### Signature
 

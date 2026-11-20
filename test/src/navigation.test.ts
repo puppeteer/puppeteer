@@ -153,21 +153,23 @@ describe('navigation', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
-        window.addEventListener(
-          'beforeunload',
-          () => {
-            return history.replaceState(null, 'initial', window.location.href);
-          },
-          false,
-        );
+        (globalThis as any).beforeReload = true;
+        window.addEventListener('beforeunload', () => {
+          history.replaceState({scroll: 0}, '', window.location.href);
+        });
       });
-      await page.reload();
-      // Evaluate still works.
+      const response = await page.reload();
+      expect(response!.ok()).toBe(true);
       expect(
         await page.evaluate(() => {
-          return 1;
+          return (globalThis as any).beforeReload;
         }),
-      ).toBe(1);
+      ).toBe(undefined);
+      expect(
+        await page.evaluate(() => {
+          return history.state;
+        }),
+      ).toEqual({scroll: 0});
     });
     it('should navigate to empty page with networkidle0', async () => {
       const {page, server} = await getTestState();
@@ -405,6 +407,16 @@ describe('navigation', function () {
       });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should prioritize default navigation timeout over default timeout with networkidle0', async () => {
+      const {page, server} = await getTestState();
+
+      page.setDefaultTimeout(1);
+      page.setDefaultNavigationTimeout(0);
+      const response = (await page.goto(server.EMPTY_PAGE, {
+        waitUntil: 'networkidle0',
+      }))!;
+      expect(response.ok()).toBe(true);
     });
     it('should disable timeout when its set to 0', async () => {
       const {page, server} = await getTestState();
@@ -967,6 +979,22 @@ describe('navigation', function () {
         return setTimeout(resolve, 200);
       });
       expect(page.url()).toBe(server.PREFIX + '/grid.html');
+    });
+    it('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setCacheEnabled(false);
+      await page.goto(server.EMPTY_PAGE);
+      await page.goto(server.PREFIX + '/grid.html');
+      // Hang for the request going back makes.
+      server.setRoute('/empty.html', () => {});
+      const abortController = new AbortController();
+      const navigation = page.goBack({signal: abortController.signal});
+      await server.waitForRequest('/empty.html');
+
+      const reason = new Error('test abort reason');
+      abortController.abort(reason);
+      await expect(navigation).rejects.toBe(reason);
     });
     it('should error if no history is found', async () => {
       const {page} = await getTestState();

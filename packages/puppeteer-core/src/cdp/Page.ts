@@ -392,6 +392,7 @@ export class CdpPage extends Page {
   }
 
   #onDetachedFromTarget = (target: CdpTarget) => {
+    this.#frameManager.onDetachedFromTarget(target);
     const sessionId = target._session()?.id();
     const worker = this.#workers.get(sessionId!);
     if (!worker) {
@@ -403,16 +404,15 @@ export class CdpPage extends Page {
 
   #onAttachedToTarget = (session: CDPSession) => {
     assert(session instanceof CdpCDPSession);
-    this.#frameManager.onAttachedToTarget(session.target());
-    if (session.target()._getTargetInfo().type === 'worker') {
+    const target = session.target();
+    this.#frameManager.onAttachedToTarget(target);
+    if (target._getTargetInfo().type === 'worker') {
       const worker = new CdpWebWorker(
         session,
-        session.target().url(),
-        session.target()._targetId,
-        session.target().type(),
+        target,
         this.#handleException.bind(this),
-        this.#frameManager.networkManager,
         this.logger,
+        this.#frameManager.networkManager,
         () => {
           return this.listenerCount(PageEvent.Exception) > 0;
         },
@@ -612,6 +612,26 @@ export class CdpPage extends Page {
     } catch (error) {
       this.#fileChooserDeferreds.delete(deferred);
       throw error;
+    } finally {
+      // Once nobody is waiting anymore, stop intercepting so that file choosers
+      // opened later (e.g. by a user of a headful browser) are shown again.
+      if (this.#fileChooserDeferreds.size === 0) {
+        await this.#disableFileChooserInterception();
+      }
+    }
+  }
+
+  async #disableFileChooserInterception(): Promise<void> {
+    try {
+      await this.#primaryTargetClient.send(
+        'Page.setInterceptFileChooserDialog',
+        {
+          enabled: false,
+        },
+      );
+    } catch (err) {
+      // If the session is gone, the interception went away with it.
+      this.logger?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 
@@ -1282,6 +1302,9 @@ export class CdpPage extends Page {
   }
 
   override async setViewport(viewport: Viewport | null): Promise<void> {
+    // Keep a copy: the caller's object can be changed or shared later, for
+    // example the default viewport or a `KnownDevices` entry.
+    viewport = viewport ? {...viewport} : null;
     const needsReload = await this.#emulationManager.emulateViewport(viewport);
     this.#viewport = viewport;
     if (needsReload) {
@@ -1290,7 +1313,7 @@ export class CdpPage extends Page {
   }
 
   override viewport(): Viewport | null {
-    return this.#viewport;
+    return this.#viewport ? {...this.#viewport} : null;
   }
 
   override async evaluateOnNewDocument<

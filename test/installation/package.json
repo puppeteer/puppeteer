@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "wireit",
-    "clean": "../../tools/clean.mjs",
+    "clean": "node ../../tools/clean.mjs",
     "test": "wireit",
     "test-ci": "mocha"
   },
@@ -52,7 +52,7 @@
     "assets"
   ],
   "devDependencies": {
-    "glob": "14.0.3",
+    "glob": "14.0.4",
     "mocha": "12.0.3"
   },
   "dependencies": {

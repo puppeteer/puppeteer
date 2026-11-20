@@ -779,7 +779,7 @@ export interface ReloadOptions extends WaitForOptions {
   /**
    * If set to true, the browser caches are ignored for the page reload.
    *
-   * @defaultValue true
+   * @defaultValue false
    * @public
    */
   ignoreCache?: boolean;
@@ -1868,8 +1868,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * @param userAgent - Specific user agent to use in this page
-   * @param userAgentData - Specific user agent client hint data to use in this
-   * page
+   * @param userAgentMetadata - Specific user agent client hint data to use in
+   * this page
    * @returns Promise which resolves when the user agent is set.
    * @deprecated Use {@link Page.(setUserAgent:2) } instead.
    */

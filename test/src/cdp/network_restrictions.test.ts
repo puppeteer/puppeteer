@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {createSocket} from 'node:dgram';
+import {createServer, type AddressInfo, type Socket} from 'node:net';
+
 import expect from 'expect';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
+import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {WebWorker} from 'puppeteer-core/internal/api/WebWorker.js';
 
 import {
@@ -15,6 +19,267 @@ import {
   setupTestBrowserHooks,
 } from '../mocha-utils.js';
 import {attachFrame, html, waitEvent} from '../utils.js';
+
+/**
+ * Starts a shared worker from a blob URL and returns a function that makes the
+ * worker fetch the given URL. The fetch uses `no-cors` mode so that
+ * cross-origin requests succeed unless they are blocked. It resolves to `null`
+ * when the fetch succeeded and to the error message otherwise.
+ */
+async function startSharedWorker(page: Page) {
+  await page.evaluate(() => {
+    const source = `onconnect = event => {
+      const port = event.ports[0];
+      port.onmessage = async message => {
+        try {
+          await fetch(message.data, {mode: 'no-cors'});
+          port.postMessage(null);
+        } catch (error) {
+          port.postMessage(error.message);
+        }
+      };
+    };`;
+    const worker = new SharedWorker(
+      URL.createObjectURL(new Blob([source], {type: 'text/javascript'})),
+    );
+    (window as any).sharedWorkerFetch = (url: string) => {
+      return new Promise<string | null>(resolve => {
+        worker.port.onmessage = event => {
+          resolve(event.data);
+        };
+        worker.port.postMessage(url);
+      });
+    };
+  });
+  return async (url: string): Promise<string | null> => {
+    return await page.evaluate(url => {
+      return (window as any).sharedWorkerFetch(url) as Promise<string | null>;
+    }, url);
+  };
+}
+
+/**
+ * The time to wait for traffic before the test concludes that the browser did
+ * not send any. Tests that expect traffic do not use this timeout. They wait
+ * until the test times out.
+ */
+const NO_TRAFFIC_TIMEOUT = 2000;
+
+/**
+ * Opens a UDP socket or a TCP server on `127.0.0.1`. WebTransport (QUIC), STUN
+ * and TURN send UDP packets or open TCP connections, so the listener shows if
+ * the browser started a connection. The listener does not reply.
+ */
+async function listenForTraffic(protocol: 'udp' | 'tcp') {
+  let port: number;
+  let close: () => Promise<void>;
+  let onTraffic!: (value: true) => void;
+  const firstTraffic = new Promise<true>(resolve => {
+    onTraffic = resolve;
+  });
+
+  if (protocol === 'udp') {
+    const socket = createSocket('udp4');
+    socket.once('message', () => {
+      onTraffic(true);
+    });
+    await new Promise<void>((resolve, reject) => {
+      socket.once('error', reject);
+      socket.bind(0, '127.0.0.1', resolve);
+    });
+    port = socket.address().port;
+    close = async () => {
+      await new Promise<void>(resolve => {
+        socket.close(resolve);
+      });
+    };
+  } else {
+    const sockets = new Set<Socket>();
+    const server = createServer(socket => {
+      sockets.add(socket);
+      socket.on('error', () => {});
+      socket.once('close', () => {
+        sockets.delete(socket);
+      });
+      onTraffic(true);
+    });
+    await new Promise<void>((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    port = (server.address() as AddressInfo).port;
+    close = async () => {
+      for (const socket of sockets) {
+        socket.destroy();
+      }
+      await new Promise<void>(resolve => {
+        server.close(() => {
+          resolve();
+        });
+      });
+    };
+  }
+
+  return {
+    port,
+    /**
+     * Resolves to `true` when the listener receives a UDP packet or a TCP
+     * connection and to `false` if nothing arrives before the timeout. Without
+     * a timeout, it waits until traffic arrives.
+     */
+    async receivedTraffic(timeout?: number): Promise<boolean> {
+      if (timeout === undefined) {
+        return await firstTraffic;
+      }
+      let timer: NodeJS.Timeout | undefined;
+      const timedOut = new Promise<false>(resolve => {
+        timer = setTimeout(() => {
+          resolve(false);
+        }, timeout);
+      });
+      try {
+        return await Promise.race([firstTraffic, timedOut]);
+      } finally {
+        clearTimeout(timer);
+      }
+    },
+    close,
+  };
+}
+
+/**
+ * Starts a WebTransport connection to the given URL. The function does not
+ * wait for the connection because no WebTransport server listens on the URL.
+ */
+async function startWebTransport(page: Page, url: string): Promise<void> {
+  await page.evaluate(url => {
+    const transport = new WebTransport(url);
+    transport.ready.catch(() => {});
+    transport.closed.catch(() => {});
+    (window as any).transport = transport;
+  }, url);
+}
+
+/**
+ * Starts ICE candidate gathering on a peer connection that uses the given ICE
+ * server. The function does not wait for the gathering to complete.
+ */
+async function startIceGathering(page: Page, urls: string): Promise<void> {
+  await page.evaluate(async urls => {
+    const connection = new RTCPeerConnection({
+      iceServers: [{urls, username: 'user', credential: 'password'}],
+    });
+    connection.createDataChannel('test');
+    await connection.setLocalDescription(await connection.createOffer());
+    (window as any).connection = connection;
+  }, urls);
+}
+
+/**
+ * Connects two peer connections in the page with a data channel. The peers
+ * use only host candidates. It resolves to `true` when the data channel opens
+ * and to `false` if the channel does not open before the timeout. Without a
+ * timeout, it waits until the channel opens.
+ */
+async function connectWebRtcPeers(
+  page: Page,
+  timeout?: number,
+): Promise<boolean> {
+  return await page.evaluate(async timeout => {
+    const local = new RTCPeerConnection();
+    const remote = new RTCPeerConnection();
+    local.onicecandidate = event => {
+      if (event.candidate) {
+        void remote.addIceCandidate(event.candidate);
+      }
+    };
+    remote.onicecandidate = event => {
+      if (event.candidate) {
+        void local.addIceCandidate(event.candidate);
+      }
+    };
+    const channel = local.createDataChannel('test');
+    const opened = new Promise<boolean>(resolve => {
+      channel.onopen = () => {
+        resolve(true);
+      };
+      if (timeout !== undefined) {
+        setTimeout(() => {
+          resolve(false);
+        }, timeout);
+      }
+    });
+    await local.setLocalDescription(await local.createOffer());
+    await remote.setRemoteDescription(local.localDescription!);
+    await remote.setLocalDescription(await remote.createAnswer());
+    await local.setRemoteDescription(remote.localDescription!);
+    try {
+      return await opened;
+    } finally {
+      local.close();
+      remote.close();
+    }
+  }, timeout);
+}
+
+/**
+ * The traffic types that do not use HTTP or WebSocket. Each type sends its
+ * traffic to a listener on `127.0.0.1`.
+ */
+const NON_HTTP_TRAFFIC: Array<{
+  name: string;
+  protocol: 'udp' | 'tcp';
+  start: (page: Page, port: number) => Promise<void>;
+}> = [
+  {
+    name: 'WebTransport packets',
+    protocol: 'udp',
+    start: (page, port) => {
+      return startWebTransport(page, `https://127.0.0.1:${port}/webtransport`);
+    },
+  },
+  {
+    name: 'WebRTC STUN requests',
+    protocol: 'udp',
+    start: (page, port) => {
+      return startIceGathering(page, `stun:127.0.0.1:${port}`);
+    },
+  },
+  {
+    name: 'WebRTC TURN requests over UDP',
+    protocol: 'udp',
+    start: (page, port) => {
+      return startIceGathering(page, `turn:127.0.0.1:${port}?transport=udp`);
+    },
+  },
+  {
+    name: 'WebRTC TURN requests over TCP',
+    protocol: 'tcp',
+    start: (page, port) => {
+      return startIceGathering(page, `turn:127.0.0.1:${port}?transport=tcp`);
+    },
+  },
+];
+
+/**
+ * Starts the given traffic type from the page. It resolves to `true` when the
+ * traffic arrives at a listener on `127.0.0.1` and to `false` if nothing
+ * arrives before the timeout. Without a timeout, it waits until traffic
+ * arrives.
+ */
+async function sendsTraffic(
+  page: Page,
+  traffic: (typeof NON_HTTP_TRAFFIC)[number],
+  timeout?: number,
+): Promise<boolean> {
+  const listener = await listenForTraffic(traffic.protocol);
+  try {
+    await traffic.start(page, listener.port);
+    return await listener.receivedTraffic(timeout);
+  } finally {
+    await listener.close();
+  }
+}
 
 describe('Network Restrictions', function () {
   setupTestBrowserHooks();
@@ -81,6 +346,24 @@ describe('Network Restrictions', function () {
       }, blockedUrl);
 
       expect(fetchError).toContain('Failed to fetch');
+    });
+
+    it('should fail fetch requests from a shared worker to URLs in the blocklist', async () => {
+      const {page, server} = state;
+
+      await page.goto(server.PREFIX + '/title.html');
+      const fetchFromSharedWorker = await startSharedWorker(page);
+
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/empty.html',
+        ),
+      ).toContain('Failed to fetch');
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/title.html',
+        ),
+      ).toBeNull();
     });
 
     it('should fail service worker registration for blocklisted script URLs', async () => {
@@ -382,6 +665,24 @@ describe('Network Restrictions', function () {
       const content = await page.content();
       expect(finalUrl).not.toBe(blockedUrl);
       expect(content).not.toContain('Woof-Woof');
+    });
+
+    it('should fail fetch requests from a shared worker to URLs not in the allowlist', async () => {
+      const {page, server} = state;
+
+      await page.goto(server.PREFIX + '/empty.html');
+      const fetchFromSharedWorker = await startSharedWorker(page);
+
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/title.html',
+        ),
+      ).toContain('Failed to fetch');
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/empty.html',
+        ),
+      ).toBeNull();
     });
 
     it('should fail fetch requests to URLs not in the allowlist', async () => {
@@ -1056,6 +1357,32 @@ describe('Network Restrictions', function () {
       expect(await canFetch()).toBe(true);
     });
 
+    it('applies and clears restrictions on an already-running shared worker', async () => {
+      const {page, server, browser} = await getTestState();
+      const blockedUrl = server.CROSS_PROCESS_PREFIX + '/empty.html';
+
+      await page.goto(server.PREFIX + '/title.html');
+      const fetchFromSharedWorker = await startSharedWorker(page);
+
+      expect(await fetchFromSharedWorker(blockedUrl)).toBeNull();
+
+      await browser.restrictNetwork({blocklist: ['*://*:*/empty.html']});
+      expect(await fetchFromSharedWorker(blockedUrl)).toContain(
+        'Failed to fetch',
+      );
+
+      await browser.restrictNetwork({allowlist: ['*://*:*/empty.html']});
+      expect(await fetchFromSharedWorker(blockedUrl)).toBeNull();
+      expect(
+        await fetchFromSharedWorker(
+          server.CROSS_PROCESS_PREFIX + '/title.html',
+        ),
+      ).toContain('Failed to fetch');
+
+      await browser.restrictNetwork(null);
+      expect(await fetchFromSharedWorker(blockedUrl)).toBeNull();
+    });
+
     it('applies and clears restrictions on an already-running service worker', async () => {
       const {page, server, browser, context} = await getTestState();
       const blockedUrl = server.PREFIX + '/empty.html';
@@ -1144,6 +1471,69 @@ describe('Network Restrictions', function () {
 
       await page.goto(server.PREFIX + '/empty.html');
       expect(page.url()).toBe(server.PREFIX + '/empty.html');
+    });
+  });
+
+  // The pages load from `localhost` and the listeners use `127.0.0.1`, so the
+  // rules can block the listeners and allow the pages.
+  describe('WebRTC and WebTransport', () => {
+    describe('blocklist', () => {
+      const state = setupSeparateTestBrowserHooks({
+        blocklist: ['*://127.0.0.1:*/*', 'stun:*', 'turn:*'],
+      });
+
+      for (const traffic of NON_HTTP_TRAFFIC) {
+        it(`should not send ${traffic.name} to hosts in the blocklist`, async () => {
+          const {page, server} = state;
+          await page.goto(server.PREFIX + '/empty.html');
+
+          expect(await sendsTraffic(page, traffic, NO_TRAFFIC_TIMEOUT)).toBe(
+            false,
+          );
+        });
+      }
+    });
+
+    describe('allowlist', () => {
+      const state = setupSeparateTestBrowserHooks({
+        allowlist: ['*://localhost:*/*'],
+      });
+
+      for (const traffic of NON_HTTP_TRAFFIC) {
+        it(`should not send ${traffic.name} to hosts not in the allowlist`, async () => {
+          const {page, server} = state;
+          await page.goto(server.PREFIX + '/empty.html');
+
+          expect(await sendsTraffic(page, traffic, NO_TRAFFIC_TIMEOUT)).toBe(
+            false,
+          );
+        });
+      }
+
+      it('should not connect WebRTC peers', async () => {
+        const {page, server} = state;
+        await page.goto(server.PREFIX + '/empty.html');
+
+        expect(await connectWebRtcPeers(page, NO_TRAFFIC_TIMEOUT)).toBe(false);
+      });
+    });
+
+    describe('no restrictions', () => {
+      for (const traffic of NON_HTTP_TRAFFIC) {
+        it(`should send ${traffic.name}`, async () => {
+          const {page, server} = await getTestState();
+          await page.goto(server.PREFIX + '/empty.html');
+
+          expect(await sendsTraffic(page, traffic)).toBe(true);
+        });
+      }
+
+      it('should connect WebRTC peers', async () => {
+        const {page, server} = await getTestState();
+        await page.goto(server.PREFIX + '/empty.html');
+
+        expect(await connectWebRtcPeers(page)).toBe(true);
+      });
     });
   });
 });
