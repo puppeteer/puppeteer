@@ -102,6 +102,23 @@ Get the browser context the target belongs to.
 </td></tr>
 <tr><td>
 
+<span id="close">[close()](./puppeteer.target.close.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Closes the target.
+
+**Remarks:**
+
+It does not create a [Page](./puppeteer.page.md) for the target, so it also closes a page target whose page could not be created. It does not run `beforeunload` handlers.
+
+Throws if the target does not support closing, for example the browser target, the target of a frame or a dedicated worker.
+
+</td></tr>
+<tr><td>
+
 <span id="createcdpsession">[createCDPSession()](./puppeteer.target.createcdpsession.md)</span>
 
 </td><td>
