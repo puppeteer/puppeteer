@@ -7,6 +7,7 @@
 import {createSocket} from 'node:dgram';
 import {createServer, type AddressInfo, type Socket} from 'node:net';
 
+import type {TestServer} from '@pptr/testserver';
 import expect from 'expect';
 import puppeteer from 'puppeteer/internal/puppeteer.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
@@ -288,6 +289,96 @@ async function sendsTraffic(
   } finally {
     await listener.close();
   }
+}
+
+/**
+ * Opens a WebSocket connection to the given URL from a page or a worker. The
+ * test server sends a message to each WebSocket client. It resolves to
+ * `opened` when the message arrives and to `failed` when the connection fails
+ * or closes before the message arrives.
+ */
+async function openWebSocket(
+  client: Page | WebWorker,
+  url: string,
+): Promise<'opened' | 'failed'> {
+  return await client.evaluate(url => {
+    return new Promise<'opened' | 'failed'>(resolve => {
+      const socket = new WebSocket(url);
+      socket.onmessage = () => {
+        resolve('opened');
+        socket.close();
+      };
+      socket.onerror = () => {
+        resolve('failed');
+      };
+      socket.onclose = () => {
+        resolve('failed');
+      };
+    });
+  }, url);
+}
+
+/**
+ * The execution contexts that can open WebSocket connections. Each `start`
+ * function loads a page from the test server and returns the page or the
+ * worker that opens the connections.
+ */
+const WEB_SOCKET_CLIENTS: Array<{
+  name: string;
+  start: (page: Page, server: TestServer) => Promise<Page | WebWorker>;
+}> = [
+  {
+    name: 'a page',
+    start: async (page, server) => {
+      await page.goto(server.PREFIX + '/empty.html');
+      return page;
+    },
+  },
+  {
+    name: 'a dedicated worker',
+    start: async (page, server) => {
+      const [worker] = await Promise.all([
+        waitEvent<WebWorker>(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+      return worker;
+    },
+  },
+  {
+    name: 'a shared worker',
+    start: async (page, server) => {
+      await page.goto(server.PREFIX + '/empty.html');
+      const workerUrl = await page.evaluate(() => {
+        const url = URL.createObjectURL(
+          new Blob(['onconnect = () => {};'], {type: 'text/javascript'}),
+        );
+        (window as any).sharedWorker = new SharedWorker(url);
+        return url;
+      });
+      const target = await page.browserContext().waitForTarget(target => {
+        return target.type() === 'shared_worker' && target.url() === workerUrl;
+      });
+      return (await target.worker())!;
+    },
+  },
+  {
+    name: 'a service worker',
+    start: async (page, server) => {
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html');
+      const target = await page.browserContext().waitForTarget(target => {
+        return target.type() === 'service_worker';
+      });
+      return (await target.worker())!;
+    },
+  },
+];
+
+/**
+ * Returns the WebSocket URL of the test server for the given path. The test
+ * server accepts WebSocket connections on all paths.
+ */
+function webSocketUrl(server: TestServer, path: string): string {
+  return server.PREFIX.replace(/^http/, 'ws') + path;
 }
 
 describe('Network Restrictions', function () {
@@ -1480,6 +1571,108 @@ describe('Network Restrictions', function () {
 
       await page.goto(server.PREFIX + '/empty.html');
       expect(page.url()).toBe(server.PREFIX + '/empty.html');
+    });
+  });
+
+  describe('WebSocket', () => {
+    describe('blocklist', () => {
+      const state = setupSeparateTestBrowserHooks({
+        blocklist: ['*://*:*/blocked-socket'],
+      });
+
+      for (const client of WEB_SOCKET_CLIENTS) {
+        it(`should fail WebSocket connections from ${client.name} to URLs in the blocklist`, async () => {
+          const {page, server} = state;
+          const webSocketClient = await client.start(page, server);
+
+          expect(
+            await openWebSocket(
+              webSocketClient,
+              webSocketUrl(server, '/blocked-socket'),
+            ),
+          ).toBe('failed');
+          expect(
+            await openWebSocket(
+              webSocketClient,
+              webSocketUrl(server, '/allowed-socket'),
+            ),
+          ).toBe('opened');
+        });
+      }
+    });
+
+    describe('allowlist', () => {
+      const state = setupSeparateTestBrowserHooks({
+        allowlist: [
+          '*://*:*/empty.html',
+          '*://*:*/worker/worker.html',
+          '*://*:*/worker/worker.js',
+          '*://*:*/serviceworkers/fetch/sw.html',
+          '*://*:*/serviceworkers/fetch/sw.js',
+          '*://*:*/allowed-socket',
+        ],
+      });
+
+      for (const client of WEB_SOCKET_CLIENTS) {
+        it(`should fail WebSocket connections from ${client.name} to URLs not in the allowlist`, async () => {
+          const {page, server} = state;
+          const webSocketClient = await client.start(page, server);
+
+          expect(
+            await openWebSocket(
+              webSocketClient,
+              webSocketUrl(server, '/blocked-socket'),
+            ),
+          ).toBe('failed');
+          expect(
+            await openWebSocket(
+              webSocketClient,
+              webSocketUrl(server, '/allowed-socket'),
+            ),
+          ).toBe('opened');
+        });
+      }
+    });
+
+    describe('no restrictions', () => {
+      for (const client of WEB_SOCKET_CLIENTS) {
+        it(`should open WebSocket connections from ${client.name}`, async () => {
+          const {page, server} = await getTestState();
+          const webSocketClient = await client.start(page, server);
+
+          expect(
+            await openWebSocket(
+              webSocketClient,
+              webSocketUrl(server, '/blocked-socket'),
+            ),
+          ).toBe('opened');
+        });
+      }
+    });
+
+    describe('dynamic restrictions', () => {
+      afterEach(async () => {
+        const {browser} = await getTestState({skipLaunch: true});
+        await browser?.restrictNetwork(null);
+      });
+
+      for (const client of WEB_SOCKET_CLIENTS) {
+        it(`applies and clears restrictions on WebSocket connections from ${client.name}`, async () => {
+          const {page, server, browser} = await getTestState();
+          const url = webSocketUrl(server, '/blocked-socket');
+          const webSocketClient = await client.start(page, server);
+
+          expect(await openWebSocket(webSocketClient, url)).toBe('opened');
+
+          await browser.restrictNetwork({
+            blocklist: ['*://*:*/blocked-socket'],
+          });
+          expect(await openWebSocket(webSocketClient, url)).toBe('failed');
+
+          await browser.restrictNetwork(null);
+          expect(await openWebSocket(webSocketClient, url)).toBe('opened');
+        });
+      }
     });
   });
 
