@@ -1162,6 +1162,61 @@ describe('Locator', function () {
         clock.restore();
       }
     });
+    it('should work with mapped non-element values', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div>test</div>`);
+      const result = page
+        .locator('div')
+        .setTimeout(2000)
+        .map(element => {
+          return element.getAttribute('clickable');
+        })
+        .filter((value, expected) => {
+          return value === expected;
+        }, 'true')
+        .wait();
+      await page.evaluate(() => {
+        document.querySelector('div')?.setAttribute('clickable', 'true');
+      });
+      await expect(result).resolves.toEqual('true');
+    });
+    it('should work with FunctionLocator non-element values', async () => {
+      const {page} = await getTestState();
+      await page.evaluate(() => {
+        (globalThis as unknown as {count: number}).count = 1;
+      });
+      const result = page
+        .locator(() => {
+          return {
+            count: (globalThis as unknown as {count: number}).count,
+          };
+        })
+        .setTimeout(2000)
+        .filter(state => {
+          return state.count >= 2;
+        })
+        .wait();
+      await page.evaluate(() => {
+        (globalThis as unknown as {count: number}).count = 2;
+      });
+      await expect(result).resolves.toEqual({count: 2});
+    });
+    it('should honor setTimeout called after filter', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div>test</div>`);
+      const result = page
+        .locator('div')
+        .setTimeout(50)
+        .filter(async element => {
+          await new Promise(resolve => {
+            setTimeout(resolve, 150);
+          });
+          return element.textContent === 'test';
+        })
+        .setTimeout(2000)
+        .hover();
+      await expect(result).resolves.toEqual(undefined);
+    });
   });
 
   describe('Locator.prototype.wait', () => {

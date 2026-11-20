@@ -46,6 +46,7 @@ import type {
   ElementHandle,
 } from '../ElementHandle.js';
 import type {Frame} from '../Frame.js';
+import type {JSHandle} from '../JSHandle.js';
 import type {Page} from '../Page.js';
 
 /**
@@ -819,15 +820,27 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
     predicate: Predicate<T, S, Args>,
     ...args: Args
   ): Locator<S> {
-    return new FilteredLocator(this._clone(), async (handle, signal) => {
-      await (handle as ElementHandle<Node>).frame.waitForFunction(
-        predicate,
-        {signal, timeout: this._timeout},
-        handle,
-        ...args,
-      );
-      return true;
-    });
+    return new FilteredLocator(
+      this._clone(),
+      async (handle, signal, timeout) => {
+        using element = handle.asElement()?.move();
+        if (!element) {
+          await using jsHandle = handle as JSHandle<T>;
+          const matched = Boolean(await jsHandle.evaluate(predicate, ...args));
+          if (matched) {
+            jsHandle.move();
+          }
+          return matched;
+        }
+        await element.frame.waitForFunction(
+          predicate as Predicate<Node, Node, Args>,
+          {signal, timeout},
+          element,
+          ...args,
+        );
+        return true;
+      },
+    );
   }
 
   /**
@@ -956,8 +969,16 @@ export type Predicate<
  * @internal
  */
 export type HandlePredicate<From, To extends From = From> =
-  | ((value: HandleFor<From>, signal?: AbortSignal) => value is HandleFor<To>)
-  | ((value: HandleFor<From>, signal?: AbortSignal) => Awaitable<boolean>);
+  | ((
+      value: HandleFor<From>,
+      signal?: AbortSignal,
+      timeout?: number,
+    ) => value is HandleFor<To>)
+  | ((
+      value: HandleFor<From>,
+      signal?: AbortSignal,
+      timeout?: number,
+    ) => Awaitable<boolean>);
 
 /**
  * @internal
@@ -1061,7 +1082,9 @@ export class FilteredLocator<From, To extends From> extends DelegatedLocator<
     return this.delegate._wait(options).pipe(
       mergeMap(handle => {
         return from(
-          Promise.resolve(this.#predicate(handle, options?.signal)),
+          Promise.resolve(
+            this.#predicate(handle, options?.signal, this._timeout),
+          ),
         ).pipe(
           filter(value => {
             return value;
