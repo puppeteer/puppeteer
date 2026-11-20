@@ -139,5 +139,23 @@ describe('Page', function () {
       expect(requests).toEqual([request1]);
       expect(page.listenerCount(PageEvent.Request)).toEqual(listenerCount);
     });
+
+    it('should remove a request listener added with once after on and off', async () => {
+      const page = new MockPage();
+      const requests: HTTPRequest[] = [];
+      const listener = (request: HTTPRequest) => {
+        requests.push(request);
+      };
+      const listenerCount = page.listenerCount(PageEvent.Request);
+
+      page.on(PageEvent.Request, listener);
+      page.off(PageEvent.Request, listener);
+      page.once(PageEvent.Request, listener);
+      page.off(PageEvent.Request, listener);
+      page.emit(PageEvent.Request, new MockHTTPRequest('1'));
+
+      expect(requests).toEqual([]);
+      expect(page.listenerCount(PageEvent.Request)).toEqual(listenerCount);
+    });
   });
 });

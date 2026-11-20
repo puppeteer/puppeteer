@@ -120,6 +120,39 @@ describe('EventEmitter', () => {
       expect(listener.callCount).toEqual(1);
       expect(listener.firstCall.args).toEqual(['foo', data]);
     });
+
+    it('does not throw if a subclass on() registers no handler', () => {
+      class NoopEmitter extends EventEmitter<Record<string, unknown>> {
+        override on(): this {
+          return this;
+        }
+      }
+      const emitter = new NoopEmitter();
+      const listener = sinon.spy();
+      expect(() => {
+        emitter.once('foo', listener);
+      }).not.toThrow();
+      expect(emitter.listenerCount('foo')).toEqual(0);
+    });
+
+    it('does not map a handler if a subclass on() registers more than one', () => {
+      const extra = sinon.spy();
+      class DoubleEmitter extends EventEmitter<Record<string, unknown>> {
+        override on(
+          ...args: Parameters<EventEmitter<Record<string, unknown>>['on']>
+        ): this {
+          super.on(...args);
+          return super.on(args[0], extra);
+        }
+      }
+      const emitter = new DoubleEmitter();
+      const listener = sinon.spy();
+      emitter.once('foo', listener);
+      emitter.off('foo', listener);
+      expect(emitter.listenerCount('foo')).toEqual(2);
+      emitter.emit('foo', undefined);
+      expect(extra.callCount).toEqual(1);
+    });
   });
 
   describe('emit', () => {
