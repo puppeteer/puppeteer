@@ -91,6 +91,12 @@ describe('Mouse', function () {
       "This is the text that we are going to try to select. Let's see how it goes.";
 
     await page.goto(`${server.PREFIX}/input/textarea.html`);
+    await page.evaluate(() => {
+      const textarea = document.querySelector('textarea')!;
+      textarea.style.width = '400px';
+      textarea.style.height = '150px';
+      textarea.style.resize = 'none';
+    });
     await page.focus('textarea');
     await page.keyboard.type(text);
     using handle = await page
@@ -101,10 +107,10 @@ describe('Mouse', function () {
         }, text);
       })
       .waitHandle();
-    const {x, y} = await page.evaluate(dimensions);
+    const {x, y, width, height} = await page.evaluate(dimensions);
     await page.mouse.move(x + 2, y + 2);
     await page.mouse.down();
-    await page.mouse.move(100, 100);
+    await page.mouse.move(x + width - 5, y + height - 5);
     await page.mouse.up();
     expect(
       await handle.evaluate(element => {

@@ -11,6 +11,7 @@ import {
   launch,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
+import {attachFrame} from './utils.js';
 
 describe('Cookie specs', () => {
   setupTestBrowserHooks();
@@ -643,17 +644,11 @@ describe('Cookie specs', () => {
       try {
         const page = await browser.newPage();
         await page.goto(httpsServer.PREFIX + '/grid.html');
-        await page.evaluate(src => {
-          let fulfill!: () => void;
-          const promise = new Promise<void>(x => {
-            return (fulfill = x);
-          });
-          const iframe = document.createElement('iframe');
-          document.body.appendChild(iframe);
-          iframe.onload = fulfill;
-          iframe.src = src;
-          return promise;
-        }, httpsServer.CROSS_PROCESS_PREFIX);
+        const frame = await attachFrame(
+          page,
+          'frame1',
+          httpsServer.CROSS_PROCESS_PREFIX,
+        );
         await page.setCookie({
           name: '127-same-site-cookie',
           value: 'best',
@@ -661,7 +656,7 @@ describe('Cookie specs', () => {
           sameSite: 'None',
         });
 
-        expect(await page.frames()[1]!.evaluate('document.cookie')).toBe(
+        expect(await frame.evaluate('document.cookie')).toBe(
           '127-same-site-cookie=best',
         );
         await expectCookieEquals(

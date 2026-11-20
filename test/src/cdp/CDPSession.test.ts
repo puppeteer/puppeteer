@@ -53,10 +53,14 @@ describe('Target.createCDPSession', function () {
     await client.send('Network.enable');
     const events: unknown[] = [];
     client.on('Network.requestWillBeSent', event => {
-      events.push(event);
+      if (!event.request.url.includes('favicon.ico')) {
+        events.push(event);
+      }
     });
     await Promise.all([
-      waitEvent(client, 'Network.requestWillBeSent'),
+      waitEvent(client, 'Network.requestWillBeSent', event => {
+        return !event.request.url.includes('favicon.ico');
+      }),
       page.goto(server.EMPTY_PAGE),
     ]);
     expect(events).toHaveLength(1);
