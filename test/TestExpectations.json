@@ -2009,7 +2009,7 @@
     "testIdPattern": "[requestinterception.test] request interception Request.continue should amend post data to an empty string",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"],
+    "expectations": ["SKIP"],
     "comment": "Firefox hangs when continueRequest changes the length of the request body"
   },
   {
