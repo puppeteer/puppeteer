@@ -127,6 +127,18 @@ describe('BidiHTTPRequest', () => {
     });
   });
 
+  it('should forward empty string postData in continue', async () => {
+    const {fakeRequest, httpRequest} = createRequest(null, true);
+
+    await httpRequest.continue({postData: ''});
+
+    expect(fakeRequest.calls).toHaveLength(1);
+    expect(fakeRequest.calls[0]!['body']).toEqual({
+      type: 'base64',
+      value: '',
+    });
+  });
+
   it('should let contentType replace a content-type header in respond()', async () => {
     const {fakeRequest, httpRequest} = createRequest(null);
 
