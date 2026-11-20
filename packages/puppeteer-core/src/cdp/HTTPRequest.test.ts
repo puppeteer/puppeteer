@@ -223,6 +223,47 @@ describe('CdpHTTPRequest', () => {
     ]);
   });
 
+  it('should forward empty string postData in continue', async () => {
+    const send = mock.fn(async () => {
+      return {};
+    });
+    const client = {send} as unknown as CDPSession;
+    const frame = {} as Frame;
+    const request = new CdpHTTPRequest(
+      client,
+      frame,
+      null,
+      'interceptionId',
+      true,
+      {
+        requestId: 'requestId',
+        request: {
+          url: 'http://example.com',
+          method: 'POST',
+          headers: {},
+          postData: 'original',
+        } as any,
+      } as any,
+      [],
+      () => {
+        return undefined;
+      },
+    );
+
+    await request.continue({postData: ''});
+    expect(send.mock.callCount()).toBe(1);
+    expect(send.mock.calls[0]!.arguments).toEqual([
+      'Fetch.continueRequest',
+      {
+        requestId: 'interceptionId',
+        url: undefined,
+        method: undefined,
+        postData: '',
+        headers: undefined,
+      },
+    ]);
+  });
+
   it('should decode base64Encoded postData in fetchPostData', async () => {
     const encoded = Buffer.from('{"hello":"world"}', 'utf-8').toString(
       'base64',
