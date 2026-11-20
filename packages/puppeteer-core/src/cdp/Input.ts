@@ -163,6 +163,7 @@ export class CdpKeyboard extends Keyboard {
       windowsVirtualKeyCode: description.keyCode,
       code: description.code,
       location: description.location,
+      isKeypad: description.location === 3,
     });
   }
 
