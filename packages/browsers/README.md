@@ -80,6 +80,9 @@ npx @puppeteer/browsers install chromedriver@116.0.5793.0
 # will still attempt to install system dependencies.
 # Requires root privileges.
 npx puppeteer browsers install chrome --install-deps
+
+# Retry downloading up to 3 times on transient network failures.
+npx @puppeteer/browsers install chrome@stable --retry=3
 ```
 
 ## Known limitations

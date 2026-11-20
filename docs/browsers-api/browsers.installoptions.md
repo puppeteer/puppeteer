@@ -256,6 +256,27 @@ By using custom providers, you accept full responsibility for:
 </td></tr>
 <tr><td>
 
+<span id="retry">retry</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+number
+
+</td><td>
+
+Number of retries to attempt if downloading the browser archive fails due to transient network or server errors (HTTP 408, 429, 5xx, or network drops, with 1s–10s exponential backoff).
+
+</td><td>
+
+`0`
+
+</td></tr>
+<tr><td>
+
 <span id="unpack">unpack</span>
 
 </td><td>
