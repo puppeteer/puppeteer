@@ -127,7 +127,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./puppeteer.keyboard.press.md).
 
-Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
+Modifier keys DO influence `keyboard.type`, the same as [Keyboard.press()](./puppeteer.keyboard.press.md). Holding down `Shift` will type the text in upper case.
 
 </td></tr>
 <tr><td>
