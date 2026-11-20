@@ -348,7 +348,9 @@ export class CdpHTTPRequest extends HTTPRequest {
       .send('Fetch.fulfillRequest', {
         requestId: this._interceptionId,
         responseCode: status,
-        responsePhrase: STATUS_TEXTS[status],
+        // Chrome rejects status codes it has no reason phrase for unless one
+        // is provided.
+        responsePhrase: STATUS_TEXTS[status] ?? 'Unknown',
         responseHeaders: headersArray(responseHeaders),
         body: parsedBody?.base64,
       })

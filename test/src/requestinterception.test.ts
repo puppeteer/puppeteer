@@ -1078,6 +1078,24 @@ describe('request interception', function () {
         }),
       ).toBe('Yo, page!');
     });
+    it('should work with a status code that has no standard reason phrase', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({
+          status: 419,
+          body: 'Yo, page!',
+        });
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.status()).toBe(419);
+      expect(
+        await page.evaluate(() => {
+          return document.body.textContent;
+        }),
+      ).toBe('Yo, page!');
+    });
     it('should redirect', async () => {
       const {page, server} = await getTestState();
 
