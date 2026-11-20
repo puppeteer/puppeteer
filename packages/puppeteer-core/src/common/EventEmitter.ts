@@ -174,13 +174,16 @@ export class EventEmitter<
       this.off(type, onceHandler);
     };
 
-    const listenerCount = this.listenerCount(type);
+    // Read the count from `#handlers` directly rather than `listenerCount()`,
+    // which a subclass can override, so both sides of the check below come
+    // from the same source.
+    const handlerCount = this.#handlers.get(type)?.length ?? 0;
     this.on(type, onceHandler);
     // Subclasses can register a wrapper of `onceHandler` in `on`, so map the
     // handler that was registered last. Only do it if `on` added exactly one
     // handler, otherwise `off(type, handler)` could remove an unrelated one.
     const handlers = this.#handlers.get(type);
-    if (handlers && handlers.length === listenerCount + 1) {
+    if (handlers && handlers.length === handlerCount + 1) {
       this.#onceHandlers.set(handlers[handlers.length - 1], handler);
     }
     return this;

@@ -135,6 +135,20 @@ describe('EventEmitter', () => {
       expect(emitter.listenerCount('foo')).toEqual(0);
     });
 
+    it('maps the handler even if a subclass overrides listenerCount()', () => {
+      class CountingEmitter extends EventEmitter<Record<string, unknown>> {
+        override listenerCount(): number {
+          return 42;
+        }
+      }
+      const emitter = new CountingEmitter();
+      const listener = sinon.spy();
+      emitter.once('foo', listener);
+      emitter.off('foo', listener);
+      emitter.emit('foo', undefined);
+      expect(listener.callCount).toEqual(0);
+    });
+
     it('does not map a handler if a subclass on() registers more than one', () => {
       const extra = sinon.spy();
       class DoubleEmitter extends EventEmitter<Record<string, unknown>> {

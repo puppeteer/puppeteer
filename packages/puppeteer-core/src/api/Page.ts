@@ -1009,6 +1009,12 @@ export abstract class Page extends EventEmitter<PageEvents> {
       eventData: K extends '*' ? PageEvents[keyof PageEvents] : never,
     ) => void,
   ): this {
+    // For `request` listeners, a handler that was passed to `on()` is matched
+    // through its `#requestHandlers` wrapper first. So after
+    // `on('request', h)`, `once('request', h)` and `off('request', h)`, the
+    // `on()` registration is removed first, even though it was added earlier.
+    // This differs from `EventEmitter.off()`, which removes the most recently
+    // added registration.
     if (type === PageEvent.Request && handler !== undefined) {
       const requestHandler = handler as (
         event: EventsWithWildcard<PageEvents>[PageEvent.Request],
