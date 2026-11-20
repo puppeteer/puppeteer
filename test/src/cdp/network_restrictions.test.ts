@@ -180,11 +180,20 @@ async function startIceGathering(page: Page, urls: string): Promise<void> {
  * use only host candidates. It resolves to `true` when the data channel opens
  * and to `false` if the channel does not open before the timeout. Without a
  * timeout, it waits until the channel opens.
+ *
+ * The function grants the microphone permission to the page origin. Without a
+ * media permission, Chrome replaces the host IP addresses in the candidates
+ * with mDNS names. Some machines cannot resolve these names, and then the
+ * peers do not connect even without network restrictions.
  */
 async function connectWebRtcPeers(
   page: Page,
   timeout?: number,
 ): Promise<boolean> {
+  await page.browserContext().setPermission(new URL(page.url()).origin, {
+    permission: {name: 'microphone'},
+    state: 'granted',
+  });
   return await page.evaluate(async timeout => {
     const local = new RTCPeerConnection();
     const remote = new RTCPeerConnection();
