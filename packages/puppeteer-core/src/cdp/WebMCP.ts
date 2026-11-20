@@ -32,6 +32,12 @@ export class WebMCPTool extends EventEmitter<{
   #formElement?: ElementHandle<HTMLFormElement>;
 
   /**
+   * Opaque tool identifier, unique per registration.
+   *
+   * @internal
+   */
+  _id: Protocol.WebMCP.ToolId;
+  /**
    * Tool name.
    */
   name: string;
@@ -66,6 +72,7 @@ export class WebMCPTool extends EventEmitter<{
   constructor(webmcp: WebMCP, tool: Protocol.WebMCP.Tool, frame: Frame) {
     super();
     this.#webmcp = webmcp;
+    this._id = tool.toolId;
     this.name = tool.name;
     this.description = tool.description;
     this.inputSchema = tool.inputSchema;
@@ -284,7 +291,7 @@ export class WebMCP extends EventEmitter<{
       }
 
       const addedTool = new WebMCPTool(this, tool, frame);
-      frameTools.set(tool.name, addedTool);
+      frameTools.set(tool.toolId, addedTool);
       tools.push(addedTool);
     }
 
@@ -294,17 +301,20 @@ export class WebMCP extends EventEmitter<{
   #onToolsRemoved = (event: Protocol.WebMCP.ToolsRemovedEvent) => {
     const tools: WebMCPTool[] = [];
     event.tools.forEach(tool => {
-      const removedTool = this.#tools.get(tool.frameId)?.get(tool.name);
+      const removedTool = this.#tools.get(tool.frameId)?.get(tool.toolId);
       if (removedTool) {
         tools.push(removedTool);
       }
-      this.#tools.get(tool.frameId)?.delete(tool.name);
+      this.#tools.get(tool.frameId)?.delete(tool.toolId);
     });
     this.emit('toolsremoved', {tools});
   };
 
   #onToolInvoked = (event: Protocol.WebMCP.ToolInvokedEvent) => {
-    const tool = this.#tools.get(event.frameId)?.get(event.toolName);
+    if (!event.toolId) {
+      return;
+    }
+    const tool = this.#tools.get(event.frameId)?.get(event.toolId);
     if (!tool) {
       return;
     }
@@ -383,7 +393,7 @@ export class WebMCP extends EventEmitter<{
   ): Promise<{invocationId: string}> {
     return await this.#client.send('WebMCP.invokeTool', {
       frameId: tool.frame._id,
-      toolName: tool.name,
+      toolId: tool._id,
       input,
     });
   }
