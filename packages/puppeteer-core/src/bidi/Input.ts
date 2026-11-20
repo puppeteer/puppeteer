@@ -497,6 +497,10 @@ export interface BidiTouchMoveOptions {
   origin?: Bidi.Input.Origin;
 }
 
+const isViewportOrigin = (origin?: Bidi.Input.Origin) => {
+  return origin === undefined || origin === 'viewport';
+};
+
 const getBidiButton = (button: MouseButton) => {
   switch (button) {
     case MouseButton.Left:
@@ -558,7 +562,9 @@ export class BidiMouse extends Mouse {
     });
     // https://w3c.github.io/webdriver-bidi/#command-input-performActions:~:text=input.PointerMoveAction%20%3D%20%7B%0A%20%20type%3A%20%22pointerMove%22%2C%0A%20%20x%3A%20js%2Dint%2C
     await this.#state.withTransaction(updateState => {
-      updateState({position: to});
+      if (isViewportOrigin(options.origin)) {
+        updateState({position: to});
+      }
       return this.#page.mainFrame().browsingContext.performActions([
         {
           type: SourceActionsType.Pointer,
@@ -635,7 +641,7 @@ export class BidiMouse extends Mouse {
     }
     actions.push(pointerUpAction);
     await this.#state.withTransaction(updateState => {
-      if (options.origin === undefined || options.origin === 'viewport') {
+      if (isViewportOrigin(options.origin)) {
         updateState({position: to});
       }
       return this.#page.mainFrame().browsingContext.performActions([
