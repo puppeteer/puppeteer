@@ -21,6 +21,7 @@ export * from './FileChooser.js';
 export * from './GetQueryHandler.js';
 export * from './HandleIterator.js';
 export * from './LazyArg.js';
+export * from './MouseStateTracker.js';
 export * from './NetworkManagerEvents.js';
 export * from './PDFOptions.js';
 export * from './PierceQueryHandler.js';

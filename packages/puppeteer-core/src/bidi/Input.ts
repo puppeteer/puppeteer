@@ -6,7 +6,6 @@
 
 import * as Bidi from 'webdriver-bidi-protocol';
 
-import type {Point} from '../api/ElementHandle.js';
 import {
   Keyboard,
   Mouse,
@@ -23,6 +22,7 @@ import {
 } from '../api/Input.js';
 import {UnsupportedOperation} from '../common/Errors.js';
 import {TouchError} from '../common/Errors.js';
+import {MouseStateTracker} from '../common/MouseStateTracker.js';
 import type {KeyInput} from '../common/USKeyboardLayout.js';
 
 import type {BidiPage} from './Page.js';
@@ -497,6 +497,10 @@ export interface BidiTouchMoveOptions {
   origin?: Bidi.Input.Origin;
 }
 
+const isViewportOrigin = (origin?: Bidi.Input.Origin) => {
+  return origin === undefined || origin === 'viewport';
+};
+
 const getBidiButton = (button: MouseButton) => {
   switch (button) {
     case MouseButton.Left:
@@ -517,7 +521,7 @@ const getBidiButton = (button: MouseButton) => {
  */
 export class BidiMouse extends Mouse {
   #page: BidiPage;
-  #lastMovePoint: Point = {x: 0, y: 0};
+  #state = new MouseStateTracker();
 
   constructor(page: BidiPage) {
     super();
@@ -525,8 +529,10 @@ export class BidiMouse extends Mouse {
   }
 
   override async reset(): Promise<void> {
-    this.#lastMovePoint = {x: 0, y: 0};
-    await this.#page.mainFrame().browsingContext.releaseActions();
+    await this.#state.withTransaction(updateState => {
+      updateState({position: {x: 0, y: 0}});
+      return this.#page.mainFrame().browsingContext.releaseActions();
+    });
   }
 
   override async move(
@@ -534,7 +540,7 @@ export class BidiMouse extends Mouse {
     y: number,
     options: Readonly<BidiMouseMoveOptions> = {},
   ): Promise<void> {
-    const from = this.#lastMovePoint;
+    const from = this.#state.position;
     const to = {
       x: Math.round(x),
       y: Math.round(y),
@@ -555,14 +561,18 @@ export class BidiMouse extends Mouse {
       origin: options.origin,
     });
     // https://w3c.github.io/webdriver-bidi/#command-input-performActions:~:text=input.PointerMoveAction%20%3D%20%7B%0A%20%20type%3A%20%22pointerMove%22%2C%0A%20%20x%3A%20js%2Dint%2C
-    this.#lastMovePoint = to;
-    await this.#page.mainFrame().browsingContext.performActions([
-      {
-        type: SourceActionsType.Pointer,
-        id: InputId.Mouse,
-        actions,
-      },
-    ]);
+    await this.#state.withTransaction(updateState => {
+      if (isViewportOrigin(options.origin)) {
+        updateState({position: to});
+      }
+      return this.#page.mainFrame().browsingContext.performActions([
+        {
+          type: SourceActionsType.Pointer,
+          id: InputId.Mouse,
+          actions,
+        },
+      ]);
+    });
   }
 
   override async down(options: Readonly<MouseOptions> = {}): Promise<void> {
@@ -600,11 +610,14 @@ export class BidiMouse extends Mouse {
     y: number,
     options: Readonly<BidiMouseClickOptions> = {},
   ): Promise<void> {
+    const to = {
+      x: Math.round(x),
+      y: Math.round(y),
+    };
     const actions: Bidi.Input.PointerSourceAction[] = [
       {
         type: ActionType.PointerMove,
-        x: Math.round(x),
-        y: Math.round(y),
+        ...to,
         origin: options.origin,
       },
     ];
@@ -627,13 +640,18 @@ export class BidiMouse extends Mouse {
       });
     }
     actions.push(pointerUpAction);
-    await this.#page.mainFrame().browsingContext.performActions([
-      {
-        type: SourceActionsType.Pointer,
-        id: InputId.Mouse,
-        actions,
-      },
-    ]);
+    await this.#state.withTransaction(updateState => {
+      if (isViewportOrigin(options.origin)) {
+        updateState({position: to});
+      }
+      return this.#page.mainFrame().browsingContext.performActions([
+        {
+          type: SourceActionsType.Pointer,
+          id: InputId.Mouse,
+          actions,
+        },
+      ]);
+    });
   }
 
   override async wheel(
@@ -646,10 +664,7 @@ export class BidiMouse extends Mouse {
         actions: [
           {
             type: ActionType.Scroll,
-            ...(this.#lastMovePoint ?? {
-              x: 0,
-              y: 0,
-            }),
+            ...this.#state.position,
             deltaX: options.deltaX ?? 0,
             deltaY: options.deltaY ?? 0,
           },
