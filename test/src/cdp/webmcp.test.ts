@@ -101,6 +101,45 @@ describe('Page.webmcp', function () {
     expect(tools[1]!.location).toBeUndefined();
   });
 
+  it('should expose tool outputSchema', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    const toolsAdded = waitEvent<{tools: WebMCPTool[]}>(
+      page.webmcp,
+      'toolsadded',
+    );
+
+    // Register an imperative WebMCP tool with an output schema.
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
+        name: 'test-tool-1',
+        description: 'A test tool 1',
+        outputSchema: {
+          type: 'object',
+          properties: {
+            greeting: {type: 'string', description: 'A greeting'},
+          },
+          required: ['greeting'],
+        },
+        execute: () => {
+          return {greeting: 'hello'};
+        },
+      });
+    });
+
+    const {tools} = await toolsAdded;
+    expect(tools.length).toBe(1);
+    expect(tools[0]!.name).toBe('test-tool-1');
+    expect(tools[0]!.outputSchema).toStrictEqual({
+      type: 'object',
+      properties: {
+        greeting: {type: 'string', description: 'A greeting'},
+      },
+      required: ['greeting'],
+    });
+  });
+
   it('should fire toolsadded events', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
