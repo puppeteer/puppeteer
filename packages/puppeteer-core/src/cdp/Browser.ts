@@ -39,6 +39,7 @@ import type {Target} from '../api/Target.js';
 import {DEBUG_PREFIXES} from '../common/Debug.js';
 import type {Logger} from '../common/Debug.js';
 import type {DownloadBehavior} from '../common/DownloadBehavior.js';
+import {UnsupportedOperation} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
@@ -315,7 +316,13 @@ export class CdpBrowser extends BrowserBase {
   }
 
   async _closeTarget(targetId: string): Promise<void> {
-    await this.#connection.send('Target.closeTarget', {targetId});
+    const {success} = await this.#connection.send('Target.closeTarget', {
+      targetId,
+    });
+    // chrome-headless-shell does not throw for a target that it cannot close.
+    if (success === false) {
+      throw new UnsupportedOperation();
+    }
   }
 
   #createTarget = (

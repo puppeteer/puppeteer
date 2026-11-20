@@ -45,7 +45,7 @@ export class CdpWebWorker extends WebWorker {
   #world: IsolatedWorld;
   #client: CDPSession;
   readonly #id: string;
-  readonly #targetType: TargetType;
+  readonly #target: CdpTarget;
   #logger: Logger;
   #hasOwnerExceptionListeners: () => boolean;
   readonly #emitter: EventEmitter<WebWorkerEvents>;
@@ -70,7 +70,7 @@ export class CdpWebWorker extends WebWorker {
     this.#client = client;
     this.#logger = logger;
     this.#hasOwnerExceptionListeners = hasOwnerExceptionListeners;
-    this.#targetType = target.type();
+    this.#target = target;
     this.#world = new IsolatedWorld(
       this,
       new TimeoutSettings(),
@@ -257,24 +257,11 @@ export class CdpWebWorker extends WebWorker {
   }
 
   override async close(): Promise<void> {
-    switch (this.#targetType) {
-      case TargetType.SERVICE_WORKER: {
-        // For service workers we need to close the target and detach to allow
-        // the worker to stop.
-        await this.client.connection()?.send('Target.closeTarget', {
-          targetId: this.#id,
-        });
-        await this.client.connection()?.send('Target.detachFromTarget', {
-          sessionId: this.client.id(),
-        });
+    switch (this.#target.type()) {
+      case TargetType.SERVICE_WORKER:
+      case TargetType.SHARED_WORKER:
+        await this.#target.close();
         break;
-      }
-      case TargetType.SHARED_WORKER: {
-        await this.client.connection()?.send('Target.closeTarget', {
-          targetId: this.#id,
-        });
-        break;
-      }
       default:
         // Dedicated workers do not support `Target.closeTarget`. Evaluate on
         // the realm directly so that closing does not wait for the worker

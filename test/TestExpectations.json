@@ -1043,6 +1043,13 @@
     "comment": "not supported"
   },
   {
+    "testIdPattern": "[target.test] Target should close a service worker when network rules are set",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "CDP-specific: network rules are not supported in WebDriver BiDi, and Puppeteer creates BiDi worker targets only for dedicated workers."
+  },
+  {
     "testIdPattern": "[target.test] Target should close a shared worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1055,6 +1062,34 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "CDP-specific: the test blocks the CDP page initialization with a dialog and handles it through a CDP session."
+  },
+  {
+    "testIdPattern": "[target.test] Target Target.close should close a service worker target",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
+  },
+  {
+    "testIdPattern": "[target.test] Target Target.close should close a service worker target when network rules are set",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "CDP-specific: network rules are not supported in WebDriver BiDi, and Puppeteer creates BiDi worker targets only for dedicated workers."
+  },
+  {
+    "testIdPattern": "[target.test] Target Target.close should close a shared worker target",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer does not create targets for shared workers, so no 'shared_worker' target appears."
+  },
+  {
+    "testIdPattern": "[target.test] Target Target.close should not throw if close() is called concurrently",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer does not create targets for shared workers, so no 'shared_worker' target appears."
   },
   {
     "testIdPattern": "[TargetManager.test] *",

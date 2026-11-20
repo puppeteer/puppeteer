@@ -11,6 +11,7 @@ import {
   BrowserContextEvent,
   type BrowserContext,
 } from '../api/BrowserContext.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
@@ -45,6 +46,7 @@ export class CdpTarget extends Target {
     ((isAutoAttachEmulated: boolean) => Promise<CdpCDPSession>) | undefined;
   #logger: Logger;
   #childTargets = new Set<CdpTarget>();
+  #closePromise?: Promise<void>;
   _initializedDeferred = Deferred.create<InitializationStatus>();
   _isClosedDeferred = Deferred.create<void>();
   _targetId: string;
@@ -211,8 +213,41 @@ export class CdpTarget extends Target {
     if (this.#targetInfo.type === 'iframe') {
       throw new UnsupportedOperation();
     }
+    if (this._isClosedDeferred.resolved()) {
+      return;
+    }
+    // Concurrent calls share one close operation, because a second
+    // `Target.closeTarget` fails if the target is already gone.
+    this.#closePromise ??= this.#close().finally(() => {
+      this.#closePromise = undefined;
+    });
+    await this.#closePromise;
+  }
+
+  async #close(): Promise<void> {
     await (this.browser() as CdpBrowser)._closeTarget(this._targetId);
+    if (this.#targetInfo.type === 'service_worker') {
+      // Chrome reports a closed service worker as destroyed only after the
+      // sessions attached to it detach.
+      const session = await this._workerSession();
+      if (session && !session.detached) {
+        // `session.detach()` sends the command on the connection, which fails
+        // for a session attached through a page. `parentSession()` returns the
+        // session itself if it was attached through the connection.
+        const parentSession = session.parentSession();
+        await (
+          parentSession === session ? session.connection() : parentSession
+        )?.send('Target.detachFromTarget', {sessionId: session.id()});
+      }
+    }
     await this._isClosedDeferred.valueOrThrow();
+  }
+
+  /**
+   * Returns the session that Puppeteer uses for the worker of this target.
+   */
+  protected async _workerSession(): Promise<CDPSession | undefined> {
+    return this.#session;
   }
 
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
@@ -349,6 +384,12 @@ export class WorkerTarget extends CdpTarget {
       });
     }
     return await this.#workerPromise;
+  }
+
+  protected override async _workerSession(): Promise<CDPSession | undefined> {
+    // Puppeteer detaches from service workers unless network rules are set,
+    // so `worker()` may attach a session of its own.
+    return (await this.#workerPromise)?.client ?? this._session();
   }
 
   /**
