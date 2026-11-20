@@ -39,4 +39,23 @@ describe('Heap Snapshot', function () {
     expect(snapshot.nodes).toBeDefined();
     expect(snapshot.edges).toBeDefined();
   });
+
+  it('should reject without an unhandled rejection when the file cannot be opened', async () => {
+    const {page} = await getTestState();
+    const filePath = path.join(tempDir, 'missing', 'heap.heapsnapshot');
+
+    const unhandledRejections: unknown[] = [];
+    const onUnhandledRejection = (reason: unknown) => {
+      unhandledRejections.push(reason);
+    };
+    process.on('unhandledRejection', onUnhandledRejection);
+    try {
+      await expect(page.captureHeapSnapshot({path: filePath})).rejects.toThrow(
+        'ENOENT',
+      );
+      expect(unhandledRejections).toEqual([]);
+    } finally {
+      process.off('unhandledRejection', onUnhandledRejection);
+    }
+  });
 });

@@ -978,31 +978,39 @@ export class CdpPage extends Page {
     options: HeapSnapshotOptions,
   ): Promise<void> {
     const stream = environment.value.createWriteStream(options.path);
-    const streamPromise = new Promise<void>((resolve, reject) => {
-      stream.on('error', reject);
-      stream.on('finish', resolve);
+    // The stream can fail (for example, when the directory does not exist)
+    // before it is awaited below. A Deferred keeps that from becoming an
+    // unhandled rejection.
+    const streamFinished = Deferred.create<void>();
+    stream.on('error', error => {
+      streamFinished.reject(error);
+    });
+    stream.on('finish', () => {
+      streamFinished.resolve();
     });
 
     const client = this.#primaryTargetClient;
-    await client.send('HeapProfiler.enable');
-    await client.send('HeapProfiler.collectGarbage');
-
-    using clientEmitter = new EventEmitter(client);
-
-    clientEmitter.on('HeapProfiler.addHeapSnapshotChunk', event => {
-      stream.write(event.chunk);
-    });
-
     try {
-      await client.send('HeapProfiler.takeHeapSnapshot', {
-        reportProgress: false,
-      });
-    } finally {
-      await client.send('HeapProfiler.disable');
-    }
+      await client.send('HeapProfiler.enable');
+      await client.send('HeapProfiler.collectGarbage');
 
-    stream.end();
-    await streamPromise;
+      using clientEmitter = new EventEmitter(client);
+
+      clientEmitter.on('HeapProfiler.addHeapSnapshotChunk', event => {
+        stream.write(event.chunk);
+      });
+
+      try {
+        await client.send('HeapProfiler.takeHeapSnapshot', {
+          reportProgress: false,
+        });
+      } finally {
+        await client.send('HeapProfiler.disable');
+      }
+    } finally {
+      stream.end();
+    }
+    await streamFinished.valueOrThrow();
   }
 
   #emitMetrics(event: Protocol.Performance.MetricsEvent): void {
