@@ -271,11 +271,11 @@ export interface WaitForSelectorOptions {
  */
 export interface GeolocationOptions {
   /**
-   * Latitude between `-90` and `90`.
+   * Longitude between `-180` and `180`.
    */
   longitude: number;
   /**
-   * Longitude between `-180` and `180`.
+   * Latitude between `-90` and `90`.
    */
   latitude: number;
   /**
