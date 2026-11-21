@@ -224,7 +224,7 @@ Boxes are represented as an array of points; Each Point is an object `{x, y}`. B
 
 </td><td>
 
-This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to click in the center of the element. If the element is detached from DOM, the method throws an error.
+This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.md#mouse) to click in the center of the element. If the element is detached from DOM, the method throws an error. If another element covers the click point, the element is scrolled to the center of the viewport, and the method throws an error if the click point is still covered.
 
 </td></tr>
 <tr><td>

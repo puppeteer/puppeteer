@@ -372,6 +372,310 @@ describe('Page.click', function () {
       }),
     ).toBe('clicked');
   });
+  it('should scroll the element into view when a sticky element covers it', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+          height: 3000px;
+        }
+        #sticky {
+          position: sticky;
+          top: 0;
+          height: 100px;
+        }
+        #spacer {
+          height: 430px;
+        }
+        #target {
+          display: block;
+          margin-left: 50px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <div id="sticky">sticky header</div>
+      <div id="spacer"></div>
+      <button id="target">target</button>
+      <script>
+        window.clicked = [];
+        document.addEventListener(
+          'click',
+          event => {
+            window.clicked.push(event.target.id);
+          },
+          true,
+        );
+      </script>
+    `);
+    // The button is fully inside the viewport, but behind the sticky header.
+    await page.evaluate(() => {
+      window.scrollTo(0, 500);
+    });
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('#target')!.getBoundingClientRect().top;
+      }),
+    ).toBe(30);
+
+    await page.click('#target');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual(['target']);
+  });
+  it('should not scroll when the element is not covered', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+          height: 3000px;
+        }
+        #target {
+          position: absolute;
+          top: 300px;
+          left: 50px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <button id="target">target</button>
+    `);
+    await page.click('#target');
+    expect(
+      await page.evaluate(() => {
+        return window.scrollY;
+      }),
+    ).toBe(0);
+  });
+  it('should throw when the element is still covered after scrolling', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+        }
+        #overlay {
+          position: fixed;
+          inset: 0;
+        }
+        #target {
+          position: absolute;
+          top: 200px;
+          left: 50px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <button id="target">target</button>
+      <div id="overlay"></div>
+      <script>
+        window.clicked = [];
+        document.addEventListener(
+          'click',
+          event => {
+            window.clicked.push(event.target.id);
+          },
+          true,
+        );
+      </script>
+    `);
+    await expect(page.click('#target')).rejects.toThrow(
+      'Node is covered by <div#overlay> at the click point',
+    );
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual([]);
+  });
+  it('should click a checkbox that is covered by an element in its label', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`
+      <style>
+        label {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 30px;
+        }
+        input {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          margin: 0;
+        }
+        span {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <label
+        ><input
+          id="checkbox"
+          type="checkbox" /><span></span
+      ></label>
+    `);
+    await page.click('#checkbox');
+    expect(
+      await page.$eval('#checkbox', element => {
+        return (element as HTMLInputElement).checked;
+      }),
+    ).toBe(true);
+  });
+  it('should check the click point given by the offset', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 800, height: 400});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+          height: 3000px;
+        }
+        #target {
+          position: absolute;
+          top: 200px;
+          left: 50px;
+          width: 200px;
+          height: 40px;
+        }
+        #overlay {
+          position: absolute;
+          top: 200px;
+          left: 140px;
+          width: 120px;
+          height: 40px;
+        }
+      </style>
+      <button id="target">target</button>
+      <div id="overlay"></div>
+      <script>
+        window.clicked = [];
+        document.addEventListener(
+          'click',
+          event => {
+            window.clicked.push(event.target.id);
+          },
+          true,
+        );
+      </script>
+    `);
+    await using handle = await page.$('#target');
+    await handle!.click({offset: {x: 10, y: 10}});
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual(['target']);
+    await expect(handle!.click()).rejects.toThrow(
+      'Node is covered by <div#overlay> at the click point',
+    );
+  });
+  it('should click an element that has slotted content in a shadow root', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`
+      <div id="host"><span id="slotted">slotted</span></div>
+      <script>
+        const shadowRoot = document.querySelector('#host').attachShadow({
+          mode: 'open',
+        });
+        shadowRoot.innerHTML = '<button id="inner"><slot></slot></button>';
+        window.clicked = [];
+        shadowRoot.querySelector('#inner').addEventListener('click', () => {
+          window.clicked.push('inner');
+        });
+      </script>
+    `);
+    await using handle = await page.evaluateHandle(() => {
+      return document
+        .querySelector('#host')!
+        .shadowRoot!.querySelector('#inner')!;
+    });
+    await handle.asElement()!.click();
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual(['inner']);
+  });
+  it('should click a label that is covered by its control', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`
+      <style>
+        label {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          width: 100px;
+          height: 30px;
+        }
+        input {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          width: 100px;
+          height: 30px;
+          margin: 0;
+          opacity: 0;
+        }
+      </style>
+      <label for="checkbox">label</label>
+      <input
+        id="checkbox"
+        type="checkbox"
+      />
+    `);
+    await page.click('label');
+    expect(
+      await page.$eval('#checkbox', element => {
+        return (element as HTMLInputElement).checked;
+      }),
+    ).toBe(true);
+  });
+  it('should click an element in an iframe that is clipped by the parent', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 400, height: 300});
+    await page.setContent(html`
+      <style>
+        body {
+          margin: 0;
+        }
+        iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 700px;
+          height: 200px;
+          border: 0;
+        }
+      </style>
+      <iframe
+        srcdoc='<style>body{margin:0}button{position:absolute;left:300px;top:50px;width:350px;height:40px}</style><button id="target" onclick="window.clicked=true">target</button>'
+      ></iframe>
+    `);
+    const frame = page.frames()[1]!;
+    await frame.waitForSelector('#target');
+    await frame.click('#target');
+    expect(
+      await frame.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toBe(true);
+  });
   it('should double click the button', async () => {
     const {page, server} = await getTestState();
 
