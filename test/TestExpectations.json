@@ -1057,6 +1057,13 @@
     "comment": "The golden image screenshot-offscreen-clip.png matches the WebDriver BiDi output. The CDP screenshot output does not match this golden. Changed in https://github.com/puppeteer/puppeteer/pull/11398."
   },
   {
+    "testIdPattern": "[target.test] Target Target.page() should retry after a failed initialization",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Stalls a CDP command, so it applies to CDP only"
+  },
+  {
     "testIdPattern": "[target.test] Target page should return tab target id",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

@@ -9,6 +9,7 @@ import type {ServerResponse} from 'node:http';
 import expect from 'expect';
 import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import {Connection} from 'puppeteer-core/internal/cdp/Connection.js';
 import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -16,6 +17,38 @@ import {waitEvent} from './utils.js';
 
 describe('Target', function () {
   setupTestBrowserHooks();
+
+  it('Target.page() should retry after a failed initialization', async () => {
+    const {browser, puppeteer} = await getTestState();
+    const page = await browser.newPage();
+
+    const rawSend = Connection.prototype._rawSend;
+    let stall = true;
+    Connection.prototype._rawSend = function (
+      this: Connection,
+      ...args: Parameters<Connection['_rawSend']>
+    ) {
+      if (stall && args[1] === 'Audits.enable') {
+        stall = false;
+        args[4] = {...args[4], timeout: 1};
+      }
+      return rawSend.apply(this, args);
+    } as Connection['_rawSend'];
+    try {
+      using remoteBrowser = await puppeteer.connect({
+        browserWSEndpoint: browser.wsEndpoint(),
+        protocol: browser.protocol,
+      });
+      await expect(remoteBrowser.pages()).rejects.toThrow(
+        'Audits.enable timed out',
+      );
+      const pages = await remoteBrowser.pages();
+      expect(pages.length).toBeGreaterThan(0);
+    } finally {
+      Connection.prototype._rawSend = rawSend;
+      await page.close();
+    }
+  });
 
   it('Target.asPage() should return the same instance', async () => {
     const {browser} = await getTestState();
