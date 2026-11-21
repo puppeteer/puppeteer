@@ -86,6 +86,20 @@ export interface LaunchOptions extends ConnectOptions {
    */
   handleSIGHUP?: boolean;
   /**
+   * Whether to kill the browser process when the Node process exits.
+   *
+   * When `false`, the browser keeps running after the Node process exits,
+   * so it can be connected to later with
+   * {@link https://pptr.dev/api/puppeteer.puppeteer.connect | puppeteer.connect()}
+   * using the endpoint from
+   * {@link https://pptr.dev/api/puppeteer.browser.wsEndpoint | browser.wsEndpoint()}.
+   * Use with an explicit `userDataDir`: a temporary profile directory is
+   * not removed when the Node process exits while the browser is still
+   * running.
+   * @defaultValue `true`
+   */
+  handleExit?: boolean;
+  /**
    * Maximum time in milliseconds to wait for the browser to start.
    * Pass `0` to disable the timeout.
    * @defaultValue `30_000` (30 seconds).

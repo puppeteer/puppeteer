@@ -260,6 +260,29 @@ Record&lt;string, unknown&gt;
 </td></tr>
 <tr><td>
 
+<span id="handleexit">handleExit</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to kill the browser process when the Node process exits.
+
+When `false`, the browser keeps running after the Node process exits, so it can be connected to later with [puppeteer.connect()](https://pptr.dev/api/puppeteer.puppeteer.connect) using the endpoint from [browser.wsEndpoint()](https://pptr.dev/api/puppeteer.browser.wsEndpoint). Use with an explicit `userDataDir`: a temporary profile directory is not removed when the Node process exits while the browser is still running.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="handlesighup">handleSIGHUP</span>
 
 </td><td>
