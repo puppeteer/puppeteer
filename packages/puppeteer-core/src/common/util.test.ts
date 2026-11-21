@@ -5,6 +5,7 @@
  */
 
 import {describe, it} from 'node:test';
+import {runInNewContext} from 'node:vm';
 
 import expect from 'expect';
 
@@ -12,6 +13,7 @@ import {NEVER, firstValueFrom, of, race} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 
 import {
+  evaluationString,
   fromAbortSignal,
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
@@ -165,6 +167,59 @@ describe('util', () => {
       expect(() => {
         return parsePDFOptions({format: 'unknown' as never});
       }).toThrow('Unknown paper format: unknown');
+    });
+  });
+
+  describe('evaluationString', () => {
+    // Evaluates the generated source and returns what the page function sees.
+    const roundTrip = (value: unknown): unknown => {
+      return runInNewContext(
+        evaluationString((arg: unknown) => {
+          return arg;
+        }, value),
+      );
+    };
+
+    it('returns a string unchanged and rejects arguments for it', () => {
+      expect(evaluationString('1 + 1')).toBe('1 + 1');
+      expect(() => {
+        return evaluationString('1 + 1', 2);
+      }).toThrow('Cannot evaluate a string with arguments');
+    });
+
+    it('serializes JSON compatible arguments', () => {
+      const fn = (..._args: unknown[]) => {};
+      expect(evaluationString(fn, 'a', 1, true, null, [1, 2], {b: 3})).toBe(
+        `(${fn})("a",1,true,null,[1,2],{"b":3})`,
+      );
+    });
+
+    it('keeps undefined arguments in place', () => {
+      expect(roundTrip(undefined)).toBe(undefined);
+      const fn = (..._args: unknown[]) => {};
+      expect(evaluationString(fn, undefined, 1)).toBe(`(${fn})(undefined,1)`);
+    });
+
+    it('preserves NaN, Infinity and -Infinity', () => {
+      expect(roundTrip(NaN)).toBe(NaN);
+      expect(roundTrip(Infinity)).toBe(Infinity);
+      expect(roundTrip(-Infinity)).toBe(-Infinity);
+    });
+
+    it('preserves negative zero', () => {
+      expect(Object.is(roundTrip(-0), -0)).toBe(true);
+      expect(Object.is(roundTrip(0), 0)).toBe(true);
+    });
+
+    it('preserves bigint arguments', () => {
+      expect(roundTrip(10n)).toBe(10n);
+      expect(roundTrip(-5n)).toBe(-5n);
+      expect(roundTrip(2n ** 70n)).toBe(2n ** 70n);
+    });
+
+    it('keeps the position of every argument', () => {
+      const fn = (..._args: unknown[]) => {};
+      expect(evaluationString(fn, NaN, 1, -0, 2n)).toBe(`(${fn})(NaN,1,-0,2n)`);
     });
   });
 
