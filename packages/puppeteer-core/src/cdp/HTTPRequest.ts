@@ -281,9 +281,8 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.interception.handled = true;
     this.#resolution = {action: InterceptResolutionAction.Continue, overrides};
 
-    const postDataBinaryBase64 = postData
-      ? stringToBase64(postData)
-      : undefined;
+    const postDataBinaryBase64 =
+      postData !== undefined ? stringToBase64(postData) : undefined;
 
     if (this._interceptionId === undefined) {
       throw new Error(
