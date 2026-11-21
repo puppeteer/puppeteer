@@ -1384,6 +1384,13 @@
     "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
   },
   {
+    "testIdPattern": "[emulation.test] Emulation Page.emulateMediaType and Page.emulateMediaFeatures should not reset each other",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
+  },
+  {
     "testIdPattern": "[emulation.test] Emulation Page.emulateMediaType should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
