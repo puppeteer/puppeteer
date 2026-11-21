@@ -1325,13 +1325,6 @@
     "comment": "Firefox does not support CDP. page.emulateCPUThrottling uses CDP Emulation.setCPUThrottlingRate, and WebDriver BiDi has no equivalent."
   },
   {
-    "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should keep the emulated media type",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
-  },
-  {
     "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1354,6 +1347,13 @@
   },
   {
     "testIdPattern": "[emulation.test] Emulation Page.emulateMediaFeatures should work with prefers-reduced-transparency",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox via WebDriver BiDi does not tunnel CDP Emulation.setEmulatedMedia"
+  },
+  {
+    "testIdPattern": "[emulation.test] Emulation Page.emulateMediaType and Page.emulateMediaFeatures should not reset each other",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],

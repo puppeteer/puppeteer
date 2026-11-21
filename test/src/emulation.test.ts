@@ -279,8 +279,8 @@ describe('Emulation', () => {
     });
   });
 
-  describe('Page.emulateMediaFeatures', function () {
-    it('should keep the emulated media type', async () => {
+  describe('Page.emulateMediaType and Page.emulateMediaFeatures', function () {
+    it('should not reset each other', async () => {
       const {page} = await getTestState();
 
       await page.emulateMediaType('print');
@@ -305,6 +305,9 @@ describe('Emulation', () => {
         }),
       ).toEqual([false, true]);
     });
+  });
+
+  describe('Page.emulateMediaFeatures', function () {
     it('should work', async () => {
       const {page} = await getTestState();
 
