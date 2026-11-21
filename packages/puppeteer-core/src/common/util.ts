@@ -186,6 +186,17 @@ export function evaluationString(
     if (Object.is(arg, undefined)) {
       return 'undefined';
     }
+    // `JSON.stringify` turns these into `null` or `0`, or throws for bigint.
+    // Write them as literals, as `Page.evaluate` passes them.
+    if (Object.is(arg, -0)) {
+      return '-0';
+    }
+    if (typeof arg === 'number' && !Number.isFinite(arg)) {
+      return String(arg);
+    }
+    if (typeof arg === 'bigint') {
+      return `${arg}n`;
+    }
     return JSON.stringify(arg);
   }
 
