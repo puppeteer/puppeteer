@@ -9,7 +9,8 @@ import type {ServerResponse} from 'node:http';
 import expect from 'expect';
 import {type Target, TimeoutError} from 'puppeteer';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
-import {Connection} from 'puppeteer-core/internal/cdp/Connection.js';
+import type {CdpBrowser} from 'puppeteer-core/internal/cdp/Browser.js';
+import type {Connection} from 'puppeteer-core/internal/cdp/Connection.js';
 import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -22,30 +23,30 @@ describe('Target', function () {
     const {browser, puppeteer} = await getTestState();
     const page = await browser.newPage();
 
-    const rawSend = Connection.prototype._rawSend;
-    let stall = true;
-    Connection.prototype._rawSend = function (
-      this: Connection,
-      ...args: Parameters<Connection['_rawSend']>
-    ) {
-      if (stall && args[1] === 'Audits.enable') {
-        stall = false;
-        args[4] = {...args[4], timeout: 1};
-      }
-      return rawSend.apply(this, args);
-    } as Connection['_rawSend'];
     try {
-      using remoteBrowser = await puppeteer.connect({
+      using remoteBrowser = (await puppeteer.connect({
         browserWSEndpoint: browser.wsEndpoint(),
         protocol: browser.protocol,
-      });
+      })) as CdpBrowser;
+      // Page initialization sends Audits.enable. Register the first one
+      // without sending it, so it always times out.
+      const connection = remoteBrowser._connection;
+      const rawSend = connection._rawSend.bind(connection);
+      let stall = true;
+      connection._rawSend = ((...args: Parameters<Connection['_rawSend']>) => {
+        if (stall && args[1] === 'Audits.enable') {
+          stall = false;
+          return args[0].create(args[1], 1, () => {});
+        }
+        return rawSend(...args);
+      }) as Connection['_rawSend'];
+
       await expect(remoteBrowser.pages()).rejects.toThrow(
         'Audits.enable timed out',
       );
       const pages = await remoteBrowser.pages();
       expect(pages.length).toBeGreaterThan(0);
     } finally {
-      Connection.prototype._rawSend = rawSend;
       await page.close();
     }
   });

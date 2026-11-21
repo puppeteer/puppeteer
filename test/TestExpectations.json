@@ -1064,6 +1064,13 @@
     "comment": "Stalls a CDP command, so it applies to CDP only"
   },
   {
+    "testIdPattern": "[target.test] Target Target.page() should retry after a failed initialization",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[target.test] Target page should return tab target id",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
