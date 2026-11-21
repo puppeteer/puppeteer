@@ -49,6 +49,11 @@ export class CdpHTTPRequest extends HTTPRequest {
   override id: string;
   declare _redirectChain: CdpHTTPRequest[];
   declare _response: CdpHTTPResponse | null;
+  /**
+   * Loader of the document the request belongs to. Empty if the request is
+   * fetched from a worker.
+   */
+  _loaderId: string;
 
   #client: CDPSession;
   #fetchClient: CDPSession;
@@ -129,6 +134,7 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.#client = client;
     this.#fetchClient = fetchClient;
     this.id = data.requestId;
+    this._loaderId = data.loaderId ?? '';
     this.#isNavigationRequest =
       data.requestId === data.loaderId && data.type === 'Document';
     this._interceptionId = interceptionId;
