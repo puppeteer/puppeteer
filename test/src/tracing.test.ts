@@ -146,4 +146,35 @@ describe('Tracing', function () {
     }
     expect(error).toBeDefined();
   });
+
+  it('should allow starting tracing again after a failed start', async () => {
+    const {page, browser} = state;
+    await page.tracing.start({path: outputFile});
+    const newPage = await browser.newPage();
+    try {
+      await expect(newPage.tracing.start({path: outputFile})).rejects.toThrow();
+      await page.tracing.stop();
+
+      await newPage.tracing.start();
+      const trace = (await newPage.tracing.stop())!;
+      expect(Buffer.from(trace).toString().length).toBeGreaterThan(10);
+    } finally {
+      await newPage.close();
+    }
+  });
+
+  it('should not mutate categories when screenshots is enabled', async () => {
+    const {page} = state;
+    const categories = ['-*', 'disabled-by-default-devtools.timeline.frame'];
+    await page.tracing.start({
+      path: outputFile,
+      screenshots: true,
+      categories,
+    });
+    await page.tracing.stop();
+    expect(categories).toEqual([
+      '-*',
+      'disabled-by-default-devtools.timeline.frame',
+    ]);
+  });
 });
