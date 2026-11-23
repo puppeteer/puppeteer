@@ -11,6 +11,7 @@ import expect from 'expect';
 import {environment} from '../environment.js';
 
 import {_connectToBrowser, getWSEndpointURL} from './BrowserConnector.js';
+import {UnsupportedOperation} from './Errors.js';
 
 describe('BrowserConnector', () => {
   describe('getWSEndpoint via browserURL', () => {
@@ -111,7 +112,7 @@ describe('BrowserConnector', () => {
       );
     });
 
-    it('should reject targetFilter for WebDriver BiDi without leaking transport', async () => {
+    it('should reject targetFilter for WebDriver BiDi without opening or closing caller transport', async () => {
       await expect(
         _connectToBrowser({
           browserWSEndpoint: 'ws://localhost:1234',
@@ -123,9 +124,7 @@ describe('BrowserConnector', () => {
             return undefined;
           },
         }),
-      ).rejects.toThrow(
-        'targetFilter is not supported with the WebDriver BiDi protocol',
-      );
+      ).rejects.toThrow(UnsupportedOperation);
 
       let transportClosed = false;
       await expect(
@@ -144,10 +143,8 @@ describe('BrowserConnector', () => {
             return undefined;
           },
         }),
-      ).rejects.toThrow(
-        'targetFilter is not supported with the WebDriver BiDi protocol',
-      );
-      expect(transportClosed).toBe(true);
+      ).rejects.toThrow(UnsupportedOperation);
+      expect(transportClosed).toBe(false);
     });
 
     it('reports permission denied when reading DevToolsActivePort fails with EPERM or EACCES', async () => {

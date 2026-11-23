@@ -949,15 +949,15 @@
     "testIdPattern": "[pdf.test] Page.pdf can print to PDF with accessible",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
+    "expectations": ["SKIP"],
     "comment": "WebDriver BiDi does not support accessible PDF options (tagged/outline)"
   },
   {
     "testIdPattern": "[pdf.test] Page.pdf can print to PDF with outline",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "BiDi does not have option for pdf with outline"
+    "expectations": ["SKIP"],
+    "comment": "WebDriver BiDi does not support PDF outline option"
   },
   {
     "testIdPattern": "[prerender.test] Prerender can screencast",

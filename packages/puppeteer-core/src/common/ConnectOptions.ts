@@ -152,6 +152,7 @@ export interface ConnectOptions {
   slowMo?: number;
   /**
    * Callback to decide if Puppeteer should connect to a given target or not.
+   * Supported only with CDP.
    */
   targetFilter?: TargetFilterCallback;
   /**

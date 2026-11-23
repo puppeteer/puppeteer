@@ -35,7 +35,6 @@ export async function _connectToBrowser(
 ): Promise<Browser> {
   assertSupportedUrlRestrictions(options);
   if (options.protocol === 'webDriverBiDi' && options.targetFilter) {
-    options.transport?.close();
     throw new UnsupportedOperation(
       'targetFilter is not supported with the WebDriver BiDi protocol',
     );
