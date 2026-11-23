@@ -14,6 +14,7 @@ import {
 import {UnsupportedOperation} from '../common/Errors.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {environment} from '../environment.js';
+import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
@@ -55,27 +56,11 @@ export class BidiElementHandle<
     return this.handle.remoteValue();
   }
 
-  async #withObjectId<T>(fn: (objectId: string) => Promise<T>): Promise<T> {
-    if (this.handle.id !== undefined) {
-      return await fn(this.handle.id);
-    }
-    await using handle = await this.evaluateHandle(element => {
-      return element;
-    });
-    return await fn(handle.id!);
-  }
-
   @throwIfDisposed()
   override async autofill(data: AutofillData): Promise<void> {
-    const client = this.frame.client;
-    const nodeInfo = await this.#withObjectId(objectId => {
-      return client.send('DOM.describeNode', {
-        objectId,
-      });
-    });
-    const fieldId = nodeInfo.node.backendNodeId;
+    const fieldId = await this.backendNodeId();
     const frameId = this.frame._id;
-    await client.send('Autofill.trigger', {
+    await this.frame.client.send('Autofill.trigger', {
       fieldId,
       frameId,
       card: data.creditCard,
@@ -157,12 +142,21 @@ export class BidiElementHandle<
     if (this.#backendNodeId !== undefined) {
       return this.#backendNodeId;
     }
-    const {node} = await this.#withObjectId(objectId => {
-      return this.frame.client.send('DOM.describeNode', {
+    const describeNode = async (objectId: string) => {
+      const {node} = await this.frame.client.send('DOM.describeNode', {
         objectId,
       });
+      return node.backendNodeId;
+    };
+    if (this.handle.id !== undefined) {
+      this.#backendNodeId = await describeNode(this.handle.id);
+      return this.#backendNodeId;
+    }
+    await using handle = await this.evaluateHandle(element => {
+      return element;
     });
-    this.#backendNodeId = node.backendNodeId;
+    assert(handle.id !== undefined, 'Failed to materialize object handle.');
+    this.#backendNodeId = await describeNode(handle.id);
     return this.#backendNodeId;
   }
 }

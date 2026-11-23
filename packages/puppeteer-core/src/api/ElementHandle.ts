@@ -381,13 +381,40 @@ export abstract class ElementHandle<
    * matching the given selector. Otherwise, `null`.
    */
   @throwIfDisposed()
-  @bindIsolatedHandle
   async $<Selector extends string>(
     selector: Selector,
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    return (await QueryHandler.queryOne(
+    if (QueryHandler === ARIAQueryHandler) {
+      return await this.#$impl(QueryHandler, updatedSelector);
+    }
+    return await this.#$(QueryHandler, updatedSelector);
+  }
+
+  /**
+   * Isolates {@link ElementHandle.$} if needed.
+   *
+   * @internal
+   */
+  @bindIsolatedHandle
+  async #$<Selector extends string>(
+    QueryHandlerClass: typeof QueryHandler,
+    updatedSelector: string,
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    return await this.#$impl(QueryHandlerClass, updatedSelector);
+  }
+
+  /**
+   * Implementation for {@link ElementHandle.$}.
+   *
+   * @internal
+   */
+  async #$impl<Selector extends string>(
+    QueryHandlerClass: typeof QueryHandler,
+    updatedSelector: string,
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    return (await QueryHandlerClass.queryOne(
       this,
       updatedSelector,
     )) as ElementHandle<NodeFor<Selector>> | null;

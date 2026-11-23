@@ -69,9 +69,14 @@ function createTestRealms() {
   } as unknown as BidiFrame;
 
   const makeWindowRealm = () => {
-    return Object.assign(new EventEmitter(), {
+    const windowRealm = Object.assign(new EventEmitter(), {
       disposed: false,
+      callFunctionCount: 0,
       async callFunction(): Promise<Bidi.Script.EvaluateResult> {
+        windowRealm.callFunctionCount++;
+        if (windowRealm.disposed) {
+          throw new Error('Realm is disposed');
+        }
         return {
           type: 'success',
           realm: 'realm-1',
@@ -86,16 +91,29 @@ function createTestRealms() {
       async disown(handles: string[]) {
         disownedHandles.push(handles);
       },
-    }) as unknown as WindowRealm;
+    });
+    return windowRealm as unknown as WindowRealm & {
+      disposed: boolean;
+      callFunctionCount: number;
+    };
   };
 
-  const realm1 = BidiFrameRealm.from(makeWindowRealm(), frame, noopLogger);
-  const realm2 = BidiFrameRealm.from(makeWindowRealm(), frame, noopLogger);
-  return {realm1, realm2, cdpCalls, disownedHandles};
+  const windowRealm1 = makeWindowRealm();
+  const windowRealm2 = makeWindowRealm();
+  const realm1 = BidiFrameRealm.from(windowRealm1, frame, noopLogger);
+  const realm2 = BidiFrameRealm.from(windowRealm2, frame, noopLogger);
+  return {
+    realm1,
+    realm2,
+    windowRealm1,
+    windowRealm2,
+    cdpCalls,
+    disownedHandles,
+  };
 }
 
 describe('BidiElementHandle and BidiFrameRealm', () => {
-  it('lazily materializes an objectId for backendNodeId and autofill on sharedId-only handles', async () => {
+  it('lazily materializes and caches backendNodeId for sharedId-only handles and autofill', async () => {
     const {realm1, cdpCalls, disownedHandles} = createTestRealms();
     const sharedOnlyNode: Bidi.Script.NodeRemoteValue = {
       type: 'node',
@@ -116,11 +134,11 @@ describe('BidiElementHandle and BidiFrameRealm', () => {
     cdpCalls.length = 0;
     disownedHandles.length = 0;
 
+    // Subsequent autofill reuses cached backendNodeId without re-materializing.
     await element.autofill({
       address: {fields: [{name: 'ADDRESS_HOME_CITY', value: 'London'}]},
     });
     expect(cdpCalls).toEqual([
-      {method: 'DOM.describeNode', params: {objectId: 'temp-object-id-1'}},
       {
         method: 'Autofill.trigger',
         params: {
@@ -131,11 +149,32 @@ describe('BidiElementHandle and BidiFrameRealm', () => {
         },
       },
     ]);
+    expect(disownedHandles).toEqual([]);
+
+    // Fresh sharedId-only handle calling autofill directly still materializes
+    // and disowns.
+    cdpCalls.length = 0;
+    const freshElement = BidiElementHandle.from(sharedOnlyNode, realm1);
+    await freshElement.autofill({
+      address: {fields: [{name: 'ADDRESS_HOME_CITY', value: 'Paris'}]},
+    });
+    expect(cdpCalls).toEqual([
+      {method: 'DOM.describeNode', params: {objectId: 'temp-object-id-1'}},
+      {
+        method: 'Autofill.trigger',
+        params: {
+          fieldId: 42,
+          frameId: 'frame-1',
+          card: undefined,
+          address: {fields: [{name: 'ADDRESS_HOME_CITY', value: 'Paris'}]},
+        },
+      },
+    ]);
     expect(disownedHandles).toEqual([['temp-object-id-1']]);
   });
 
-  it('adopts live sharedId-only handles directly but rejects disposed handles', async () => {
-    const {realm1, realm2} = createTestRealms();
+  it('adopts live sharedId-only handles directly but falls back for disposed handles, disposed realms, or missing sharedId', async () => {
+    const {realm1, realm2, windowRealm2} = createTestRealms();
     const sharedOnlyNode: Bidi.Script.NodeRemoteValue = {
       type: 'node',
       sharedId: 'shared-1',
@@ -146,6 +185,22 @@ describe('BidiElementHandle and BidiFrameRealm', () => {
     const adopted = await realm2.adoptHandle(liveHandle);
     expect(adopted.realm).toBe(realm2);
     expect(adopted.disposed).toBe(false);
+    expect(windowRealm2.callFunctionCount).toBe(0);
+
+    // Handle without sharedId (e.g. WindowProxyRemoteValue) must not take the fast path.
+    const windowHandle = BidiElementHandle.from(
+      {type: 'window', value: {context: 'frame-1'}},
+      realm1,
+    );
+    await realm2.adoptHandle(windowHandle);
+    expect(windowRealm2.callFunctionCount).toBe(1);
+
+    // Adopting into a disposed target realm must fall back and reject.
+    windowRealm2.disposed = true;
+    await expect(realm2.adoptHandle(liveHandle)).rejects.toThrow(
+      'Realm is disposed',
+    );
+    windowRealm2.disposed = false;
 
     await liveHandle.dispose();
     expect(liveHandle.disposed).toBe(true);
@@ -154,8 +209,9 @@ describe('BidiElementHandle and BidiFrameRealm', () => {
     );
   });
 
-  it('supports Accessibility.snapshot({root}) with sharedId-only handles', async () => {
+  it('supports Accessibility.snapshot({root}) with sharedId-only handles and prevents cross-frame collisions', async () => {
     const {realm1, disownedHandles} = createTestRealms();
+    const {realm1: otherFrameRealm} = createTestRealms();
     const sharedOnlyNode: Bidi.Script.NodeRemoteValue = {
       type: 'node',
       sharedId: 'shared-1',
@@ -172,5 +228,19 @@ describe('BidiElementHandle and BidiFrameRealm', () => {
       backendNodeId: 42,
     });
     expect(disownedHandles).toEqual([['temp-object-id-1']]);
+
+    // A root handle from a different frame must return null rather than
+    // colliding on backendNodeId 42.
+    const otherFrameElement = BidiElementHandle.from(
+      sharedOnlyNode,
+      otherFrameRealm,
+    );
+    expect(await accessibility.snapshot({root: otherFrameElement})).toBeNull();
+
+    // A disposed root handle must reject.
+    await element.dispose();
+    await expect(accessibility.snapshot({root: element})).rejects.toThrow(
+      'Attempted to use disposed BidiElementHandle.',
+    );
   });
 });

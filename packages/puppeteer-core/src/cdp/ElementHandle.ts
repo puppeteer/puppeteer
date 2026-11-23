@@ -207,8 +207,9 @@ export class CdpElementHandle<
     });
   }
 
+  @throwIfDisposed()
   override async backendNodeId(): Promise<number> {
-    if (this.#backendNodeId) {
+    if (this.#backendNodeId !== undefined) {
       return this.#backendNodeId;
     }
     const {node} = await this.client.send('DOM.describeNode', {
