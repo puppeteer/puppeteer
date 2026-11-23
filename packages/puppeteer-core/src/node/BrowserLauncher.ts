@@ -371,13 +371,18 @@ export abstract class BrowserLauncher {
     }
 
     if (Array.isArray(enableExtensions)) {
-      await Promise.all([
-        enableExtensions.map(path => {
-          return browser.installExtension(path, {
-            enabledInIncognito: extensionsEnabledInIncognito.includes(path),
-          });
-        }),
-      ]);
+      try {
+        await Promise.all(
+          enableExtensions.map(path => {
+            return browser.installExtension(path, {
+              enabledInIncognito: extensionsEnabledInIncognito.includes(path),
+            });
+          }),
+        );
+      } catch (error) {
+        await browser.close();
+        throw error;
+      }
     }
 
     if (waitForInitialPage) {
