@@ -625,10 +625,7 @@ export interface NetworkRestrictions {
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
   #logger: Logger;
-  /**
-   * If defined, indicates an ongoing screenshot operation.
-   */
-  #pageScreenshotMutex?: Mutex;
+  #pageScreenshotMutex = new Mutex();
   #screenshotOperationsCount = 0;
 
   /**
@@ -639,26 +636,14 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
     this.#logger = logger;
   }
 
-  #acquireScreenshotMutex(
-    mutex: Mutex,
-  ): Promise<InstanceType<typeof Mutex.Guard>> {
-    this.#screenshotOperationsCount++;
-    return mutex.acquire(() => {
-      this.#screenshotOperationsCount--;
-      if (this.#screenshotOperationsCount === 0) {
-        // Remove the mutex to indicate no ongoing screenshot operation.
-        this.#pageScreenshotMutex = undefined;
-      }
-    });
-  }
-
   /**
    * @internal
    */
   _startScreenshot(): Promise<InstanceType<typeof Mutex.Guard>> {
-    const mutex = this.#pageScreenshotMutex || new Mutex();
-    this.#pageScreenshotMutex = mutex;
-    return this.#acquireScreenshotMutex(mutex);
+    this.#screenshotOperationsCount++;
+    return this.#pageScreenshotMutex.acquire(() => {
+      this.#screenshotOperationsCount--;
+    });
   }
 
   /**
@@ -666,10 +651,10 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    */
   _waitForScreenshotOperations():
     Promise<InstanceType<typeof Mutex.Guard>> | undefined {
-    if (!this.#pageScreenshotMutex) {
+    if (this.#screenshotOperationsCount === 0) {
       return undefined;
     }
-    return this.#acquireScreenshotMutex(this.#pageScreenshotMutex);
+    return this.#pageScreenshotMutex.acquire();
   }
 
   /**

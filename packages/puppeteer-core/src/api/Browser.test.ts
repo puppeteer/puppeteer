@@ -125,4 +125,61 @@ describe('Browser screenshot mutex', () => {
     expect(context1.waitForScreenshotOperations()).toBeUndefined();
     expect(context2.waitForScreenshotOperations()).toBeUndefined();
   });
+
+  it('serializes queued waiters during a screenshot without chaining new waiters afterward', async () => {
+    const browser = new MockBrowser();
+    const context1 = new MockBrowserContext(browser);
+    const context2 = new MockBrowserContext(browser);
+
+    const order: string[] = [];
+
+    const guard1 = await context1.startScreenshot();
+    const waiter1Promise = context1.waitForScreenshotOperations()!.then(g => {
+      order.push('waiter-1-acquired');
+      return g;
+    });
+    const waiter2Promise = context2.waitForScreenshotOperations()!.then(g => {
+      order.push('waiter-2-acquired');
+      return g;
+    });
+
+    guard1[disposeSymbol]();
+
+    const waiter1 = await waiter1Promise;
+    expect(order).toEqual(['waiter-1-acquired']);
+
+    // Once screenshots finish, newly arriving waiters do not chain behind active waiters.
+    expect(context1.waitForScreenshotOperations()).toBeUndefined();
+
+    // A new screenshot still waits until all queued waiters dispose.
+    const guard2Promise = context2.startScreenshot().then(guard => {
+      order.push('screenshot-2-acquired');
+      return guard;
+    });
+
+    await new Promise(resolve => {
+      setTimeout(resolve, 0);
+    });
+    expect(order).toEqual(['waiter-1-acquired']);
+
+    waiter1[disposeSymbol]();
+    const waiter2 = await waiter2Promise;
+    expect(order).toEqual(['waiter-1-acquired', 'waiter-2-acquired']);
+
+    await new Promise(resolve => {
+      setTimeout(resolve, 0);
+    });
+    expect(order).toEqual(['waiter-1-acquired', 'waiter-2-acquired']);
+
+    waiter2[disposeSymbol]();
+    const guard2 = await guard2Promise;
+    expect(order).toEqual([
+      'waiter-1-acquired',
+      'waiter-2-acquired',
+      'screenshot-2-acquired',
+    ]);
+
+    guard2[disposeSymbol]();
+    expect(context1.waitForScreenshotOperations()).toBeUndefined();
+  });
 });

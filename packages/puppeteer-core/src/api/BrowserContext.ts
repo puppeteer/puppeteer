@@ -26,7 +26,6 @@ import {
   timeout,
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
-import type {Mutex} from '../util/Mutex.js';
 
 import type {
   Browser,
@@ -258,15 +257,14 @@ export abstract class BrowserContext extends EventEmitter<BrowserContextEvents> 
   /**
    * @internal
    */
-  startScreenshot(): Promise<InstanceType<typeof Mutex.Guard>> {
+  startScreenshot(): Promise<Disposable> {
     return this.browser()._startScreenshot();
   }
 
   /**
    * @internal
    */
-  waitForScreenshotOperations():
-    Promise<InstanceType<typeof Mutex.Guard>> | undefined {
+  waitForScreenshotOperations(): Promise<Disposable> | undefined {
     return this.browser()._waitForScreenshotOperations();
   }
 
