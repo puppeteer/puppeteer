@@ -30,7 +30,9 @@ if (process.platform === 'linux') {
   try {
     // Prevent systemd-coredump / apport from compressing multi-GB renderer
     // core dumps during intentional crash tests (e.g. chrome://crash).
-    execFileSync('prlimit', ['--core=0:', `--pid=${process.pid}`]);
+    execFileSync('prlimit', ['--core=0:', `--pid=${process.pid}`], {
+      stdio: 'ignore',
+    });
   } catch {
     // Ignore if prlimit is unavailable.
   }

@@ -16,7 +16,7 @@ import {LifecycleWatcher} from './LifecycleWatcher.js';
 import type {NetworkManager} from './NetworkManager.js';
 
 describe('LifecycleWatcher', () => {
-  it('terminates navigation immediately when the page crashes', async () => {
+  function createMockFrame() {
     const page = new EventEmitter();
     const frameManager = new EventEmitter();
     const networkManager = new EventEmitter() as unknown as NetworkManager;
@@ -31,7 +31,11 @@ describe('LifecycleWatcher', () => {
         return page;
       },
     }) as unknown as CdpFrame;
+    return {page, networkManager, frame};
+  }
 
+  it('terminates navigation immediately when the page crashes', async () => {
+    const {page, networkManager, frame} = createMockFrame();
     const watcher = new LifecycleWatcher(networkManager, frame, 'load', 30_000);
 
     const crashError = new Error('Page crashed!');
@@ -39,5 +43,14 @@ describe('LifecycleWatcher', () => {
 
     await expect(watcher.terminationPromise()).resolves.toBe(crashError);
     watcher.dispose();
+  });
+
+  it('removes the page error listener when disposed without a crash', () => {
+    const {page, networkManager, frame} = createMockFrame();
+    const watcher = new LifecycleWatcher(networkManager, frame, 'load', 30_000);
+
+    expect(page.listenerCount(PageEvent.Error)).toBe(1);
+    watcher.dispose();
+    expect(page.listenerCount(PageEvent.Error)).toBe(0);
   });
 });

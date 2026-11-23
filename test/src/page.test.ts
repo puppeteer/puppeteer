@@ -278,7 +278,7 @@ describe('Page', function () {
           () => {
             return true;
           },
-          page.getDefaultTimeout(),
+          10_000,
         ),
         navigate,
       ]);
