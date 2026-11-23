@@ -17,3 +17,7 @@ class Target {
 **Returns:**
 
 Promise&lt;[Page](./puppeteer.page.md)&gt;
+
+## Remarks
+
+For a `"tab"` target, forces a page for the child target that shows the content of the tab, and throws if the tab has no such child yet. Throws for a target with the `"prerender"` [subtype](./puppeteer.target.subtype.md).
