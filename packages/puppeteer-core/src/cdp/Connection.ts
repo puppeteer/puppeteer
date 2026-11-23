@@ -37,12 +37,16 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #sessions = new Map<string, CdpCDPSession>();
   #closed = false;
   /**
-   * Number of in-flight manual attaches per target. A target can have several
-   * at once (e.g. concurrent `page.createCDPSession()` calls), and it must stay
-   * marked until the last one resolves, or a later `Target.attachedToTarget`
-   * is mistaken for the target's auto-attached session.
+   * FIFO queue of in-flight `_createSession` calls per target. A target can
+   * have several attaches in flight at once (e.g. concurrent
+   * `page.createCDPSession()` or emulated auto-attach calls), so the head of
+   * the queue reflects whether the next `Target.attachedToTarget` event for
+   * that target is an emulated auto-attach or a manual attach.
    */
-  #manuallyAttached = new Map<string, number>();
+  #pendingCreateSessions = new Map<
+    string,
+    Array<{isAutoAttachEmulated: boolean}>
+  >();
   #rejectEmulateNetworkConditionsCalls = false;
   #callbacks: CallbackRegistry;
   #rawErrors = false;
@@ -281,6 +285,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     this.#transport.onmessage = undefined;
     this.#transport.onclose = undefined;
     this.#callbacks.clear();
+    this.#pendingCreateSessions.clear();
     for (const session of this.#sessions.values()) {
       session.onClosed();
     }
@@ -297,7 +302,11 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
    * @internal
    */
   isAutoAttached(targetId: string): boolean {
-    return !this.#manuallyAttached.has(targetId);
+    const queue = this.#pendingCreateSessions.get(targetId);
+    if (!queue || queue.length === 0) {
+      return true;
+    }
+    return queue[0]!.isAutoAttachEmulated;
   }
 
   /**
@@ -308,12 +317,13 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     isAutoAttachEmulated = true,
   ): Promise<CdpCDPSession> {
     const {targetId} = targetInfo;
-    if (!isAutoAttachEmulated) {
-      this.#manuallyAttached.set(
-        targetId,
-        (this.#manuallyAttached.get(targetId) ?? 0) + 1,
-      );
+    const entry = {isAutoAttachEmulated};
+    let queue = this.#pendingCreateSessions.get(targetId);
+    if (!queue) {
+      queue = [];
+      this.#pendingCreateSessions.set(targetId, queue);
     }
+    queue.push(entry);
     let sessionId: string;
     try {
       ({sessionId} = await this.send('Target.attachToTarget', {
@@ -321,12 +331,14 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
         flatten: true,
       }));
     } finally {
-      if (!isAutoAttachEmulated) {
-        const pending = (this.#manuallyAttached.get(targetId) ?? 1) - 1;
-        if (pending > 0) {
-          this.#manuallyAttached.set(targetId, pending);
-        } else {
-          this.#manuallyAttached.delete(targetId);
+      const pending = this.#pendingCreateSessions.get(targetId);
+      if (pending) {
+        const index = pending.indexOf(entry);
+        if (index !== -1) {
+          pending.splice(index, 1);
+        }
+        if (pending.length === 0) {
+          this.#pendingCreateSessions.delete(targetId);
         }
       }
     }

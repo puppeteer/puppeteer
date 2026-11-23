@@ -197,6 +197,7 @@ export class TargetManager
   dispose(): void {
     this.#subscriptions.dispose();
     this.#removeAttachmentListeners(this.#connection);
+    this.#pendingSilentDetaches.clear();
   }
 
   getAvailableTargets(): ReadonlyMap<string, CdpTarget> {
@@ -276,7 +277,7 @@ export class TargetManager
   #silentDetach = async (
     session: CdpCDPSession,
     parentSession: Connection | CDPSession,
-    targetId?: string,
+    targetId: string,
   ): Promise<void> => {
     const detachPromise = (async () => {
       await session.send('Runtime.runIfWaitingForDebugger').catch(error => {
@@ -293,25 +294,20 @@ export class TargetManager
         });
     })();
 
-    if (targetId !== undefined) {
-      let set = this.#pendingSilentDetaches.get(targetId);
-      if (!set) {
-        set = new Set();
-        this.#pendingSilentDetaches.set(targetId, set);
-      }
-      set.add(detachPromise);
-      try {
-        await detachPromise;
-      } finally {
-        set.delete(detachPromise);
-        if (set.size === 0) {
-          this.#pendingSilentDetaches.delete(targetId);
-        }
-      }
-      return;
+    let set = this.#pendingSilentDetaches.get(targetId);
+    if (!set) {
+      set = new Set();
+      this.#pendingSilentDetaches.set(targetId, set);
     }
-
-    await detachPromise;
+    set.add(detachPromise);
+    try {
+      await detachPromise;
+    } finally {
+      set.delete(detachPromise);
+      if (set.size === 0) {
+        this.#pendingSilentDetaches.delete(targetId);
+      }
+    }
   };
 
   #getParentTarget = (
@@ -430,6 +426,10 @@ export class TargetManager
     // If we connect to a browser that is already open,
     // immediately detach from any tab that is on the blocklist.
     if (!this.#initialAttachDone && !this.isUrlAllowed(targetInfo.url)) {
+      const parentTarget = this.#getParentTarget(parentSession);
+      if (parentTarget?.type() === 'tab') {
+        this.#finishInitializationIfReady(parentTarget._targetId);
+      }
       await this.#silentDetach(session, parentSession, targetInfo.targetId);
       return;
     }
@@ -553,17 +553,21 @@ export class TargetManager
     // The browser might be shutting down here, so we
     // ignore potential errors.
     await Promise.all([
-      session.send('Target.setAutoAttach', {
-        waitForDebuggerOnStart: true,
-        flatten: true,
-        autoAttach: true,
-        filter: this.#discoveryFilter,
-      }),
+      session
+        .send('Target.setAutoAttach', {
+          waitForDebuggerOnStart: true,
+          flatten: true,
+          autoAttach: true,
+          filter: this.#discoveryFilter,
+        })
+        .catch(error => {
+          this.#finishInitializationIfReady(target._targetId);
+          throw error;
+        }),
       this.#maybeSetupNetworkConditions(session, targetInfo),
       session.send('Runtime.runIfWaitingForDebugger'),
     ]).catch(error => {
       this.#logger?.(DEBUG_PREFIXES.error)?.(error);
-      this.#finishInitializationIfReady(target._targetId);
     });
   };
 

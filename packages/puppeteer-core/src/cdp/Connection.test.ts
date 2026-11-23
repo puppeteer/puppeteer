@@ -8,6 +8,7 @@ import {afterEach, describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
@@ -149,6 +150,42 @@ describe('Connection', () => {
       const session2 = await session2Promise;
       expect(session2.id()).toBe('session-2');
       expect(connection.isAutoAttached(targetId)).toBe(true);
+    });
+
+    it('should track FIFO order for concurrent emulated auto-attach and manual attach', async () => {
+      const {connection, transport} = createConnection();
+
+      const autoAttachPromise = connection._createSession({targetId}, true);
+      const manualAttachPromise = connection._createSession({targetId}, false);
+      const [autoCommand, manualCommand] = transport.sent;
+
+      // Emulated auto-attach is at the head of the FIFO queue.
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+
+      transport.acceptAttach(autoCommand!, 'session-auto');
+      await autoAttachPromise;
+      // Now the manual attach is at the head of the queue.
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+
+      transport.acceptAttach(manualCommand!, 'session-manual');
+      await manualAttachPromise;
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+    });
+
+    it('should clear pending attach state synchronously on disconnect', async () => {
+      const {connection} = createConnection();
+
+      const sessionPromise = connection._createSession({targetId}, false);
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+
+      let autoAttachedDuringDisconnect = false;
+      connection.once(CDPSessionEvent.Disconnected, () => {
+        autoAttachedDuringDisconnect = connection.isAutoAttached(targetId);
+      });
+
+      connection.dispose();
+      expect(autoAttachedDuringDisconnect).toBe(true);
+      await expect(sessionPromise).rejects.toThrow();
     });
   });
 });

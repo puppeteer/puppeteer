@@ -119,5 +119,68 @@ describe('WorkerTarget', function () {
 
       await expect(worker).rejects.toThrow(TargetCloseError);
     });
+
+    it('should detach via parentSession and drain silent detaches even if _closeTarget fails', async () => {
+      const calls: string[] = [];
+      const parentSend = sinon.stub().callsFake(async (method, params) => {
+        calls.push(`parent:${method}:${JSON.stringify(params)}`);
+      });
+      const parentSession = {send: parentSend};
+      const session = {
+        detached: false,
+        id: () => {
+          return 'sw-session-1';
+        },
+        parentSession: () => {
+          return parentSession;
+        },
+        connection: () => {
+          return {
+            send: sinon.stub().rejects(new Error('Should use parentSession')),
+          };
+        },
+      };
+      const closeTarget = sinon.stub().callsFake(async targetId => {
+        calls.push(`closeTarget:${targetId}`);
+        throw new Error('Target already closed');
+      });
+      let waitCalls = 0;
+      const waitForSilentDetaches = sinon.stub().callsFake(async targetId => {
+        waitCalls++;
+        calls.push(`wait:${waitCalls}:${targetId}`);
+      });
+      const target = new WorkerTarget(
+        {
+          targetId: 'sw-target-1',
+          type: 'service_worker',
+        } as Protocol.Target.TargetInfo,
+        undefined,
+        {
+          browser: () => {
+            return {_closeTarget: closeTarget};
+          },
+        } as unknown as BrowserContext,
+        {
+          getAttachedSessions: () => {
+            return [session as unknown as CdpCDPSession];
+          },
+          waitForSilentDetaches,
+        } as unknown as TargetManager,
+        () => {
+          return Promise.reject(new Error('Attach failed'));
+        },
+        () => {
+          return undefined;
+        },
+      );
+
+      await expect(target.close()).rejects.toThrow('Target already closed');
+      expect(calls).toEqual([
+        'wait:1:sw-target-1',
+        'closeTarget:sw-target-1',
+        'parent:Target.detachFromTarget:{"sessionId":"sw-session-1"}',
+        'wait:2:sw-target-1',
+      ]);
+    });
   });
 });
