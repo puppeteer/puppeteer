@@ -9,6 +9,7 @@ import {afterEach, describe, it, mock} from 'node:test';
 import {BidiMapper} from 'chromium-bidi';
 import expect from 'expect';
 
+import {CDPSessionEvent} from '../api/CDPSession.js';
 import {Connection as CdpConnection} from '../cdp/Connection.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {Deferred} from '../util/Deferred.js';
@@ -92,5 +93,76 @@ describe('connectBidiOverCdp', () => {
     const bidiConnection = await connectBidiOverCdp(cdp, noopLogger);
     expect(createCalled).toBe(false);
     expect(bidiConnection.closed).toBe(true);
+    expect(cdp.listenerCount(CDPSessionEvent.Disconnected)).toBe(0);
+  });
+
+  it('removes the CDP disconnect listener when createAndStart fails', async () => {
+    const transport = new TestCdpTransport();
+    const cdp = new CdpConnection(
+      'ws://127.0.0.1',
+      transport,
+      0,
+      undefined,
+      false,
+      createIncrementalIdGenerator(),
+      noopLogger,
+    );
+
+    mock.method(BidiMapper.BidiServer, 'createAndStart', async () => {
+      throw new Error('startup failed');
+    });
+
+    await expect(connectBidiOverCdp(cdp, noopLogger)).rejects.toThrow(
+      'startup failed',
+    );
+    expect(cdp.listenerCount(CDPSessionEvent.Disconnected)).toBe(0);
+    cdp.dispose();
+  });
+
+  it('delivers queued bidiResponse messages before closing on CDP disconnect', async () => {
+    const transport = new TestCdpTransport();
+    const cdp = new CdpConnection(
+      'ws://127.0.0.1',
+      transport,
+      0,
+      undefined,
+      false,
+      createIncrementalIdGenerator(),
+      noopLogger,
+    );
+
+    let capturedTransport:
+      {sendMessage(message: object): Promise<void>} | undefined;
+    mock.method(
+      BidiMapper.BidiServer,
+      'createAndStart',
+      async (bidiTransport: {sendMessage(message: object): Promise<void>}) => {
+        capturedTransport = bidiTransport;
+        return {close() {}} as unknown as BidiMapper.BidiServer;
+      },
+    );
+
+    const bidiConnection = await connectBidiOverCdp(cdp, noopLogger);
+    const events: string[] = [];
+    bidiConnection.on('log.entryAdded', () => {
+      events.push('log.entryAdded');
+    });
+    const closedPromise = new Promise<void>(resolve => {
+      bidiConnection.once('closed', () => {
+        events.push('closed');
+        resolve();
+      });
+    });
+
+    // Emit a BiDi event and disconnect CDP in the same tick.
+    void capturedTransport!.sendMessage({
+      type: 'event',
+      method: 'log.entryAdded',
+      params: {},
+    });
+    transport.onclose?.();
+
+    await closedPromise;
+    expect(events).toEqual(['log.entryAdded', 'closed']);
   });
 });

@@ -26,6 +26,7 @@ export type BidiEvents = {
 export interface Connection<
   Events extends BidiEvents = BidiEvents,
 > extends EventEmitter<Events> {
+  readonly closed?: boolean;
   send<T extends keyof Commands>(
     method: T,
     params: Commands[T]['params'],

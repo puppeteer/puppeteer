@@ -99,50 +99,52 @@ describe('Browser specs', function () {
   });
 
   describe('Browser.connected', () => {
-    let state: Awaited<ReturnType<typeof launch>> | undefined;
-
-    before(async function () {
-      this.timeout(30_000);
-      state = await launch({}, {after: 'all'});
-    });
-
-    after(async () => {
-      if (state?.browser) {
-        const cleanupBrowser = await state.puppeteer
-          .connect({
-            browserWSEndpoint: state.browser.wsEndpoint(),
-            protocol: state.browser.protocol,
-          })
-          .catch(() => {
-            return undefined;
-          });
-        await cleanupBrowser?.close();
-        state.browser.process()?.kill();
-      }
-      await state?.close();
-    });
-
     it('should set the browser connected state', async () => {
-      const {puppeteer} = state!;
-      let currentBrowser = state!.browser;
-      const browserWSEndpoint = currentBrowser.wsEndpoint();
-      if (!currentBrowser.connected) {
-        currentBrowser = await puppeteer.connect({
-          browserWSEndpoint,
-          protocol: currentBrowser.protocol,
-        });
-      }
-      expect(currentBrowser.connected).toBe(true);
-      await currentBrowser.disconnect();
-      expect(currentBrowser.connected).toBe(false);
+      const {browser, puppeteer, close} = await launch({});
+      const browserWSEndpoint = browser.wsEndpoint();
+      const protocol = browser.protocol;
 
-      const newBrowser = await puppeteer.connect({
-        browserWSEndpoint,
-        protocol: currentBrowser.protocol,
-      });
-      expect(newBrowser.connected).toBe(true);
-      await newBrowser.disconnect();
-      expect(newBrowser.connected).toBe(false);
+      try {
+        expect(browser.connected).toBe(true);
+        await browser.disconnect();
+        expect(browser.connected).toBe(false);
+
+        using newBrowser = await puppeteer.connect({
+          browserWSEndpoint,
+          protocol,
+        });
+        expect(newBrowser.connected).toBe(true);
+        await newBrowser.disconnect();
+        expect(newBrowser.connected).toBe(false);
+      } finally {
+        try {
+          const cleanupBrowser = await puppeteer
+            .connect({
+              browserWSEndpoint,
+              protocol,
+            })
+            .catch(() => {
+              return undefined;
+            });
+          await cleanupBrowser?.close();
+        } finally {
+          const browserProcess = browser.process();
+          if (
+            browserProcess &&
+            browserProcess.exitCode === null &&
+            browserProcess.signalCode === null
+          ) {
+            const exited = new Promise<void>(resolve => {
+              browserProcess.once('exit', () => {
+                resolve();
+              });
+            });
+            browserProcess.kill();
+            await exited;
+          }
+          await close();
+        }
+      }
     });
   });
 

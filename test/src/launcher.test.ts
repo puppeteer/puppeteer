@@ -21,7 +21,7 @@ import {getTestState, launch} from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
-const FIREFOX_TIMEOUT = 60_000;
+const FIREFOX_TIMEOUT = 30_000;
 
 describe('Launcher specs', function () {
   this.timeout(FIREFOX_TIMEOUT);
@@ -996,6 +996,8 @@ describe('Launcher specs', function () {
   });
 
   describe('Browser.Events.disconnected', function () {
+    this.timeout(60_000);
+
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async () => {
       const {puppeteer, browser, close} = await launch({});
       try {

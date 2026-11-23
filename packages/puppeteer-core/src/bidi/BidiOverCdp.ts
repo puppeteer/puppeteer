@@ -20,6 +20,13 @@ import type {Handler} from '../common/EventEmitter.js';
 
 import {BidiConnection} from './Connection.js';
 
+const scheduleMacrotask =
+  typeof setImmediate === 'function'
+    ? setImmediate
+    : (callback: () => void) => {
+        setTimeout(callback, 0);
+      };
+
 /**
  * @internal
  */
@@ -37,11 +44,23 @@ export async function connectBidiOverCdp(
   const cdpConnectionAdapter = new CdpConnectionAdapter(cdp);
   let bidiServer: BidiMapper.BidiServer | undefined;
   let closed = false;
+  let forceClosed = false;
+  let pendingResponses = 0;
+  let pendingDisconnectClose = false;
+  const onCdpDisconnected = () => {
+    closeResources();
+    if (pendingResponses > 0) {
+      pendingDisconnectClose = true;
+    } else {
+      pptrTransport.onclose?.();
+    }
+  };
   const closeResources = () => {
     if (closed) {
       return;
     }
     closed = true;
+    cdp.off(CDPSessionEvent.Disconnected, onCdpDisconnected);
     bidiServer?.close();
     cdpConnectionAdapter.close();
   };
@@ -51,6 +70,8 @@ export async function connectBidiOverCdp(
       transportBiDi.emitMessage(JSON.parse(message));
     },
     close(): void {
+      forceClosed = true;
+      pendingDisconnectClose = false;
       closeResources();
       cdp.dispose();
     },
@@ -60,12 +81,22 @@ export async function connectBidiOverCdp(
   };
   transportBiDi.on('bidiResponse', (message: object) => {
     // Forwards a BiDi event sent by BidiServer to Puppeteer.
-    // Dispatch in setImmediate (matching PipeTransport and NodeWebSocketTransport)
-    // so microtasks from each BiDi message drain before the next message runs.
+    // Dispatch in a macrotask (matching PipeTransport and ws
+    // allowSynchronousEvents: false) so microtasks from each BiDi message
+    // drain before the next message runs.
+    if (forceClosed) {
+      return;
+    }
     const raw = JSON.stringify(message);
-    setImmediate(() => {
-      if (!closed) {
+    pendingResponses++;
+    scheduleMacrotask(() => {
+      pendingResponses--;
+      if (!forceClosed) {
         pptrTransport.onmessage?.(raw);
+      }
+      if (pendingDisconnectClose && pendingResponses === 0) {
+        pendingDisconnectClose = false;
+        pptrTransport.onclose?.();
       }
     });
   });
@@ -77,16 +108,11 @@ export async function connectBidiOverCdp(
     cdp.timeout,
     logger,
   );
-  const onCdpDisconnected = () => {
-    closeResources();
-    pptrTransport.onclose?.();
-  };
-  cdp.once(CDPSessionEvent.Disconnected, onCdpDisconnected);
   if (cdp._closed) {
-    cdp.off(CDPSessionEvent.Disconnected, onCdpDisconnected);
     onCdpDisconnected();
     return pptrBiDiConnection;
   }
+  cdp.on(CDPSessionEvent.Disconnected, onCdpDisconnected);
   try {
     bidiServer = await BidiMapper.BidiServer.createAndStart(
       transportBiDi,
@@ -97,8 +123,10 @@ export async function connectBidiOverCdp(
       bidiServerLogger,
     );
   } catch (error) {
-    cdp.off(CDPSessionEvent.Disconnected, onCdpDisconnected);
+    forceClosed = true;
+    pendingDisconnectClose = false;
     closeResources();
+    pptrBiDiConnection.unbind();
     throw error;
   }
   if (closed) {
