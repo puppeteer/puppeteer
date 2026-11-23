@@ -315,6 +315,34 @@ describe('Emulation', () => {
     });
   });
 
+  describe('Page.emulateMediaType and Page.emulateMediaFeatures', function () {
+    it('should not reset each other', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaType('print');
+      await page.emulateMediaFeatures([
+        {name: 'prefers-reduced-motion', value: 'reduce'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return [
+            matchMedia('print').matches,
+            matchMedia('(prefers-reduced-motion: reduce)').matches,
+          ];
+        }),
+      ).toEqual([true, true]);
+      await page.emulateMediaType('screen');
+      expect(
+        await page.evaluate(() => {
+          return [
+            matchMedia('print').matches,
+            matchMedia('(prefers-reduced-motion: reduce)').matches,
+          ];
+        }),
+      ).toEqual([false, true]);
+    });
+  });
+
   describe('Page.emulateMediaFeatures', function () {
     it('should work', async () => {
       const {page} = await getTestState();
