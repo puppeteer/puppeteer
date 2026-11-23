@@ -107,6 +107,11 @@ export abstract class Target {
    * Throws if the target does not support closing, for example the browser
    * target, the target of a frame or a dedicated worker.
    *
+   * Chrome destroys a service worker only after all CDP sessions attached to
+   * it detach. While a different session, for example one from
+   * {@link Target.createCDPSession}, stays attached to a service worker,
+   * `close()` might not resolve.
+   *
    * @experimental
    */
   abstract close(): Promise<void>;

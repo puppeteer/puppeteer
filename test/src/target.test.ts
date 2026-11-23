@@ -6,8 +6,10 @@
 
 import type {ServerResponse} from 'node:http';
 
+import type {TestServer} from '@pptr/testserver';
 import expect from 'expect';
-import {type Target, TimeoutError} from 'puppeteer';
+import {type Target, TimeoutError, UnsupportedOperation} from 'puppeteer';
+import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
 import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 
@@ -260,20 +262,15 @@ describe('Target', function () {
       blocklist: ['*://*:*/empty.html'],
     });
     try {
-      const page = await browser.newPage();
-      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+      // With network rules, Puppeteer stays attached to service workers, also
+      // through the page that registered them.
+      const page = await openServiceWorkerPage(browser, server);
       const target = await browser.waitForTarget(
         target => {
           return target.type() === 'service_worker';
         },
         {timeout: 3000},
       );
-      // With network rules, Puppeteer stays attached to service workers, also
-      // through the page that registered them. Waiting until the service
-      // worker is ready gives the page time to attach.
-      await page.evaluate(async () => {
-        await navigator.serviceWorker.ready;
-      });
       const worker = (await target.worker())!;
       const targetDestroyed = waitEvent(
         browser,
@@ -282,10 +279,12 @@ describe('Target', function () {
           return destroyed === target;
         },
       );
+      const {destroyed} = await watchServiceWorker(page);
 
       await worker.close();
 
       expect(await targetDestroyed).toBe(target);
+      await destroyed;
     } finally {
       await close();
     }
@@ -466,37 +465,61 @@ describe('Target', function () {
       expect(await targetDestroyed).toBe(target);
     });
 
-    it('should close a service worker target when network rules are set', async () => {
+    it('should close a service worker target used by two pages when network rules are set', async () => {
       const {browser, server, close} = await launch({
         blocklist: ['*://*:*/empty.html'],
       });
       try {
-        const page = await browser.newPage();
-        await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+        // With network rules, Puppeteer stays attached to service workers,
+        // also through each page that uses them.
+        const page = await openServiceWorkerPage(browser, server);
+        await openServiceWorkerPage(browser, server);
         const target = await browser.waitForTarget(
           target => {
             return target.type() === 'service_worker';
           },
           {timeout: 3000},
         );
-        // With network rules, Puppeteer stays attached to service workers,
-        // also through the page that registered them. Waiting until the
-        // service worker is ready gives the page time to attach.
-        await page.evaluate(async () => {
-          await navigator.serviceWorker.ready;
+        let destroyedCount = 0;
+        browser.on('targetdestroyed', destroyed => {
+          if (destroyed === target) {
+            destroyedCount++;
+          }
         });
-        const targetDestroyed = waitEvent(
-          browser,
-          'targetdestroyed',
-          destroyed => {
-            return destroyed === target;
-          },
-        );
+        const {destroyed} = await watchServiceWorker(page);
 
         await target.close();
 
         expect(browser.targets()).not.toContain(target);
-        expect(await targetDestroyed).toBe(target);
+        await destroyed;
+        expect(destroyedCount).toBe(1);
+      } finally {
+        await close();
+      }
+    });
+
+    it('should close a service worker target after a page that used it closed when network rules are set', async () => {
+      const {browser, server, close} = await launch({
+        blocklist: ['*://*:*/empty.html'],
+      });
+      try {
+        const page = await openServiceWorkerPage(browser, server);
+        // Puppeteer reports the service worker as gone when a page that uses
+        // it closes, and creates a new target for it when another page
+        // attaches. Puppeteer still keeps the sessions of the old target.
+        await (await openServiceWorkerPage(browser, server)).close();
+        await openServiceWorkerPage(browser, server);
+        const target = await browser.waitForTarget(
+          target => {
+            return target.type() === 'service_worker';
+          },
+          {timeout: 3000},
+        );
+        const {destroyed} = await watchServiceWorker(page);
+
+        await target.close();
+
+        await destroyed;
       } finally {
         await close();
       }
@@ -596,7 +619,11 @@ describe('Target', function () {
     it('should throw if the target does not support closing', async () => {
       const {browser, close} = await launch({});
       try {
-        await expect(browser.target().close()).rejects.toThrow();
+        // Chrome rejects `Target.closeTarget` for the browser target, and
+        // chrome-headless-shell reports that it did not close it.
+        await expect(browser.target().close()).rejects.toThrow(
+          browser.protocol === 'cdp' ? /support closing/ : UnsupportedOperation,
+        );
         expect(browser.connected).toBe(true);
       } finally {
         await close();
@@ -616,7 +643,11 @@ describe('Target', function () {
           return target.url() === frameUrl;
         });
 
-        await expect(target.close()).rejects.toThrow();
+        await expect(target.close()).rejects.toThrow(
+          browser.protocol === 'cdp'
+            ? 'The target of a frame does not support closing'
+            : UnsupportedOperation,
+        );
 
         expect(page.isClosed()).toBe(false);
         expect(
@@ -703,3 +734,45 @@ describe('Target', function () {
     });
   });
 });
+
+/**
+ * Opens a page that registers a service worker and waits until the service
+ * worker is ready, which gives Puppeteer time to attach to it through the page.
+ */
+async function openServiceWorkerPage(
+  browser: Browser,
+  server: TestServer,
+): Promise<Page> {
+  const page = await browser.newPage();
+  await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  return page;
+}
+
+/**
+ * Watches the targets of the browser through a CDP session of the page.
+ * `destroyed` resolves when Chrome reports the service worker as destroyed,
+ * which it does only after all sessions attached to it detach.
+ */
+async function watchServiceWorker(
+  page: Page,
+): Promise<{destroyed: Promise<void>}> {
+  const session = await page.createCDPSession();
+  const destroyed = new Promise<void>(resolve => {
+    let targetId: string | undefined;
+    session.on('Target.targetCreated', event => {
+      if (event.targetInfo.type === 'service_worker') {
+        targetId = event.targetInfo.targetId;
+      }
+    });
+    session.on('Target.targetDestroyed', event => {
+      if (event.targetId === targetId) {
+        resolve();
+      }
+    });
+  });
+  await session.send('Target.setDiscoverTargets', {discover: true});
+  return {destroyed};
+}
