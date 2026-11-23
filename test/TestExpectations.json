@@ -1094,16 +1094,16 @@
   {
     "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Firefox WebDriver BiDi does not yet provide a stable remote connection lifecycle for this test."
   },
   {
     "testIdPattern": "[browser.test] Browser specs Browser.connected should set the browser connected state",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "Firefox WebDriver BiDi does not yet provide a stable remote connection lifecycle for this test."
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[browser.test] Browser specs Browser.on(\"console\") should report console messages from dedicated workers",
@@ -1358,16 +1358,16 @@
   {
     "testIdPattern": "[fixtures.test] Fixtures should close the browser when the node process closes",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "pipe"],
-    "expectations": ["SKIP"],
-    "comment": "We can't connect to a browser started with pipe:true"
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "The browser `disconnect` event is not emitted"
   },
   {
     "testIdPattern": "[fixtures.test] Fixtures should close the browser when the node process closes",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "The browser `disconnect` event is not emitted"
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
   },
   {
     "testIdPattern": "[fixtures.test] Fixtures should dump browser process stderr",
@@ -1455,6 +1455,13 @@
   {
     "testIdPattern": "[launcher.test] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Times out in Chrome over WebDriver BiDi: the connected browsers do not reliably emit the `disconnected` event. Skipped in https://github.com/puppeteer/puppeteer/pull/11824."
+  },
+  {
+    "testIdPattern": "[launcher.test] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "The test connects multiple clients to one browser. Firefox does not support multiple WebDriver BiDi sessions. See https://bugzilla.mozilla.org/show_bug.cgi?id=1862018"
@@ -1465,13 +1472,6 @@
     "parameters": ["chrome", "pipe"],
     "expectations": ["SKIP"],
     "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[launcher.test] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "Times out in Chrome over WebDriver BiDi: the connected browsers do not reliably emit the `disconnected` event. Skipped in https://github.com/puppeteer/puppeteer/pull/11824."
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Browser.close should terminate network waiters",
@@ -1543,17 +1543,17 @@
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"],
-    "comment": "targetFilter is not implemented in BiDi, but waitForInitialPage: false can finish before the initial page target is created"
-  },
-  {
-    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["PASS", "TIMEOUT"],
     "comment": "Flaky test needing investigation, seems to be Windows only."
+  },
+  {
+    "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": "targetFilter is not implemented in BiDi, but waitForInitialPage: false can finish before the initial page target is created"
   },
   {
     "testIdPattern": "[launcher.test] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default argument in Firefox",

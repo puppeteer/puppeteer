@@ -52,6 +52,9 @@ describe('request proxy', () => {
 
   beforeEach(async () => {
     proxiedRequestUrls = [];
+    const {server} = await getTestState({
+      skipLaunch: true,
+    });
 
     proxyServer = http.createServer((originalRequest, originalResponse) => {
       if (!originalRequest.url || !URL.canParse(originalRequest.url)) {
@@ -60,12 +63,17 @@ describe('request proxy', () => {
         return;
       }
       const parsedUrl = new URL(originalRequest.url);
+      const targetPort = parsedUrl.port || '80';
       // Ignore background browser requests (e.g. component updates, telemetry,
       // captive portal checks) not targeting the test server. Tests in this
-      // suite must target `HOSTNAME` (e.g. via `getEmptyPageUrl(server)`), as
-      // requests to any other host return 404.
+      // suite must target `HOSTNAME` on the test server's HTTP port (e.g. via
+      // `getEmptyPageUrl(server)`), as all other requests return 404.
       // See https://crbug.com/576202737.
-      if (parsedUrl.hostname !== HOSTNAME) {
+      if (
+        parsedUrl.protocol !== 'http:' ||
+        parsedUrl.hostname !== HOSTNAME ||
+        targetPort !== String(server.PORT)
+      ) {
         originalResponse.writeHead(404);
         originalResponse.end();
         return;
@@ -75,8 +83,11 @@ describe('request proxy', () => {
       }
 
       const proxyRequest = http.request(
-        originalRequest.url,
         {
+          protocol: 'http:',
+          hostname: HOSTNAME,
+          port: server.PORT,
+          path: `${parsedUrl.pathname}${parsedUrl.search}`,
           method: originalRequest.method,
           headers: originalRequest.headers,
         },
@@ -96,10 +107,10 @@ describe('request proxy', () => {
     });
 
     await new Promise<void>(resolve => {
-      proxyServer.listen(0, resolve);
+      proxyServer.listen(0, '127.0.0.1', resolve);
     });
 
-    proxyServerUrl = `http://${HOSTNAME}:${
+    proxyServerUrl = `http://127.0.0.1:${
       (proxyServer.address() as AddressInfo).port
     }`;
   });
