@@ -55,11 +55,23 @@ export class BidiElementHandle<
     return this.handle.remoteValue();
   }
 
+  async #withObjectId<T>(fn: (objectId: string) => Promise<T>): Promise<T> {
+    if (this.handle.id !== undefined) {
+      return await fn(this.handle.id);
+    }
+    await using handle = await this.evaluateHandle(element => {
+      return element;
+    });
+    return await fn(handle.id!);
+  }
+
   @throwIfDisposed()
   override async autofill(data: AutofillData): Promise<void> {
     const client = this.frame.client;
-    const nodeInfo = await client.send('DOM.describeNode', {
-      objectId: this.handle.id,
+    const nodeInfo = await this.#withObjectId(objectId => {
+      return client.send('DOM.describeNode', {
+        objectId,
+      });
     });
     const fieldId = nodeInfo.node.backendNodeId;
     const frameId = this.frame._id;
@@ -137,15 +149,18 @@ export class BidiElementHandle<
     });
   }
 
+  @throwIfDisposed()
   override async backendNodeId(): Promise<number> {
     if (!this.frame.page().browser().cdpSupported) {
       throw new UnsupportedOperation();
     }
-    if (this.#backendNodeId) {
+    if (this.#backendNodeId !== undefined) {
       return this.#backendNodeId;
     }
-    const {node} = await this.frame.client.send('DOM.describeNode', {
-      objectId: this.handle.id,
+    const {node} = await this.#withObjectId(objectId => {
+      return this.frame.client.send('DOM.describeNode', {
+        objectId,
+      });
     });
     this.#backendNodeId = node.backendNodeId;
     return this.#backendNodeId;
