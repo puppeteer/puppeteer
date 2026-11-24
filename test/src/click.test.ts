@@ -505,6 +505,28 @@ describe('Page.click', function () {
       }),
     ).toBe('Clicked');
   });
+  it('should click the button inside a scaled iframe', async () => {
+    const {page} = await getTestState();
+
+    const srcdoc =
+      "<button style='position: absolute; left: 100px; top: 100px; width: 50px; height: 50px' onclick='window.result = 1'></button>";
+    for (const style of ['zoom: 2', 'transform: scale(1.5)']) {
+      await page.setContent(
+        html`<iframe
+          style="${style}; width: 300px; height: 300px"
+          srcdoc="${srcdoc}"
+        ></iframe>`,
+      );
+      const frame = page.frames()[1]!;
+      using button = (await frame.$('button'))!;
+      await button.click();
+      expect(
+        await frame.evaluate(() => {
+          return (globalThis as any).result;
+        }),
+      ).toBe(1);
+    }
+  });
   // @see https://github.com/puppeteer/puppeteer/issues/4110
   it('should click the button with fixed position inside an iframe', async () => {
     const {page, server} = await getTestState();

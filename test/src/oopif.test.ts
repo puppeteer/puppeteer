@@ -468,6 +468,40 @@ describe('OOPIF', function () {
     expect(resultBoundingBox.y).toBeGreaterThan(150); // padding + margin + border top
   });
 
+  it('clickablePoint should work for elements inside scaled OOPIFs', async () => {
+    const {server, page} = state;
+    await page.goto(server.EMPTY_PAGE);
+    await page.addStyleTag({
+      content: `
+        body { margin: 0; }
+        iframe { border: none; transform: scale(2); transform-origin: 0 0; }
+      `,
+    });
+    const framePromise = page.waitForFrame(frame => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html',
+    );
+    const frame = await framePromise;
+    await frame.evaluate(() => {
+      const div = document.createElement('div');
+      div.style.position = 'absolute';
+      div.style.left = '30px';
+      div.style.top = '40px';
+      div.style.width = '20px';
+      div.style.height = '10px';
+      document.body.appendChild(div);
+    });
+    using div = (await frame.waitForSelector('div', {visible: true}))!;
+    expect(await div.clickablePoint()).toEqual({
+      x: (30 + 10) * 2, // (div.left + half width) * scale
+      y: (40 + 5) * 2,
+    });
+  });
+
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
     const {server, puppeteer, browser, page} = state;
 

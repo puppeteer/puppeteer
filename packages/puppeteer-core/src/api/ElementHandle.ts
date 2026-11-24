@@ -1201,23 +1201,38 @@ export abstract class ElementHandle<
         }
         const rect = element.getBoundingClientRect();
         const style = window.getComputedStyle(element);
+        // The frame can be scaled by CSS `zoom` or `transform`. The rendered
+        // size differs from the layout size then. `offsetWidth` is rounded,
+        // so differences below one pixel are not treated as scaling.
+        const scaleX =
+          Math.abs(rect.width - element.offsetWidth) >= 1
+            ? rect.width / element.offsetWidth
+            : 1;
+        const scaleY =
+          Math.abs(rect.height - element.offsetHeight) >= 1
+            ? rect.height / element.offsetHeight
+            : 1;
         return {
           left:
             rect.left +
-            parseInt(style.paddingLeft, 10) +
-            parseInt(style.borderLeftWidth, 10),
+            parseInt(style.paddingLeft, 10) * scaleX +
+            parseInt(style.borderLeftWidth, 10) * scaleX,
           top:
             rect.top +
-            parseInt(style.paddingTop, 10) +
-            parseInt(style.borderTopWidth, 10),
+            parseInt(style.paddingTop, 10) * scaleY +
+            parseInt(style.borderTopWidth, 10) * scaleY,
+          scaleX,
+          scaleY,
         };
       });
       if (!parentBox) {
         return null;
       }
       for (const box of boxes) {
-        box.x += parentBox.left;
-        box.y += parentBox.top;
+        box.x = parentBox.left + box.x * parentBox.scaleX;
+        box.y = parentBox.top + box.y * parentBox.scaleY;
+        box.width *= parentBox.scaleX;
+        box.height *= parentBox.scaleY;
       }
       await handle.#intersectBoundingBoxesWithFrame(boxes);
       frame = parentFrame;
@@ -1277,10 +1292,10 @@ export abstract class ElementHandle<
       return null;
     }
     return {
-      x: box.x + offset.x,
-      y: box.y + offset.y,
-      height: box.height,
-      width: box.width,
+      x: box.x * offset.scaleX + offset.x,
+      y: box.y * offset.scaleY + offset.y,
+      height: box.height * offset.scaleY,
+      width: box.width * offset.scaleX,
     };
   }
 
@@ -1383,15 +1398,17 @@ export abstract class ElementHandle<
       'margin',
     ] as const) {
       for (const point of model[attribute]) {
-        point.x += offset.x;
-        point.y += offset.y;
+        point.x = point.x * offset.scaleX + offset.x;
+        point.y = point.y * offset.scaleY + offset.y;
       }
     }
+    model.width *= offset.scaleX;
+    model.height *= offset.scaleY;
     return model;
   }
 
   async #getTopLeftCornerOfFrame() {
-    const point = {x: 0, y: 0};
+    const point = {x: 0, y: 0, scaleX: 1, scaleY: 1};
     let frame = this.frame;
     let parentFrame: Frame | null | undefined;
     while ((parentFrame = frame?.parentFrame())) {
@@ -1406,22 +1423,37 @@ export abstract class ElementHandle<
         }
         const rect = element.getBoundingClientRect();
         const style = window.getComputedStyle(element);
+        // The frame can be scaled by CSS `zoom` or `transform`. The rendered
+        // size differs from the layout size then. `offsetWidth` is rounded,
+        // so differences below one pixel are not treated as scaling.
+        const scaleX =
+          Math.abs(rect.width - element.offsetWidth) >= 1
+            ? rect.width / element.offsetWidth
+            : 1;
+        const scaleY =
+          Math.abs(rect.height - element.offsetHeight) >= 1
+            ? rect.height / element.offsetHeight
+            : 1;
         return {
           left:
             rect.left +
-            parseInt(style.paddingLeft, 10) +
-            parseInt(style.borderLeftWidth, 10),
+            parseInt(style.paddingLeft, 10) * scaleX +
+            parseInt(style.borderLeftWidth, 10) * scaleX,
           top:
             rect.top +
-            parseInt(style.paddingTop, 10) +
-            parseInt(style.borderTopWidth, 10),
+            parseInt(style.paddingTop, 10) * scaleY +
+            parseInt(style.borderTopWidth, 10) * scaleY,
+          scaleX,
+          scaleY,
         };
       });
       if (!parentBox) {
         return null;
       }
-      point.x += parentBox.left;
-      point.y += parentBox.top;
+      point.x = parentBox.left + point.x * parentBox.scaleX;
+      point.y = parentBox.top + point.y * parentBox.scaleY;
+      point.scaleX *= parentBox.scaleX;
+      point.scaleY *= parentBox.scaleY;
       frame = parentFrame;
     }
     return point;
