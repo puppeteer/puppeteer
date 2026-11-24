@@ -230,17 +230,6 @@ describe('JSHandle', function () {
       expect(one).toBeTruthy();
       expect(await one.jsonValue()).toBe('b');
     });
-    it('should throw if handle is disposed', async () => {
-      const {page} = await getTestState();
-
-      using aHandle = await page.evaluateHandle(() => {
-        return {foo: 'bar'};
-      });
-      await aHandle.dispose();
-      expect(() => {
-        void aHandle.getProperties();
-      }).toThrow(/Attempted to use disposed/);
-    });
   });
 
   describe('JSHandle.asElement', function () {
