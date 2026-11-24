@@ -341,10 +341,17 @@ describe('cooperative request interception', function () {
         }
       });
       let failedRequests = 0;
-      page.on('requestfailed', () => {
-        return ++failedRequests;
+      page.on('requestfailed', request => {
+        if (!isFavicon(request)) {
+          ++failedRequests;
+        }
       });
-      const response = await page.goto(server.PREFIX + '/one-style.html');
+      const [response] = await Promise.all([
+        page.goto(server.PREFIX + '/one-style.html'),
+        waitEvent<HTTPRequest>(page, 'requestfailed', request => {
+          return !isFavicon(request);
+        }),
+      ]);
       expect(response!.ok()).toBe(true);
       expect(response!.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
