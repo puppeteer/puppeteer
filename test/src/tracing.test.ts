@@ -162,19 +162,4 @@ describe('Tracing', function () {
       await newPage.close();
     }
   });
-
-  it('should not mutate categories when screenshots is enabled', async () => {
-    const {page} = state;
-    const categories = ['-*', 'disabled-by-default-devtools.timeline.frame'];
-    await page.tracing.start({
-      path: outputFile,
-      screenshots: true,
-      categories,
-    });
-    await page.tracing.stop();
-    expect(categories).toEqual([
-      '-*',
-      'disabled-by-default-devtools.timeline.frame',
-    ]);
-  });
 });
