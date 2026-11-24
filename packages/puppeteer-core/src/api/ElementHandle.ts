@@ -101,6 +101,14 @@ export interface ClickOptions extends MouseClickOptions {
    * @experimental
    */
   debugHighlight?: boolean;
+  /**
+   * Whether to check that the click point is not covered by another element.
+   * Set to `false` to skip the check and click even if the click point is
+   * covered.
+   *
+   * @defaultValue `true`
+   */
+  checkCoverage?: boolean;
 }
 
 /**
@@ -776,7 +784,9 @@ export abstract class ElementHandle<
    * If the element is detached from DOM, the method throws an error.
    * If another element covers the click point, the element is scrolled to the
    * center of the viewport, and the method throws an error if the click point
-   * is still covered.
+   * is still covered. The covered check does not run for elements in child
+   * frames and can be turned off with
+   * {@link ClickOptions.checkCoverage | `options.checkCoverage`}.
    */
   @throwIfDisposed()
   @bindIsolatedHandle
@@ -784,9 +794,17 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     options: Readonly<ClickOptions> = {},
   ): Promise<void> {
+    const checkCovered = options.checkCoverage !== false;
     await this.scrollIntoViewIfNeeded();
-    let {x, y, coveredBy} = await this.#clickablePoint(options.offset, true);
+    let {x, y, coveredBy} = await this.#clickablePoint(
+      options.offset,
+      checkCovered,
+    );
     if (coveredBy) {
+      // Scroll the element to the center of the viewport. scrollIntoView()
+      // cannot be used here: on CDP it calls DOM.scrollIntoViewIfNeeded,
+      // which does not scroll when the element is already in the viewport
+      // even if it is covered by another element.
       await this.evaluate(element => {
         element.scrollIntoView({
           block: 'center',
@@ -794,7 +812,10 @@ export abstract class ElementHandle<
           behavior: 'instant',
         });
       });
-      ({x, y, coveredBy} = await this.#clickablePoint(options.offset, true));
+      ({x, y, coveredBy} = await this.#clickablePoint(
+        options.offset,
+        checkCovered,
+      ));
       if (coveredBy) {
         throw new Error(`Node is covered by ${coveredBy} at the click point`);
       }
@@ -1214,7 +1235,7 @@ export abstract class ElementHandle<
         if (!(element instanceof Element)) {
           return null;
         }
-        const root = element.getRootNode() as Document | ShadowRoot;
+        const root = element.getRootNode();
         const viewportWidth = document.documentElement.clientWidth;
         const viewportHeight = document.documentElement.clientHeight;
         // Walks the flat tree, i.e. through slots and shadow hosts.
@@ -1229,6 +1250,16 @@ export abstract class ElementHandle<
                 ? current.host
                 : ((current instanceof Element ? current.assignedSlot : null) ??
                   current.parentNode);
+          }
+          // Element.assignedSlot returns null for slots in closed shadow
+          // roots, so the walk cannot see them. The slot assignment can
+          // still be checked from within the tree via assignedNodes.
+          if (ancestor instanceof Element) {
+            for (const slot of ancestor.querySelectorAll('slot')) {
+              if (slot.assignedNodes({flatten: true}).includes(node)) {
+                return true;
+              }
+            }
           }
           return false;
         };
@@ -1263,10 +1294,15 @@ export abstract class ElementHandle<
           if (!checkCovered || width < 1 || height < 1) {
             continue;
           }
-          const topElement = root.elementFromPoint(
-            offset ? x + offset.x : x + width / 2,
-            offset ? y + offset.y : y + height / 2,
-          );
+          // elementFromPoint is only defined on Document and ShadowRoot. For
+          // other roots the covered check cannot run.
+          const topElement =
+            root instanceof Document || root instanceof ShadowRoot
+              ? root.elementFromPoint(
+                  offset ? x + offset.x : x + width / 2,
+                  offset ? y + offset.y : y + height / 2,
+                )
+              : null;
           if (
             !topElement ||
             isFlatTreeAncestor(element, topElement) ||
@@ -1279,6 +1315,10 @@ export abstract class ElementHandle<
             element instanceof HTMLLabelElement &&
             element.control === topElement
           ) {
+            continue;
+          }
+          // A click inside a label activates the labeled control.
+          if (element.closest('label')?.control === topElement) {
             continue;
           }
           if (

@@ -676,6 +676,87 @@ describe('Page.click', function () {
       }),
     ).toBe(true);
   });
+  it('should click an element that has slotted content in a closed shadow root', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`
+      <div id="host"><span id="slotted">slotted</span></div>
+    `);
+    await using handle = await page.evaluateHandle(() => {
+      const host = document.querySelector('#host')!;
+      const shadowRoot = host.attachShadow({mode: 'closed'});
+      shadowRoot.innerHTML = '<button id="inner"><slot></slot></button>';
+      const button = shadowRoot.querySelector('#inner')!;
+      (globalThis as any).clicked = [];
+      button.addEventListener('click', () => {
+        (globalThis as any).clicked.push('inner');
+      });
+      return button;
+    });
+    await handle.asElement()!.click();
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).clicked;
+      }),
+    ).toEqual(['inner']);
+  });
+  it('should click an element in a label that is covered by the control', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`
+      <style>
+        label {
+          position: relative;
+          display: block;
+          width: 100px;
+          height: 30px;
+        }
+        input {
+          position: absolute;
+          inset: 0;
+          margin: 0;
+          opacity: 0;
+          z-index: 1;
+        }
+        #checkmark {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <label>
+        <input
+          id="checkbox"
+          type="checkbox"
+        />
+        <span id="checkmark"></span>
+      </label>
+    `);
+    await page.click('#checkmark');
+    expect(
+      await page.$eval('#checkbox', element => {
+        return (element as HTMLInputElement).checked;
+      }),
+    ).toBe(true);
+  });
+  it('should click a covered element when the covered check is turned off', async () => {
+    const {page} = await getTestState();
+
+    await page.setContent(html`
+      <style>
+        #overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+      <button id="target">target</button>
+      <div id="overlay"></div>
+    `);
+    await using button = (await page.$('#target'))!;
+    await button.click({checkCoverage: false});
+  });
   it('should double click the button', async () => {
     const {page, server} = await getTestState();
 
