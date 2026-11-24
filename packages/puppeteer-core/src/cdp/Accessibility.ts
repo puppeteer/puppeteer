@@ -264,31 +264,36 @@ export class Accessibility {
       backendNodeId = node.backendNodeId;
     }
     const defaultRoot = AXNode.createTree(this.#realm, nodes);
-    const populateIframes = async (root: AXNode): Promise<void> => {
-      if (root.payload.role?.value === 'Iframe') {
-        if (!root.payload.backendDOMNodeId) {
-          return;
-        }
-        using handle = (await this.#realm.adoptBackendNode(
-          root.payload.backendDOMNodeId,
-        )) as ElementHandle<Element>;
-        if (!handle || !('contentFrame' in handle)) {
-          return;
-        }
-        const frame = await handle.contentFrame();
-        if (!frame) {
+    const populateIframes = async (node: AXNode): Promise<void> => {
+      if (node.payload.role?.value === 'Iframe') {
+        if (!node.payload.backendDOMNodeId) {
           return;
         }
         try {
-          const iframeSnapshot = await frame.accessibility.snapshot(options);
-          root.iframeSnapshot = iframeSnapshot ?? undefined;
+          using handle = (await this.#realm.adoptBackendNode(
+            node.payload.backendDOMNodeId,
+          )) as ElementHandle<Element>;
+          if (!handle || !('contentFrame' in handle)) {
+            return;
+          }
+          const frame = await handle.contentFrame();
+          if (!frame) {
+            return;
+          }
+          // Scope `root` to the originating frame; child frames snapshot
+          // their own full subtrees.
+          const iframeSnapshot = await frame.accessibility.snapshot({
+            interestingOnly,
+            includeIframes,
+          });
+          node.iframeSnapshot = iframeSnapshot ?? undefined;
         } catch (error) {
           // Frames can get detached at any time resulting in errors.
           this.#logger?.(DEBUG_PREFIXES.error)?.(error);
         }
       }
       await Promise.all(
-        root.children.map(child => {
+        node.children.map(child => {
           return populateIframes(child);
         }),
       );
@@ -299,10 +304,6 @@ export class Accessibility {
       return null;
     }
 
-    if (includeIframes) {
-      await populateIframes(defaultRoot);
-    }
-
     if (backendNodeId) {
       needle = defaultRoot.find(node => {
         return node.payload.backendDOMNodeId === backendNodeId;
@@ -311,6 +312,10 @@ export class Accessibility {
 
     if (!needle) {
       return null;
+    }
+
+    if (includeIframes) {
+      await populateIframes(needle);
     }
 
     if (!interestingOnly) {
