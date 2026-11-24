@@ -200,6 +200,7 @@ export class Coverage {
 export class JSCoverage {
   #client: CDPSession;
   #enabled = false;
+  #generation = 0;
   #scriptURLs = new Map<string, string>();
   #scriptSources = new Map<string, string>();
   #subscriptions?: DisposableStack;
@@ -243,8 +244,10 @@ export class JSCoverage {
     this.#reportAnonymousScripts = reportAnonymousScripts;
     this.#includeRawScriptCoverage = includeRawScriptCoverage;
     this.#enabled = true;
+    this.#generation++;
     this.#scriptURLs.clear();
     this.#scriptSources.clear();
+    this.#subscriptions?.dispose();
     this.#subscriptions = new DisposableStack();
     const clientEmitter = this.#subscriptions.use(
       new EventEmitter(this.#client),
@@ -254,21 +257,30 @@ export class JSCoverage {
       'Runtime.executionContextsCleared',
       this.#onExecutionContextsCleared.bind(this),
     );
-    await Promise.all([
-      this.#client.send('Profiler.enable'),
-      this.#client.send('Profiler.startPreciseCoverage', {
-        callCount: this.#includeRawScriptCoverage,
-        detailed: useBlockCoverage,
-      }),
-      this.#client.send('Debugger.enable'),
-      this.#client.send('Debugger.setSkipAllPauses', {skip: true}),
-    ]);
+    try {
+      await Promise.all([
+        this.#client.send('Profiler.enable'),
+        this.#client.send('Profiler.startPreciseCoverage', {
+          callCount: this.#includeRawScriptCoverage,
+          detailed: useBlockCoverage,
+        }),
+        this.#client.send('Debugger.enable'),
+        this.#client.send('Debugger.setSkipAllPauses', {skip: true}),
+      ]);
+    } catch (error) {
+      this.#enabled = false;
+      this.#generation++;
+      this.#subscriptions.dispose();
+      this.#subscriptions = undefined;
+      throw error;
+    }
   }
 
   #onExecutionContextsCleared(): void {
     if (!this.#resetOnNavigation) {
       return;
     }
+    this.#generation++;
     this.#scriptURLs.clear();
     this.#scriptSources.clear();
   }
@@ -284,10 +296,14 @@ export class JSCoverage {
     if (!event.url && !this.#reportAnonymousScripts) {
       return;
     }
+    const generation = this.#generation;
     try {
       const response = await this.#client.send('Debugger.getScriptSource', {
         scriptId: event.scriptId,
       });
+      if (generation !== this.#generation) {
+        return;
+      }
       this.#scriptURLs.set(event.scriptId, event.url);
       this.#scriptSources.set(event.scriptId, response.scriptSource);
     } catch (error) {
@@ -300,14 +316,19 @@ export class JSCoverage {
     assert(this.#enabled, 'JSCoverage is not enabled');
     this.#enabled = false;
 
-    const result = await Promise.all([
-      this.#client.send('Profiler.takePreciseCoverage'),
-      this.#client.send('Profiler.stopPreciseCoverage'),
-      this.#client.send('Profiler.disable'),
-      this.#client.send('Debugger.disable'),
-    ]);
-
-    this.#subscriptions?.dispose();
+    let result;
+    try {
+      result = await Promise.all([
+        this.#client.send('Profiler.takePreciseCoverage'),
+        this.#client.send('Profiler.stopPreciseCoverage'),
+        this.#client.send('Profiler.disable'),
+        this.#client.send('Debugger.disable'),
+      ]);
+    } finally {
+      this.#generation++;
+      this.#subscriptions?.dispose();
+      this.#subscriptions = undefined;
+    }
 
     const coverage = [];
     const profileResponse = result[0];
@@ -342,6 +363,7 @@ export class JSCoverage {
 export class CSSCoverage {
   #client: CDPSession;
   #enabled = false;
+  #generation = 0;
   #stylesheetURLs = new Map<string, string>();
   #stylesheetSources = new Map<string, string>();
   #eventListeners?: DisposableStack;
@@ -366,8 +388,10 @@ export class CSSCoverage {
     const {resetOnNavigation = true} = options;
     this.#resetOnNavigation = resetOnNavigation;
     this.#enabled = true;
+    this.#generation++;
     this.#stylesheetURLs.clear();
     this.#stylesheetSources.clear();
+    this.#eventListeners?.dispose();
     this.#eventListeners = new DisposableStack();
     const clientEmitter = this.#eventListeners.use(
       new EventEmitter(this.#client),
@@ -378,17 +402,26 @@ export class CSSCoverage {
       this.#onExecutionContextsCleared.bind(this),
     );
 
-    await Promise.all([
-      this.#client.send('DOM.enable'),
-      this.#client.send('CSS.enable'),
-      this.#client.send('CSS.startRuleUsageTracking'),
-    ]);
+    try {
+      await Promise.all([
+        this.#client.send('DOM.enable'),
+        this.#client.send('CSS.enable'),
+        this.#client.send('CSS.startRuleUsageTracking'),
+      ]);
+    } catch (error) {
+      this.#enabled = false;
+      this.#generation++;
+      this.#eventListeners.dispose();
+      this.#eventListeners = undefined;
+      throw error;
+    }
   }
 
   #onExecutionContextsCleared(): void {
     if (!this.#resetOnNavigation) {
       return;
     }
+    this.#generation++;
     this.#stylesheetURLs.clear();
     this.#stylesheetSources.clear();
   }
@@ -399,10 +432,14 @@ export class CSSCoverage {
     if (!header.sourceURL) {
       return;
     }
+    const generation = this.#generation;
     try {
       const response = await this.#client.send('CSS.getStyleSheetText', {
         styleSheetId: header.styleSheetId,
       });
+      if (generation !== this.#generation) {
+        return;
+      }
       this.#stylesheetURLs.set(header.styleSheetId, header.sourceURL);
       this.#stylesheetSources.set(header.styleSheetId, response.text);
     } catch (error) {
@@ -414,14 +451,20 @@ export class CSSCoverage {
   async stop(): Promise<CoverageEntry[]> {
     assert(this.#enabled, 'CSSCoverage is not enabled');
     this.#enabled = false;
-    const ruleTrackingResponse = await this.#client.send(
-      'CSS.stopRuleUsageTracking',
-    );
-    await Promise.all([
-      this.#client.send('CSS.disable'),
-      this.#client.send('DOM.disable'),
-    ]);
-    this.#eventListeners?.dispose();
+    let ruleTrackingResponse;
+    try {
+      ruleTrackingResponse = await this.#client.send(
+        'CSS.stopRuleUsageTracking',
+      );
+      await Promise.all([
+        this.#client.send('CSS.disable'),
+        this.#client.send('DOM.disable'),
+      ]);
+    } finally {
+      this.#generation++;
+      this.#eventListeners?.dispose();
+      this.#eventListeners = undefined;
+    }
 
     // aggregate by styleSheetId
     const styleSheetIdToCoverage = new Map();
