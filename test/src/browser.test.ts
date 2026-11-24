@@ -99,15 +99,46 @@ describe('Browser specs', function () {
   });
 
   describe('Browser.connected', () => {
-    it('should set the browser connected state', async () => {
-      const {browser, puppeteer} = await getTestState({
-        skipContextCreation: true,
-      });
+    let state: Awaited<ReturnType<typeof launch>> | undefined;
 
-      const browserWSEndpoint = browser.wsEndpoint();
-      using newBrowser = await puppeteer.connect({
+    before(async function () {
+      this.timeout(30_000);
+      state = await launch({}, {after: 'all'});
+    });
+
+    after(async () => {
+      if (state?.browser) {
+        const cleanupBrowser = await state.puppeteer
+          .connect({
+            browserWSEndpoint: state.browser.wsEndpoint(),
+            protocol: state.browser.protocol,
+          })
+          .catch(() => {
+            return undefined;
+          });
+        await cleanupBrowser?.close();
+        state.browser.process()?.kill();
+      }
+      await state?.close();
+    });
+
+    it('should set the browser connected state', async () => {
+      const {puppeteer} = state!;
+      let currentBrowser = state!.browser;
+      const browserWSEndpoint = currentBrowser.wsEndpoint();
+      if (!currentBrowser.connected) {
+        currentBrowser = await puppeteer.connect({
+          browserWSEndpoint,
+          protocol: currentBrowser.protocol,
+        });
+      }
+      expect(currentBrowser.connected).toBe(true);
+      await currentBrowser.disconnect();
+      expect(currentBrowser.connected).toBe(false);
+
+      const newBrowser = await puppeteer.connect({
         browserWSEndpoint,
-        protocol: browser.protocol,
+        protocol: currentBrowser.protocol,
       });
       expect(newBrowser.connected).toBe(true);
       await newBrowser.disconnect();
