@@ -668,15 +668,17 @@ describe('cooperative request interception', function () {
       page.on('request', async r => {
         return (request = r);
       });
-      void (page.$eval(
-        'iframe',
-        (frame, url) => {
-          return (frame.src = url as string);
-        },
-        server.EMPTY_PAGE,
-      ),
-      // Wait for request interception.
-      await waitEvent(page, 'request'));
+      void (
+        page.$eval(
+          'iframe',
+          (frame, url) => {
+            return (frame.src = url as string);
+          },
+          server.EMPTY_PAGE,
+        ),
+        // Wait for request interception.
+        await waitEvent(page, 'request')
+      );
       // Delete frame to cause request to be canceled.
       await page.$eval('iframe', frame => {
         return frame.remove();
