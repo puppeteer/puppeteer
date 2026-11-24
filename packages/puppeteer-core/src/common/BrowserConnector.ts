@@ -14,6 +14,7 @@ import {isErrnoException, isErrorLike} from '../util/ErrorLike.js';
 import type {ConnectionTransport} from './ConnectionTransport.js';
 import type {ConnectOptions} from './ConnectOptions.js';
 import type {Logger} from './Debug.js';
+import {UnsupportedOperation} from './Errors.js';
 import {assertSupportedUrlRestrictions} from './util.js';
 
 const getWebSocketTransportClass = async () => {
@@ -33,6 +34,12 @@ export async function _connectToBrowser(
   options: ConnectOptions & {logger: Logger},
 ): Promise<Browser> {
   assertSupportedUrlRestrictions(options);
+  if (options.protocol === 'webDriverBiDi' && options.targetFilter) {
+    options.transport?.close();
+    throw new UnsupportedOperation(
+      'targetFilter is not supported with the WebDriver BiDi protocol',
+    );
+  }
   const {connectionTransport, endpointUrl} =
     await getConnectionTransport(options);
 

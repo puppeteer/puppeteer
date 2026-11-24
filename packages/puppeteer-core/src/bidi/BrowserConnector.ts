@@ -30,6 +30,13 @@ export async function _connectToBiDiBrowser(
   options: ConnectOptions,
   logger: Logger,
 ): Promise<BidiBrowser> {
+  if (options.targetFilter) {
+    connectionTransport.close();
+    throw new UnsupportedOperation(
+      'targetFilter is not supported with the WebDriver BiDi protocol',
+    );
+  }
+
   const {
     acceptInsecureCerts = false,
     networkEnabled = true,
