@@ -3,14 +3,17 @@
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-import type {CDPSession} from '../api/CDPSession.js';
+import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import type {Logger} from '../common/Debug.js';
+import {TargetCloseError} from '../common/Errors.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {
   getReadableAsTypedArray,
   getReadableFromProtocolStream,
 } from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
+import {DisposableStack} from '../util/disposable.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 /**
@@ -115,31 +118,37 @@ export class Tracing {
       bufferSize,
     } = options;
 
-    if (screenshots) {
-      categories.push('disabled-by-default-devtools.screenshot');
-    }
+    const effectiveCategories = screenshots
+      ? [...categories, 'disabled-by-default-devtools.screenshot']
+      : categories;
 
-    const excludedCategories = categories
+    const excludedCategories = effectiveCategories
       .filter(cat => {
         return cat.startsWith('-');
       })
       .map(cat => {
         return cat.slice(1);
       });
-    const includedCategories = categories.filter(cat => {
+    const includedCategories = effectiveCategories.filter(cat => {
       return !cat.startsWith('-');
     });
 
     this.#path = path;
     this.#recording = true;
-    await this.#client.send('Tracing.start', {
-      transferMode: 'ReturnAsStream',
-      traceConfig: {
-        excludedCategories,
-        includedCategories,
-        traceBufferSizeInKb: bufferSize,
-      },
-    });
+    try {
+      await this.#client.send('Tracing.start', {
+        transferMode: 'ReturnAsStream',
+        traceConfig: {
+          excludedCategories,
+          includedCategories,
+          traceBufferSizeInKb: bufferSize,
+        },
+      });
+    } catch (error) {
+      this.#recording = false;
+      this.#path = undefined;
+      throw error;
+    }
   }
 
   /**
@@ -148,11 +157,14 @@ export class Tracing {
    */
   async stop(): Promise<Uint8Array | undefined> {
     const contentDeferred = Deferred.create<Uint8Array | undefined>();
-    this.#client.once('Tracing.tracingComplete', async event => {
+    const client = this.#client;
+    using stack = new DisposableStack();
+    const clientEmitter = stack.use(new EventEmitter(client));
+    clientEmitter.once('Tracing.tracingComplete', async event => {
       try {
         assert(event.stream, 'Missing "stream"');
         const readable = await getReadableFromProtocolStream(
-          this.#client,
+          client,
           event.stream,
         );
         const typedArray = await getReadableAsTypedArray(
@@ -169,8 +181,16 @@ export class Tracing {
         }
       }
     });
-    await this.#client.send('Tracing.end');
-    this.#recording = false;
+    clientEmitter.once(CDPSessionEvent.Disconnected, () => {
+      contentDeferred.reject(
+        new TargetCloseError('Tracing failed: Target closed.'),
+      );
+    });
+    try {
+      await client.send('Tracing.end');
+    } finally {
+      this.#recording = false;
+    }
     return await contentDeferred.valueOrThrow();
   }
 }
