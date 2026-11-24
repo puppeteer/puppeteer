@@ -11,6 +11,7 @@ import expect from 'expect';
 import sinon from 'sinon';
 
 import type {BrowserContext} from '../api/BrowserContext.js';
+import {TargetCloseError} from '../common/Errors.js';
 
 import type {CdpCDPSession} from './CdpSession.js';
 import {WorkerTarget} from './Target.js';
@@ -100,6 +101,21 @@ describe('WorkerTarget', function () {
       send.rejects(new Error('Detach failed'));
 
       await expect(target.close()).rejects.toThrow('Detach failed');
+    });
+
+    it('should reject worker() after the sessions to detach were collected', async () => {
+      const {target, send} = createServiceWorkerTarget();
+      let worker: Promise<unknown> | undefined;
+      // `close()` would not detach a session that `worker()` attached now.
+      send.callsFake(async () => {
+        worker = target.worker();
+      });
+
+      const closed = target.close();
+      target._isClosedDeferred.resolve();
+      await closed;
+
+      await expect(worker).rejects.toThrow(TargetCloseError);
     });
   });
 });

@@ -1099,6 +1099,13 @@
     "comment": "Not supported in WebDriver BiDi. Puppeteer does not create targets for shared workers, so no 'shared_worker' target appears."
   },
   {
+    "testIdPattern": "[target.test] Target Target.close should reject worker() while a service worker target closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
+  },
+  {
     "testIdPattern": "[TargetManager.test] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

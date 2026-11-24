@@ -16,6 +16,7 @@ import {PageEvent, type Page} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {WebWorkerEvent} from '../api/WebWorker.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {TargetCloseError} from '../common/Errors.js';
 import type {Viewport} from '../common/Viewport.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -266,6 +267,13 @@ export class CdpTarget extends Target {
     return this._targetManager().getAttachedSessions(this._targetId);
   }
 
+  /**
+   * Whether `close()` is closing the target.
+   */
+  protected _isClosing(): boolean {
+    return this.#closePromise !== undefined;
+  }
+
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
     this.#targetInfo = targetInfo;
     this._checkIfInitialized();
@@ -382,6 +390,12 @@ export class WorkerTarget extends CdpTarget {
 
   override async worker(): Promise<CdpWebWorker | null> {
     if (!this.#workerPromise) {
+      // `close()` detaches the sessions that are attached when Chrome closes
+      // the target, so a session attached later would keep a closed service
+      // worker alive.
+      if (this._isClosing()) {
+        throw new TargetCloseError('Target closed');
+      }
       const session = this._session();
       this.#workerPromise = (
         session

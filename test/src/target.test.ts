@@ -11,6 +11,7 @@ import expect from 'expect';
 import {type Target, TimeoutError, UnsupportedOperation} from 'puppeteer';
 import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {Page} from 'puppeteer-core/internal/api/Page.js';
+import {TargetCloseError} from 'puppeteer-core/internal/common/Errors.js';
 import type {RemoteException} from 'puppeteer-core/internal/common/RemoteException.js';
 
 import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
@@ -569,6 +570,26 @@ describe('Target', function () {
       await Promise.all([target.close(), target.close()]);
 
       expect(context.targets()).not.toContain(target);
+    });
+
+    it('should reject worker() while a service worker target closes', async () => {
+      const {page, server, context} = await getTestState();
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+      const target = await context.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        },
+        {timeout: 3000},
+      );
+      const {destroyed} = await watchServiceWorker(page);
+
+      // A session that `worker()` attached while `close()` runs would keep the
+      // closed service worker alive.
+      const closed = target.close();
+      await expect(target.worker()).rejects.toThrow(TargetCloseError);
+      await closed;
+
+      await destroyed;
     });
 
     it('should do nothing if the target is already closed', async () => {
