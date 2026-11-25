@@ -102,6 +102,25 @@ Get the browser context the target belongs to.
 </td></tr>
 <tr><td>
 
+<span id="close">[close()](./puppeteer.target.close.md)</span>
+
+</td><td>
+
+</td><td>
+
+**_(Experimental)_** Closes the target.
+
+**Remarks:**
+
+It does not create a [Page](./puppeteer.page.md) for the target, so it also closes a page target whose page could not be created. It does not run `beforeunload` handlers.
+
+Throws if the target does not support closing, for example the browser target, the target of a frame or a dedicated worker.
+
+Chrome destroys a service worker only after all CDP sessions attached to it detach. While a different session, for example one from [Target.createCDPSession()](./puppeteer.target.createcdpsession.md), stays attached to a service worker, `close()` might not resolve.
+
+</td></tr>
+<tr><td>
+
 <span id="createcdpsession">[createCDPSession()](./puppeteer.target.createcdpsession.md)</span>
 
 </td><td>

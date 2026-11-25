@@ -314,6 +314,16 @@ export class CdpBrowser extends BrowserBase {
     this.#contexts.delete(contextId);
   }
 
+  async _closeTarget(targetId: string): Promise<void> {
+    const {success} = await this.#connection.send('Target.closeTarget', {
+      targetId,
+    });
+    // chrome-headless-shell does not throw for a target that it cannot close.
+    if (success === false) {
+      throw new Error('The target does not support closing');
+    }
+  }
+
   #createTarget = (
     targetInfo: Protocol.Target.TargetInfo,
     session?: CdpCDPSession,

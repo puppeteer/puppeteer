@@ -94,4 +94,25 @@ export abstract class Target {
    * Get the target that opened this target. Top-level targets return `null`.
    */
   abstract opener(): Target | undefined;
+
+  /**
+   * Closes the target.
+   *
+   * @remarks
+   *
+   * It does not create a {@link Page} for the target, so it also closes a
+   * page target whose page could not be created. It does not run
+   * `beforeunload` handlers.
+   *
+   * Throws if the target does not support closing, for example the browser
+   * target, the target of a frame or a dedicated worker.
+   *
+   * Chrome destroys a service worker only after all CDP sessions attached to
+   * it detach. While a different session, for example one from
+   * {@link Target.createCDPSession}, stays attached to a service worker,
+   * `close()` might not resolve.
+   *
+   * @experimental
+   */
+  abstract close(): Promise<void>;
 }
