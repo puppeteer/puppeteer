@@ -80,6 +80,8 @@ export class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
     filter: (device: DeviceRequestPromptDevice) => boolean,
     options: WaitTimeoutOptions = {},
   ): Promise<DeviceRequestPromptDevice> {
+    options.signal?.throwIfAborted();
+
     for (const device of this.devices) {
       if (filter(device)) {
         return device;
@@ -163,6 +165,8 @@ export class CdpDeviceRequestPromptManager {
       this.#client !== null,
       'Cannot wait for device prompt through detached session!',
     );
+    options.signal?.throwIfAborted();
+
     const needsEnable = this.#deviceRequestPromptDeferreds.size === 0;
     let enablePromise: Promise<void> | undefined;
     if (needsEnable) {
