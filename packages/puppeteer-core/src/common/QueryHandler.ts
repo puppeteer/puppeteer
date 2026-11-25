@@ -204,10 +204,10 @@ export class QueryHandler {
       }
       return await frame.mainRealm().transferHandle(handle);
     } catch (error) {
-      if (!isErrorLike(error)) {
+      if (signal?.aborted && Object.is(error, signal.reason)) {
         throw error;
       }
-      if (error.name === 'AbortError') {
+      if (!isErrorLike(error)) {
         throw error;
       }
       const waitForSelectorError = new (

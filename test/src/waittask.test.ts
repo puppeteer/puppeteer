@@ -387,6 +387,34 @@ describe('waittask specs', function () {
         ),
       ).rejects.toThrow(/aborted/);
     });
+    it('should reject with falsy abort reasons', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await expect(
+        Promise.race([
+          page.waitForFunction(
+            () => {
+              return false;
+            },
+            {signal: AbortSignal.abort(null)},
+          ),
+          createTimeout(300, 'hung'),
+        ]),
+      ).rejects.toBe(null);
+
+      const abortController = new AbortController();
+      const task = page.waitForFunction(
+        () => {
+          return false;
+        },
+        {signal: abortController.signal},
+      );
+      abortController.abort(0);
+      await expect(
+        Promise.race([task, createTimeout(300, 'hung')]),
+      ).rejects.toBe(0);
+    });
     it('can start multiple tasks without node warnings', async () => {
       const {page} = await getTestState();
       let warning: Error | undefined;
@@ -440,6 +468,63 @@ describe('waittask specs', function () {
       });
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
+    });
+
+    it('should preserve custom Error and AbortSignal.timeout abort reasons', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const reason = new Error('custom abort reason');
+      await expect(
+        page.waitForSelector('wrong', {
+          signal: AbortSignal.abort(reason),
+        }),
+      ).rejects.toBe(reason);
+
+      const abortController = new AbortController();
+      const task = page.waitForSelector('wrong', {
+        signal: abortController.signal,
+      });
+      setTimeout(() => {
+        abortController.abort(reason);
+      }, 10);
+      await expect(task).rejects.toBe(reason);
+
+      const timeoutSignal = AbortSignal.timeout(10);
+      const error = await page
+        .waitForSelector('wrong', {
+          signal: timeoutSignal,
+        })
+        .catch(err => {
+          return err;
+        });
+      expect(error).toBe(timeoutSignal.reason);
+      expect((error as Error).name).toBe('TimeoutError');
+    });
+
+    it('should reject with falsy abort reasons', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await expect(
+        Promise.race([
+          page.waitForSelector('wrong', {
+            signal: AbortSignal.abort(null),
+          }),
+          createTimeout(300, 'hung'),
+        ]),
+      ).rejects.toBe(null);
+
+      const abortController = new AbortController();
+      const task = page.waitForSelector('wrong', {
+        signal: abortController.signal,
+      });
+      setTimeout(() => {
+        abortController.abort(0);
+      }, 20);
+      await expect(
+        Promise.race([task, createTimeout(300, 'hung')]),
+      ).rejects.toBe(0);
     });
 
     it('should work with removed MutationObserver', async () => {
