@@ -20,18 +20,37 @@
     <button>Click target</button>
     <script>
       const allEvents = [];
-      const waitForEvents = Promise.withResolvers();
-      globalThis.waitForEvents = waitForEvents.promise;
-      let timeout;
+      const listeners = new Set();
 
       function recordEvent(data) {
         allEvents.push(data);
-        
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          waitForEvents.resolve(allEvents);
-        }, 50);
+        for (const listener of listeners) {
+          listener();
+        }
       }
+
+      globalThis.getEvents = expectedCount => {
+        return new Promise(resolve => {
+          let debounceTimeout;
+          let maxTimeout;
+          const finish = () => {
+            clearTimeout(debounceTimeout);
+            clearTimeout(maxTimeout);
+            listeners.delete(scheduleResolve);
+            resolve(allEvents);
+          };
+          const scheduleResolve = () => {
+            clearTimeout(debounceTimeout);
+            if (allEvents.length < expectedCount) {
+              return;
+            }
+            debounceTimeout = setTimeout(finish, 50);
+          };
+          maxTimeout = setTimeout(finish, 1000);
+          listeners.add(scheduleResolve);
+          scheduleResolve();
+        });
+      };
 
       for (const name of ["touchstart", "touchmove", "touchend"]) {
         globalThis.addEventListener(

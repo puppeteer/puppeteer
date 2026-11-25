@@ -334,6 +334,7 @@ describe('network', function () {
 
         // Load and re-load to make sure it's cached.
         await page.goto(server.PREFIX + '/cached/' + html);
+        responses.clear();
         await page.reload();
 
         expect(responses.size).toBe(2);
@@ -964,7 +965,12 @@ describe('network', function () {
       page.on('request', request => {
         return !isFavicon(request) && requests.push(request);
       });
-      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPResponse>(page, 'response', response => {
+          return response.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(requests).toHaveLength(1);
       const request = requests[0]!;
       expect(request.url()).toBe(server.EMPTY_PAGE);
@@ -1005,7 +1011,12 @@ describe('network', function () {
       page.on('response', response => {
         return !isFavicon(response) && responses.push(response);
       });
-      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPResponse>(page, 'response', response => {
+          return response.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(responses).toHaveLength(1);
       const response = responses[0]!;
       expect(response.url()).toBe(server.EMPTY_PAGE);
@@ -1027,9 +1038,16 @@ describe('network', function () {
       });
       const failedRequests: HTTPRequest[] = [];
       page.on('requestfailed', request => {
-        return failedRequests.push(request);
+        if (!isFavicon(request)) {
+          failedRequests.push(request);
+        }
       });
-      await page.goto(server.PREFIX + '/one-style.html');
+      await Promise.all([
+        page.goto(server.PREFIX + '/one-style.html'),
+        waitEvent<HTTPRequest>(page, 'requestfailed', request => {
+          return !isFavicon(request);
+        }),
+      ]);
       expect(failedRequests).toHaveLength(1);
       const failedRequest = failedRequests[0]!;
       expect(failedRequest.url()).toContain('one-style.css');
@@ -1065,7 +1083,12 @@ describe('network', function () {
       page.on('requestfinished', request => {
         return !isFavicon(request) && requests.push(request);
       });
-      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(requests).toHaveLength(1);
       const request = requests[0]!;
       expect(request.url()).toBe(server.EMPTY_PAGE);
@@ -1077,22 +1100,28 @@ describe('network', function () {
       const {page, server} = await getTestState();
 
       const events: string[] = [];
-      page.on('request', () => {
-        return events.push('request');
+      page.on('request', request => {
+        if (!isFavicon(request)) {
+          events.push('request');
+        }
       });
-      page.on('response', () => {
-        return events.push('response');
+      page.on('response', response => {
+        if (!isFavicon(response)) {
+          events.push('response');
+        }
       });
-      page.on('requestfinished', () => {
-        return events.push('requestfinished');
+      page.on('requestfinished', request => {
+        if (!isFavicon(request)) {
+          events.push('requestfinished');
+        }
       });
-      await page.goto(server.EMPTY_PAGE);
-      // Events can sneak in after the page has navigate
-      expect(events.slice(0, 3)).toEqual([
-        'request',
-        'response',
-        'requestfinished',
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
       ]);
+      expect(events).toEqual(['request', 'response', 'requestfinished']);
     });
     it('should support redirects', async () => {
       const {page, server} = await getTestState();
@@ -1120,7 +1149,12 @@ describe('network', function () {
       });
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
-      const response = (await page.goto(FOO_URL))!;
+      const [response] = await Promise.all([
+        page.goto(FOO_URL),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(events).toEqual([
         `GET ${FOO_URL}`,
         `302 ${FOO_URL}`,
@@ -1131,7 +1165,7 @@ describe('network', function () {
       ]);
 
       // Check redirect chain
-      const redirectChain = response.request().redirectChain();
+      const redirectChain = response!.request().redirectChain();
       expect(redirectChain).toHaveLength(1);
       expect(redirectChain[0]!.url()).toContain('/foo.html');
     });
@@ -1164,10 +1198,15 @@ describe('network', function () {
         res.end('final response');
       });
       const url = server.PREFIX + '/no-location.html';
-      const response = (await page.goto(url))!;
+      const [response] = await Promise.all([
+        page.goto(url),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === url;
+        }),
+      ]);
       expect(events).toEqual([`GET ${url}`, `302 ${url}`, `DONE ${url}`]);
-      expect(response.status()).toBe(302);
-      expect(response.request().redirectChain()).toHaveLength(0);
+      expect(response!.status()).toBe(302);
+      expect(response!.request().redirectChain()).toHaveLength(0);
     });
   });
 
@@ -1375,6 +1414,7 @@ describe('network', function () {
 
         // Load and re-load to make sure it's cached.
         await page.goto(server.PREFIX + '/cached/' + html);
+        responses.clear();
         await page.reload();
 
         expect(responses.get(resource).status()).toBe(200);
@@ -1410,12 +1450,20 @@ describe('network', function () {
 
       const [response] = await Promise.all([
         waitEvent<HTTPResponse>(page, 'response', res => {
-          return !isFavicon(res);
+          return res.url() === server.PREFIX + '/foo';
         }),
         page.evaluate(() => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('GET', '/foo');
-          xhr.send();
+          return new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = () => {
+              resolve();
+            };
+            xhr.onerror = () => {
+              reject(new Error('XHR failed'));
+            };
+            xhr.open('GET', '/foo');
+            xhr.send();
+          });
         }),
       ]);
       expect(response.headers()['set-cookie']).toBe(setCookieString);
