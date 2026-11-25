@@ -225,16 +225,40 @@ export class CdpTarget extends Target {
   }
 
   async #close(): Promise<void> {
-    await (this.browser() as CdpBrowser)._closeTarget(this._targetId);
     if (this.#targetInfo.type === 'service_worker') {
+      // Wait for any concurrent auto-attached sessions on this service worker
+      // to finish detaching, then close the target and detach our sessions so
+      // the worker can stop cleanly.
+      await this._targetManager().waitForSilentDetaches(this._targetId);
+      let closeError: unknown;
+      let hasCloseError = false;
+      try {
+        await (this.browser() as CdpBrowser)._closeTarget(this._targetId);
+      } catch (error) {
+        closeError = error;
+        hasCloseError = true;
+      }
       // Chrome reports a closed service worker as destroyed only after the
       // sessions attached to it detach.
-      const sessions = await this._attachedSessions();
-      await Promise.all(
-        sessions.map(session => {
-          return this.#detach(session);
-        }),
-      );
+      try {
+        const sessions = await this._attachedSessions();
+        await Promise.all(
+          sessions.map(session => {
+            return hasCloseError
+              ? this.#detach(session).catch(error => {
+                  this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+                })
+              : this.#detach(session);
+          }),
+        );
+      } finally {
+        await this._targetManager().waitForSilentDetaches(this._targetId);
+      }
+      if (hasCloseError) {
+        throw closeError;
+      }
+    } else {
+      await (this.browser() as CdpBrowser)._closeTarget(this._targetId);
     }
     await this._isClosedDeferred.valueOrThrow();
   }

@@ -8,6 +8,7 @@ import {afterEach, describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {CDPSessionEvent} from '../api/CDPSession.js';
 import type {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {createIncrementalIdGenerator} from '../util/incremental-id-generator.js';
 
@@ -124,6 +125,67 @@ describe('Connection', () => {
       transport.acceptAttach(manualCommand!, 'manual-session');
       await manual;
       expect(connection.isAutoAttached(targetId)).toBe(true);
+    });
+
+    it('should reference-count manual attaches across concurrent _createSession calls', async () => {
+      const {connection, transport} = createConnection();
+
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+
+      const session1Promise = connection._createSession({targetId}, false);
+      const session2Promise = connection._createSession({targetId}, false);
+
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+      expect(transport.sent).toHaveLength(2);
+
+      const [firstCommand, secondCommand] = transport.sent;
+
+      transport.acceptAttach(firstCommand!, 'session-1');
+      const session1 = await session1Promise;
+      expect(session1.id()).toBe('session-1');
+      // Second manual attach is still pending, so target remains manually attached.
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+
+      transport.acceptAttach(secondCommand!, 'session-2');
+      const session2 = await session2Promise;
+      expect(session2.id()).toBe('session-2');
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+    });
+
+    it('should track FIFO order for concurrent emulated auto-attach and manual attach', async () => {
+      const {connection, transport} = createConnection();
+
+      const autoAttachPromise = connection._createSession({targetId}, true);
+      const manualAttachPromise = connection._createSession({targetId}, false);
+      const [autoCommand, manualCommand] = transport.sent;
+
+      // Emulated auto-attach is at the head of the FIFO queue.
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+
+      transport.acceptAttach(autoCommand!, 'session-auto');
+      await autoAttachPromise;
+      // Now the manual attach is at the head of the queue.
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+
+      transport.acceptAttach(manualCommand!, 'session-manual');
+      await manualAttachPromise;
+      expect(connection.isAutoAttached(targetId)).toBe(true);
+    });
+
+    it('should clear pending attach state synchronously on disconnect', async () => {
+      const {connection} = createConnection();
+
+      const sessionPromise = connection._createSession({targetId}, false);
+      expect(connection.isAutoAttached(targetId)).toBe(false);
+
+      let autoAttachedDuringDisconnect = false;
+      connection.once(CDPSessionEvent.Disconnected, () => {
+        autoAttachedDuringDisconnect = connection.isAutoAttached(targetId);
+      });
+
+      connection.dispose();
+      expect(autoAttachedDuringDisconnect).toBe(true);
+      await expect(sessionPromise).rejects.toThrow();
     });
   });
 });

@@ -124,6 +124,7 @@ export class TargetManager
     CDPSession,
     Protocol.Target.TargetInfo
   >();
+  #pendingSilentDetaches = new Map<string, Set<Promise<void>>>();
   #logger?: Logger;
 
   constructor(
@@ -196,6 +197,7 @@ export class TargetManager
   dispose(): void {
     this.#subscriptions.dispose();
     this.#removeAttachmentListeners(this.#connection);
+    this.#pendingSilentDetaches.clear();
   }
 
   getAvailableTargets(): ReadonlyMap<string, CdpTarget> {
@@ -262,22 +264,50 @@ export class TargetManager
     }
   }
 
+  async waitForSilentDetaches(targetId: string): Promise<void> {
+    while (true) {
+      const pending = this.#pendingSilentDetaches.get(targetId);
+      if (!pending || pending.size === 0) {
+        return;
+      }
+      await Promise.all([...pending]);
+    }
+  }
+
   #silentDetach = async (
     session: CdpCDPSession,
     parentSession: Connection | CDPSession,
+    targetId: string,
   ): Promise<void> => {
-    await session.send('Runtime.runIfWaitingForDebugger').catch(error => {
-      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
-    });
-    // We don't use `session.detach()` because that dispatches all commands on
-    // the connection instead of the parent session.
-    await parentSession
-      .send('Target.detachFromTarget', {
-        sessionId: session.id(),
-      })
-      .catch(error => {
+    const detachPromise = (async () => {
+      await session.send('Runtime.runIfWaitingForDebugger').catch(error => {
         this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       });
+      // We don't use `session.detach()` because that dispatches all commands on
+      // the connection instead of the parent session.
+      await parentSession
+        .send('Target.detachFromTarget', {
+          sessionId: session.id(),
+        })
+        .catch(error => {
+          this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+        });
+    })();
+
+    let set = this.#pendingSilentDetaches.get(targetId);
+    if (!set) {
+      set = new Set();
+      this.#pendingSilentDetaches.set(targetId, set);
+    }
+    set.add(detachPromise);
+    try {
+      await detachPromise;
+    } finally {
+      set.delete(detachPromise);
+      if (set.size === 0) {
+        this.#pendingSilentDetaches.delete(targetId);
+      }
+    }
   };
 
   #getParentTarget = (
@@ -383,7 +413,11 @@ export class TargetManager
       throw new Error(`Session ${event.sessionId} was not created.`);
     }
 
-    if (!this.#connection.isAutoAttached(targetInfo.targetId)) {
+    if (
+      !event.waitingForDebugger &&
+      parentSession === this.#connection &&
+      !this.#connection.isAutoAttached(targetInfo.targetId)
+    ) {
       this.#networkConditionsSessions.set(session, targetInfo);
       await this.#maybeSetupNetworkConditions(session, targetInfo);
       return;
@@ -392,7 +426,11 @@ export class TargetManager
     // If we connect to a browser that is already open,
     // immediately detach from any tab that is on the blocklist.
     if (!this.#initialAttachDone && !this.isUrlAllowed(targetInfo.url)) {
-      await this.#silentDetach(session, parentSession);
+      const parentTarget = this.#getParentTarget(parentSession);
+      if (parentTarget?.type() === 'tab') {
+        this.#finishInitializationIfReady(parentTarget._targetId);
+      }
+      await this.#silentDetach(session, parentSession, targetInfo.targetId);
       return;
     }
 
@@ -443,7 +481,7 @@ export class TargetManager
         this.#attachServiceWorkerTarget(targetInfo, session, parentSession);
         return;
       }
-      await this.#silentDetach(session, parentSession);
+      await this.#silentDetach(session, parentSession, targetInfo.targetId);
       if (
         this.#attachedTargetsByTargetId.has(targetInfo.targetId) ||
         this.#ignoredTargets.has(targetInfo.targetId) ||
@@ -476,7 +514,7 @@ export class TargetManager
       if (parentTarget?.type() === 'tab') {
         this.#finishInitializationIfReady(parentTarget._targetId);
       }
-      await this.#silentDetach(session, parentSession);
+      await this.#silentDetach(session, parentSession, targetInfo.targetId);
       return;
     }
 
@@ -515,12 +553,17 @@ export class TargetManager
     // The browser might be shutting down here, so we
     // ignore potential errors.
     await Promise.all([
-      session.send('Target.setAutoAttach', {
-        waitForDebuggerOnStart: true,
-        flatten: true,
-        autoAttach: true,
-        filter: this.#discoveryFilter,
-      }),
+      session
+        .send('Target.setAutoAttach', {
+          waitForDebuggerOnStart: true,
+          flatten: true,
+          autoAttach: true,
+          filter: this.#discoveryFilter,
+        })
+        .catch(error => {
+          this.#finishInitializationIfReady(target._targetId);
+          throw error;
+        }),
       this.#maybeSetupNetworkConditions(session, targetInfo),
       session.send('Runtime.runIfWaitingForDebugger'),
     ]).catch(error => {
@@ -599,6 +642,7 @@ export class TargetManager
       return;
     }
     this.#attachedTargetsByTargetId.delete(target._targetId);
+    this.#finishInitializationIfReady(target._targetId);
     this.emit(TargetManagerEvent.TargetGone, target);
   };
 
