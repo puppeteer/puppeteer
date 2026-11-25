@@ -210,9 +210,6 @@ export class QueryHandler {
       if (!isErrorLike(error)) {
         throw error;
       }
-      if (error.name === 'AbortError') {
-        throw error;
-      }
       const waitForSelectorError = new (
         error instanceof TimeoutError ? TimeoutError : Error
       )(`Waiting for selector \`${selector}\` failed`);

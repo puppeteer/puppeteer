@@ -22,10 +22,8 @@ export interface DeferredOptions {
  *
  * @internal
  */
-export class Deferred<T, V extends Error = Error> {
-  static create<R, X extends Error = Error>(
-    opts?: DeferredOptions,
-  ): Deferred<R, X> {
+export class Deferred<T, V = Error> {
+  static create<R, X = Error>(opts?: DeferredOptions): Deferred<R, X> {
     return new Deferred<R, X>(opts);
   }
 

@@ -487,10 +487,10 @@ describe('waittask specs', function () {
       });
       setTimeout(() => {
         abortController.abort(reason);
-      }, 20);
+      }, 10);
       await expect(task).rejects.toBe(reason);
 
-      const timeoutSignal = AbortSignal.timeout(20);
+      const timeoutSignal = AbortSignal.timeout(10);
       const error = await page
         .waitForSelector('wrong', {
           signal: timeoutSignal,

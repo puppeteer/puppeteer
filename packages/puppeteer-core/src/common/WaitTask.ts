@@ -41,7 +41,7 @@ export class WaitTask<T = unknown> {
   #genericError = new Error('Waiting failed');
   #timeoutError?: TimeoutError;
 
-  #result = Deferred.create<HandleFor<T>>();
+  #result = Deferred.create<HandleFor<T>, unknown>();
 
   #poller?: JSHandle<Poller<T>>;
   #signal?: AbortSignal;
@@ -194,7 +194,7 @@ export class WaitTask<T = unknown> {
     clearTimeout(this.#timeout);
 
     if (error !== undefined && !this.#result.finished()) {
-      this.#result.reject(error as Error);
+      this.#result.reject(error);
     }
 
     if (this.#poller) {
