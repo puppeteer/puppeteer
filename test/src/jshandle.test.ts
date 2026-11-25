@@ -209,6 +209,27 @@ describe('JSHandle', function () {
       expect(await properties.get('a')!.jsonValue()).toBe('1');
       expect(await properties.get('b')!.jsonValue()).toBe('2');
     });
+    it('should work with primitive values', async () => {
+      const {page} = await getTestState();
+
+      using numberHandle = await page.evaluateHandle(() => {
+        return 42;
+      });
+      const numberProperties = await numberHandle.getProperties();
+      expect(numberProperties.size).toBe(0);
+
+      using stringHandle = await page.evaluateHandle(() => {
+        return 'ab';
+      });
+      const stringProperties = await stringHandle.getProperties();
+      expect(stringProperties.size).toBe(2);
+      using zero = stringProperties.get('0')!;
+      expect(zero).toBeTruthy();
+      expect(await zero.jsonValue()).toBe('a');
+      using one = stringProperties.get('1')!;
+      expect(one).toBeTruthy();
+      expect(await one.jsonValue()).toBe('b');
+    });
   });
 
   describe('JSHandle.asElement', function () {

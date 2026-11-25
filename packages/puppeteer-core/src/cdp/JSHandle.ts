@@ -9,6 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
+import {throwIfDisposed} from '../util/decorators.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
@@ -91,11 +92,15 @@ export class CdpJSHandle<T = unknown> extends JSHandle<T> {
     return this.#remoteObject;
   }
 
+  @throwIfDisposed()
   override async getProperties(): Promise<Map<string, JSHandle<unknown>>> {
+    if (!this.#remoteObject.objectId) {
+      return await super.getProperties();
+    }
     // We use Runtime.getProperties rather than iterative version for
     // improved performance as it allows getting everything at once.
     const response = await this.client.send('Runtime.getProperties', {
-      objectId: this.#remoteObject.objectId!,
+      objectId: this.#remoteObject.objectId,
       ownProperties: true,
     });
     const result = new Map<string, JSHandle>();
