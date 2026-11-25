@@ -13,7 +13,7 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Realm} from '../api/Realm.js';
 import {disposeSymbol} from '../util/disposable.js';
 
-import {Accessibility, type SnapshotOptions} from './Accessibility.js';
+import {Accessibility} from './Accessibility.js';
 
 function createAXNode(
   nodeId: string,
