@@ -285,14 +285,20 @@ export class PageTarget extends CdpTarget {
         session
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
-      ).then(client => {
-        return CdpPage._create(
-          client,
-          this,
-          this.#defaultViewport ?? null,
-          this.logger,
-        );
-      });
+      )
+        .then(client => {
+          return CdpPage._create(
+            client,
+            this,
+            this.#defaultViewport ?? null,
+            this.logger,
+          );
+        })
+        .catch(error => {
+          // Forget a failed initialization so the next call can retry it.
+          this.pagePromise = undefined;
+          throw error;
+        });
     }
     return (await this.pagePromise) ?? null;
   }
@@ -325,17 +331,23 @@ export class WorkerTarget extends CdpTarget {
         session
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
-      ).then(client => {
-        // Service and shared workers create their own NetworkManager.
-        const worker = new CdpWebWorker(
-          client,
-          this,
-          () => {} /* exceptionThrown */,
-          this.logger,
-        );
-        this.#bubbleConsoleMessages(worker);
-        return worker;
-      });
+      )
+        .then(client => {
+          // Service and shared workers create their own NetworkManager.
+          const worker = new CdpWebWorker(
+            client,
+            this,
+            () => {} /* exceptionThrown */,
+            this.logger,
+          );
+          this.#bubbleConsoleMessages(worker);
+          return worker;
+        })
+        .catch(error => {
+          // Forget a failed initialization so the next call can retry it.
+          this.#workerPromise = undefined;
+          throw error;
+        });
     }
     return await this.#workerPromise;
   }
