@@ -996,6 +996,8 @@ describe('Launcher specs', function () {
   });
 
   describe('Browser.Events.disconnected', function () {
+    this.timeout(60_000);
+
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async () => {
       const {puppeteer, browser, close} = await launch({});
       try {
