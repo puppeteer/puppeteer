@@ -2010,7 +2010,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
-    "comment": "Firefox hangs when continueRequest changes the length of the request body"
+    "comment": "Firefox does not update `Content-Length` header which makes our TestServer `request.postBody` wait forever, making Mocha timeout"
   },
   {
     "testIdPattern": "[requestinterception.test] request interception Request.resourceType should work for document type",
