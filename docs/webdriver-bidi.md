@@ -94,7 +94,8 @@ await chromeBrowser.close();
   - Browser.close()
   - Browser.userAgent()
   - Browser.version()
-  - Puppeteer.launch()
+  - Puppeteer.launch() (except `targetFilter`)
+  - Puppeteer.connect() (except `targetFilter`)
 
 - Page automation
   - Frame.goto() (except `referer` and `referrerPolicy`)

@@ -440,7 +440,7 @@ Slows down Puppeteer operations by the specified amount of milliseconds to aid d
 
 </td><td>
 
-Callback to decide if Puppeteer should connect to a given target or not.
+Callback to decide if Puppeteer should connect to a given target or not. Supported only with CDP.
 
 </td><td>
 
