@@ -255,13 +255,13 @@ export class Accessibility {
     );
     let backendNodeId: number | undefined;
     if (root) {
-      const {node} = await this.#realm.environment.client.send(
-        'DOM.describeNode',
-        {
-          objectId: root.id,
-        },
-      );
-      backendNodeId = node.backendNodeId;
+      if (root.disposed) {
+        throw new Error(`Attempted to use disposed ${root.constructor.name}.`);
+      }
+      if (root.frame !== this.#realm.environment) {
+        return null;
+      }
+      backendNodeId = await root.backendNodeId();
     }
     const defaultRoot = AXNode.createTree(this.#realm, nodes);
     const populateIframes = async (root: AXNode): Promise<void> => {
@@ -280,7 +280,10 @@ export class Accessibility {
           return;
         }
         try {
-          const iframeSnapshot = await frame.accessibility.snapshot(options);
+          const iframeSnapshot = await frame.accessibility.snapshot({
+            ...options,
+            root: undefined,
+          });
           root.iframeSnapshot = iframeSnapshot ?? undefined;
         } catch (error) {
           // Frames can get detached at any time resulting in errors.

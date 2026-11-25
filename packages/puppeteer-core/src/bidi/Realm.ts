@@ -347,6 +347,25 @@ export class BidiFrameRealm extends BidiRealm {
     });
   }
 
+  override async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
+    const remoteValue =
+      handle instanceof BidiElementHandle ? handle.remoteValue() : undefined;
+    if (
+      handle instanceof BidiElementHandle &&
+      !this.disposed &&
+      !this.realm.disposed &&
+      !handle.disposed &&
+      handle.handle.id === undefined &&
+      remoteValue !== undefined &&
+      'sharedId' in remoteValue &&
+      remoteValue.sharedId !== undefined &&
+      handle.frame === this.environment
+    ) {
+      return BidiElementHandle.from(remoteValue, this) as unknown as T;
+    }
+    return await super.adoptHandle(handle);
+  }
+
   #bindingsInstalled = false;
   override get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerInjectedUtil>> {
     let promise = Promise.resolve() as Promise<unknown>;
