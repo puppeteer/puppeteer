@@ -32,6 +32,7 @@ import {
   fromAbortSignal,
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
+import {Mutex} from '../util/Mutex.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Extension} from './Extension.js';
@@ -624,6 +625,8 @@ export interface NetworkRestrictions {
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
   #logger: Logger;
+  #pageScreenshotMutex = new Mutex();
+  #screenshotOperationsCount = 0;
 
   /**
    * @internal
@@ -631,6 +634,27 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   constructor(logger: Logger) {
     super(undefined, logger);
     this.#logger = logger;
+  }
+
+  /**
+   * @internal
+   */
+  _startScreenshot(): Promise<InstanceType<typeof Mutex.Guard>> {
+    this.#screenshotOperationsCount++;
+    return this.#pageScreenshotMutex.acquire(() => {
+      this.#screenshotOperationsCount--;
+    });
+  }
+
+  /**
+   * @internal
+   */
+  _waitForScreenshotOperations():
+    Promise<InstanceType<typeof Mutex.Guard>> | undefined {
+    if (this.#screenshotOperationsCount === 0) {
+      return undefined;
+    }
+    return this.#pageScreenshotMutex.acquire();
   }
 
   /**
