@@ -150,8 +150,8 @@
     "testIdPattern": "[network_restrictions.test] Network Restrictions * should fail fetch requests from a shared worker to *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Chrome drops Network.emulateNetworkConditionsByRule for shared workers attached before they start, so their requests bypass the blocklist and allowlist. Fixed in Chromium by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Chrome drops Network.emulateNetworkConditionsByRule for shared workers attached before they start unless WorkerReadyForInspection() restores the storage partition before the command arrives, causing a race where requests usually bypass the blocklist/allowlist (FAIL) but occasionally get blocked (PASS). Fixed in Chromium 160 (160.0.8166.0) by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
   },
   {
     "testIdPattern": "[network_restrictions.test] Network Restrictions WebRTC and WebTransport blocklist *",
@@ -164,8 +164,8 @@
     "testIdPattern": "[network_restrictions.test] Network Restrictions WebSocket * should fail WebSocket connections from a shared worker to *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
-    "expectations": ["FAIL"],
-    "comment": "Chrome does not apply launch-time rules of Network.emulateNetworkConditionsByRule to shared workers, so their WebSocket connections bypass the blocklist and allowlist. The fetch tests for shared workers fail in the same way. Fixed in Chromium by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
+    "expectations": ["FAIL", "PASS"],
+    "comment": "Chrome drops launch-time Network.emulateNetworkConditionsByRule rules for shared workers unless WorkerReadyForInspection() restores the storage partition before the command arrives, so their WebSocket connections usually bypass the blocklist/allowlist (FAIL) but occasionally get blocked (PASS). The fetch tests for shared workers race in the same way. Fixed in Chromium 160 (160.0.8166.0) by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
   },
   {
     "testIdPattern": "[network.test] network Page.setBypassServiceWorker *",
