@@ -9,6 +9,7 @@ on:
     # Run everyday at: https://crontab.guru/#0_7_*_*_1-5 UTC
     - cron: '0 7 * * 1-5'
   workflow_dispatch:
+  pull_request:
 
 jobs:
   chrome-canary-tests:
@@ -20,17 +21,10 @@ jobs:
       matrix:
         suite:
           - chrome-headless
-          - chrome-headful
-          - chrome-headless-shell
-          - chrome-bidi
         os:
-          - ubuntu-latest
           - ubuntu-24.04-arm
-          - windows-latest
-          - macos-15
         shard:
           - 1-2
-          - 2-2
         configs:
           - stable
         exclude:
@@ -82,6 +76,24 @@ jobs:
           PUPPETEER_CHROME_HEADLESS_SHELL_VERSION: canary
           PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: true
           PUPPETEER_TEST_EXPERIMENTAL_CHROME_FEATURES: ${{ matrix.configs == 'experimental' }}
+      - name: Print crash settings
+        run: |
+          cat /proc/sys/kernel/core_pattern
+          ulimit -a
+          which prlimit
+      - name: Run crash test (default core_pattern)
+        continue-on-error: true
+        run: DUMPIO=true DEBUG="puppeteer:protocol:*" xvfb-run --auto-servernum npm run test:chrome:headless
+        env:
+          PUPPETEER_CHROME_VERSION: canary
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: true
+      - name: Run crash test (core_pattern=/dev/null)
+        run: |
+          echo /dev/null | sudo tee /proc/sys/kernel/core_pattern
+          DUMPIO=true DEBUG="puppeteer:protocol:*" xvfb-run --auto-servernum npm run test:chrome:headless
+        env:
+          PUPPETEER_CHROME_VERSION: canary
+          PUPPETEER_CHROME_HEADLESS_SHELL_SKIP_DOWNLOAD: true
       - name: Run all tests (Linux)
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: xvfb-run --auto-servernum npm run test -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}' --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json

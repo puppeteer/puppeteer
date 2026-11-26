@@ -262,7 +262,7 @@ describe('Page', function () {
   });
 
   describe('Page.Events.error', function () {
-    it('should throw when page crashes', async () => {
+    it.only('should throw when page crashes', async () => {
       const {page, isChrome} = await getTestState();
 
       let navigate: Promise<unknown>;
