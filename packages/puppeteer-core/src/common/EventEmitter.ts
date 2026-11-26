@@ -152,8 +152,9 @@ export class EventEmitter<
     type: Key,
     event: EventsWithWildcard<Events>[Key],
   ): boolean {
+    const hasListeners = this.listenerCount(type) > 0;
     this.#emitter.emit(type, event);
-    return this.listenerCount(type) > 0;
+    return hasListeners;
   }
 
   /**
@@ -169,9 +170,16 @@ export class EventEmitter<
       eventData: Key extends '*' ? Events[keyof Events] : never,
     ) => void,
   ): this {
+    let called = false;
     const onceHandler: any = (...args: [any, any]) => {
-      handler(...args);
+      // mitt iterates over a snapshot, so a re-entrant emit can still reach
+      // this handler after it was removed.
+      if (called) {
+        return;
+      }
+      called = true;
       this.off(type, onceHandler);
+      return handler(...args);
     };
 
     // Read the count from `#handlers` directly rather than `listenerCount()`,

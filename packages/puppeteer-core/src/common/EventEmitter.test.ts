@@ -167,6 +167,82 @@ describe('EventEmitter', () => {
       emitter.emit('foo', undefined);
       expect(extra.callCount).toEqual(1);
     });
+
+    it('removes the listener before invoking it', () => {
+      let countDuringCall = -1;
+      emitter.once('foo', () => {
+        countDuringCall = emitter.listenerCount('foo');
+      });
+      emitter.emit('foo', undefined);
+      expect(countDuringCall).toEqual(0);
+      expect(emitter.listenerCount('foo')).toEqual(0);
+    });
+
+    it('does not fire again on a re-entrant emit from inside the listener', () => {
+      let calls = 0;
+      emitter.once('foo', () => {
+        calls++;
+        if (calls < 3) {
+          emitter.emit('foo', undefined);
+        }
+      });
+      emitter.emit('foo', undefined);
+      expect(calls).toEqual(1);
+      expect(emitter.listenerCount('foo')).toEqual(0);
+    });
+
+    it('does not fire twice when an earlier listener re-entrantly emits the same event', () => {
+      let calls = 0;
+      let reentered = false;
+      emitter.on('foo', () => {
+        if (!reentered) {
+          reentered = true;
+          emitter.emit('foo', undefined);
+        }
+      });
+      emitter.once('foo', () => {
+        calls++;
+      });
+      emitter.emit('foo', undefined);
+      expect(calls).toEqual(1);
+    });
+
+    it('removes the listener even if it throws', () => {
+      let calls = 0;
+      emitter.once('foo', () => {
+        calls++;
+        throw new Error('boom');
+      });
+      expect(() => {
+        emitter.emit('foo', undefined);
+      }).toThrow('boom');
+      expect(emitter.listenerCount('foo')).toEqual(0);
+      expect(() => {
+        emitter.emit('foo', undefined);
+      }).not.toThrow();
+      expect(calls).toEqual(1);
+    });
+
+    it('forwards the return value of the listener to subclass wrappers', () => {
+      const returnValues: unknown[] = [];
+      class CapturingEmitter extends EventEmitter<Record<string, unknown>> {
+        override on<Key extends keyof Record<string, unknown> | '*'>(
+          type: Key,
+          handler: (...args: any[]) => any,
+        ): this {
+          return super.on(type, ((...args: any[]) => {
+            returnValues.push(handler(...args));
+          }) as any);
+        }
+      }
+      const capturing = new CapturingEmitter();
+      const result = Promise.resolve('done');
+      capturing.once('foo', (() => {
+        return result;
+      }) as () => void);
+      capturing.emit('foo', undefined);
+      expect(returnValues).toEqual([result]);
+    });
   });
 
   describe('emit', () => {
@@ -197,6 +273,22 @@ describe('EventEmitter', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
       expect(emitter.emit('foo', undefined)).toBe(true);
+    });
+
+    it('returns true when the only listener was added with once', () => {
+      const listener = sinon.spy();
+      emitter.once('foo', listener);
+      expect(emitter.emit('foo', undefined)).toBe(true);
+      expect(emitter.emit('foo', undefined)).toBe(false);
+    });
+
+    it('returns true when a listener removes itself during emit', () => {
+      const listener = () => {
+        emitter.off('foo', listener);
+      };
+      emitter.on('foo', listener);
+      expect(emitter.emit('foo', undefined)).toBe(true);
+      expect(emitter.emit('foo', undefined)).toBe(false);
     });
 
     it('returns false if the event has listeners', () => {
