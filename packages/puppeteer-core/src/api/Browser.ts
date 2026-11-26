@@ -32,6 +32,7 @@ import {
   fromAbortSignal,
 } from '../common/util.js';
 import {asyncDisposeSymbol, disposeSymbol} from '../util/disposable.js';
+import {Mutex} from '../util/Mutex.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Extension} from './Extension.js';
@@ -564,12 +565,21 @@ export interface NetworkRestrictions {
    * A list of {@link https://urlpattern.spec.whatwg.org/ | URLPattern} strings to block.
    * Mutually exclusive with {@link NetworkRestrictions.allowlist}.
    * Passing `[]` or omitting this option means no restriction.
+   *
+   * @remarks
+   * The blocklist does not apply to WebTransport and WebRTC at this time.
+   * See {@link ConnectOptions.blocklist}.
    */
   blocklist?: string[];
   /**
    * A list of {@link https://urlpattern.spec.whatwg.org/ | URLPattern} strings to allow.
    * Mutually exclusive with {@link NetworkRestrictions.blocklist}.
    * Passing `[]` or omitting this option means no restriction.
+   *
+   * @remarks
+   * The allowlist does not apply to WebTransport and to TURN over TCP at
+   * this time. It blocks all WebRTC traffic over UDP.
+   * See {@link ConnectOptions.allowlist}.
    */
   allowlist?: string[];
 }
@@ -615,6 +625,8 @@ export interface NetworkRestrictions {
  */
 export abstract class Browser extends EventEmitter<BrowserEvents> {
   #logger: Logger;
+  #pageScreenshotMutex = new Mutex();
+  #screenshotOperationsCount = 0;
 
   /**
    * @internal
@@ -622,6 +634,27 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
   constructor(logger: Logger) {
     super(undefined, logger);
     this.#logger = logger;
+  }
+
+  /**
+   * @internal
+   */
+  _startScreenshot(): Promise<InstanceType<typeof Mutex.Guard>> {
+    this.#screenshotOperationsCount++;
+    return this.#pageScreenshotMutex.acquire(() => {
+      this.#screenshotOperationsCount--;
+    });
+  }
+
+  /**
+   * @internal
+   */
+  _waitForScreenshotOperations():
+    Promise<InstanceType<typeof Mutex.Guard>> | undefined {
+    if (this.#screenshotOperationsCount === 0) {
+      return undefined;
+    }
+    return this.#pageScreenshotMutex.acquire();
   }
 
   /**
@@ -742,6 +775,9 @@ export abstract class Browser extends EventEmitter<BrowserEvents> {
    * will remain attached and stay on the blocked page. This is a behavior difference
    * compared to launching the browser with network restrictions, where such targets
    * are detached immediately upon initial attach.
+   *
+   * The restrictions have the same WebTransport and WebRTC limitations as
+   * {@link ConnectOptions.blocklist} and {@link ConnectOptions.allowlist}.
    *
    * @experimental
    */

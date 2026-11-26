@@ -52,6 +52,15 @@ export class Session
   }
 
   async #initialize(): Promise<void> {
+    const connectionEmitter = this.#disposables.use(
+      new EventEmitter(this.connection),
+    );
+    connectionEmitter.once('closed', () => {
+      this.dispose(
+        'Session already destroyed, probably because the connection broke.',
+      );
+    });
+
     // SAFETY: We use `any` to allow assignment of the readonly property.
     (this as any).browser = await Browser.from(this);
 
@@ -59,6 +68,13 @@ export class Session
     browserEmitter.once('closed', reason => {
       this.dispose(reason);
     });
+
+    if (this.connection.closed) {
+      this.dispose(
+        'Session already destroyed, probably because the connection broke.',
+      );
+      return;
+    }
 
     // TODO: Currently, some implementations do not emit navigationStarted event
     // for fragment navigations (as per spec) and some do. This could emits a

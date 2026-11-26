@@ -518,3 +518,64 @@ jobs:
       - if: ${{ needs.browsers-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
         run: 'exit 1'
       - run: 'exit 0'
+
+  # The Pre-release workflow runs on a push to the release branch and commits
+  # the generated files to that branch. This job runs the same steps for the
+  # release PR and fails if the steps fail or change files. The job fails for
+  # the release-please commit and passes for the commit of the Pre-release
+  # workflow. Keep the steps in sync with pre-release.yml.
+  pre-release-check:
+    name: Verify pre-release output
+    needs: check-changes
+    if: |
+      github.event_name == 'pull_request' &&
+      startsWith(github.head_ref, 'release-please-') &&
+      contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          cache: npm
+          node-version-file: '.nvmrc'
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Build all packages
+        env:
+          PUBLISH: 1
+        run: npm run build
+      - name: Build docs
+        env:
+          PUBLISH: 1
+        run: npm run docs
+      - name: Format
+        run: npm run format
+      - name: Install to refresh package-lock
+        run: npm install
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Check if the pre-release output is committed
+        run: |
+          git add .
+          if ! git diff --staged --quiet; then
+            echo "The release branch does not contain the output of the Pre-release workflow. The following was the diff"
+            git diff --staged --color
+            exit 1
+          fi
+
+  pre-release-required:
+    name: '[Required] Pre-release'
+    needs: [check-changes, pre-release-check]
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() && needs.check-changes.result != 'skipped' }}
+    steps:
+      - if: ${{ needs.pre-release-check.result != 'success' && github.event_name == 'pull_request' && startsWith(github.head_ref, 'release-please-') && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'

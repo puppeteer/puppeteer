@@ -48,6 +48,7 @@ import {
 } from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {PDFOptions} from '../common/PDFOptions.js';
+import type {RemoteException} from '../common/RemoteException.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {
   Awaitable,
@@ -69,7 +70,6 @@ import {
 import type {Viewport} from '../common/Viewport.js';
 import {environment} from '../environment.js';
 import type {ScreenRecorder} from '../node/ScreenRecorder.js';
-import {guarded} from '../util/decorators.js';
 import {
   AsyncDisposableStack,
   asyncDisposeSymbol,
@@ -576,6 +576,16 @@ export const enum PageEvent {
    * Emitted when the page crashes. Will contain an `Error`.
    */
   Error = 'error',
+  /**
+   * Emitted when an uncaught exception happens within the page or one of its
+   * dedicated workers. Contains a {@link RemoteException}.
+   *
+   * @remarks
+   * The {@link RemoteException.handle | handle} of the exception is disposed
+   * right after the event has been dispatched. Call `move()` on it
+   * synchronously inside the listener to keep it alive.
+   */
+  Exception = 'exception',
   /** Emitted when a frame is attached. Will contain a {@link Frame}. */
   FrameAttached = 'frameattached',
   /** Emitted when a frame is detached. Will contain a {@link Frame}. */
@@ -583,8 +593,32 @@ export const enum PageEvent {
   /**
    * Emitted when a frame is navigated to a new URL. Will contain a
    * {@link Frame}.
+   *
+   * @remarks
+   * This event is emitted for both same-document navigations (for example,
+   * fragment navigations) and navigations to a new document. Use
+   * {@link PageEvent.FrameNavigatedSameDocument} or
+   * {@link PageEvent.FrameNavigatedNewDocument} to distinguish between the
+   * two.
    */
   FrameNavigated = 'framenavigated',
+  /**
+   * Emitted when a frame navigates within the same document, for example, to
+   * a different fragment (`#hash`) or via the History API. Will contain a
+   * {@link Frame}.
+   *
+   * @remarks
+   * Emitted after {@link PageEvent.FrameNavigated}.
+   */
+  FrameNavigatedSameDocument = 'framenavigatedsamedocument',
+  /**
+   * Emitted when a frame is navigated to a new document. Will contain a
+   * {@link Frame}.
+   *
+   * @remarks
+   * Emitted after {@link PageEvent.FrameNavigated}.
+   */
+  FrameNavigatedNewDocument = 'framenavigatednewdocument',
   /**
    * Emitted when the JavaScript
    * {@link https://developer.mozilla.org/en-US/docs/Web/Events/load | load}
@@ -606,6 +640,8 @@ export const enum PageEvent {
   /**
    * Emitted when an uncaught exception happens within the page. Contains an
    * `Error` or data of type unknown.
+   *
+   * @deprecated Use {@link PageEvent.Exception} instead.
    */
   PageError = 'pageerror',
   /**
@@ -696,9 +732,12 @@ export interface PageEvents extends Record<EventType, unknown> {
   [PageEvent.DOMContentLoaded]: undefined;
   [PageEvent.Issue]: Issue;
   [PageEvent.Error]: Error;
+  [PageEvent.Exception]: RemoteException;
   [PageEvent.FrameAttached]: Frame;
   [PageEvent.FrameDetached]: Frame;
   [PageEvent.FrameNavigated]: Frame;
+  [PageEvent.FrameNavigatedSameDocument]: Frame;
+  [PageEvent.FrameNavigatedNewDocument]: Frame;
   [PageEvent.Load]: undefined;
   [PageEvent.Metrics]: {title: string; metrics: Metrics};
   [PageEvent.PageError]: Error | unknown;
@@ -739,7 +778,7 @@ export interface ReloadOptions extends WaitForOptions {
   /**
    * If set to true, the browser caches are ignored for the page reload.
    *
-   * @defaultValue true
+   * @defaultValue false
    * @public
    */
   ignoreCache?: boolean;
@@ -969,13 +1008,30 @@ export abstract class Page extends EventEmitter<PageEvents> {
       eventData: K extends '*' ? PageEvents[keyof PageEvents] : never,
     ) => void,
   ): this {
-    if (type === PageEvent.Request) {
-      handler =
-        (this.#requestHandlers.get(
-          handler as (
-            event: EventsWithWildcard<PageEvents>[PageEvent.Request],
-          ) => void,
-        ) as (event: EventsWithWildcard<PageEvents>[K]) => void) || handler;
+    // For `request` listeners, a handler that was passed to `on()` is matched
+    // through its `#requestHandlers` wrapper first. So after
+    // `on('request', h)`, `once('request', h)` and `off('request', h)`, the
+    // `on()` registration is removed first, even though it was added earlier.
+    // This differs from `EventEmitter.off()`, which removes the most recently
+    // added registration.
+    if (type === PageEvent.Request && handler !== undefined) {
+      const requestHandler = handler as (
+        event: EventsWithWildcard<PageEvents>[PageEvent.Request],
+      ) => void;
+      const wrapper = this.#requestHandlers.get(requestHandler);
+      if (wrapper !== undefined) {
+        const listenerCount = this.listenerCount(type);
+        super.off(
+          type,
+          wrapper as (event: EventsWithWildcard<PageEvents>[K]) => void,
+        );
+        if (this.listenerCount(type) < listenerCount) {
+          return this;
+        }
+        // The wrapper is no longer registered, so drop the stale entry and
+        // fall back to `handler`, which matches listeners added with `once`.
+        this.#requestHandlers.delete(requestHandler);
+      }
     }
     return super.off(type, handler);
   }
@@ -1828,8 +1884,8 @@ export abstract class Page extends EventEmitter<PageEvents> {
 
   /**
    * @param userAgent - Specific user agent to use in this page
-   * @param userAgentData - Specific user agent client hint data to use in this
-   * page
+   * @param userAgentMetadata - Specific user agent client hint data to use in
+   * this page
    * @returns Promise which resolves when the user agent is set.
    * @deprecated Use {@link Page.(setUserAgent:2) } instead.
    */
@@ -2918,7 +2974,7 @@ export abstract class Page extends EventEmitter<PageEvents> {
    *
    * @remarks
    *
-   * While a screenshot is being taken in a {@link BrowserContext}, the
+   * While a screenshot is being taken in a {@link Browser}, the
    * following methods will automatically wait for the screenshot to
    * finish to prevent interference with the screenshot process:
    * {@link BrowserContext.newPage}, {@link Browser.newPage},
@@ -2932,9 +2988,6 @@ export abstract class Page extends EventEmitter<PageEvents> {
     options: Readonly<ScreenshotOptions> & {encoding: 'base64'},
   ): Promise<string>;
   async screenshot(options?: Readonly<ScreenshotOptions>): Promise<Uint8Array>;
-  @guarded(function () {
-    return this.browser();
-  })
   async screenshot(
     userOptions: Readonly<ScreenshotOptions> = {},
   ): Promise<Uint8Array | string> {

@@ -11,6 +11,7 @@ import type {TargetFilterCallback} from '../api/Browser.js';
 import type {NetworkRestrictions} from '../api/Browser.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import {CDPSessionEvent} from '../api/CDPSession.js';
+import {TargetType} from '../api/Target.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {assertSupportedUrlRestrictions} from '../common/util.js';
@@ -38,7 +39,11 @@ function isPageTargetBecomingPrimary(
   target: CdpTarget,
   newTargetInfo: Protocol.Target.TargetInfo,
 ): boolean {
-  return Boolean(target._subtype()) && !newTargetInfo.subtype;
+  return (
+    target.type() === TargetType.PAGE &&
+    Boolean(target._subtype()) &&
+    !newTargetInfo.subtype
+  );
 }
 
 /**
@@ -195,6 +200,38 @@ export class TargetManager
 
   getAvailableTargets(): ReadonlyMap<string, CdpTarget> {
     return this.#attachedTargetsByTargetId;
+  }
+
+  /**
+   * Returns the sessions that the target manager keeps attached to the target
+   * with the given ID. A target that was reported gone and is attached again
+   * gets a new {@link CdpTarget}, so the sessions are matched by ID.
+   */
+  getAttachedSessions(targetId: string): CdpCDPSession[] {
+    const sessions: CdpCDPSession[] = [];
+    for (const [sessionId, target] of this.#attachedTargetsBySessionId) {
+      const session = this.#connection._session(sessionId);
+      if (target._targetId === targetId && session) {
+        sessions.push(session);
+      }
+    }
+    return sessions;
+  }
+
+  /**
+   * Returns the attached iframe target that has the given frame as its root
+   * frame.
+   */
+  getFrameTarget(frameId: string): CdpTarget | undefined {
+    const target = this.#attachedTargetsByTargetId.get(frameId);
+    if (
+      !target ||
+      target._getTargetInfo().type !== 'iframe' ||
+      !target._session()
+    ) {
+      return undefined;
+    }
+    return target;
   }
 
   getDiscoveredTargetInfos(): ReadonlyMap<string, Protocol.Target.TargetInfo> {
@@ -555,6 +592,11 @@ export class TargetManager
 
     if (parentSession instanceof CdpCDPSession) {
       parentSession.target()._removeChildTarget(target);
+    }
+    // A target can have several sessions, for example a service worker when
+    // network rules are set, so it might already be gone or replaced.
+    if (this.#attachedTargetsByTargetId.get(target._targetId) !== target) {
+      return;
     }
     this.#attachedTargetsByTargetId.delete(target._targetId);
     this.emit(TargetManagerEvent.TargetGone, target);

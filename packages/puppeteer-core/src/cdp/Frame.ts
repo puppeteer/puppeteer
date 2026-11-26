@@ -6,6 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import {firstValueFrom, from, raceWith} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {DeviceRequestPrompt} from '../api/DeviceRequestPrompt.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
@@ -15,6 +16,7 @@ import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {WaitTimeoutOptions} from '../api/Page.js';
 import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import {fromAbortSignal} from '../common/util.js';
 import type {Realm} from '../puppeteer-core.js';
 import {Deferred} from '../util/Deferred.js';
 import {disposeSymbol} from '../util/disposable.js';
@@ -152,6 +154,7 @@ export class CdpFrame extends Frame {
       referrerPolicy?: string;
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+      signal?: AbortSignal;
     } = {},
   ): Promise<HTTPResponse | null> {
     if (!this.page()._isUrlAllowed(url)) {
@@ -167,7 +170,9 @@ export class CdpFrame extends Frame {
       ],
       waitUntil = ['load'],
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+      signal,
     } = options;
+    signal?.throwIfAborted();
 
     let ensureNewDocumentNavigation = false;
     const watcher = new LifecycleWatcher(
@@ -175,27 +180,27 @@ export class CdpFrame extends Frame {
       this,
       waitUntil,
       timeout,
+      signal,
     );
-    let error = await Deferred.race([
-      navigate(
-        this.#client,
-        url,
-        referer,
-        referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined,
-        this._id,
-      ),
-      watcher.terminationPromise(),
-    ]);
-    if (!error) {
-      error = await Deferred.race([
-        watcher.terminationPromise(),
-        ensureNewDocumentNavigation
-          ? watcher.newDocumentNavigationPromise()
-          : watcher.sameDocumentNavigationPromise(),
-      ]);
-    }
-
     try {
+      let error = await Deferred.race([
+        navigate(
+          this.#client,
+          url,
+          referer,
+          referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined,
+          this._id,
+        ),
+        watcher.terminationPromise(),
+      ]);
+      if (!error) {
+        error = await Deferred.race([
+          watcher.terminationPromise(),
+          ensureNewDocumentNavigation
+            ? watcher.newDocumentNavigationPromise()
+            : watcher.sameDocumentNavigationPromise(),
+        ]);
+      }
       if (error) {
         throw error;
       }
@@ -256,14 +261,14 @@ export class CdpFrame extends Frame {
       timeout,
       signal,
     );
-    const error = await Deferred.race([
-      watcher.terminationPromise(),
-      ...(options.ignoreSameDocumentNavigation
-        ? []
-        : [watcher.sameDocumentNavigationPromise()]),
-      watcher.newDocumentNavigationPromise(),
-    ]);
     try {
+      const error = await Deferred.race([
+        watcher.terminationPromise(),
+        ...(options.ignoreSameDocumentNavigation
+          ? []
+          : [watcher.sameDocumentNavigationPromise()]),
+        watcher.newDocumentNavigationPromise(),
+      ]);
       if (error) {
         throw error;
       }
@@ -271,7 +276,7 @@ export class CdpFrame extends Frame {
         Error | HTTPResponse | null | undefined
       >([watcher.terminationPromise(), watcher.navigationResponse()]);
       if (result instanceof Error) {
-        throw error;
+        throw result;
       }
       return result || null;
     } finally {
@@ -299,26 +304,34 @@ export class CdpFrame extends Frame {
     const {
       waitUntil = ['load'],
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+      signal,
     } = options;
+    signal?.throwIfAborted();
 
     // We rely upon the fact that the document is reopened, which resets the
     // frame lifecycle with an "init" lifecycle event.
     // @see https://crrev.com/608658
-    await this.setFrameContent(html);
+    await firstValueFrom(
+      from(this.setFrameContent(html)).pipe(raceWith(fromAbortSignal(signal))),
+    );
 
     const watcher = new LifecycleWatcher(
       this._frameManager.networkManager,
       this,
       waitUntil,
       timeout,
+      signal,
     );
-    const error = await Deferred.race<void | Error | undefined>([
-      watcher.terminationPromise(),
-      watcher.lifecyclePromise(),
-    ]);
-    watcher.dispose();
-    if (error) {
-      throw error;
+    try {
+      const error = await Deferred.race<void | Error | undefined>([
+        watcher.terminationPromise(),
+        watcher.lifecyclePromise(),
+      ]);
+      if (error) {
+        throw error;
+      }
+    } finally {
+      watcher.dispose();
     }
   }
 

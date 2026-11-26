@@ -30,11 +30,8 @@ import type {PuppeteerInjectedUtil} from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
 
-import type {
-  Realm as BidiRealmCore,
-  DedicatedWorkerRealm,
-  SharedWorkerRealm,
-} from './core/Realm.js';
+import {DedicatedWorkerRealm} from './core/Realm.js';
+import type {Realm as BidiRealmCore, SharedWorkerRealm} from './core/Realm.js';
 import type {WindowRealm} from './core/Realm.js';
 import {BidiDeserializer} from './Deserializer.js';
 import {BidiElementHandle} from './ElementHandle.js';
@@ -44,8 +41,11 @@ import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
 import {
   createEvaluationError,
+  createPageErrorFromLogEntry,
+  createRemoteExceptionFromLogEntry,
   getConsoleMessage,
   isConsoleLogEntry,
+  isJavaScriptLogEntry,
   rewriteEvaluationError,
 } from './util.js';
 import type {BidiWebWorker} from './WebWorker.js';
@@ -443,10 +443,24 @@ export class BidiWorkerRealm extends BidiRealm {
   override initialize(): void {
     super.initialize();
     this.realm.on('log', entry => {
+      const page = this.#worker.frame.page();
+      if (isJavaScriptLogEntry(entry)) {
+        const exception = createRemoteExceptionFromLogEntry(entry);
+        this.#worker.emit(WebWorkerEvent.Exception, exception);
+        // Match CDP: exceptions in dedicated workers are also reported on the
+        // page that owns the worker, including the deprecated `pageerror`.
+        if (this.realm instanceof DedicatedWorkerRealm) {
+          page.trustedEmitter.emit(
+            PageEvent.PageError,
+            createPageErrorFromLogEntry(entry),
+          );
+          page.trustedEmitter.emit(PageEvent.Exception, exception);
+        }
+        return;
+      }
       if (!isConsoleLogEntry(entry)) {
         return;
       }
-      const page = this.#worker.frame.page();
       const context = page.browserContext();
       if (
         !this.#worker.listenerCount(WebWorkerEvent.Console) &&

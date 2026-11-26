@@ -8,6 +8,7 @@ import path from 'node:path';
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
+import type {CdpPage} from 'puppeteer-core/internal/cdp/Page.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {html} from './utils.js';
@@ -177,6 +178,13 @@ describe('input tests', function () {
       expect(fileChooser1 === fileChooser2).toBe(true);
     });
 
+    it('should reject immediately when the signal is already aborted', async () => {
+      const {page} = await getTestState();
+
+      await expect(
+        page.waitForFileChooser({signal: AbortSignal.abort(), timeout: 1000}),
+      ).rejects.toThrow(/aborted/);
+    });
     it('should be able to abort', async () => {
       const {page} = await getTestState();
 
@@ -212,6 +220,63 @@ describe('input tests', function () {
         expect(unhandledRejections).toEqual([]);
       } finally {
         process.off('unhandledRejection', onUnhandledRejection);
+      }
+    });
+
+    it('should stop intercepting file choosers when no longer waiting', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(html`<input type="file" />`);
+      const client = (page as CdpPage)._client();
+      let fileChooserOpenedEvents = 0;
+      const onFileChooserOpened = () => {
+        fileChooserOpenedEvents++;
+      };
+      client.on('Page.fileChooserOpened', onFileChooserOpened);
+      try {
+        const [chooser] = await Promise.all([
+          page.waitForFileChooser(),
+          page.click('input'),
+        ]);
+        await chooser.accept([FILE_TO_UPLOAD]);
+        expect(fileChooserOpenedEvents).toBe(1);
+
+        // Nobody is waiting, so this file chooser must not be intercepted.
+        await page.click('input');
+
+        // Events arrive in order, so an intercepted file chooser from the click
+        // above would be reported before this one.
+        await Promise.all([page.waitForFileChooser(), page.click('input')]);
+        expect(fileChooserOpenedEvents).toBe(2);
+      } finally {
+        client.off('Page.fileChooserOpened', onFileChooserOpened);
+      }
+    });
+
+    it('should stop intercepting file choosers after a timeout', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(html`<input type="file" />`);
+      const client = (page as CdpPage)._client();
+      let fileChooserOpenedEvents = 0;
+      const onFileChooserOpened = () => {
+        fileChooserOpenedEvents++;
+      };
+      client.on('Page.fileChooserOpened', onFileChooserOpened);
+      try {
+        await expect(page.waitForFileChooser({timeout: 1})).rejects.toThrow(
+          TimeoutError,
+        );
+
+        // Nobody is waiting, so this file chooser must not be intercepted.
+        await page.click('input');
+
+        // Events arrive in order, so an intercepted file chooser from the click
+        // above would be reported before this one.
+        await Promise.all([page.waitForFileChooser(), page.click('input')]);
+        expect(fileChooserOpenedEvents).toBe(1);
+      } finally {
+        client.off('Page.fileChooserOpened', onFileChooserOpened);
       }
     });
   });

@@ -76,7 +76,7 @@ boolean
 
 Tells Puppeteer to not download the browser during installation.
 
-Can be overridden by `PUPPETEER_CHROME_SKIP_DOWNLOAD`.
+Can be overridden by `PUPPETEER_CHROME_SKIP_DOWNLOAD` or `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
 
 </td><td>
 
@@ -99,7 +99,7 @@ string
 
 Specifies a certain version of the browser you'd like Puppeteer to use.
 
-Can be overridden by `PUPPETEER_CHROME_VERSION` or `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
+Can be overridden by `PUPPETEER_CHROME_VERSION`.
 
 See [puppeteer.launch](./puppeteer.puppeteernode.launch.md) on how executable path is inferred.
 

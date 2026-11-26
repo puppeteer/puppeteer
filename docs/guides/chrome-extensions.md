@@ -76,7 +76,7 @@ await browser.close();
 ### Background page (MV2)
 
 The following is code for getting a handle to the
-[background page](https://developer.chrome.com/extensions/background_pages) of
+[background page](https://developer.chrome.com/docs/extensions/mv2/background-pages) of
 an extension whose source is located in `./my-extension`:
 
 ```ts

@@ -6,6 +6,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {Browser} from '../api/Browser.js';
 import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
 import {PageEvent, type NewDocumentScriptEvaluation} from '../api/Page.js';
@@ -54,11 +55,12 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   _frameTree = new FrameTree<CdpFrame>();
 
   /**
-   * Set of frame IDs stored to indicate if a frame has received a
-   * frameNavigated event so that frame tree responses could be ignored as the
-   * frameNavigated event usually contains the latest information.
+   * For each session, the IDs of the frames that have received a
+   * frameNavigated event on that session. The frame tree response of the
+   * session is ignored for these frames because the frameNavigated event
+   * usually contains the latest information.
    */
-  #frameNavigatedReceived = new Set<string>();
+  #frameNavigatedReceived = new WeakMap<CDPSession, Set<string>>();
 
   #deviceRequestPromptManagerMap = new WeakMap<
     CDPSession,
@@ -159,7 +161,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     this.#client = client;
     const frame = this._frameTree.getMainFrame();
     if (frame) {
-      this.#frameNavigatedReceived.add(this.#client.target()._targetId);
+      this.#navigatedFrames(client).add(this.#client.target()._targetId);
       this._frameTree.removeFrame(frame);
       frame.updateId(this.#client.target()._targetId);
       this._frameTree.addFrame(frame);
@@ -188,19 +190,20 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
     });
     session.on('Page.frameNavigated', async event => {
-      this.#frameNavigatedReceived.add(event.frame.id);
+      this.#navigatedFrames(session).add(event.frame.id);
       await this.#frameTreeHandled?.valueOrThrow();
-      void this.#onFrameNavigated(event.frame, event.type);
+      void this.#onFrameNavigated(session, event.frame, event.type);
     });
     session.on('Page.navigatedWithinDocument', async event => {
       await this.#frameTreeHandled?.valueOrThrow();
-      this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
+      this.#onFrameNavigatedWithinDocument(session, event.frameId, event.url);
     });
     session.on(
       'Page.frameDetached',
       async (event: Protocol.Page.FrameDetachedEvent) => {
         await this.#frameTreeHandled?.valueOrThrow();
         this.#onFrameDetached(
+          session,
           event.frameId,
           event.reason as Protocol.Page.FrameDetachedEventReason,
         );
@@ -208,11 +211,11 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     );
     session.on('Page.frameStartedLoading', async event => {
       await this.#frameTreeHandled?.valueOrThrow();
-      this.#onFrameStartedLoading(event.frameId);
+      this.#onFrameStartedLoading(session, event.frameId);
     });
     session.on('Page.frameStoppedLoading', async event => {
       await this.#frameTreeHandled?.valueOrThrow();
-      this.#onFrameStoppedLoading(event.frameId);
+      this.#onFrameStoppedLoading(session, event.frameId);
     });
     session.on('Runtime.executionContextCreated', async event => {
       await this.#frameTreeHandled?.valueOrThrow();
@@ -220,11 +223,82 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     });
     session.on('Page.lifecycleEvent', async event => {
       await this.#frameTreeHandled?.valueOrThrow();
-      this.#onLifecycleEvent(event);
+      this.#onLifecycleEvent(session, event);
     });
     session.on('Audits.issueAdded', event => {
       this.#page.emit(PageEvent.Issue, new CdpIssue(event.issue));
     });
+  }
+
+  #navigatedFrames(session: CDPSession): Set<string> {
+    let frameIds = this.#frameNavigatedReceived.get(session);
+    if (!frameIds) {
+      frameIds = new Set();
+      this.#frameNavigatedReceived.set(session, frameIds);
+    }
+    return frameIds;
+  }
+
+  /**
+   * Returns the session of the iframe target that has the frame as its root
+   * frame, if the target manager reported such a target.
+   */
+  #targetSession(frameId: string): CDPSession | undefined {
+    return this.#client
+      .target()
+      ._targetManager()
+      .getFrameTarget(frameId)
+      ?._session();
+  }
+
+  /**
+   * Returns the session that the frame belongs to: the session of the
+   * nearest iframe target in the ancestor chain, or the session of the page.
+   * Only the target manager defines the targets, the events of a session do
+   * not change the result.
+   */
+  #sessionOf(frame: CdpFrame): CDPSession {
+    let current: CdpFrame | null = frame;
+    while (current) {
+      if (!current._parentId) {
+        return this.#client;
+      }
+      const session = this.#targetSession(current._id);
+      if (session) {
+        return session;
+      }
+      current = this.frame(current._parentId);
+    }
+    // A part of the ancestor chain is not known yet.
+    return frame.client;
+  }
+
+  #belongsTo(frame: CdpFrame, session: CDPSession): boolean {
+    return this.#sessionOf(frame) === session;
+  }
+
+  /**
+   * Returns the frame if its events are expected on the given session.
+   */
+  #frameOf(session: CDPSession, frameId: string): CdpFrame | null {
+    const frame = this.frame(frameId);
+    if (!frame || !this.#belongsTo(frame, session)) {
+      return null;
+    }
+    return frame;
+  }
+
+  /**
+   * Sets the client of the frame and of the descendants that do not have a
+   * target of their own.
+   */
+  #updateClients(frame: CdpFrame): void {
+    frame.updateClient(this.#sessionOf(frame));
+    for (const child of frame.childFrames()) {
+      if (!this.#targetSession(child._id)) {
+        this.#updateClients(child);
+      }
+    }
   }
 
   async initialize(client: CDPSession, frame?: CdpFrame | null): Promise<void> {
@@ -272,6 +346,10 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return this.#page;
   }
 
+  browser(): Browser {
+    return this.#page.browser();
+  }
+
   worker(client: CDPSession): WebWorker | null {
     return this.#page.worker(client);
   }
@@ -295,12 +373,14 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   ): Promise<void> {
     await Promise.all(
       this.frames().map(async frame => {
+        // The client can change while the action is in progress.
+        const client = frame._client();
         try {
           await action(frame);
         } catch (error) {
           // Only an out-of-process frame has a session of its own to lose.
           if (
-            frame._client() === this.#client ||
+            client === this.#client ||
             !isErrorLike(error) ||
             !isTargetClosedError(error)
           ) {
@@ -392,6 +472,30 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     });
   }
 
+  onDetachedFromTarget(target: CdpTarget): void {
+    if (target._getTargetInfo().type !== 'iframe') {
+      return;
+    }
+    const frame = this.frame(target._targetId);
+    if (frame) {
+      // The frame is in the same process as its parent frame again or it is
+      // about to be removed.
+      //
+      // If an OOP iframe becomes a normal iframe again, Chrome removes the
+      // target when the navigation is ready to commit. The session of the
+      // parent frame reports Page.frameAttached, Page.frameNavigated and
+      // Runtime.executionContextCreated for the frame after the commit.
+      // Thus, the frame must belong to the session of the parent frame
+      // before these events arrive. The events that the session of the
+      // parent frame reports for the frame while the target is attached are
+      // not handled.
+      //
+      // If an OOP iframe is removed, Page.frameDetached arrives before the
+      // target is gone, and the frame is not known here.
+      this.#updateClients(frame);
+    }
+  }
+
   _deviceRequestPromptManager(
     client: CDPSession,
   ): CdpDeviceRequestPromptManager {
@@ -406,8 +510,11 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return manager;
   }
 
-  #onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
-    const frame = this.frame(event.frameId);
+  #onLifecycleEvent(
+    session: CDPSession,
+    event: Protocol.Page.LifecycleEventEvent,
+  ): void {
+    const frame = this.#frameOf(session, event.frameId);
     if (!frame) {
       return;
     }
@@ -416,16 +523,16 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     frame.emit(FrameEvent.LifecycleEvent, undefined);
   }
 
-  #onFrameStartedLoading(frameId: string): void {
-    const frame = this.frame(frameId);
+  #onFrameStartedLoading(session: CDPSession, frameId: string): void {
+    const frame = this.#frameOf(session, frameId);
     if (!frame) {
       return;
     }
     frame._onLoadingStarted();
   }
 
-  #onFrameStoppedLoading(frameId: string): void {
-    const frame = this.frame(frameId);
+  #onFrameStoppedLoading(session: CDPSession, frameId: string): void {
+    const frame = this.#frameOf(session, frameId);
     if (!frame) {
       return;
     }
@@ -438,17 +545,19 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     session: CDPSession,
     frameTree: Protocol.Page.FrameTree,
   ): void {
-    if (frameTree.frame.parentId) {
-      this.#onFrameAttached(
-        session,
-        frameTree.frame.id,
-        frameTree.frame.parentId,
-      );
+    const parentId = this.#parentFrameId(
+      session,
+      frameTree.frame.id,
+      frameTree.frame.parentId,
+    );
+    if (parentId) {
+      this.#onFrameAttached(session, frameTree.frame.id, parentId);
     }
-    if (!this.#frameNavigatedReceived.has(frameTree.frame.id)) {
-      void this.#onFrameNavigated(frameTree.frame, 'Navigation');
+    const navigatedFrames = this.#navigatedFrames(session);
+    if (!navigatedFrames.has(frameTree.frame.id)) {
+      void this.#onFrameNavigated(session, frameTree.frame, 'Navigation');
     } else {
-      this.#frameNavigatedReceived.delete(frameTree.frame.id);
+      navigatedFrames.delete(frameTree.frame.id);
     }
 
     if (!frameTree.childFrames) {
@@ -460,6 +569,25 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
   }
 
+  /**
+   * For the root frame of an iframe target, the target info provides the
+   * parent frame.
+   */
+  #parentFrameId(
+    session: CDPSession,
+    frameId: string,
+    parentFrameId: string | undefined,
+  ): string | undefined {
+    const target = this.#client
+      .target()
+      ._targetManager()
+      .getFrameTarget(frameId);
+    if (target?._session() === session) {
+      return target._getTargetInfo().parentFrameId ?? parentFrameId;
+    }
+    return parentFrameId;
+  }
+
   #onFrameAttached(
     session: CDPSession,
     frameId: string,
@@ -467,29 +595,55 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   ): void {
     let frame = this.frame(frameId);
     if (frame) {
-      const parentFrame = this.frame(parentFrameId);
-      if (session && parentFrame && frame.client !== parentFrame?.client) {
-        // If an OOP iframes becomes a normal iframe
-        // again it is first attached to the parent frame before the
-        // target is removed.
-        frame.updateClient(session);
-      }
+      // The session of a known frame only changes when the target manager
+      // reports that the target of the frame is attached or gone. If an OOP
+      // iframe becomes a normal iframe again, its target is gone before this
+      // event arrives (see onDetachedFromTarget).
       return;
     }
 
-    frame = new CdpFrame(this, frameId, parentFrameId, session, this.#logger);
+    const parentFrame = this.frame(parentFrameId);
+    const targetSession = this.#targetSession(frameId);
+    if (
+      targetSession !== session &&
+      parentFrame &&
+      !this.#belongsTo(parentFrame, session)
+    ) {
+      // A frame is reported on the session of its target or on the session
+      // of its parent frame.
+      return;
+    }
+
+    frame = new CdpFrame(
+      this,
+      frameId,
+      parentFrameId,
+      targetSession ?? session,
+      this.#logger,
+    );
     this._frameTree.addFrame(frame);
     this.emit(FrameManagerEvent.FrameAttached, frame);
   }
 
   async #onFrameNavigated(
+    session: CDPSession,
     framePayload: Protocol.Page.Frame,
     navigationType: Protocol.Page.NavigationType,
   ): Promise<void> {
     const frameId = framePayload.id;
-    const isMainFrame = !framePayload.parentId;
 
     let frame = this._frameTree.getById(frameId);
+    const isMainFrame = !framePayload.parentId;
+
+    // A frame navigation is reported on the session of the frame. A new main
+    // frame is reported on the session of the page.
+    if (
+      frame
+        ? !this.#belongsTo(frame, session)
+        : isMainFrame && session !== this.#client
+    ) {
+      return;
+    }
 
     // Detach all child frames first.
     if (frame) {
@@ -518,8 +672,12 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
 
     frame = await this._frameTree.waitForFrame(frameId);
+    if (!this.#belongsTo(frame, session)) {
+      return;
+    }
     frame._navigated(framePayload);
     this.emit(FrameManagerEvent.FrameNavigated, frame);
+    this.emit(FrameManagerEvent.FrameNavigatedNewDocument, frame);
     frame.emit(FrameEvent.FrameNavigated, navigationType);
   }
 
@@ -558,24 +716,38 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     this.#isolatedWorlds.add(key);
   }
 
-  #onFrameNavigatedWithinDocument(frameId: string, url: string): void {
-    const frame = this.frame(frameId);
+  #onFrameNavigatedWithinDocument(
+    session: CDPSession,
+    frameId: string,
+    url: string,
+  ): void {
+    const frame = this.#frameOf(session, frameId);
     if (!frame) {
       return;
     }
     frame._navigatedWithinDocument(url);
-    this.emit(FrameManagerEvent.FrameNavigatedWithinDocument, frame);
     frame.emit(FrameEvent.FrameNavigatedWithinDocument, undefined);
     this.emit(FrameManagerEvent.FrameNavigated, frame);
+    this.emit(FrameManagerEvent.FrameNavigatedWithinDocument, frame);
     frame.emit(FrameEvent.FrameNavigated, 'Navigation');
   }
 
   #onFrameDetached(
+    session: CDPSession,
     frameId: string,
     reason: Protocol.Page.FrameDetachedEventReason,
   ): void {
     const frame = this.frame(frameId);
     if (!frame) {
+      return;
+    }
+    // The detachment is reported on the session of the frame or on the
+    // session of one of its ancestors.
+    let ancestor: CdpFrame | null = frame;
+    while (ancestor && !this.#belongsTo(ancestor, session)) {
+      ancestor = ancestor.parentFrame();
+    }
+    if (!ancestor) {
       return;
     }
     switch (reason) {
@@ -620,7 +792,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     let world: IsolatedWorld | undefined;
     if (frame) {
       // Only care about execution contexts created for the current session.
-      if (frame.client !== session) {
+      if (frame.client !== session || !this.#belongsTo(frame, session)) {
         return;
       }
       if (contextPayload.auxData && contextPayload.auxData['isDefault']) {

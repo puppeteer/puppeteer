@@ -59,6 +59,7 @@ export class ExecutionContext
       ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown,
       '', // custom init
       logger,
+      {ownsArguments: true, ownsResult: true},
     ));
   }
 
@@ -70,16 +71,26 @@ export class ExecutionContext
         element: ElementHandle<Node>,
         selector: string,
       ): Promise<JSHandle<Node[]>> => {
-        const results = ARIAQueryHandler.queryAll(element, selector);
+        using stack = new DisposableStack();
+        // The stack keeps these handles alive until the result array is created.
+        const elements = await AsyncIterableUtil.collect(
+          AsyncIterableUtil.map(
+            ARIAQueryHandler.queryAll(element, selector),
+            async result => {
+              return stack.use(result);
+            },
+          ),
+        );
         return await element.realm.evaluateHandle(
           (...elements) => {
             return elements;
           },
-          ...(await AsyncIterableUtil.collect(results)),
+          ...elements,
         );
       }) as (...args: unknown[]) => unknown,
       '', // custom init
       logger,
+      {ownsArguments: true, ownsResult: true},
     ));
   }
 

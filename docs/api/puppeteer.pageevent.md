@@ -98,6 +98,23 @@ Emitted when the page crashes. Will contain an `Error`.
 </td></tr>
 <tr><td>
 
+Exception
+
+</td><td>
+
+`"exception"`
+
+</td><td>
+
+Emitted when an uncaught exception happens within the page or one of its dedicated workers. Contains a [RemoteException](./puppeteer.remoteexception.md).
+
+**Remarks:**
+
+The [handle](./puppeteer.remoteexception.handle.md) of the exception is disposed right after the event has been dispatched. Call `move()` on it synchronously inside the listener to keep it alive.
+
+</td></tr>
+<tr><td>
+
 FrameAttached
 
 </td><td>
@@ -133,6 +150,44 @@ FrameNavigated
 </td><td>
 
 Emitted when a frame is navigated to a new URL. Will contain a [Frame](./puppeteer.frame.md).
+
+**Remarks:**
+
+This event is emitted for both same-document navigations (for example, fragment navigations) and navigations to a new document. Use [PageEvent.FrameNavigatedSameDocument](./puppeteer.pageevent.md) or [PageEvent.FrameNavigatedNewDocument](./puppeteer.pageevent.md) to distinguish between the two.
+
+</td></tr>
+<tr><td>
+
+FrameNavigatedNewDocument
+
+</td><td>
+
+`"framenavigatednewdocument"`
+
+</td><td>
+
+Emitted when a frame is navigated to a new document. Will contain a [Frame](./puppeteer.frame.md).
+
+**Remarks:**
+
+Emitted after [PageEvent.FrameNavigated](./puppeteer.pageevent.md).
+
+</td></tr>
+<tr><td>
+
+FrameNavigatedSameDocument
+
+</td><td>
+
+`"framenavigatedsamedocument"`
+
+</td><td>
+
+Emitted when a frame navigates within the same document, for example, to a different fragment (`#hash`) or via the History API. Will contain a [Frame](./puppeteer.frame.md).
+
+**Remarks:**
+
+Emitted after [PageEvent.FrameNavigated](./puppeteer.pageevent.md).
 
 </td></tr>
 <tr><td>
@@ -191,6 +246,10 @@ PageError
 </td><td>
 
 Emitted when an uncaught exception happens within the page. Contains an `Error` or data of type unknown.
+
+**Deprecated:**
+
+Use [PageEvent.Exception](./puppeteer.pageevent.md) instead.
 
 </td></tr>
 <tr><td>

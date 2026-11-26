@@ -116,6 +116,14 @@ export interface InstallOptions {
    * If omitted, the download proceeds without integrity verification.
    */
   expectedHash?: string;
+  /**
+   * Number of retries to attempt if downloading the browser archive fails
+   * due to transient network or server errors (HTTP 408, 429, 5xx, or network
+   * drops, with 1s–10s exponential backoff).
+   *
+   * @defaultValue `0`
+   */
+  retry?: number;
 
   /**
    * Custom provider implementation for alternative download sources.
@@ -315,6 +323,12 @@ export function install(
 export async function install(
   options: InstallOptions,
 ): Promise<InstalledBrowser | string> {
+  if (
+    options.retry !== undefined &&
+    (!Number.isInteger(options.retry) || options.retry < 0)
+  ) {
+    throw new TypeError('Invalid retry value: must be a non-negative integer');
+  }
   options.platform ??= detectBrowserPlatform();
   options.unpack ??= true;
   options.logger ??= debug;
@@ -436,6 +450,7 @@ async function installUrl(
       archivePath,
       downloadProgressCallback,
       options.expectedHash,
+      options.retry,
     );
     debugTimeEnd('download', logger);
     return archivePath;
@@ -495,6 +510,7 @@ async function installUrl(
           archivePath,
           downloadProgressCallback,
           options.expectedHash,
+          options.retry,
         );
       } finally {
         debugTimeEnd('download', logger);

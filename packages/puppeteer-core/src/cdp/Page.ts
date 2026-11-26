@@ -85,7 +85,7 @@ import {FrameManager} from './FrameManager.js';
 import {FrameManagerEvent} from './FrameManagerEvents.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import type {IsolatedWorld} from './IsolatedWorld.js';
-import {MAIN_WORLD} from './IsolatedWorlds.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {releaseObject} from './JSHandle.js';
 import type {NetworkConditions} from './NetworkManager.js';
 import {CdpScreenRecording} from './ScreenRecording.js';
@@ -97,6 +97,7 @@ import {
   convertConsoleMessageLevel,
   createClientError,
   createConsoleMessage,
+  createRemoteException,
   pageBindingInitString,
 } from './utils.js';
 import {WebMCP} from './WebMCP.js';
@@ -210,6 +211,18 @@ export class CdpPage extends Page {
     frameManagerEmitter.on(FrameManagerEvent.FrameNavigated, frame => {
       this.emit(PageEvent.FrameNavigated, frame);
     });
+    frameManagerEmitter.on(
+      FrameManagerEvent.FrameNavigatedWithinDocument,
+      frame => {
+        this.emit(PageEvent.FrameNavigatedSameDocument, frame);
+      },
+    );
+    frameManagerEmitter.on(
+      FrameManagerEvent.FrameNavigatedNewDocument,
+      frame => {
+        this.emit(PageEvent.FrameNavigatedNewDocument, frame);
+      },
+    );
     frameManagerEmitter.on(
       FrameManagerEvent.ConsoleApiCalled,
       ([world, event]) => {
@@ -367,7 +380,7 @@ export class CdpPage extends Page {
     clientEmitter.on('Page.javascriptDialogOpening', this.#onDialog.bind(this));
     clientEmitter.on(
       'Runtime.exceptionThrown',
-      this.#handleException.bind(this),
+      this.#onExceptionThrown.bind(this),
     );
     clientEmitter.on(
       'Inspector.targetCrashed',
@@ -379,6 +392,7 @@ export class CdpPage extends Page {
   }
 
   #onDetachedFromTarget = (target: CdpTarget) => {
+    this.#frameManager.onDetachedFromTarget(target);
     const sessionId = target._session()?.id();
     const worker = this.#workers.get(sessionId!);
     if (!worker) {
@@ -390,16 +404,18 @@ export class CdpPage extends Page {
 
   #onAttachedToTarget = (session: CDPSession) => {
     assert(session instanceof CdpCDPSession);
-    this.#frameManager.onAttachedToTarget(session.target());
-    if (session.target()._getTargetInfo().type === 'worker') {
+    const target = session.target();
+    this.#frameManager.onAttachedToTarget(target);
+    if (target._getTargetInfo().type === 'worker') {
       const worker = new CdpWebWorker(
         session,
-        session.target().url(),
-        session.target()._targetId,
-        session.target().type(),
+        target,
         this.#handleException.bind(this),
-        this.#frameManager.networkManager,
         this.logger,
+        this.#frameManager.networkManager,
+        () => {
+          return this.listenerCount(PageEvent.Exception) > 0;
+        },
       );
       this.#workers.set(session.id(), worker);
       worker.internalEmitter.on(WebWorkerEvent.Console, message => {
@@ -424,6 +440,9 @@ export class CdpPage extends Page {
         }
 
         this.#emitConsoleMessage(message);
+      });
+      worker.internalEmitter.on(WebWorkerEvent.Exception, exception => {
+        this.emit(PageEvent.Exception, exception);
       });
       this.emit(PageEvent.WorkerCreated, worker);
     }
@@ -557,6 +576,8 @@ export class CdpPage extends Page {
   override async waitForFileChooser(
     options: WaitTimeoutOptions = {},
   ): Promise<FileChooser> {
+    options.signal?.throwIfAborted();
+
     const needsEnable = this.#fileChooserDeferreds.size === 0;
     const {timeout = this._timeoutSettings.timeout()} = options;
     const deferred = Deferred.create<FileChooser>({
@@ -593,6 +614,26 @@ export class CdpPage extends Page {
     } catch (error) {
       this.#fileChooserDeferreds.delete(deferred);
       throw error;
+    } finally {
+      // Once nobody is waiting anymore, stop intercepting so that file choosers
+      // opened later (e.g. by a user of a headful browser) are shown again.
+      if (this.#fileChooserDeferreds.size === 0) {
+        await this.#disableFileChooserInterception();
+      }
+    }
+  }
+
+  async #disableFileChooserInterception(): Promise<void> {
+    try {
+      await this.#primaryTargetClient.send(
+        'Page.setInterceptFileChooserDialog',
+        {
+          enabled: false,
+        },
+      );
+    } catch (err) {
+      // If the session is gone, the interception went away with it.
+      this.logger?.(DEBUG_PREFIXES.error)?.(err);
     }
   }
 
@@ -799,7 +840,7 @@ export class CdpPage extends Page {
         await this.#primaryTargetClient.send('Network.deleteCookies', {
           ...item,
           partitionKey: {
-            topLevelSite: url.origin.replace(`:${url.port}`, ''),
+            topLevelSite: `${url.protocol}//${url.hostname}`,
             hasCrossSiteAncestor: false,
           },
         });
@@ -993,6 +1034,73 @@ export class CdpPage extends Page {
     );
   }
 
+  #onExceptionThrown(event: Protocol.Runtime.ExceptionThrownEvent): void {
+    this.#handleException(event);
+    this.#onMainTargetException(event);
+  }
+
+  #onMainTargetException(event: Protocol.Runtime.ExceptionThrownEvent): void {
+    const details = event.exceptionDetails;
+    if (this.listenerCount(PageEvent.Exception) === 0) {
+      // Nobody can use a handle, but the browser keeps the exception alive
+      // until it is released.
+      if (details.exception) {
+        void releaseObject(
+          this.#primaryTargetClient,
+          details.exception,
+          this.logger,
+        );
+      }
+      return;
+    }
+    // Disposed when this scope ends, i.e. right after dispatch. This is a no-op
+    // if a listener called `move()` on the handle.
+    using handle = this.#createExceptionHandle(details);
+    this.emit(PageEvent.Exception, createRemoteException(details, handle));
+  }
+
+  #createExceptionHandle(
+    details: Protocol.Runtime.ExceptionDetails,
+  ): JSHandle | undefined {
+    const remoteObject = details.exception;
+    if (!remoteObject?.objectId) {
+      return;
+    }
+    const world = this.#findWorldByExecutionContextId(
+      details.executionContextId,
+    );
+    if (world) {
+      return world.createCdpHandle(remoteObject);
+    }
+    // We cannot bind the handle to a realm, but the remote object must still
+    // be released to avoid leaking it.
+    void releaseObject(this.#primaryTargetClient, remoteObject, this.logger);
+    return;
+  }
+
+  #findWorldByExecutionContextId(
+    executionContextId: number | undefined,
+  ): IsolatedWorld | undefined {
+    if (executionContextId === undefined) {
+      return;
+    }
+    for (const frame of this.#frameManager.frames()) {
+      // Execution context IDs are only unique per session.
+      if (frame.client !== this.#primaryTargetClient) {
+        continue;
+      }
+      for (const world of [
+        frame.worlds[MAIN_WORLD],
+        frame.worlds[PUPPETEER_WORLD],
+      ]) {
+        if (world.context?.id === executionContextId) {
+          return world;
+        }
+      }
+    }
+    return;
+  }
+
   #onConsoleAPI(
     world: IsolatedWorld,
     event: Protocol.Runtime.ConsoleAPICalledEvent,
@@ -1092,6 +1200,7 @@ export class CdpPage extends Page {
   }
 
   override async reload(options?: ReloadOptions): Promise<HTTPResponse | null> {
+    options?.signal?.throwIfAborted();
     const [result] = await Promise.all([
       this.waitForNavigation({
         ...options,
@@ -1125,6 +1234,7 @@ export class CdpPage extends Page {
     delta: number,
     options: WaitForOptions,
   ): Promise<HTTPResponse | null> {
+    options.signal?.throwIfAborted();
     const history = await this.#primaryTargetClient.send(
       'Page.getNavigationHistory',
     );
@@ -1194,6 +1304,9 @@ export class CdpPage extends Page {
   }
 
   override async setViewport(viewport: Viewport | null): Promise<void> {
+    // Keep a copy: the caller's object can be changed or shared later, for
+    // example the default viewport or a `KnownDevices` entry.
+    viewport = viewport ? {...viewport} : null;
     const needsReload = await this.#emulationManager.emulateViewport(viewport);
     this.#viewport = viewport;
     if (needsReload) {
@@ -1202,7 +1315,7 @@ export class CdpPage extends Page {
   }
 
   override viewport(): Viewport | null {
-    return this.#viewport;
+    return this.#viewport ? {...this.#viewport} : null;
   }
 
   override async evaluateOnNewDocument<

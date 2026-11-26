@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {getEventListeners} from 'node:events';
 import type {ServerResponse} from 'node:http';
 
 import expect from 'expect';
 import {type Frame, TimeoutError} from 'puppeteer';
+import {FrameEvent} from 'puppeteer-core/internal/api/Frame.js';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import type {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
@@ -151,21 +153,23 @@ describe('navigation', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
-        window.addEventListener(
-          'beforeunload',
-          () => {
-            return history.replaceState(null, 'initial', window.location.href);
-          },
-          false,
-        );
+        (globalThis as any).beforeReload = true;
+        window.addEventListener('beforeunload', () => {
+          history.replaceState({scroll: 0}, '', window.location.href);
+        });
       });
-      await page.reload();
-      // Evaluate still works.
+      const response = await page.reload();
+      expect(response!.ok()).toBe(true);
       expect(
         await page.evaluate(() => {
-          return 1;
+          return (globalThis as any).beforeReload;
         }),
-      ).toBe(1);
+      ).toBe(undefined);
+      expect(
+        await page.evaluate(() => {
+          return history.state;
+        }),
+      ).toEqual({scroll: 0});
     });
     it('should navigate to empty page with networkidle0', async () => {
       const {page, server} = await getTestState();
@@ -275,6 +279,51 @@ describe('navigation', function () {
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
     });
+    it('should remove its listeners when the navigation times out', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/empty.html', () => {});
+      const frame = page.mainFrame();
+      const listeners = frame.listenerCount(FrameEvent.FrameDetached);
+      await expect(
+        page.goto(server.PREFIX + '/empty.html', {timeout: 1}),
+      ).rejects.toBeInstanceOf(TimeoutError);
+      expect(frame.listenerCount(FrameEvent.FrameDetached)).toBe(listeners);
+    });
+    it('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      // Hang for request to the empty.html
+      server.setRoute('/empty.html', () => {});
+      const abortController = new AbortController();
+      const navigation = page.goto(server.PREFIX + '/empty.html', {
+        signal: abortController.signal,
+      });
+      await server.waitForRequest('/empty.html');
+
+      abortController.abort();
+      await expect(navigation).rejects.toThrow(/aborted/);
+    });
+    it('should not navigate when the signal is already aborted', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      let requested = false;
+      server.setRoute('/title.html', (_req, res) => {
+        requested = true;
+        res.end();
+      });
+      await expect(
+        page.goto(server.PREFIX + '/title.html', {
+          signal: AbortSignal.abort(),
+        }),
+      ).rejects.toThrow(/aborted/);
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
+      expect(requested).toBe(false);
+      expect(page.url()).toBe(server.EMPTY_PAGE);
+    });
     it('should settle when the page navigates again while loading', async () => {
       const {page, server} = await getTestState();
 
@@ -358,6 +407,16 @@ describe('navigation', function () {
       });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should prioritize default navigation timeout over default timeout with networkidle0', async () => {
+      const {page, server} = await getTestState();
+
+      page.setDefaultTimeout(1);
+      page.setDefaultNavigationTimeout(0);
+      const response = (await page.goto(server.EMPTY_PAGE, {
+        waitUntil: 'networkidle0',
+      }))!;
+      expect(response.ok()).toBe(true);
     });
     it('should disable timeout when its set to 0', async () => {
       const {page, server} = await getTestState();
@@ -868,6 +927,28 @@ describe('navigation', function () {
       abortController.abort();
       await expect(task).rejects.toThrow(/aborted/);
     });
+    it('should reject at once when the signal is already aborted', async () => {
+      const {page} = await getTestState();
+
+      await expect(
+        page.waitForNavigation({signal: AbortSignal.abort()}),
+      ).rejects.toThrow(/aborted/);
+    });
+    it('should remove the abort listener from the signal', async () => {
+      const {page, server} = await getTestState();
+
+      const abortController = new AbortController();
+      await Promise.all([
+        page.waitForNavigation({signal: abortController.signal}),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      await expect(
+        page.waitForNavigation({signal: abortController.signal, timeout: 1}),
+      ).rejects.toBeInstanceOf(TimeoutError);
+      expect(getEventListeners(abortController.signal, 'abort')).toHaveLength(
+        0,
+      );
+    });
   });
 
   describe('Page.goBack', function () {
@@ -885,6 +966,35 @@ describe('navigation', function () {
       response = (await page.goForward())!;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('/grid.html');
+    });
+    it('should not go back when the signal is already aborted', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.goto(server.PREFIX + '/grid.html');
+      await expect(page.goBack({signal: AbortSignal.abort()})).rejects.toThrow(
+        /aborted/,
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
+      expect(page.url()).toBe(server.PREFIX + '/grid.html');
+    });
+    it('should be cancellable', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setCacheEnabled(false);
+      await page.goto(server.EMPTY_PAGE);
+      await page.goto(server.PREFIX + '/grid.html');
+      // Hang for the request going back makes.
+      server.setRoute('/empty.html', () => {});
+      const abortController = new AbortController();
+      const navigation = page.goBack({signal: abortController.signal});
+      await server.waitForRequest('/empty.html');
+
+      const reason = new Error('test abort reason');
+      abortController.abort(reason);
+      await expect(navigation).rejects.toBe(reason);
     });
     it('should error if no history is found', async () => {
       const {page} = await getTestState();
@@ -1058,6 +1168,23 @@ describe('navigation', function () {
           return (globalThis as any)._foo;
         }),
       ).toBe(undefined);
+    });
+    it('should not reload when the signal is already aborted', async () => {
+      const {page, server} = await getTestState();
+
+      let requests = 0;
+      server.setRoute('/empty.html', (_req, res) => {
+        requests++;
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      await expect(page.reload({signal: AbortSignal.abort()})).rejects.toThrow(
+        /aborted/,
+      );
+      await new Promise(resolve => {
+        return setTimeout(resolve, 200);
+      });
+      expect(requests).toBe(1);
     });
   });
 });

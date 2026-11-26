@@ -5,6 +5,7 @@
  */
 import assert from 'node:assert';
 import fs from 'node:fs';
+import * as http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -203,6 +204,82 @@ describe('CLI', function () {
     assert.ok(
       !output.includes('empty the whole browser cache'),
       `Expected the output to not mention the clear command but got "${output}"`,
+    );
+  });
+
+  it('proves that --retry reaches the download', async () => {
+    let requestCount = 0;
+    const server = http.createServer((_req, res) => {
+      requestCount++;
+      res.writeHead(500);
+      res.end('internal server error');
+    });
+    await new Promise<void>(resolve => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    const port = (server.address() as {port: number}).port;
+
+    try {
+      const output = await runAndCaptureFailure(new CLI(tmpDir), [
+        'npx',
+        '@puppeteer/browsers',
+        'install',
+        `chrome@${testChromeBuildId}`,
+        `--path=${tmpDir}`,
+        '--platform=linux',
+        `--base-url=http://127.0.0.1:${port}`,
+        '--retry=1',
+      ]);
+
+      assert.ok(
+        output.includes('All providers failed'),
+        `Expected failure from server error, got: "${output}"`,
+      );
+      assert.strictEqual(
+        requestCount,
+        2,
+        `Expected 2 attempts (1 initial + 1 retry), got ${requestCount}`,
+      );
+    } finally {
+      await new Promise<void>(resolve => {
+        server.close(() => {
+          return resolve();
+        });
+      });
+    }
+  });
+
+  it('rejects invalid --retry option values', async () => {
+    const outputNaN = await runAndCaptureFailure(new CLI(tmpDir), [
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `chrome@${testChromeBuildId}`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+      '--retry=abc',
+    ]);
+    assert.ok(
+      outputNaN.includes(
+        'Invalid --retry value: must be a non-negative integer',
+      ),
+      `Expected validation error, got: "${outputNaN}"`,
+    );
+
+    const outputNegative = await runAndCaptureFailure(new CLI(tmpDir), [
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `chrome@${testChromeBuildId}`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+      '--retry=-1',
+    ]);
+    assert.ok(
+      outputNegative.includes(
+        'Invalid --retry value: must be a non-negative integer',
+      ),
+      `Expected validation error, got: "${outputNegative}"`,
     );
   });
 });

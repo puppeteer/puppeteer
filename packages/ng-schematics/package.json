@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "wireit",
-    "clean": "../../tools/clean.mjs",
+    "clean": "node ../../tools/clean.mjs",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
     "unit": "wireit"
@@ -58,8 +58,8 @@
     "rxjs": "7.8.2"
   },
   "devDependencies": {
-    "@angular/cli": "^22.2.4",
-    "@schematics/angular": "22.2.4"
+    "@angular/cli": "^22.2.7",
+    "@schematics/angular": "22.2.7"
   },
   "files": [
     "lib",

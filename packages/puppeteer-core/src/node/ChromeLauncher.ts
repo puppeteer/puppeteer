@@ -118,15 +118,10 @@ export class ChromeLauncher extends BrowserLauncher {
       userDataDir = await mkdtemp(profilePath);
       chromeArguments.push(`--user-data-dir=${userDataDir}`);
     } else {
-      const parsedUserDataDir = chromeArguments[userDataDirIndex]!.split(
-        '=',
-        2,
-      )[1];
-      assert(
-        typeof parsedUserDataDir === 'string',
-        '`--user-data-dir` is malformed',
-      );
-      userDataDir = parsedUserDataDir;
+      const userDataDirArgument = chromeArguments[userDataDirIndex]!;
+      const separatorIndex = userDataDirArgument.indexOf('=');
+      assert(separatorIndex !== -1, '`--user-data-dir` is malformed');
+      userDataDir = userDataDirArgument.slice(separatorIndex + 1);
     }
 
     let chromeExecutable = executablePath;

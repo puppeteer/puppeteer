@@ -46,6 +46,24 @@ describe('Target.createCDPSession', function () {
     context.off('targetcreated', handler);
   });
 
+  it('should keep the page when one of two concurrent sessions detaches', async () => {
+    const {context, page} = await getTestState();
+
+    const [first, second] = await Promise.all([
+      page.createCDPSession(),
+      page.createCDPSession(),
+    ]);
+    await second.detach();
+    await first.detach();
+
+    expect(await context.pages()).toContain(page);
+    expect(
+      await page.evaluate(() => {
+        return 1;
+      }),
+    ).toBe(1);
+  });
+
   it('should send events', async () => {
     const {page, server} = await getTestState();
 
@@ -53,10 +71,14 @@ describe('Target.createCDPSession', function () {
     await client.send('Network.enable');
     const events: unknown[] = [];
     client.on('Network.requestWillBeSent', event => {
-      events.push(event);
+      if (!event.request.url.includes('favicon.ico')) {
+        events.push(event);
+      }
     });
     await Promise.all([
-      waitEvent(client, 'Network.requestWillBeSent'),
+      waitEvent(client, 'Network.requestWillBeSent', event => {
+        return !event.request.url.includes('favicon.ico');
+      }),
       page.goto(server.EMPTY_PAGE),
     ]);
     expect(events).toHaveLength(1);

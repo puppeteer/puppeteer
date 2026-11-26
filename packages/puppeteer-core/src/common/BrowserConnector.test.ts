@@ -11,6 +11,7 @@ import expect from 'expect';
 import {environment} from '../environment.js';
 
 import {_connectToBrowser, getWSEndpointURL} from './BrowserConnector.js';
+import {UnsupportedOperation} from './Errors.js';
 
 describe('BrowserConnector', () => {
   describe('getWSEndpoint via browserURL', () => {
@@ -109,6 +110,41 @@ describe('BrowserConnector', () => {
       ).rejects.toThrow(
         'blocklist and allowlist are only supported with the CDP protocol',
       );
+    });
+
+    it('should reject targetFilter for WebDriver BiDi without opening or closing caller transport', async () => {
+      await expect(
+        _connectToBrowser({
+          browserWSEndpoint: 'ws://localhost:1234',
+          protocol: 'webDriverBiDi',
+          targetFilter: () => {
+            return true;
+          },
+          logger: () => {
+            return undefined;
+          },
+        }),
+      ).rejects.toThrow(UnsupportedOperation);
+
+      let transportClosed = false;
+      await expect(
+        _connectToBrowser({
+          transport: {
+            send() {},
+            close() {
+              transportClosed = true;
+            },
+          },
+          protocol: 'webDriverBiDi',
+          targetFilter: () => {
+            return true;
+          },
+          logger: () => {
+            return undefined;
+          },
+        }),
+      ).rejects.toThrow(UnsupportedOperation);
+      expect(transportClosed).toBe(false);
     });
 
     it('reports permission denied when reading DevToolsActivePort fails with EPERM or EACCES', async () => {

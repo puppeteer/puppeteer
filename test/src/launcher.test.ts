@@ -679,6 +679,20 @@ describe('Launcher specs', function () {
           await close();
         }
       });
+      it('should not modify the connect options', async () => {
+        const {puppeteer, browser, close} = await launch({});
+        try {
+          const otherBrowser = await puppeteer.connect(
+            Object.freeze({
+              browserWSEndpoint: browser.wsEndpoint(),
+              protocol: browser.protocol,
+            }),
+          );
+          await otherBrowser.disconnect();
+        } finally {
+          await close();
+        }
+      });
       it('should be able to close remote browser', async () => {
         const {puppeteer, browser, close} = await launch({});
         try {
@@ -982,6 +996,8 @@ describe('Launcher specs', function () {
   });
 
   describe('Browser.Events.disconnected', function () {
+    this.timeout(60_000);
+
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async () => {
       const {puppeteer, browser, close} = await launch({});
       try {

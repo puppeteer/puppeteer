@@ -642,11 +642,10 @@ export class BrowsingContext extends EventEmitter<{
     return context.#reason!;
   })
   async setTimezoneOverride(timezoneId?: string): Promise<void> {
-    if (timezoneId?.startsWith('GMT')) {
-      // CDP requires `GMT` prefix before timezone offset, while BiDi does not. Remove the
-      // `GMT` for interop between CDP and BiDi.
-      timezoneId = timezoneId?.replace('GMT', '');
-    }
+    // CDP requires `GMT` prefix before timezone offset, while BiDi does not. Remove the
+    // `GMT` for interop between CDP and BiDi. Keep plain `GMT`, which is a valid
+    // timezone ID on its own.
+    timezoneId = timezoneId?.replace(/^GMT(?=[+-])/, '');
     await this.userContext.browser.session.send(
       'emulation.setTimezoneOverride',
       {

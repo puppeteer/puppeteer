@@ -13,6 +13,7 @@ import {
   ConsoleMessage,
   type ConsoleMessageType,
 } from '../common/ConsoleMessage.js';
+import {type CallFrame, RemoteException} from '../common/RemoteException.js';
 import {PuppeteerURL, evaluationString} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
@@ -136,6 +137,66 @@ const getErrorDetails = (details: Protocol.Runtime.ExceptionDetails) => {
   }
   return {message, name};
 };
+
+/**
+ * @internal
+ */
+export function createRemoteException(
+  details: Protocol.Runtime.ExceptionDetails,
+  handle?: JSHandle,
+): RemoteException {
+  let text: string;
+  let name: string;
+  const exception = details.exception;
+  if (!exception) {
+    // The browser reports no exception value for exceptions thrown by code
+    // that Puppeteer injected, e.g. a callback scheduled inside
+    // `Page.evaluate`. Report them like `createClientError` does.
+    text = details.text;
+    name = 'Error';
+  } else if (exception.type === 'object' && exception.subtype === 'error') {
+    // The description is the error as rendered by the browser
+    // (`${error.name}: ${error.message}`) followed by the stack, if any.
+    text = (exception.description ?? '').split('\n    at ')[0]!;
+    const header = text.split('\n')[0]!;
+    const separator = header.indexOf(': ');
+    name = separator === -1 ? header : header.slice(0, separator);
+  } else if (exception.objectId) {
+    // A non-error object or a symbol was thrown.
+    text = exception.description ?? '';
+    name = '';
+  } else {
+    // A primitive value was thrown.
+    text =
+      exception.description ??
+      String(valueFromPrimitiveRemoteObject(exception));
+    name = '';
+  }
+
+  const stackTrace: CallFrame[] = (details.stackTrace?.callFrames ?? []).map(
+    frame => {
+      return {
+        url: frame.url,
+        lineNumber: frame.lineNumber,
+        columnNumber: frame.columnNumber,
+        functionName: frame.functionName,
+      };
+    },
+  );
+
+  return new RemoteException({
+    text,
+    name,
+    stackTrace,
+    location: {
+      url: details.url,
+      lineNumber: details.lineNumber,
+      columnNumber: details.columnNumber,
+    },
+    handle,
+    rawExceptionDetails: details,
+  });
+}
 
 /**
  * @internal

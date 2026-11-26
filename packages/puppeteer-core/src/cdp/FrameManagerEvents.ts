@@ -27,6 +27,9 @@ export namespace FrameManagerEvent {
   export const FrameNavigatedWithinDocument = Symbol(
     'FrameManager.FrameNavigatedWithinDocument',
   );
+  export const FrameNavigatedNewDocument = Symbol(
+    'FrameManager.FrameNavigatedNewDocument',
+  );
   export const ConsoleApiCalled = Symbol('FrameManager.ConsoleApiCalled');
   export const BindingCalled = Symbol('FrameManager.BindingCalled');
 }
@@ -41,6 +44,7 @@ export interface FrameManagerEvents extends Record<EventType, unknown> {
   [FrameManagerEvent.FrameSwapped]: CdpFrame;
   [FrameManagerEvent.LifecycleEvent]: CdpFrame;
   [FrameManagerEvent.FrameNavigatedWithinDocument]: CdpFrame;
+  [FrameManagerEvent.FrameNavigatedNewDocument]: CdpFrame;
   // Emitted when a new console message is logged.
   [FrameManagerEvent.ConsoleApiCalled]: [
     IsolatedWorld,

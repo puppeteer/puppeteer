@@ -14,7 +14,7 @@ import expect from 'expect';
 
 import {getTestState, launch} from './mocha-utils.js';
 
-let HOSTNAME = os.hostname();
+let HOSTNAME = os.hostname().toLowerCase();
 
 // Hostname might not be always accessible in environments other than GitHub
 // Actions. Therefore, we try to find an external IPv4 address to be used as a
@@ -50,43 +50,67 @@ describe('request proxy', () => {
     '--disable-features=NetworkTimeServiceQuerying,AimEnabled',
   ];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     proxiedRequestUrls = [];
+    const {server} = await getTestState({
+      skipLaunch: true,
+    });
 
-    proxyServer = http
-      .createServer((originalRequest, originalResponse) => {
-        // Ignore component update requests triggered on startup.
-        // See https://crbug.com/576202737.
-        if (
-          originalRequest.url &&
-          new URL(originalRequest.url).hostname === 'update.googleapis.com'
-        ) {
-          originalResponse.writeHead(404);
-          originalResponse.end();
-          return;
-        }
-        proxiedRequestUrls.push(originalRequest.url!);
+    proxyServer = http.createServer((originalRequest, originalResponse) => {
+      if (!originalRequest.url || !URL.canParse(originalRequest.url)) {
+        originalResponse.writeHead(400);
+        originalResponse.end();
+        return;
+      }
+      const parsedUrl = new URL(originalRequest.url);
+      const targetPort = parsedUrl.port || '80';
+      // Ignore background browser requests (e.g. component updates, telemetry,
+      // captive portal checks) not targeting the test server. Tests in this
+      // suite must target `HOSTNAME` on the test server's HTTP port (e.g. via
+      // `getEmptyPageUrl(server)`), as all other requests return 404.
+      // See https://crbug.com/576202737.
+      if (
+        parsedUrl.protocol !== 'http:' ||
+        parsedUrl.hostname !== HOSTNAME ||
+        targetPort !== String(server.PORT)
+      ) {
+        originalResponse.writeHead(404);
+        originalResponse.end();
+        return;
+      }
+      if (!parsedUrl.pathname.endsWith('/favicon.ico')) {
+        proxiedRequestUrls.push(originalRequest.url);
+      }
 
-        const proxyRequest = http.request(
-          originalRequest.url!,
-          {
-            method: originalRequest.method,
-            headers: originalRequest.headers,
-          },
-          proxyResponse => {
-            originalResponse.writeHead(
-              proxyResponse.statusCode as number,
-              proxyResponse.headers,
-            );
-            proxyResponse.pipe(originalResponse, {end: true});
-          },
-        );
+      const proxyRequest = http.request(
+        {
+          protocol: 'http:',
+          hostname: HOSTNAME,
+          port: server.PORT,
+          path: `${parsedUrl.pathname}${parsedUrl.search}`,
+          method: originalRequest.method,
+          headers: originalRequest.headers,
+        },
+        proxyResponse => {
+          originalResponse.writeHead(
+            proxyResponse.statusCode as number,
+            proxyResponse.headers,
+          );
+          proxyResponse.pipe(originalResponse, {end: true});
+        },
+      );
+      proxyRequest.on('error', () => {
+        originalResponse.destroy();
+      });
 
-        originalRequest.pipe(proxyRequest, {end: true});
-      })
-      .listen();
+      originalRequest.pipe(proxyRequest, {end: true});
+    });
 
-    proxyServerUrl = `http://${HOSTNAME}:${
+    await new Promise<void>(resolve => {
+      proxyServer.listen(0, '127.0.0.1', resolve);
+    });
+
+    proxyServerUrl = `http://127.0.0.1:${
       (proxyServer.address() as AddressInfo).port
     }`;
   });

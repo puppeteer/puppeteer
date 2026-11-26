@@ -152,6 +152,7 @@ export interface ConnectOptions {
   slowMo?: number;
   /**
    * Callback to decide if Puppeteer should connect to a given target or not.
+   * Supported only with CDP.
    */
   targetFilter?: TargetFilterCallback;
   /**
@@ -260,6 +261,12 @@ export interface ConnectOptions {
    * attached to every service worker while this option is set. As a
    * consequence, the browser never idle-terminates service workers.
    *
+   * The blocklist does not apply to WebTransport and WebRTC at this time.
+   * The browser opens WebTransport connections to URLs that match a blocked
+   * pattern. The browser also connects WebRTC peers and sends requests to
+   * STUN and TURN servers (over UDP and TCP) on blocked hosts. Patterns such
+   * as `stun:*` and `turn:*` do not block these requests.
+   *
    * Cannot be used along with {@link ConnectOptions.allowlist}.
    *
    * @experimental
@@ -303,6 +310,15 @@ export interface ConnectOptions {
    * requests they forward on behalf of controlled pages), Puppeteer stays
    * attached to every service worker while this option is set. As a
    * consequence, the browser never idle-terminates service workers.
+   *
+   * The allowlist does not apply to WebTransport and to TURN over TCP at
+   * this time. The browser opens WebTransport connections to URLs that do
+   * not match a pattern in the allowlist. The browser also opens TCP
+   * connections to TURN servers that are not in the allowlist.
+   *
+   * The allowlist blocks all WebRTC traffic over UDP. WebRTC peers do not
+   * connect and the browser does not send UDP requests to STUN and TURN
+   * servers. A pattern in the allowlist cannot allow this traffic.
    *
    * Cannot be used along with {@link ConnectOptions.blocklist}.
    *

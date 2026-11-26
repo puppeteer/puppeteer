@@ -53,7 +53,7 @@ If set to true, the browser caches are ignored for the page reload.
 
 </td><td>
 
-true
+false
 
 </td></tr>
 </tbody></table>

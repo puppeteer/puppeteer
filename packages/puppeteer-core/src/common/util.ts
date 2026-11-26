@@ -6,6 +6,7 @@
 
 import type {OperatorFunction} from '../../third_party/rxjs/rxjs.js';
 import {
+  defer,
   filter,
   from,
   fromEvent,
@@ -13,6 +14,7 @@ import {
   mergeMap,
   NEVER,
   Observable,
+  of,
   timer,
 } from '../../third_party/rxjs/rxjs.js';
 import {URLPattern} from '../../third_party/urlpattern-polyfill/urlpattern-polyfill.js';
@@ -183,6 +185,17 @@ export function evaluationString(
   function serializeArgument(arg: unknown): string {
     if (Object.is(arg, undefined)) {
       return 'undefined';
+    }
+    // `JSON.stringify` turns these into `null` or `0`, or throws for bigint.
+    // Write them as literals, as `Page.evaluate` passes them.
+    if (Object.is(arg, -0)) {
+      return '-0';
+    }
+    if (typeof arg === 'number' && !Number.isFinite(arg)) {
+      return String(arg);
+    }
+    if (typeof arg === 'bigint') {
+      return `${arg}n`;
     }
     return JSON.stringify(arg);
   }
@@ -462,7 +475,9 @@ export function fromAbortSignal(
   cause?: Error,
 ): Observable<never> {
   return signal
-    ? fromEvent(signal, 'abort').pipe(
+    ? defer(() => {
+        return signal.aborted ? of(undefined) : fromEvent(signal, 'abort');
+      }).pipe(
         map(() => {
           if (signal.reason instanceof Error) {
             signal.reason.cause = cause;

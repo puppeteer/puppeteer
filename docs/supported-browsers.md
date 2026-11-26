@@ -3,7 +3,7 @@
 ## Chrome
 
 Starting with v20.0.0 Puppeteer downloads and works with **[Chrome for Testing](https://github.com/GoogleChromeLabs/chrome-for-testing?tab=readme-ov-file#what-is-chrome-for-testing)**, which supports both headless and headful modes sharing the same code path in the browser.
-The old headless mode is now a separate program called **[chrome-headless-shell](https://developer.chrome.com/blog/chrome-headless-shell)** (use `headless: 'shell'` with Puppeteer).
+The old headless mode is now a separate program called **[chrome-headless-shell](https://developer.chrome.com/docs/automation-and-testing/headless-chrome-shell)** (use `headless: 'shell'` with Puppeteer).
 
 Prior to this version Puppeteer downloaded and worked with Chromium.
 
@@ -22,6 +22,9 @@ If an exact matching version of Puppeteer isn't listed, the supported version of
 
 | Puppeteer                                                                                              | Chrome                                                                                     | Firefox                                                   |
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| [Puppeteer v25.19.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.19.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 158.0.8127.88  | [Firefox](https://www.mozilla.org/en-US/firefox/) 161.0   |
+| [Puppeteer v25.18.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.18.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 157.0.8103.78  | [Firefox](https://www.mozilla.org/en-US/firefox/) 160.0   |
+| [Puppeteer v25.17.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.17.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 157.0.8103.50  | [Firefox](https://www.mozilla.org/en-US/firefox/) 159.0.1 |
 | [Puppeteer v25.16.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.16.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 156.0.8078.47  | [Firefox](https://www.mozilla.org/en-US/firefox/) 158.0.1 |
 | [Puppeteer v25.15.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.15.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 155.0.8059.84  | [Firefox](https://www.mozilla.org/en-US/firefox/) 158.0   |
 | [Puppeteer v25.14.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-v25.14.0/docs/api/index.md) | [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) 155.0.8059.79  | [Firefox](https://www.mozilla.org/en-US/firefox/) 158.0   |

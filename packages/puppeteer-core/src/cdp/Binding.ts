@@ -14,21 +14,36 @@ import {CDP_BINDING_PREFIX} from './utils.js';
 /**
  * @internal
  */
+export interface BindingOptions {
+  /** Whether to dispose node arguments after the binding call finishes. */
+  ownsArguments?: boolean;
+  /** Whether to dispose a returned handle after forwarding it to the page. */
+  ownsResult?: boolean;
+}
+
+/**
+ * @internal
+ */
 export class Binding {
   #name: string;
   #fn: (...args: unknown[]) => unknown;
   #initSource: string;
   #logger: Logger;
+  #ownsArguments: boolean;
+  #ownsResult: boolean;
   constructor(
     name: string,
     fn: (...args: unknown[]) => unknown,
     initSource: string,
     logger: Logger,
+    options: BindingOptions = {},
   ) {
     this.#name = name;
     this.#fn = fn;
     this.#initSource = initSource;
     this.#logger = logger;
+    this.#ownsArguments = options.ownsArguments ?? false;
+    this.#ownsResult = options.ownsResult ?? false;
   }
 
   get name(): string {
@@ -52,7 +67,7 @@ export class Binding {
     args: unknown[],
     isTrivial: boolean,
   ): Promise<void> {
-    const stack = new DisposableStack();
+    using stack = new DisposableStack();
     const cdpName = CDP_BINDING_PREFIX + this.#name;
     try {
       if (!isTrivial) {
@@ -69,20 +84,21 @@ export class Binding {
         for (const [index, handle] of properties) {
           // This is not straight-forward since some arguments can stringify, but
           // aren't plain objects so add subtypes when the use-case arises.
-          if (index in args) {
-            switch (handle.remoteObject().subtype) {
-              case 'node':
-                args[+index] = handle;
-                break;
-              default:
-                stack.use(handle);
+          if (index in args && handle.remoteObject().subtype === 'node') {
+            args[+index] = handle;
+            // Exposed functions can retain node arguments beyond this call.
+            if (!this.#ownsArguments) {
+              continue;
             }
-          } else {
-            stack.use(handle);
           }
+          stack.use(handle);
         }
       }
 
+      const result = await this.#fn(...args);
+      if (this.#ownsResult && result instanceof JSHandle) {
+        stack.use(result);
+      }
       await context.evaluate(
         (name, seq, result) => {
           // @ts-expect-error Code is evaluated in a different context.
@@ -92,14 +108,8 @@ export class Binding {
         },
         cdpName,
         id,
-        await this.#fn(...args),
+        result,
       );
-
-      for (const arg of args) {
-        if (arg instanceof JSHandle) {
-          stack.use(arg);
-        }
-      }
     } catch (error) {
       if (isErrorLike(error)) {
         await context

@@ -47,6 +47,9 @@ export class BidiBrowserTarget extends Target {
   override opener(): Target | undefined {
     throw new UnsupportedOperation();
   }
+  override async close(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
 }
 
 /**
@@ -83,6 +86,9 @@ export class BidiPageTarget extends Target {
   }
   override opener(): Target | undefined {
     throw new UnsupportedOperation();
+  }
+  override async close(): Promise<void> {
+    await this.#page.close();
   }
 }
 
@@ -129,6 +135,9 @@ export class BidiFrameTarget extends Target {
   override opener(): Target | undefined {
     throw new UnsupportedOperation();
   }
+  override async close(): Promise<void> {
+    throw new UnsupportedOperation();
+  }
 }
 
 /**
@@ -164,6 +173,9 @@ export class BidiWorkerTarget extends Target {
     return this.#worker.frame.page().browserContext();
   }
   override opener(): Target | undefined {
+    throw new UnsupportedOperation();
+  }
+  override async close(): Promise<void> {
     throw new UnsupportedOperation();
   }
 }

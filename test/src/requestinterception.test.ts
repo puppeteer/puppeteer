@@ -305,12 +305,19 @@ describe('request interception', function () {
         }
       });
       let failedRequests = 0;
-      page.on('requestfailed', () => {
-        return ++failedRequests;
+      page.on('requestfailed', request => {
+        if (!isFavicon(request)) {
+          ++failedRequests;
+        }
       });
-      const response = (await page.goto(server.PREFIX + '/one-style.html'))!;
-      expect(response.ok()).toBe(true);
-      expect(response.request().failure()).toBe(null);
+      const [response] = await Promise.all([
+        page.goto(server.PREFIX + '/one-style.html'),
+        waitEvent<HTTPRequest>(page, 'requestfailed', request => {
+          return !isFavicon(request);
+        }),
+      ]);
+      expect(response!.ok()).toBe(true);
+      expect(response!.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
     });
     it('should be abortable with custom error codes', async () => {
@@ -619,15 +626,17 @@ describe('request interception', function () {
       page.on('request', async r => {
         return (request = r);
       });
-      void (page.$eval(
-        'iframe',
-        (frame, url) => {
-          return (frame.src = url);
-        },
-        server.EMPTY_PAGE,
-      ),
-      // Wait for request interception.
-      await waitEvent(page, 'request'));
+      void (
+        page.$eval(
+          'iframe',
+          (frame, url) => {
+            return (frame.src = url);
+          },
+          server.EMPTY_PAGE,
+        ),
+        // Wait for request interception.
+        await waitEvent(page, 'request')
+      );
       // Delete frame to cause request to be canceled.
       await page.$eval('iframe', frame => {
         return frame.remove();
@@ -981,6 +990,23 @@ describe('request interception', function () {
       ]);
       expect(await serverRequest.postBody).toBe('🐶');
     });
+    it('should amend post data to an empty string', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.continue({postData: ''});
+      });
+      const [serverRequest] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => {
+          return fetch('/sleep.zzz', {method: 'POST', body: '🐦'});
+        }),
+      ]);
+      expect(await serverRequest.postBody).toBe('');
+    });
     it('should amend both post data and method on navigation', async () => {
       const {page, server} = await getTestState();
 
@@ -1072,6 +1098,24 @@ describe('request interception', function () {
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.status()).toBe(422);
       expect(response.statusText()).toBe('Unprocessable Entity');
+      expect(
+        await page.evaluate(() => {
+          return document.body.textContent;
+        }),
+      ).toBe('Yo, page!');
+    });
+    it('should work with a status code that has no standard reason phrase', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({
+          status: 419,
+          body: 'Yo, page!',
+        });
+      });
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response.status()).toBe(419);
       expect(
         await page.evaluate(() => {
           return document.body.textContent;

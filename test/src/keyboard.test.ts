@@ -89,6 +89,34 @@ describe('Keyboard', function () {
       }),
     ).toBe('hellohello');
   });
+  it('should trigger editing shortcuts automatically on macOS without commands option', async () => {
+    const {page, server} = await getTestState();
+    if (os.platform() !== 'darwin') {
+      return;
+    }
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.type('textarea', 'puppeteer');
+
+    await page.keyboard.down('Meta');
+    await page.keyboard.press('a');
+    await page.keyboard.up('Meta');
+
+    await page.keyboard.down('Meta');
+    await page.keyboard.press('c');
+    await page.keyboard.up('Meta');
+
+    await page.keyboard.down('Meta');
+    await page.keyboard.press('v');
+    await page.keyboard.press('v');
+    await page.keyboard.up('Meta');
+
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('textarea')!.value;
+      }),
+    ).toBe('puppeteerpuppeteer');
+  });
   it('should send a character with ElementHandle.press', async () => {
     const {page, server} = await getTestState();
 
@@ -430,6 +458,31 @@ describe('Keyboard', function () {
     );
     await keyboard.up('Shift');
   });
+  it('should send the Enter code for Enter', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.evaluate(() => {
+      (globalThis as any).codes = [];
+      window.addEventListener(
+        'keydown',
+        event => {
+          (globalThis as any).codes.push(`${event.code} ${event.location}`);
+        },
+        true,
+      );
+    });
+    using textarea = (await page.$('textarea'))!;
+
+    await textarea.press('Enter');
+    await textarea.type('\n');
+    await textarea.press('NumpadEnter');
+    const codes = await page.evaluate(() => {
+      return (globalThis as any).codes;
+    });
+    expect(codes.slice(0, 2)).toEqual(['Enter 0', 'Enter 0']);
+    expect(codes[2]).toMatch(/^NumpadEnter /);
+  });
   it('should not type canceled events', async () => {
     const {page, server} = await getTestState();
 
@@ -522,6 +575,33 @@ describe('Keyboard', function () {
     await page.evaluate(() => {
       window.addEventListener(
         'keydown',
+        event => {
+          return ((globalThis as any).keyLocation = event.location);
+        },
+        true,
+      );
+    });
+    using textarea = (await page.$('textarea'))!;
+
+    await textarea.press('Digit5');
+    expect(await page.evaluate('keyLocation')).toBe(0);
+
+    await textarea.press('ControlLeft');
+    expect(await page.evaluate('keyLocation')).toBe(1);
+
+    await textarea.press('ControlRight');
+    expect(await page.evaluate('keyLocation')).toBe(2);
+
+    await textarea.press('NumpadSubtract');
+    expect(await page.evaluate('keyLocation')).toBe(3);
+  });
+  it('should specify location on keyup', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.evaluate(() => {
+      window.addEventListener(
+        'keyup',
         event => {
           return ((globalThis as any).keyLocation = event.location);
         },

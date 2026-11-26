@@ -21,16 +21,16 @@ export const textQuerySelectorAll = function* (
   let yielded = false;
   for (const node of root.childNodes) {
     if (node instanceof Element && isSuitableNodeForTextMatching(node)) {
-      let matches: Generator<Element, boolean>;
-      if (!node.shadowRoot) {
-        matches = textQuerySelectorAll(node, selector);
-      } else {
-        matches = textQuerySelectorAll(node.shadowRoot, selector);
-      }
-      for (const match of matches) {
+      for (const match of textQuerySelectorAll(node, selector)) {
         yield match;
         yielded = true;
       }
+    }
+  }
+  if (root instanceof Element && root.shadowRoot) {
+    for (const match of textQuerySelectorAll(root.shadowRoot, selector)) {
+      yield match;
+      yielded = true;
     }
   }
   if (yielded) {

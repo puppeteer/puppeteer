@@ -156,6 +156,23 @@ describe('BrowserContext', function () {
     await context.close();
   });
 
+  it('should be able to abort waiting for a target', async () => {
+    const {context} = await getTestState();
+
+    const abortController = new AbortController();
+    const task = context.waitForTarget(
+      () => {
+        return false;
+      },
+      {
+        signal: abortController.signal,
+      },
+    );
+
+    abortController.abort();
+    await expect(task).rejects.toThrow(/aborted/);
+  });
+
   it('should isolate localStorage and cookies', async () => {
     const {browser, server} = await getTestState({
       skipContextCreation: true,
@@ -457,6 +474,23 @@ describe('BrowserContext', function () {
         {permission: {name: 'geolocation'}, state: 'prompt'},
         {permission: {name: 'midi'}, state: 'prompt'},
       );
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(page, 'midi')).toBe('prompt');
+    });
+
+    it('should be reset by clearPermissionOverrides', async () => {
+      const {page, server, context} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.setPermission(
+        server.EMPTY_PAGE,
+        {permission: {name: 'geolocation'}, state: 'granted'},
+        {permission: {name: 'midi'}, state: 'denied'},
+      );
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      expect(await getPermission(page, 'midi')).toBe('denied');
+
+      await context.clearPermissionOverrides();
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
       expect(await getPermission(page, 'midi')).toBe('prompt');
     });

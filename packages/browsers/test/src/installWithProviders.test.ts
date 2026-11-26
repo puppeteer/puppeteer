@@ -460,5 +460,37 @@ describe('Install with providers', () => {
         assert.strictEqual(typeof result.path, 'string');
       }
     });
+
+    it('rejects invalid retry option values', async () => {
+      await assert.rejects(
+        () => {
+          return install({
+            cacheDir: tmpDir,
+            browser: Browser.CHROME,
+            buildId: testChromeBuildId,
+            retry: -1,
+          });
+        },
+        {
+          name: 'TypeError',
+          message: 'Invalid retry value: must be a non-negative integer',
+        },
+      );
+
+      await assert.rejects(
+        () => {
+          return install({
+            cacheDir: tmpDir,
+            browser: Browser.CHROME,
+            buildId: testChromeBuildId,
+            retry: NaN,
+          });
+        },
+        {
+          name: 'TypeError',
+          message: 'Invalid retry value: must be a non-negative integer',
+        },
+      );
+    });
   });
 });

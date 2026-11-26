@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.3.0](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.7...browsers-v3.3.0) (2026-11-25)
+
+
+### 🎉 Features
+
+* **browsers:** add --retry option to install command ([#15814](https://github.com/puppeteer/puppeteer/issues/15814)) ([b12d9ad](https://github.com/puppeteer/puppeteer/commit/b12d9ad9f814711e58e1968567f5c4c200ebcefe))
+
+
+### 🛠️ Fixes
+
+* **browsers:** fail tar extraction when the decompressor fails ([#15733](https://github.com/puppeteer/puppeteer/issues/15733)) ([4658647](https://github.com/puppeteer/puppeteer/commit/4658647694fdc97736b7f8a5b70a14d2e051cd68))
+* **browsers:** resolve the executable path of old Windows Chromium builds ([#15821](https://github.com/puppeteer/puppeteer/issues/15821)) ([1b2e11e](https://github.com/puppeteer/puppeteer/commit/1b2e11e4fbedfe72bde6d2962c0127a2bd93db4f))
+* do not hide the window of headful browsers on Windows ([#15836](https://github.com/puppeteer/puppeteer/issues/15836)) ([ddfefdf](https://github.com/puppeteer/puppeteer/commit/ddfefdf4c38f9d57be2408c1616a6f7aa7d16fe0))
+
+## [3.2.7](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.6...browsers-v3.2.7) (2026-11-10)
+
+
+### 🛠️ Fixes
+
+* **browsers:** compare Firefox versions numerically ([#15658](https://github.com/puppeteer/puppeteer/issues/15658)) ([47e587d](https://github.com/puppeteer/puppeteer/commit/47e587dac8e44820219ba1264b21bbe086914aae))
+* **browsers:** propagate errors from redirected requests ([#15675](https://github.com/puppeteer/puppeteer/issues/15675)) ([8df33ea](https://github.com/puppeteer/puppeteer/commit/8df33eac9569e67aec6c8d8f119927260c95565a))
+* **browsers:** record the alias when the build is already installed ([#15694](https://github.com/puppeteer/puppeteer/issues/15694)) ([fa7bcdc](https://github.com/puppeteer/puppeteer/commit/fa7bcdc64fe99bc1742ec04ea0b8ed3875675bdb))
+
 ## [3.2.6](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.5...browsers-v3.2.6) (2026-10-22)
 
 

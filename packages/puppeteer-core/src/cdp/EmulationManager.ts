@@ -46,13 +46,9 @@ interface CpuThrottlingState {
   active: boolean;
 }
 
-interface MediaFeaturesState {
-  mediaFeatures?: MediaFeature[];
-  active: boolean;
-}
-
-interface MediaTypeState {
+interface MediaState {
   type?: string;
+  mediaFeatures?: MediaFeature[];
   active: boolean;
 }
 
@@ -174,19 +170,12 @@ export class EmulationManager implements ClientProvider {
     this,
     this.#emulateCpuThrottling,
   );
-  #mediaFeaturesState = new EmulatedState<MediaFeaturesState>(
+  #mediaState = new EmulatedState<MediaState>(
     {
       active: false,
     },
     this,
-    this.#emulateMediaFeatures,
-  );
-  #mediaTypeState = new EmulatedState<MediaTypeState>(
-    {
-      active: false,
-    },
-    this,
-    this.#emulateMediaType,
+    this.#emulateMedia,
   );
   #geoLocationState = new EmulatedState<GeoLocationState>(
     {
@@ -475,14 +464,14 @@ export class EmulationManager implements ClientProvider {
   }
 
   @invokeAtMostOnceForArguments
-  async #emulateMediaFeatures(
-    client: CDPSession,
-    state: MediaFeaturesState,
-  ): Promise<void> {
+  async #emulateMedia(client: CDPSession, state: MediaState): Promise<void> {
     if (!state.active) {
       return;
     }
+    // `Emulation.setEmulatedMedia` resets the media type or the features
+    // when they are omitted, so always send both.
     await client.send('Emulation.setEmulatedMedia', {
+      media: state.type || '',
       features: state.mediaFeatures,
     });
   }
@@ -506,22 +495,10 @@ export class EmulationManager implements ClientProvider {
         );
       }
     }
-    await this.#mediaFeaturesState.setState({
+    await this.#mediaState.setState({
+      ...this.#mediaState.state,
       active: true,
       mediaFeatures: features,
-    });
-  }
-
-  @invokeAtMostOnceForArguments
-  async #emulateMediaType(
-    client: CDPSession,
-    state: MediaTypeState,
-  ): Promise<void> {
-    if (!state.active) {
-      return;
-    }
-    await client.send('Emulation.setEmulatedMedia', {
-      media: state.type || '',
     });
   }
 
@@ -532,7 +509,8 @@ export class EmulationManager implements ClientProvider {
         (type ?? undefined) === undefined,
       'Unsupported media type: ' + type,
     );
-    await this.#mediaTypeState.setState({
+    await this.#mediaState.setState({
+      ...this.#mediaState.state,
       type,
       active: true,
     });

@@ -116,6 +116,21 @@ Error
 </td></tr>
 <tr><td>
 
+<span id="exception">exception</span>
+
+</td><td>
+
+</td><td>
+
+[RemoteException](./puppeteer.remoteexception.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="frameattached">frameattached</span>
 
 </td><td>
@@ -147,6 +162,36 @@ Error
 <tr><td>
 
 <span id="framenavigated">framenavigated</span>
+
+</td><td>
+
+</td><td>
+
+[Frame](./puppeteer.frame.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="framenavigatednewdocument">framenavigatednewdocument</span>
+
+</td><td>
+
+</td><td>
+
+[Frame](./puppeteer.frame.md)
+
+</td><td>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+<span id="framenavigatedsamedocument">framenavigatedsamedocument</span>
 
 </td><td>
 

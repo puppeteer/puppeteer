@@ -11,7 +11,14 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {registerProcessExitCleanup} from './BrowserLauncher.js';
+import {UnsupportedOperation} from '../common/Errors.js';
+import type {SupportedBrowser} from '../common/SupportedBrowser.js';
+
+import {
+  BrowserLauncher,
+  registerProcessExitCleanup,
+} from './BrowserLauncher.js';
+import type {PuppeteerNode} from './PuppeteerNode.js';
 
 class ProcessEmitter {
   #listeners = new Set<() => void>();
@@ -89,5 +96,48 @@ describe('registerProcessExitCleanup', () => {
 
     expect(existsSync(firstDir)).toBe(false);
     expect(existsSync(secondDir)).toBe(false);
+  });
+});
+
+// @ts-expect-error abstract methods not needed for launch option validation test
+class TestBrowserLauncher extends BrowserLauncher {
+  computeLaunchArgumentsCalled = false;
+
+  constructor(browser: SupportedBrowser) {
+    super({} as PuppeteerNode, browser, logger);
+  }
+
+  override async computeLaunchArguments(): Promise<never> {
+    this.computeLaunchArgumentsCalled = true;
+    throw new Error('should not compute launch arguments');
+  }
+}
+
+describe('BrowserLauncher.launch', () => {
+  it('rejects targetFilter for Chrome with WebDriver BiDi before launching', async () => {
+    const launcher = new TestBrowserLauncher('chrome');
+
+    await expect(
+      launcher.launch({
+        protocol: 'webDriverBiDi',
+        targetFilter: () => {
+          return true;
+        },
+      }),
+    ).rejects.toThrow(UnsupportedOperation);
+    expect(launcher.computeLaunchArgumentsCalled).toBe(false);
+  });
+
+  it('rejects targetFilter for Firefox defaulting to WebDriver BiDi before launching', async () => {
+    const launcher = new TestBrowserLauncher('firefox');
+
+    await expect(
+      launcher.launch({
+        targetFilter: () => {
+          return true;
+        },
+      }),
+    ).rejects.toThrow(UnsupportedOperation);
+    expect(launcher.computeLaunchArgumentsCalled).toBe(false);
   });
 });

@@ -81,6 +81,20 @@ export abstract class HTTPResponse {
   abstract timing(): Protocol.Network.ResourceTiming | null;
 
   /**
+   * Total number of bytes received for this request over the network.
+   *
+   * @remarks
+   * The value is updated when the response finishes loading. During the
+   * `response` event, it only covers the bytes received up to the response
+   * headers. To get the total encoded transfer size (headers + compressed
+   * body), read it in a `requestfinished` handler or after awaiting
+   * {@link HTTPResponse.content}. If the request fails after the response is
+   * received, the value is not updated. If the browser does not report a
+   * size, e.g. for `data:` or `file:` URLs, the value is `0`.
+   */
+  abstract encodedDataLength(): number;
+
+  /**
    * Promise which resolves to a buffer with response body.
    *
    * @remarks
@@ -92,6 +106,20 @@ export abstract class HTTPResponse {
    * https://github.com/puppeteer/puppeteer/issues/6478.
    */
   abstract content(): Promise<Uint8Array>;
+
+  /**
+   * Returns the response body as a stream of chunks as they arrive from the
+   * network.
+   *
+   * @remarks
+   *
+   * Call this from the {@link PageEvent.Response | response} event to
+   * receive the body while it is still loading. If the body has already
+   * finished loading, the stream contains the whole body as a single chunk.
+   *
+   * @experimental
+   */
+  abstract stream(): Promise<ReadableStream<Uint8Array>>;
 
   /**
    * {@inheritDoc HTTPResponse.content}

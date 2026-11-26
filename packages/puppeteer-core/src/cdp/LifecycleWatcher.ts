@@ -9,6 +9,7 @@ import type Protocol from 'devtools-protocol';
 import {type Frame, FrameEvent} from '../api/Frame.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
+import {PageEvent} from '../api/Page.js';
 import type {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {NetworkManagerEvent} from '../common/NetworkManagerEvents.js';
@@ -100,13 +101,6 @@ export class LifecycleWatcher {
       return protocolEvent;
     });
 
-    signal?.addEventListener('abort', () => {
-      if (signal.reason instanceof Error) {
-        signal.reason.cause = this.#error;
-      }
-      this.#terminationDeferred.reject(signal.reason);
-    });
-
     this.#frame = frame;
     this.#timeout = timeout;
     const frameManagerEmitter = this.#subscriptions.use(
@@ -130,6 +124,11 @@ export class LifecycleWatcher {
     );
     frameEmitter.on(FrameEvent.FrameDetached, this.#onFrameDetached.bind(this));
 
+    const pageEmitter = this.#subscriptions.use(new EventEmitter(frame.page()));
+    pageEmitter.once(PageEvent.Error, error => {
+      this.#terminationDeferred.resolve(error);
+    });
+
     const networkManagerEmitter = this.#subscriptions.use(
       new EventEmitter(networkManager),
     );
@@ -150,6 +149,23 @@ export class LifecycleWatcher {
       timeout: this.#timeout,
       message: `Navigation timeout of ${this.#timeout} ms exceeded`,
     });
+
+    if (signal) {
+      const onAbort = () => {
+        if (signal.reason instanceof Error) {
+          signal.reason.cause = this.#error;
+        }
+        this.#terminationDeferred.reject(signal.reason);
+      };
+      if (signal.aborted) {
+        onAbort();
+      } else {
+        signal.addEventListener('abort', onAbort, {once: true});
+        this.#subscriptions.defer(() => {
+          signal.removeEventListener('abort', onAbort);
+        });
+      }
+    }
 
     this.#checkLifecycleComplete();
   }

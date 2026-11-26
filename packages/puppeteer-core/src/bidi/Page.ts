@@ -331,8 +331,12 @@ export class BidiPage extends Page {
   override async reload(
     options: ReloadOptions = {},
   ): Promise<BidiHTTPResponse | null> {
+    options.signal?.throwIfAborted();
     const [response] = await Promise.all([
-      this.#frame.waitForNavigation(options),
+      this.#frame.waitForNavigation({
+        ...options,
+        ignoreSameDocumentNavigation: true,
+      }),
       this.#frame.browsingContext.reload({
         ignoreCache: options.ignoreCache ? true : undefined,
       }),
@@ -438,6 +442,9 @@ export class BidiPage extends Page {
   }
 
   override async setViewport(viewport: Viewport | null): Promise<void> {
+    // Keep a copy: the caller's object can be changed or shared later, for
+    // example the default viewport or a `KnownDevices` entry.
+    viewport = viewport ? {...viewport} : null;
     let needsReload = false;
     if (!this.browser().cdpSupported) {
       const viewportSize =
@@ -514,7 +521,7 @@ export class BidiPage extends Page {
   }
 
   override viewport(): Viewport | null {
-    return this.#viewport;
+    return this.#viewport ? {...this.#viewport} : null;
   }
 
   override async pdf(options: PDFOptions = {}): Promise<Uint8Array> {
@@ -732,6 +739,8 @@ export class BidiPage extends Page {
   override async waitForFileChooser(
     options: WaitTimeoutOptions = {},
   ): Promise<FileChooser> {
+    options.signal?.throwIfAborted();
+
     const {timeout = this._timeoutSettings.timeout()} = options;
     const deferred = Deferred.create<FileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
@@ -1053,13 +1062,17 @@ export class BidiPage extends Page {
     delta: number,
     options: WaitForOptions,
   ): Promise<HTTPResponse | null> {
+    options.signal?.throwIfAborted();
     const controller = new AbortController();
+    const signal = options.signal
+      ? AbortSignal.any([options.signal, controller.signal])
+      : controller.signal;
 
     try {
       const [response] = await Promise.all([
         this.waitForNavigation({
           ...options,
-          signal: controller.signal,
+          signal,
         }),
         this.#frame.browsingContext.traverseHistory(delta),
       ]);
@@ -1280,7 +1293,10 @@ export function convertCookiesSameSiteCdpToBiDi(
 export function convertCookiesExpiryCdpToBiDi(
   expiry: number | undefined,
 ): number | undefined {
-  return [undefined, -1].includes(expiry) ? undefined : expiry;
+  if (expiry === undefined || expiry === -1) {
+    return undefined;
+  }
+  return Math.floor(expiry);
 }
 
 export function convertCookiesPartitionKeyFromPuppeteerToBiDi(

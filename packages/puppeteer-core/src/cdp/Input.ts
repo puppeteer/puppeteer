@@ -23,6 +23,7 @@ import {
   type MouseWheelOptions,
 } from '../api/Input.js';
 import {TouchError} from '../common/Errors.js';
+import {MouseStateTracker} from '../common/MouseStateTracker.js';
 import {
   _keyDefinitions,
   type KeyDefinition,
@@ -163,6 +164,7 @@ export class CdpKeyboard extends Keyboard {
       windowsVirtualKeyCode: description.keyCode,
       code: description.code,
       location: description.location,
+      isKeypad: description.location === 3,
     });
   }
 
@@ -256,17 +258,6 @@ const getButtonFromPressedButtons = (
   return 'none';
 };
 
-interface MouseState {
-  /**
-   * The current position of the mouse.
-   */
-  position: Point;
-  /**
-   * The buttons that are currently being pressed.
-   */
-  buttons: number;
-}
-
 /**
  * @internal
  */
@@ -284,56 +275,7 @@ export class CdpMouse extends Mouse {
     this.#client = client;
   }
 
-  #_state: Readonly<MouseState> = {
-    position: {x: 0, y: 0},
-    buttons: MouseButtonFlag.None,
-  };
-  get #state(): MouseState {
-    return Object.assign({...this.#_state}, ...this.#transactions);
-  }
-
-  // Transactions can run in parallel, so we store each of them in this array.
-  #transactions: Array<Partial<MouseState>> = [];
-  #createTransaction(): {
-    update: (updates: Partial<MouseState>) => void;
-    commit: () => void;
-    rollback: () => void;
-  } {
-    const transaction: Partial<MouseState> = {};
-    this.#transactions.push(transaction);
-    const popTransaction = () => {
-      this.#transactions.splice(this.#transactions.indexOf(transaction), 1);
-    };
-    return {
-      update: (updates: Partial<MouseState>) => {
-        Object.assign(transaction, updates);
-      },
-      commit: () => {
-        this.#_state = {...this.#_state, ...transaction};
-        popTransaction();
-      },
-      rollback: popTransaction,
-    };
-  }
-
-  /**
-   * This is a shortcut for a typical update, commit/rollback lifecycle based on
-   * the error of the action.
-   */
-  async #withTransaction(
-    action: (
-      update: (updates: Partial<MouseState>) => void,
-    ) => Promise<unknown>,
-  ): Promise<void> {
-    const {update, commit, rollback} = this.#createTransaction();
-    try {
-      await action(update);
-      commit();
-    } catch (error) {
-      rollback();
-      throw error;
-    }
-  }
+  #state = new MouseStateTracker();
 
   override async reset(): Promise<void> {
     const actions = [];
@@ -363,7 +305,7 @@ export class CdpMouse extends Mouse {
     const from = this.#state.position;
     const to = {x, y};
     for (let i = 1; i <= steps; i++) {
-      await this.#withTransaction(updateState => {
+      await this.#state.withTransaction(updateState => {
         updateState({
           position: {
             x: from.x + (to.x - from.x) * (i / steps),
@@ -391,7 +333,7 @@ export class CdpMouse extends Mouse {
     if (this.#state.buttons & flag) {
       throw new Error(`'${button}' is already pressed.`);
     }
-    await this.#withTransaction(updateState => {
+    await this.#state.withTransaction(updateState => {
       updateState({
         buttons: this.#state.buttons | flag,
       });
@@ -416,7 +358,7 @@ export class CdpMouse extends Mouse {
     if (!(this.#state.buttons & flag)) {
       throw new Error(`'${button}' is not pressed.`);
     }
-    await this.#withTransaction(updateState => {
+    await this.#state.withTransaction(updateState => {
       updateState({
         buttons: this.#state.buttons & ~flag,
       });

@@ -281,9 +281,8 @@ export class CdpHTTPRequest extends HTTPRequest {
     this.interception.handled = true;
     this.#resolution = {action: InterceptResolutionAction.Continue, overrides};
 
-    const postDataBinaryBase64 = postData
-      ? stringToBase64(postData)
-      : undefined;
+    const postDataBinaryBase64 =
+      postData !== undefined ? stringToBase64(postData) : undefined;
 
     if (this._interceptionId === undefined) {
       throw new Error(
@@ -348,7 +347,9 @@ export class CdpHTTPRequest extends HTTPRequest {
       .send('Fetch.fulfillRequest', {
         requestId: this._interceptionId,
         responseCode: status,
-        responsePhrase: STATUS_TEXTS[status],
+        // Chrome rejects status codes it has no reason phrase for unless one
+        // is provided.
+        responsePhrase: STATUS_TEXTS[status] ?? 'Unknown',
         responseHeaders: headersArray(responseHeaders),
         body: parsedBody?.base64,
       })

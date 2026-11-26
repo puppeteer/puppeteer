@@ -1,5 +1,172 @@
 # Changelog
 
+## [25.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.18.1...puppeteer-core-v25.19.0) (2026-11-25)
+
+
+### 🎉 Features
+
+* add Target.close() ([#15830](https://github.com/puppeteer/puppeteer/issues/15830)) ([7133169](https://github.com/puppeteer/puppeteer/commit/71331695c42e75291f5e20ab3babfef72bd41983))
+* roll to Chrome 158.0.8127.36 ([#15832](https://github.com/puppeteer/puppeteer/issues/15832)) ([680acbd](https://github.com/puppeteer/puppeteer/commit/680acbd014b8b4776a75edd9e89ea124457928fd))
+* roll to Firefox 161.0 ([#15878](https://github.com/puppeteer/puppeteer/issues/15878)) ([a3f5581](https://github.com/puppeteer/puppeteer/commit/a3f5581797135ef966b6fb8beb566a61bd3aa240))
+
+
+### 🛠️ Fixes
+
+* **accessibility:** preserve iframe snapshots when root is specified ([#15875](https://github.com/puppeteer/puppeteer/issues/15875)) ([53e3573](https://github.com/puppeteer/puppeteer/commit/53e3573797bb77b425eb0042fb1b932b92e6fea4))
+* **bidi:** propagate connection close and drain microtasks in BidiOverCdp ([#15776](https://github.com/puppeteer/puppeteer/issues/15776)) ([ceb4414](https://github.com/puppeteer/puppeteer/commit/ceb4414ef7ec1d3a708575e86517e5fdac071ffb))
+* **bidi:** throw UnsupportedOperation for targetFilter ([#15779](https://github.com/puppeteer/puppeteer/issues/15779)) ([1670e54](https://github.com/puppeteer/puppeteer/commit/1670e5489b416e3b3dc9da091f931dbd5ec53406))
+* **bidi:** use defaultNavigationTimeout for network-idle waits ([#15820](https://github.com/puppeteer/puppeteer/issues/15820)) ([e82d656](https://github.com/puppeteer/puppeteer/commit/e82d656004488cc2f635f878da7cede1b4631235))
+* **cdp:** count concurrent manual attaches per target ([#15751](https://github.com/puppeteer/puppeteer/issues/15751)) ([47a6c68](https://github.com/puppeteer/puppeteer/commit/47a6c686b8dd58e8c9a5c3ac03ae36c84e2c6f7f))
+* **cdp:** keep the media type when emulating media features ([#15745](https://github.com/puppeteer/puppeteer/issues/15745)) ([4ff12b3](https://github.com/puppeteer/puppeteer/commit/4ff12b308a69b6b55cc14fe6022623610a99995a))
+* **cdp:** report the numpad location on keyup events ([#15845](https://github.com/puppeteer/puppeteer/issues/15845)) ([283aa65](https://github.com/puppeteer/puppeteer/commit/283aa65c790bbef6831ebd910050d77f0427a927))
+* **cdp:** support getProperties on primitive and disposed handles ([#15858](https://github.com/puppeteer/puppeteer/issues/15858)) ([7ec3c95](https://github.com/puppeteer/puppeteer/commit/7ec3c95715b0365945d93ef150ce9dde9836fe89))
+* **cdp:** terminate navigation immediately when page crashes ([#15774](https://github.com/puppeteer/puppeteer/issues/15774)) ([9c28591](https://github.com/puppeteer/puppeteer/commit/9c28591067f2dcdc7020c95777376bcb64c40529))
+* copy options when cloning FunctionLocator ([#15834](https://github.com/puppeteer/puppeteer/issues/15834)) ([d68ee59](https://github.com/puppeteer/puppeteer/commit/d68ee5953bf9b0f02aabe591fe1cb6fa4cdb9b0f))
+* copy the viewport in Page.setViewport() and Page.viewport() ([#15842](https://github.com/puppeteer/puppeteer/issues/15842)) ([6b9bc63](https://github.com/puppeteer/puppeteer/commit/6b9bc638b8ab90751d88380154096140132ec9de))
+* do not hide the window of headful browsers on Windows ([#15836](https://github.com/puppeteer/puppeteer/issues/15836)) ([ddfefdf](https://github.com/puppeteer/puppeteer/commit/ddfefdf4c38f9d57be2408c1616a6f7aa7d16fe0))
+* honor an already aborted signal in waitForFileChooser() and waitForDevicePrompt() ([#15804](https://github.com/puppeteer/puppeteer/issues/15804)) ([3ba5501](https://github.com/puppeteer/puppeteer/commit/3ba55014c00d50c02182b50d8f66ac1c0fa6a047))
+* let off() remove listeners added with once() ([#15806](https://github.com/puppeteer/puppeteer/issues/15806)) ([fee3304](https://github.com/puppeteer/puppeteer/commit/fee3304834acc91458893bf22f8470338dcb611e))
+* **page:** preserve special numbers in evaluateOnNewDocument arguments ([#15861](https://github.com/puppeteer/puppeteer/issues/15861)) ([e8f6920](https://github.com/puppeteer/puppeteer/commit/e8f69209b6f29edfbad2fb7f8c663264bf2ffa52))
+* preserve custom and falsy AbortSignal reasons in WaitTask and QueryHandler ([#15839](https://github.com/puppeteer/puppeteer/issues/15839)) ([95b7f85](https://github.com/puppeteer/puppeteer/commit/95b7f8507a3141a93422e2959acd18a42fd0a9a6))
+* roll to Chrome 158.0.8127.88 ([#15871](https://github.com/puppeteer/puppeteer/issues/15871)) ([e81f47a](https://github.com/puppeteer/puppeteer/commit/e81f47a3f70a1d0203f10a48bd9f2f76d85d5029))
+* roll to Firefox 160.0.1 ([#15831](https://github.com/puppeteer/puppeteer/issues/15831)) ([e1f91c5](https://github.com/puppeteer/puppeteer/commit/e1f91c5e53c08034f17309f56be941aee19479a6))
+* send a reason phrase for status codes Chrome doesn't know ([#15844](https://github.com/puppeteer/puppeteer/issues/15844)) ([66beb76](https://github.com/puppeteer/puppeteer/commit/66beb762aba251b12297755ded164415bc1f662b))
+* send an empty post data override in request.continue() ([#15849](https://github.com/puppeteer/puppeteer/issues/15849)) ([f4bf4ac](https://github.com/puppeteer/puppeteer/commit/f4bf4ac07a3c1239d36f86368c9c34813e8f03d4))
+* serialize page screenshots across browser contexts ([#15775](https://github.com/puppeteer/puppeteer/issues/15775)) ([8d0b92e](https://github.com/puppeteer/puppeteer/commit/8d0b92e3f0d16d5e3b7dad8dad9a1251ca54f413))
+* stronger target subtype check ([#15837](https://github.com/puppeteer/puppeteer/issues/15837)) ([c90b385](https://github.com/puppeteer/puppeteer/commit/c90b3854cbfc130eba9d57a8bfec32dc2f1e0b17))
+* **tracing:** reset state, avoid mutating categories, and handle disconnect ([#15870](https://github.com/puppeteer/puppeteer/issues/15870)) ([5860428](https://github.com/puppeteer/puppeteer/commit/5860428de49053533944a2a91a202850b22d9746))
+* use the payload of the highest priority in Cooperative Intercept Mode ([#15825](https://github.com/puppeteer/puppeteer/issues/15825)) ([4ee6cff](https://github.com/puppeteer/puppeteer/commit/4ee6cff57442b7e03f7b27fb8018ee5ebaeab68b))
+* **webdriver:** update the mouse position after a click over WebDriver BiDi ([#15807](https://github.com/puppeteer/puppeteer/issues/15807)) ([b4435d4](https://github.com/puppeteer/puppeteer/commit/b4435d4ded2b771ef54cb85144876bc3290027b5))
+
+
+### 📄 Documentation
+
+* fix the documented default of ReloadOptions.ignoreCache ([#15840](https://github.com/puppeteer/puppeteer/issues/15840)) ([aebed44](https://github.com/puppeteer/puppeteer/commit/aebed4488e7b9d828034521c7930daf47c6e82c5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.7 to 3.3.0
+
+## [25.18.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.18.0...puppeteer-core-v25.18.1) (2026-11-17)
+
+
+### 🛠️ Fixes
+
+* **bidi:** wait for the new document in page.reload() ([#15746](https://github.com/puppeteer/puppeteer/issues/15746)) ([50c848e](https://github.com/puppeteer/puppeteer/commit/50c848efca0e24746905ae1364be4b2625213002))
+* fix the pre-release job and verify its output in CI ([#15822](https://github.com/puppeteer/puppeteer/issues/15822)) ([bc66e28](https://github.com/puppeteer/puppeteer/commit/bc66e288d334a268d4132705254a93628d8d74d5))
+
+## [25.18.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.17.0...puppeteer-core-v25.18.0) (2026-11-17)
+
+
+### 🎉 Features
+
+* add framenavigatedsamedocument and framenavigatednewdocument page events ([#15760](https://github.com/puppeteer/puppeteer/issues/15760)) ([5e2df24](https://github.com/puppeteer/puppeteer/commit/5e2df242533e35714c349d0d1755c6555a882ceb))
+* implement network logs for worker ([#15798](https://github.com/puppeteer/puppeteer/issues/15798)) ([1943b4f](https://github.com/puppeteer/puppeteer/commit/1943b4f34b1e98cf50eb4203ea6aaeb521d442ec))
+* Implement RemoteException for WebDriver BiDi ([#15748](https://github.com/puppeteer/puppeteer/issues/15748)) ([e61ec75](https://github.com/puppeteer/puppeteer/commit/e61ec75722ad2c543a8ea1578a4f941e82ddf5a9))
+* introducing RemoteException for CDP ([#15729](https://github.com/puppeteer/puppeteer/issues/15729)) ([864c8bc](https://github.com/puppeteer/puppeteer/commit/864c8bceb98ac217bb8e816ea7bbe3a56810d68e))
+* roll to Firefox 160.0 ([#15763](https://github.com/puppeteer/puppeteer/issues/15763)) ([6a841e1](https://github.com/puppeteer/puppeteer/commit/6a841e16f7b883a0e775ebbd1179ab575f7f4785))
+
+
+### 🛠️ Fixes
+
+* **bidi:** honor the signal while goBack() and goForward() wait ([#15801](https://github.com/puppeteer/puppeteer/issues/15801)) ([eb1deeb](https://github.com/puppeteer/puppeteer/commit/eb1deeb204b8488407c71030b8eccc513901464f))
+* **bidi:** reset setPermission overrides in clearPermissionOverrides ([#15754](https://github.com/puppeteer/puppeteer/issues/15754)) ([c3604cf](https://github.com/puppeteer/puppeteer/commit/c3604cf757ecca3facc23c831a7d08e1b11da323))
+* **cdp:** delete cookies from the page partition for default port pages ([#15790](https://github.com/puppeteer/puppeteer/issues/15790)) ([a246598](https://github.com/puppeteer/puppeteer/commit/a2465981c2618a829cd27b3cdfe046b3e5d0fc19))
+* **cdp:** handle frame events on the session of the frame ([#15816](https://github.com/puppeteer/puppeteer/issues/15816)) ([a6f0929](https://github.com/puppeteer/puppeteer/commit/a6f092978b69f9451ab2a4791ed6a51c9c99b7e4))
+* **cdp:** honor the signal option in goto() ([#15785](https://github.com/puppeteer/puppeteer/issues/15785)) ([9fce0cb](https://github.com/puppeteer/puppeteer/commit/9fce0cb5eae0f292a9b6e824f0236cd624b186e3))
+* **cdp:** release navigation listeners after a timeout or abort ([#15769](https://github.com/puppeteer/puppeteer/issues/15769)) ([bf61b54](https://github.com/puppeteer/puppeteer/commit/bf61b54862bc2ad18882e08d0dab7309cf649db6))
+* **cdp:** stop intercepting file choosers once waitForFileChooser() is done ([#15817](https://github.com/puppeteer/puppeteer/issues/15817)) ([38e0c67](https://github.com/puppeteer/puppeteer/commit/38e0c67b9fbf14821660469c6471663e48f63020))
+* dispose temporary CDP binding handles ([#15731](https://github.com/puppeteer/puppeteer/issues/15731)) ([768ab92](https://github.com/puppeteer/puppeteer/commit/768ab92a80aca010f0c90f0eb57fad3b46e15016))
+* do not modify the options passed to addStyleTag ([#15757](https://github.com/puppeteer/puppeteer/issues/15757)) ([b47386c](https://github.com/puppeteer/puppeteer/commit/b47386c451ad022b0644fc3fc9ecc0dbbab68a4b))
+* do not modify the options passed to launch and connect ([#15762](https://github.com/puppeteer/puppeteer/issues/15762)) ([8d24ee3](https://github.com/puppeteer/puppeteer/commit/8d24ee3a07162368aeaa4339720598937d2a1f4b))
+* honor an already aborted signal in waitForFunction() and navigation methods ([#15797](https://github.com/puppeteer/puppeteer/issues/15797)) ([12348e4](https://github.com/puppeteer/puppeteer/commit/12348e4e06f4b0d5e216be768226afc9903d2be2))
+* honor the signal option in BrowserContext.waitForTarget() ([#15808](https://github.com/puppeteer/puppeteer/issues/15808)) ([6cb9cee](https://github.com/puppeteer/puppeteer/commit/6cb9ceee095bb343b028d34b5f75431432eae493))
+* honor the signal option in setContent() ([#15789](https://github.com/puppeteer/puppeteer/issues/15789)) ([1eb68c1](https://github.com/puppeteer/puppeteer/commit/1eb68c114dcf92947681b51b2d3e669cd060af19))
+* **injected:** query light DOM of shadow hosts in text selector ([#15735](https://github.com/puppeteer/puppeteer/issues/15735)) ([#15739](https://github.com/puppeteer/puppeteer/issues/15739)) ([70669de](https://github.com/puppeteer/puppeteer/commit/70669de6034e5723630d23ce3c01f4498a92f13b))
+* keep equals signs in the --user-data-dir value ([#15802](https://github.com/puppeteer/puppeteer/issues/15802)) ([1424aab](https://github.com/puppeteer/puppeteer/commit/1424aab23f3c0a8948c4f95d9e673bcc9f707aad))
+* reject immediately when the AbortSignal is already aborted ([#15792](https://github.com/puppeteer/puppeteer/issues/15792)) ([ec28111](https://github.com/puppeteer/puppeteer/commit/ec28111760387aa5e1d1f05c7514e0c143b64f71))
+* roll to Chrome 157.0.8103.78 ([#15771](https://github.com/puppeteer/puppeteer/issues/15771)) ([0d76771](https://github.com/puppeteer/puppeteer/commit/0d76771ce9454a88e84464b1eb03728dc952076f))
+* use RAF polling for P selectors with pseudo classes ([#15791](https://github.com/puppeteer/puppeteer/issues/15791)) ([3f86e0e](https://github.com/puppeteer/puppeteer/commit/3f86e0eb579acc07584a731c3821f7345fea1314))
+* **webdriver:** return the placeholder remote address from HTTPResponse.remoteAddress() ([#15813](https://github.com/puppeteer/puppeteer/issues/15813)) ([017c454](https://github.com/puppeteer/puppeteer/commit/017c454437b135b93c415b2edde5f1b41bb3a9fc))
+* **webdriver:** send an integer cookie expiry over WebDriver BiDi ([#15805](https://github.com/puppeteer/puppeteer/issues/15805)) ([a23f62a](https://github.com/puppeteer/puppeteer/commit/a23f62a1a62a3fd57a96379ffdc72a87aa36c3d8))
+
+
+### 📄 Documentation
+
+* correct browser download environment variable comments ([#15744](https://github.com/puppeteer/puppeteer/issues/15744)) ([da01a54](https://github.com/puppeteer/puppeteer/commit/da01a54f9bafd05fceacb19847ff26c41d4ffaa8))
+* fix TSDoc [@param](https://github.com/param) names of Page.setUserAgent and EventEmitter.emit ([#15818](https://github.com/puppeteer/puppeteer/issues/15818)) ([88bb7a0](https://github.com/puppeteer/puppeteer/commit/88bb7a07495b5d60cdcfb0fa4ecbe875fb44cbb2))
+
+## [25.17.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.16.0...puppeteer-core-v25.17.0) (2026-11-10)
+
+
+### 🎉 Features
+
+* add console events to Browser and BrowserContext ([#15710](https://github.com/puppeteer/puppeteer/issues/15710)) ([e9894e3](https://github.com/puppeteer/puppeteer/commit/e9894e33b23375c4b6fc89ec9cf48669af617238))
+* add HTTPResponse.stream() ([#15717](https://github.com/puppeteer/puppeteer/issues/15717)) ([8fab4dc](https://github.com/puppeteer/puppeteer/commit/8fab4dc965d4d7d9375e7b84dede8e9b80ac5c15))
+* add page and worker methods on HTTPRequest ([#15514](https://github.com/puppeteer/puppeteer/issues/15514)) ([9b2fe5e](https://github.com/puppeteer/puppeteer/commit/9b2fe5e30743fd9122fe51d5f316ea4c1bf0fe78))
+* add request events to Browser and BrowserContext ([#15539](https://github.com/puppeteer/puppeteer/issues/15539)) ([b99132a](https://github.com/puppeteer/puppeteer/commit/b99132afd6ea565313be3a155cf8188273097a8b))
+* add scriptId to ConsoleMessageLocation ([#15537](https://github.com/puppeteer/puppeteer/issues/15537)) ([f3511d8](https://github.com/puppeteer/puppeteer/commit/f3511d8529e23fb32441b54928b61abc837e9236))
+* **cdp:** expose DomContentLoaded and NavigationStart in page.metrics() ([#15676](https://github.com/puppeteer/puppeteer/issues/15676)) ([5862b81](https://github.com/puppeteer/puppeteer/commit/5862b81684539ca70397986f3cbbc76ca74101b9))
+* expose HTTPResponse.encodedDataLength() ([#15678](https://github.com/puppeteer/puppeteer/issues/15678)) ([9abca26](https://github.com/puppeteer/puppeteer/commit/9abca261e6cc0aa39c2bf08dcda3ca211cc85661))
+* introduce other network event on browser and browserContext ([#15726](https://github.com/puppeteer/puppeteer/issues/15726)) ([9319ada](https://github.com/puppeteer/puppeteer/commit/9319ada927c28e763e7d2748d7e6c80d453a94de))
+* **locators:** support passing arguments to Locator.filter and Locator.map ([#15684](https://github.com/puppeteer/puppeteer/issues/15684)) ([a0b2b8d](https://github.com/puppeteer/puppeteer/commit/a0b2b8dd0de163b9f0ac8fb78445f4158196a705))
+* report dedicated worker console messages on Browser and BrowserContext ([#15711](https://github.com/puppeteer/puppeteer/issues/15711)) ([092e6e6](https://github.com/puppeteer/puppeteer/commit/092e6e6fa5912b2c27f01a5ecb12ddb29289fe47))
+* roll to Chrome 157.0.8103.38 ([#15716](https://github.com/puppeteer/puppeteer/issues/15716)) ([591d736](https://github.com/puppeteer/puppeteer/commit/591d7367487f9431a87a56d863f842c3f1e17e73))
+* roll to Firefox 159.0 ([#15685](https://github.com/puppeteer/puppeteer/issues/15685)) ([de2e9f9](https://github.com/puppeteer/puppeteer/commit/de2e9f9c97970b2d8106497c837a80df862d3faa))
+
+
+### 🛠️ Fixes
+
+* **bidi:** apply downloadBehavior from launch and connect options ([#15687](https://github.com/puppeteer/puppeteer/issues/15687)) ([d8cc590](https://github.com/puppeteer/puppeteer/commit/d8cc590f12c30025cff5fae09910de465da3523e))
+* **bidi:** deliver console messages replayed while connecting ([#15712](https://github.com/puppeteer/puppeteer/issues/15712)) ([5115e5c](https://github.com/puppeteer/puppeteer/commit/5115e5c29fb87faee7700a12a22fa13bd6a20ef8))
+* **bidi:** enforce exhaustive switch in getBidiKeyValue and support Abort/NumpadEnter ([#15654](https://github.com/puppeteer/puppeteer/issues/15654)) ([7cb1c0b](https://github.com/puppeteer/puppeteer/commit/7cb1c0bb7f2dc7019c3bdd664cb65d054174c2a8))
+* **bidi:** keep the plain GMT timezone ID in page.emulateTimezone() ([#15728](https://github.com/puppeteer/puppeteer/issues/15728)) ([026b426](https://github.com/puppeteer/puppeteer/commit/026b426a2d8034e4e312a80d56b82905dea89781))
+* **bidi:** let contentType replace a content-type header in respond() ([#15653](https://github.com/puppeteer/puppeteer/issues/15653)) ([7cb283c](https://github.com/puppeteer/puppeteer/commit/7cb283cb4bba7f18627a013a0d97ae056b30315c))
+* **bidi:** make page.setCacheEnabled() enable the cache by default ([#15698](https://github.com/puppeteer/puppeteer/issues/15698)) ([4b211de](https://github.com/puppeteer/puppeteer/commit/4b211de2690400fc231aa47092c4d2f7c310c5b7))
+* **bidi:** respect waitForFonts in page.pdf() ([#15714](https://github.com/puppeteer/puppeteer/issues/15714)) ([0814ac1](https://github.com/puppeteer/puppeteer/commit/0814ac121f996351c15725613ff105f939f12be1))
+* **bidi:** return domain cookies for the domain itself in page.cookies() ([#15689](https://github.com/puppeteer/puppeteer/issues/15689)) ([884a8c3](https://github.com/puppeteer/puppeteer/commit/884a8c3a62b727a58ee2fd4ee4a0a3c4970fd171))
+* **bidi:** send the default accuracy in page.setGeolocation() ([#15704](https://github.com/puppeteer/puppeteer/issues/15704)) ([8dfe2ff](https://github.com/puppeteer/puppeteer/commit/8dfe2ffb112d3b3abdc7db6d213197d3e4c9480d))
+* **bidi:** send the Enter code for the Enter key ([#15743](https://github.com/puppeteer/puppeteer/issues/15743)) ([27e017c](https://github.com/puppeteer/puppeteer/commit/27e017c4787188de2f3aad2486b6a3e8f46a1b57))
+* **bidi:** tolerate respond() and abort() failures for gone requests ([#15697](https://github.com/puppeteer/puppeteer/issues/15697)) ([1c4e4ad](https://github.com/puppeteer/puppeteer/commit/1c4e4ad0dd185b8eed9781cdcec27ede96b816e9))
+* **bidi:** update Request.isBlocked on network lifecycle events ([#15677](https://github.com/puppeteer/puppeteer/issues/15677)) ([a0d910a](https://github.com/puppeteer/puppeteer/commit/a0d910a453c9c559f689b023937544dab32d9239))
+* **cdp:** allow calling exposed functions after deleting from globalThis ([#15683](https://github.com/puppeteer/puppeteer/issues/15683)) ([5c11065](https://github.com/puppeteer/puppeteer/commit/5c11065ae361c384aa470dd7f7f482852dfbe98f))
+* **cdp:** handle internal redirects not paused by Fetch.requestPaused ([#15644](https://github.com/puppeteer/puppeteer/issues/15644)) ([176afa2](https://github.com/puppeteer/puppeteer/commit/176afa2965ec9986bfbe9dc8238121e7ff281b43))
+* **cdp:** include null and undefined in ConsoleMessage.text() ([#15693](https://github.com/puppeteer/puppeteer/issues/15693)) ([e54f1db](https://github.com/puppeteer/puppeteer/commit/e54f1db4c7c973a450c5eb6f42d2006df33c93e6))
+* deflake BiDi navigation and flaky tests from main CI ([#15638](https://github.com/puppeteer/puppeteer/issues/15638)) ([d8ef67a](https://github.com/puppeteer/puppeteer/commit/d8ef67a5ce6bf9b307408290389a8339e99c2f4c))
+* do not mutate options.args in defaultArgs ([#15664](https://github.com/puppeteer/puppeteer/issues/15664)) ([1581677](https://github.com/puppeteer/puppeteer/commit/15816772ad01431b976ff1bb052456a0aa9ecd0b))
+* do not throw in evaluate when the caller stack frame is missing ([#15666](https://github.com/puppeteer/puppeteer/issues/15666)) ([28782a2](https://github.com/puppeteer/puppeteer/commit/28782a2b84f431b88c559bbf78d0f243b144d27f))
+* **extensions:** support Target.attachToTarget in ExtensionTransport ([#15647](https://github.com/puppeteer/puppeteer/issues/15647)) ([c615311](https://github.com/puppeteer/puppeteer/commit/c615311db0f6f1826f31cbc59978e8367b2ed9b3))
+* fail pending worker requests on worker termination ([#15538](https://github.com/puppeteer/puppeteer/issues/15538)) ([7231774](https://github.com/puppeteer/puppeteer/commit/72317747dbead16bcb53334cb8c356ccc9f01ce3))
+* **network:** emit requestfailed when loadingFailed precedes requestPaused ([#15576](https://github.com/puppeteer/puppeteer/issues/15576)) ([5b0c34a](https://github.com/puppeteer/puppeteer/commit/5b0c34aa079e5943921bce65be67e360e581e862))
+* roll to Chrome 156.0.8078.73 ([#15686](https://github.com/puppeteer/puppeteer/issues/15686)) ([33f2ad6](https://github.com/puppeteer/puppeteer/commit/33f2ad619cfb0ca8d359436b8796fc6031f26a27))
+* roll to Chrome 156.0.8078.80 ([#15696](https://github.com/puppeteer/puppeteer/issues/15696)) ([715534b](https://github.com/puppeteer/puppeteer/commit/715534b579b5b90062ee246cc904c48ee204dbdc))
+* roll to Chrome 157.0.8103.50 ([#15747](https://github.com/puppeteer/puppeteer/issues/15747)) ([5a0d6de](https://github.com/puppeteer/puppeteer/commit/5a0d6dee46b2843213d5bcd7cb5c72739083ccd6))
+* roll to Firefox 159.0.1 ([#15715](https://github.com/puppeteer/puppeteer/issues/15715)) ([62d357a](https://github.com/puppeteer/puppeteer/commit/62d357a87d40518a2c1e687d62cccc06be9dc805))
+* type wildcard event emitter handlers correctly ([#15643](https://github.com/puppeteer/puppeteer/issues/15643)) ([08e7b1a](https://github.com/puppeteer/puppeteer/commit/08e7b1aebe60462b6f7834e9dfe0f6c70464247c))
+* validate CRLF in input HTTPRequest headers ([#15601](https://github.com/puppeteer/puppeteer/issues/15601)) ([d830850](https://github.com/puppeteer/puppeteer/commit/d830850116835db4fd6bea7f874958bc4fe338ce))
+* **webdriver:** dispose requests that complete with a 3xx status but are not redirected ([#15631](https://github.com/puppeteer/puppeteer/issues/15631)) ([fac3a5b](https://github.com/puppeteer/puppeteer/commit/fac3a5b659d19f7108c8d2fc44d14f4161ef46d2))
+* **webdriver:** support the Space key over WebDriver BiDi ([#15650](https://github.com/puppeteer/puppeteer/issues/15650)) ([346bace](https://github.com/puppeteer/puppeteer/commit/346bace62a480837302c9c820db0858d6e377e1b))
+
+
+### 📄 Documentation
+
+* **pdf:** clarify emulateMediaType('screen') behavior with page.pdf() ([#15636](https://github.com/puppeteer/puppeteer/issues/15636)) ([a1149f3](https://github.com/puppeteer/puppeteer/commit/a1149f302f8c1ddd0740fe26964c59e8533d1179))
+
+
+### ⚡ Performance
+
+* count in-flight requests in linear time ([#15668](https://github.com/puppeteer/puppeteer/issues/15668)) ([394e92d](https://github.com/puppeteer/puppeteer/commit/394e92de9d6d694d2d06bd168e5738a757b48b1f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.2.6 to 3.2.7
+
 ## [25.16.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.15.0...puppeteer-core-v25.16.0) (2026-10-22)
 
 

@@ -84,7 +84,7 @@ export class BidiBrowserContext extends BrowserContext {
     ]
   >();
 
-  #overrides: Array<{origin: string; permission: Permission}> = [];
+  #overrides: Array<{origin: string; permission: string}> = [];
   #logger: Logger;
 
   private constructor(
@@ -318,23 +318,33 @@ export class BidiBrowserContext extends BrowserContext {
         'Origin (*) is not supported by WebDriver BiDi',
       );
     }
+    // Validate all descriptors before sending any commands, so that an
+    // unsupported descriptor does not leave permissions partially applied.
+    for (const {permission} of permissions) {
+      if (permission.allowWithoutSanitization) {
+        throw new UnsupportedOperation(
+          'allowWithoutSanitization is not supported by WebDriver BiDi',
+        );
+      }
+      if (permission.panTiltZoom) {
+        throw new UnsupportedOperation(
+          'panTiltZoom is not supported by WebDriver BiDi',
+        );
+      }
+      if (permission.userVisibleOnly) {
+        throw new UnsupportedOperation(
+          'userVisibleOnly is not supported by WebDriver BiDi',
+        );
+      }
+      if (permission.sysex) {
+        throw new UnsupportedOperation(
+          'sysex is not supported by WebDriver BiDi',
+        );
+      }
+    }
     await Promise.all(
       permissions.map(permission => {
-        if (permission.permission.allowWithoutSanitization) {
-          throw new UnsupportedOperation(
-            'allowWithoutSanitization is not supported by WebDriver BiDi',
-          );
-        }
-        if (permission.permission.panTiltZoom) {
-          throw new UnsupportedOperation(
-            'panTiltZoom is not supported by WebDriver BiDi',
-          );
-        }
-        if (permission.permission.userVisibleOnly) {
-          throw new UnsupportedOperation(
-            'userVisibleOnly is not supported by WebDriver BiDi',
-          );
-        }
+        this.#overrides.push({origin, permission: permission.permission.name});
         return this.userContext.setPermissions(
           origin,
           {

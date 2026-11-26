@@ -11,6 +11,7 @@ import {
   launch,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
+import {attachFrame} from './utils.js';
 
 describe('Cookie specs', () => {
   setupTestBrowserHooks();
@@ -344,6 +345,19 @@ describe('Cookie specs', () => {
       expect(cookies[0]!.session).toBe(true);
       expect(cookies[0]!.expires).toBe(-1);
     });
+    it('should set a cookie with a fractional |expires|', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const expires = Math.floor(Date.now() / 1000) + 24 * 60 * 60;
+      await page.setCookie({
+        name: 'expiring',
+        value: '123456',
+        expires: expires + 0.5,
+      });
+      const cookies = await page.cookies();
+      expect(cookies).toHaveLength(1);
+      expect(Math.floor(cookies[0]!.expires)).toBe(expires);
+    });
     it('should set cookie with reasonable defaults', async () => {
       const {page, server} = await getTestState();
 
@@ -630,17 +644,11 @@ describe('Cookie specs', () => {
       try {
         const page = await browser.newPage();
         await page.goto(httpsServer.PREFIX + '/grid.html');
-        await page.evaluate(src => {
-          let fulfill!: () => void;
-          const promise = new Promise<void>(x => {
-            return (fulfill = x);
-          });
-          const iframe = document.createElement('iframe');
-          document.body.appendChild(iframe);
-          iframe.onload = fulfill;
-          iframe.src = src;
-          return promise;
-        }, httpsServer.CROSS_PROCESS_PREFIX);
+        const frame = await attachFrame(
+          page,
+          'frame1',
+          httpsServer.CROSS_PROCESS_PREFIX,
+        );
         await page.setCookie({
           name: '127-same-site-cookie',
           value: 'best',
@@ -648,7 +656,7 @@ describe('Cookie specs', () => {
           sameSite: 'None',
         });
 
-        expect(await page.frames()[1]!.evaluate('document.cookie')).toBe(
+        expect(await frame.evaluate('document.cookie')).toBe(
           '127-same-site-cookie=best',
         );
         await expectCookieEquals(
@@ -871,6 +879,28 @@ describe('Cookie specs', () => {
         name: 'partitionCookie',
         partitionKey: origin,
       });
+      expect(await page.cookies()).toHaveLength(0);
+    });
+    it('should delete cookie from the page partition if the page uses the default port', async () => {
+      const {page} = await getTestState();
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        void request.respond({
+          status: 200,
+          contentType: 'text/html',
+          body: '<!DOCTYPE html>',
+        });
+      });
+      await page.goto('https://example.com/');
+      await page.setCookie({
+        url: 'https://example.com/',
+        name: 'partitionCookie',
+        value: 'partition',
+        secure: true,
+        partitionKey: 'https://example.com',
+      });
+      expect(await page.cookies()).toHaveLength(1);
+      await page.deleteCookie({name: 'partitionCookie'});
       expect(await page.cookies()).toHaveLength(0);
     });
   });

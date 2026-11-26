@@ -41,7 +41,7 @@ export class WaitTask<T = unknown> {
   #genericError = new Error('Waiting failed');
   #timeoutError?: TimeoutError;
 
-  #result = Deferred.create<HandleFor<T>>();
+  #result = Deferred.create<HandleFor<T>, unknown>();
 
   #poller?: JSHandle<Poller<T>>;
   #signal?: AbortSignal;
@@ -70,6 +70,11 @@ export class WaitTask<T = unknown> {
         break;
     }
     this.#args = args;
+
+    if (this.#signal?.aborted) {
+      void this.terminate(this.#signal.reason);
+      return;
+    }
 
     this.#world.taskManager.add(this);
 
@@ -181,14 +186,14 @@ export class WaitTask<T = unknown> {
     }
   }
 
-  async terminate(error?: Error): Promise<void> {
+  async terminate(error?: unknown): Promise<void> {
     this.#world.taskManager.delete(this);
 
     this.#signal?.removeEventListener('abort', this.#onAbortSignal);
 
     clearTimeout(this.#timeout);
 
-    if (error && !this.#result.finished()) {
+    if (error !== undefined && !this.#result.finished()) {
       this.#result.reject(error);
     }
 

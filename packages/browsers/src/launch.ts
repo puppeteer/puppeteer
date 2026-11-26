@@ -193,6 +193,18 @@ export interface LaunchOptions {
    */
   detached?: boolean;
   /**
+   * Whether to spawn process with the {@link https://nodejs.org/api/child_process.html#child_processspawncommand-args-options | windowsHide}
+   * option. It only has an effect on Windows.
+   *
+   * @remarks
+   * Set it to `false` when launching a headful browser. `windowsHide` also
+   * hides the first window that the browser shows, and Chrome cannot show it
+   * again when it is launched with `--window-size` or `--window-position`.
+   *
+   * @defaultValue `true`
+   */
+  windowsHide?: boolean;
+  /**
    * A callback to run after the browser process exits or before the process
    * will be closed via the {@link Process.close} call (including when handling
    * signals). The callback is only run once.
@@ -331,6 +343,7 @@ export class Process {
     // process tree with `.kill(-pid)` command. @see
     // https://nodejs.org/api/child_process.html#child_process_options_detached
     opts.detached ??= process.platform !== 'win32';
+    opts.windowsHide ??= true;
     const stdio = this.#configureStdio({
       pipe: opts.pipe,
     });
@@ -341,6 +354,7 @@ export class Process {
       `Launching ${this.#executablePath} ${this.#args.join(' ')}`,
       {
         detached: opts.detached,
+        windowsHide: opts.windowsHide,
         env: Object.keys(env).reduce<Record<string, string | undefined>>(
           (res, key) => {
             if (key.toLowerCase().startsWith('puppeteer_')) {
@@ -359,7 +373,7 @@ export class Process {
       this.#args,
       {
         detached: opts.detached,
-        windowsHide: true,
+        windowsHide: opts.windowsHide,
         env,
         stdio,
       },

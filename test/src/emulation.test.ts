@@ -23,6 +23,28 @@ describe('Emulation', () => {
       await page.setViewport({width: 123, height: 456});
       expect(page.viewport()).toEqual({width: 123, height: 456});
     });
+    it('should keep a copy of the viewport that was set', async () => {
+      const {page} = await getTestState();
+
+      const viewport = {width: 123, height: 456};
+      await page.setViewport(viewport);
+      viewport.width = 789;
+      expect(page.viewport()).toEqual({width: 123, height: 456});
+      expect(
+        await page.evaluate(() => {
+          return window.innerWidth;
+        }),
+      ).toBe(123);
+    });
+    it('should return a copy of the viewport', async () => {
+      const {page} = await getTestState();
+
+      page.viewport()!.width = 123;
+      expect(page.viewport()).toEqual({width: 800, height: 600});
+      await page.setViewport({width: 400, height: 300});
+      page.viewport()!.width = 123;
+      expect(page.viewport()).toEqual({width: 400, height: 300});
+    });
     it('should support mobile emulation', async () => {
       const {page, server} = await getTestState();
 
@@ -213,6 +235,20 @@ describe('Emulation', () => {
       await page.emulate(KnownDevices['iPad Pro landscape']);
     });
 
+    it('should not change the device descriptor', async () => {
+      const {page} = await getTestState();
+
+      const original = {...iPhone.viewport};
+      try {
+        await page.emulate(iPhone);
+        page.viewport()!.isLandscape = true;
+        expect(iPhone.viewport).toEqual(original);
+      } finally {
+        // Undo any change so that later tests see the real device.
+        Object.assign(iPhone.viewport, original);
+      }
+    });
+
     it('should support clicking', async () => {
       const {page, server} = await getTestState();
 
@@ -276,6 +312,34 @@ describe('Emulation', () => {
         return (error = error_);
       });
       expect(error.message).toBe('Unsupported media type: bad');
+    });
+  });
+
+  describe('Page.emulateMediaType and Page.emulateMediaFeatures', function () {
+    it('should not reset each other', async () => {
+      const {page} = await getTestState();
+
+      await page.emulateMediaType('print');
+      await page.emulateMediaFeatures([
+        {name: 'prefers-reduced-motion', value: 'reduce'},
+      ]);
+      expect(
+        await page.evaluate(() => {
+          return [
+            matchMedia('print').matches,
+            matchMedia('(prefers-reduced-motion: reduce)').matches,
+          ];
+        }),
+      ).toEqual([true, true]);
+      await page.emulateMediaType('screen');
+      expect(
+        await page.evaluate(() => {
+          return [
+            matchMedia('print').matches,
+            matchMedia('(prefers-reduced-motion: reduce)').matches,
+          ];
+        }),
+      ).toEqual([false, true]);
     });
   });
 
@@ -500,6 +564,13 @@ describe('Emulation', () => {
       ).toBe(
         'Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)',
       );
+
+      await page.emulateTimezone('GMT');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).date.toString();
+        }),
+      ).toBe('Sat Nov 19 2016 18:12:34 GMT+0000 (Greenwich Mean Time)');
     });
 
     it('should support timezone offset', async () => {

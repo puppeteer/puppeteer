@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import type {ServerResponse} from 'node:http';
 import path from 'node:path';
+import zlib from 'node:zlib';
 
 import expect from 'expect';
 import type {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
@@ -333,6 +334,7 @@ describe('network', function () {
 
         // Load and re-load to make sure it's cached.
         await page.goto(server.PREFIX + '/cached/' + html);
+        responses.clear();
         await page.reload();
 
         expect(responses.size).toBe(2);
@@ -728,6 +730,122 @@ describe('network', function () {
     });
   });
 
+  describe('Response.stream', function () {
+    async function readAll(
+      stream: ReadableStream<Uint8Array>,
+    ): Promise<Uint8Array[]> {
+      const chunks = [];
+      for await (const chunk of stream) {
+        chunks.push(chunk);
+      }
+      return chunks;
+    }
+
+    function streamOnResponse(
+      page: Awaited<ReturnType<typeof getTestState>>['page'],
+      url: string,
+    ): Promise<ReadableStream<Uint8Array>> {
+      return new Promise((resolve, reject) => {
+        page.on('response', function handler(response) {
+          if (response.url() !== url) {
+            return;
+          }
+          page.off('response', handler);
+          response.stream().then(resolve, reject);
+        });
+      });
+    }
+
+    it('should stream the body while it is loading', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/stream', (_req, res) => {
+        res.writeHead(200, {'content-type': 'text/plain'});
+        let i = 0;
+        const interval = setInterval(() => {
+          res.write(`chunk${i}\n`);
+          if (++i === 4) {
+            clearInterval(interval);
+            res.end();
+          }
+        }, 100);
+      });
+      const streamPromise = streamOnResponse(page, server.PREFIX + '/stream');
+      const [chunks] = await Promise.all([
+        streamPromise.then(readAll),
+        page.evaluate(async () => {
+          await (await fetch('/stream')).text();
+        }),
+      ]);
+
+      expect(chunks.length).toBeGreaterThan(1);
+      expect(Buffer.concat(chunks).toString()).toBe(
+        'chunk0\nchunk1\nchunk2\nchunk3\n',
+      );
+    });
+    it('should return the whole body if loading has finished', async () => {
+      const {page, server} = await getTestState();
+
+      const response = (await page.goto(server.PREFIX + '/simple.json'))!;
+      const chunks = await readAll(await response.stream());
+      expect(Buffer.concat(chunks).toString()).toBe(await response.text());
+    });
+    it('should error the stream if loading fails', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/stream', (_req, res) => {
+        res.writeHead(200, {'content-type': 'text/plain'});
+        res.write('chunk0\n');
+        setTimeout(() => {
+          res.socket?.destroy();
+        }, 100);
+      });
+      const streamPromise = streamOnResponse(page, server.PREFIX + '/stream');
+      const [error] = await Promise.all([
+        streamPromise.then(readAll).catch(error => {
+          return error;
+        }),
+        page
+          .evaluate(async () => {
+            await (await fetch('/stream')).text();
+          })
+          .catch(() => {}),
+      ]);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toContain('Loading failed');
+    });
+    it('should stop listening when the stream is cancelled', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      let serverResponse!: ServerResponse;
+      server.setRoute('/stream', (_req, res) => {
+        res.writeHead(200, {'content-type': 'text/plain'});
+        res.write('chunk0\n');
+        serverResponse = res;
+      });
+      const responsePromise = waitEvent<HTTPResponse>(page, 'response', r => {
+        return r.url() === server.PREFIX + '/stream';
+      });
+      const fetchPromise = page.evaluate(async () => {
+        await (await fetch('/stream')).text();
+      });
+      const response = await responsePromise;
+      const client = response.request().client;
+      const listeners = client.listenerCount('Network.dataReceived');
+      const stream = await response.stream();
+      expect(client.listenerCount('Network.dataReceived')).toBe(listeners + 1);
+
+      await stream.cancel();
+      expect(client.listenerCount('Network.dataReceived')).toBe(listeners);
+      serverResponse.end('chunk1\n');
+      await fetchPromise;
+    });
+  });
+
   describe('Response.statusText', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
@@ -768,6 +886,77 @@ describe('network', function () {
     });
   });
 
+  describe('Response.encodedDataLength', function () {
+    it('should return the encoded transfer size', async () => {
+      const {page, server} = await getTestState();
+
+      const raw = Array.from({length: 1000}, (_, i) => {
+        return `line-number-${i}-some-repeated-text`;
+      }).join('\n');
+      const compressed = zlib.gzipSync(raw);
+      server.setRoute('/compressible', (_req, res) => {
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Encoding', 'gzip');
+        res.end(compressed);
+      });
+      const response = (await page.goto(server.PREFIX + '/compressible'))!;
+      const responseBuffer = await response.buffer();
+      expect(responseBuffer.length).toBe(raw.length);
+      expect(response.encodedDataLength()).toBeGreaterThanOrEqual(
+        compressed.length,
+      );
+      expect(response.encodedDataLength()).toBeLessThan(raw.length);
+    });
+
+    it('should return 0 for cached responses', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/cached-encoded-length', (_req, res) => {
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('Content-Type', 'text/plain');
+        res.end('cached-content-'.repeat(100));
+      });
+      const firstResponse = (await page.goto(
+        server.PREFIX + '/cached-encoded-length',
+      ))!;
+      await firstResponse.buffer();
+      expect(firstResponse.fromCache()).toBe(false);
+      expect(firstResponse.encodedDataLength()).toBeGreaterThan(1500);
+
+      const cachedRequestFinished = waitEvent<HTTPRequest>(
+        page,
+        'requestfinished',
+        request => {
+          return request.url() === server.PREFIX + '/cached-encoded-length';
+        },
+      );
+      const cachedResponse = (await page.goto(
+        server.PREFIX + '/cached-encoded-length',
+      ))!;
+      await cachedRequestFinished;
+      expect(cachedResponse.fromCache()).toBe(true);
+      expect(cachedResponse.encodedDataLength()).toBe(0);
+    });
+
+    it('should not return a negative value for data: URLs', async () => {
+      const {page} = await getTestState();
+
+      // Chromium reports -1 for data: URLs when the response is received.
+      // Browsers differ in the final value, so only check that the unknown
+      // size is not exposed.
+      let responseLengthOnEvent: number | undefined;
+      page.on('response', response => {
+        if (response.url() === 'data:text/plain,hello') {
+          responseLengthOnEvent = response.encodedDataLength();
+        }
+      });
+
+      const response = (await page.goto('data:text/plain,hello'))!;
+      expect(responseLengthOnEvent).toBeGreaterThanOrEqual(0);
+      expect(response.encodedDataLength()).toBeGreaterThanOrEqual(0);
+    });
+  });
+
   describe('Network Events', function () {
     it('Page.Events.Request', async () => {
       const {page, server} = await getTestState();
@@ -776,7 +965,12 @@ describe('network', function () {
       page.on('request', request => {
         return !isFavicon(request) && requests.push(request);
       });
-      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPResponse>(page, 'response', response => {
+          return response.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(requests).toHaveLength(1);
       const request = requests[0]!;
       expect(request.url()).toBe(server.EMPTY_PAGE);
@@ -817,7 +1011,12 @@ describe('network', function () {
       page.on('response', response => {
         return !isFavicon(response) && responses.push(response);
       });
-      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPResponse>(page, 'response', response => {
+          return response.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(responses).toHaveLength(1);
       const response = responses[0]!;
       expect(response.url()).toBe(server.EMPTY_PAGE);
@@ -839,9 +1038,16 @@ describe('network', function () {
       });
       const failedRequests: HTTPRequest[] = [];
       page.on('requestfailed', request => {
-        return failedRequests.push(request);
+        if (!isFavicon(request)) {
+          failedRequests.push(request);
+        }
       });
-      await page.goto(server.PREFIX + '/one-style.html');
+      await Promise.all([
+        page.goto(server.PREFIX + '/one-style.html'),
+        waitEvent<HTTPRequest>(page, 'requestfailed', request => {
+          return !isFavicon(request);
+        }),
+      ]);
       expect(failedRequests).toHaveLength(1);
       const failedRequest = failedRequests[0]!;
       expect(failedRequest.url()).toContain('one-style.css');
@@ -877,7 +1083,12 @@ describe('network', function () {
       page.on('requestfinished', request => {
         return !isFavicon(request) && requests.push(request);
       });
-      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(requests).toHaveLength(1);
       const request = requests[0]!;
       expect(request.url()).toBe(server.EMPTY_PAGE);
@@ -889,22 +1100,28 @@ describe('network', function () {
       const {page, server} = await getTestState();
 
       const events: string[] = [];
-      page.on('request', () => {
-        return events.push('request');
+      page.on('request', request => {
+        if (!isFavicon(request)) {
+          events.push('request');
+        }
       });
-      page.on('response', () => {
-        return events.push('response');
+      page.on('response', response => {
+        if (!isFavicon(response)) {
+          events.push('response');
+        }
       });
-      page.on('requestfinished', () => {
-        return events.push('requestfinished');
+      page.on('requestfinished', request => {
+        if (!isFavicon(request)) {
+          events.push('requestfinished');
+        }
       });
-      await page.goto(server.EMPTY_PAGE);
-      // Events can sneak in after the page has navigate
-      expect(events.slice(0, 3)).toEqual([
-        'request',
-        'response',
-        'requestfinished',
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
       ]);
+      expect(events).toEqual(['request', 'response', 'requestfinished']);
     });
     it('should support redirects', async () => {
       const {page, server} = await getTestState();
@@ -932,7 +1149,12 @@ describe('network', function () {
       });
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
-      const response = (await page.goto(FOO_URL))!;
+      const [response] = await Promise.all([
+        page.goto(FOO_URL),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === server.EMPTY_PAGE;
+        }),
+      ]);
       expect(events).toEqual([
         `GET ${FOO_URL}`,
         `302 ${FOO_URL}`,
@@ -943,7 +1165,7 @@ describe('network', function () {
       ]);
 
       // Check redirect chain
-      const redirectChain = response.request().redirectChain();
+      const redirectChain = response!.request().redirectChain();
       expect(redirectChain).toHaveLength(1);
       expect(redirectChain[0]!.url()).toContain('/foo.html');
     });
@@ -976,10 +1198,15 @@ describe('network', function () {
         res.end('final response');
       });
       const url = server.PREFIX + '/no-location.html';
-      const response = (await page.goto(url))!;
+      const [response] = await Promise.all([
+        page.goto(url),
+        waitEvent<HTTPRequest>(page, 'requestfinished', request => {
+          return request.url() === url;
+        }),
+      ]);
       expect(events).toEqual([`GET ${url}`, `302 ${url}`, `DONE ${url}`]);
-      expect(response.status()).toBe(302);
-      expect(response.request().redirectChain()).toHaveLength(0);
+      expect(response!.status()).toBe(302);
+      expect(response!.request().redirectChain()).toHaveLength(0);
     });
   });
 
@@ -1187,6 +1414,7 @@ describe('network', function () {
 
         // Load and re-load to make sure it's cached.
         await page.goto(server.PREFIX + '/cached/' + html);
+        responses.clear();
         await page.reload();
 
         expect(responses.get(resource).status()).toBe(200);
@@ -1222,12 +1450,20 @@ describe('network', function () {
 
       const [response] = await Promise.all([
         waitEvent<HTTPResponse>(page, 'response', res => {
-          return !isFavicon(res);
+          return res.url() === server.PREFIX + '/foo';
         }),
         page.evaluate(() => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('GET', '/foo');
-          xhr.send();
+          return new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = () => {
+              resolve();
+            };
+            xhr.onerror = () => {
+              reject(new Error('XHR failed'));
+            };
+            xhr.open('GET', '/foo');
+            xhr.send();
+          });
         }),
       ]);
       expect(response.headers()['set-cookie']).toBe(setCookieString);

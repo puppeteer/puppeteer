@@ -435,6 +435,119 @@ describe('Accessibility', function () {
         ],
       });
     });
+
+    it('same-origin iframe with root option', async () => {
+      const {page, server} = await getTestState();
+      await page.setContent(
+        htmlRaw`
+          <section aria-label="Container">
+            <iframe src="${server.EMPTY_PAGE}"></iframe>
+          </section>
+        `,
+      );
+      const frame1 = page.frames()[1]!;
+      await frame1.evaluate(() => {
+        const button = document.createElement('button');
+        button.innerText = 'value1';
+        document.body.appendChild(button);
+      });
+      using container = (await page.$('section'))!;
+      const containerSnapshot = await page.accessibility.snapshot({
+        root: container,
+        interestingOnly: true,
+        includeIframes: true,
+      });
+      expect(containerSnapshot).toMatchObject({
+        role: 'region',
+        name: 'Container',
+        children: [
+          {
+            role: 'Iframe',
+            name: '',
+            children: [
+              {
+                role: 'RootWebArea',
+                name: '',
+                children: [
+                  {
+                    role: 'button',
+                    name: 'value1',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+
+      using iframeEl = (await page.$('iframe'))!;
+      const iframeSnapshot = await page.accessibility.snapshot({
+        root: iframeEl,
+        interestingOnly: true,
+        includeIframes: true,
+      });
+      expect(iframeSnapshot).toMatchObject({
+        role: 'Iframe',
+        name: '',
+        children: [
+          {
+            role: 'RootWebArea',
+            name: '',
+            children: [
+              {
+                role: 'button',
+                name: 'value1',
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('cross-origin iframe with root option', async () => {
+      const {page, server} = await getTestState();
+      await page.setContent(
+        htmlRaw`
+          <section aria-label="Container">
+            <iframe src="${server.CROSS_PROCESS_PREFIX}/empty.html"></iframe>
+          </section>
+        `,
+      );
+      const frame1 = page.frames()[1]!;
+      await frame1.evaluate(() => {
+        const button = document.createElement('button');
+        button.innerText = 'value1';
+        document.body.appendChild(button);
+      });
+      using container = (await page.$('section'))!;
+      const snapshot = await page.accessibility.snapshot({
+        root: container,
+        interestingOnly: true,
+        includeIframes: true,
+      });
+      expect(snapshot).toMatchObject({
+        role: 'region',
+        name: 'Container',
+        children: [
+          {
+            role: 'Iframe',
+            name: '',
+            children: [
+              {
+                role: 'RootWebArea',
+                name: '',
+                children: [
+                  {
+                    role: 'button',
+                    name: 'value1',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
   });
 
   it('keyshortcuts', async () => {

@@ -341,10 +341,17 @@ describe('cooperative request interception', function () {
         }
       });
       let failedRequests = 0;
-      page.on('requestfailed', () => {
-        return ++failedRequests;
+      page.on('requestfailed', request => {
+        if (!isFavicon(request)) {
+          ++failedRequests;
+        }
       });
-      const response = await page.goto(server.PREFIX + '/one-style.html');
+      const [response] = await Promise.all([
+        page.goto(server.PREFIX + '/one-style.html'),
+        waitEvent<HTTPRequest>(page, 'requestfailed', request => {
+          return !isFavicon(request);
+        }),
+      ]);
       expect(response!.ok()).toBe(true);
       expect(response!.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
@@ -668,15 +675,17 @@ describe('cooperative request interception', function () {
       page.on('request', async r => {
         return (request = r);
       });
-      void (page.$eval(
-        'iframe',
-        (frame, url) => {
-          return (frame.src = url as string);
-        },
-        server.EMPTY_PAGE,
-      ),
-      // Wait for request interception.
-      await waitEvent(page, 'request'));
+      void (
+        page.$eval(
+          'iframe',
+          (frame, url) => {
+            return (frame.src = url as string);
+          },
+          server.EMPTY_PAGE,
+        ),
+        // Wait for request interception.
+        await waitEvent(page, 'request')
+      );
       // Delete frame to cause request to be canceled.
       await page.$eval('iframe', frame => {
         return frame.remove();

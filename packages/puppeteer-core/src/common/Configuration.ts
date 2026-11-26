@@ -88,7 +88,8 @@ export interface ChromeSettings {
   /**
    * Tells Puppeteer to not download the browser during installation.
    *
-   * Can be overridden by `PUPPETEER_CHROME_SKIP_DOWNLOAD`.
+   * Can be overridden by `PUPPETEER_CHROME_SKIP_DOWNLOAD`
+   * or `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
    *
    * @defaultValue false
    */
@@ -108,8 +109,7 @@ export interface ChromeSettings {
   /**
    * Specifies a certain version of the browser you'd like Puppeteer to use.
    *
-   * Can be overridden by `PUPPETEER_CHROME_VERSION`
-   * or `PUPPETEER_SKIP_CHROME_DOWNLOAD`.
+   * Can be overridden by `PUPPETEER_CHROME_VERSION`.
    *
    * See {@link PuppeteerNode.launch | puppeteer.launch} on how executable path
    * is inferred.
@@ -168,7 +168,8 @@ export interface FirefoxSettings {
   /**
    * Tells Puppeteer to not download the browser during installation.
    *
-   * Can be overridden by `PUPPETEER_FIREFOX_SKIP_DOWNLOAD`.
+   * Can be overridden by `PUPPETEER_FIREFOX_SKIP_DOWNLOAD`
+   * or `PUPPETEER_SKIP_FIREFOX_DOWNLOAD`.
    *
    * @defaultValue true
    */

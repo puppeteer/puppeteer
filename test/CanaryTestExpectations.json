@@ -14,13 +14,6 @@
     "comment": "Times out in Chrome Canary on Windows with CDP. The same test is also flaky (PASS/TIMEOUT) on Windows in stable Chrome. The cause is unknown. Added in https://github.com/puppeteer/puppeteer/pull/14460."
   },
   {
-    "testIdPattern": "[waittask.test] waittask specs protocol timeout *",
-    "platforms": ["darwin"],
-    "parameters": ["firefox", "headful", "webDriverBiDi"],
-    "expectations": ["PASS"],
-    "comment": "Fixed by https://bugzilla.mozilla.org/show_bug.cgi?id=2010507"
-  },
-  {
     "testIdPattern": "[console.test] console should work for different console API calls with group functions",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

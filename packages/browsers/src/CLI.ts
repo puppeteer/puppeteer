@@ -39,6 +39,7 @@ interface InstallArgs {
   baseUrl?: string;
   installDeps?: boolean;
   format: string;
+  retry?: number;
 }
 
 function isValidBrowser(browser: unknown): browser is Browser {
@@ -51,7 +52,7 @@ function isValidPlatform(platform: unknown): platform is BrowserPlatform {
 
 // If moved update release-please config
 // x-release-please-start-version
-const packageVersion = '3.2.6';
+const packageVersion = '3.3.0';
 // x-release-please-end
 
 /**
@@ -321,6 +322,22 @@ export class CLI {
               type: 'boolean',
               desc: 'Whether to attempt installing system dependencies (only supported on Linux, requires root privileges).',
               default: false,
+            })
+            .option('retry', {
+              type: 'number',
+              desc: 'Number of times to retry downloading the browser archive on transient failures (HTTP 408, 429, 5xx, or network errors, with 1s–10s exponential backoff).',
+              default: 0,
+            })
+            .check(argv => {
+              if (
+                argv.retry !== undefined &&
+                (!Number.isInteger(argv.retry) || argv.retry < 0)
+              ) {
+                throw new Error(
+                  'Invalid --retry value: must be a non-negative integer',
+                );
+              }
+              return true;
             })
             .option('format', {
               type: 'string',
@@ -648,6 +665,7 @@ export class CLI {
             ? originalBuildId
             : undefined,
         installDeps: args.installDeps,
+        retry: args.retry,
       });
     } catch (error) {
       if (!(error instanceof IncompleteInstallationError)) {
