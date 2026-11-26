@@ -1,5 +1,19 @@
 # Changelog
 
+## [25.19.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.19.0...puppeteer-core-v25.19.1) (2026-11-26)
+
+
+### 🛠️ Fixes
+
+* **webdriver:** reject an exposed function call if its result cannot be serialized ([#15885](https://github.com/puppeteer/puppeteer/issues/15885)) ([d1ab44e](https://github.com/puppeteer/puppeteer/commit/d1ab44e96472b4d1b92b7f2209ad6e9c432d7a4b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 3.3.0 to 3.3.1
+
 ## [25.19.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v25.18.1...puppeteer-core-v25.19.0) (2026-11-25)
 
 
