@@ -119,6 +119,9 @@ jobs:
       - name: Disable AppArmor
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - name: Disable core dumps
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo /dev/null | sudo tee /proc/sys/kernel/core_pattern
       - name: Install dependencies
         run: npm ci
         env:
@@ -201,6 +204,9 @@ jobs:
       - name: Disable AppArmor
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - name: Disable core dumps
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo /dev/null | sudo tee /proc/sys/kernel/core_pattern
       - name: Install dependencies
         run: npm ci
         env:
