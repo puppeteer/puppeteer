@@ -124,6 +124,9 @@ export class TargetManager
     CDPSession,
     Protocol.Target.TargetInfo
   >();
+  // Fetch interception on a separate session leaves user request interception
+  // and authentication on the page's session independent of network rules.
+  #requestBlockingSessions = new Map<string, Promise<CdpCDPSession>>();
   #logger?: Logger;
 
   constructor(
@@ -317,6 +320,7 @@ export class TargetManager
   #onTargetDestroyed = (event: Protocol.Target.TargetDestroyedEvent) => {
     const targetInfo = this.#discoveredTargetsByTargetId.get(event.targetId);
     this.#discoveredTargetsByTargetId.delete(event.targetId);
+    this.#requestBlockingSessions.delete(event.targetId);
     this.#finishInitializationIfReady(event.targetId);
 
     if (targetInfo?.type === 'service_worker') {
@@ -512,6 +516,10 @@ export class TargetManager
 
     this.#networkConditionsSessions.set(session, targetInfo);
 
+    await this.#setupRequestBlocking(targetInfo).catch(error => {
+      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+    });
+
     // The browser might be shutting down here, so we
     // ignore potential errors.
     await Promise.all([
@@ -679,6 +687,7 @@ export class TargetManager
         continue;
       }
       promises.push(
+        this.#setupRequestBlocking(targetInfo),
         this.#maybeSetupNetworkConditions(
           session,
           targetInfo,
@@ -715,6 +724,62 @@ export class TargetManager
       );
     }
     await Promise.all(promises);
+  }
+
+  async #setupRequestBlocking(
+    targetInfo: Protocol.Target.TargetInfo,
+  ): Promise<void> {
+    if (targetInfo.type !== 'page' && targetInfo.type !== 'iframe') {
+      return;
+    }
+    const existing = this.#requestBlockingSessions.get(targetInfo.targetId);
+    if (!this.#hasNetworkRules()) {
+      if (existing) {
+        this.#requestBlockingSessions.delete(targetInfo.targetId);
+        const session = await existing;
+        if (!session.detached) {
+          await session.detach();
+        }
+      }
+      return;
+    }
+    if (existing) {
+      await existing;
+      return;
+    }
+
+    // Audio worklet module loads bypass network emulation. Fetch interception
+    // covers them, including redirects, even when network monitoring is disabled.
+    const pending = (async () => {
+      const session = await this.#connection._createSession(targetInfo, false);
+      session.on('Fetch.requestPaused', event => {
+        const allowed = this.isUrlAllowed(event.request.url);
+        void session
+          .send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', {
+            requestId: event.requestId,
+            ...(allowed ? {} : {errorReason: 'InternetDisconnected' as const}),
+          })
+          .catch(error => {
+            this.#logger?.(DEBUG_PREFIXES.error)?.(error);
+          });
+      });
+      session.once(CDPSessionEvent.Disconnected, () => {
+        if (
+          this.#requestBlockingSessions.get(targetInfo.targetId) === pending
+        ) {
+          this.#requestBlockingSessions.delete(targetInfo.targetId);
+        }
+      });
+      await session.send('Fetch.enable', {patterns: [{urlPattern: '*'}]});
+      return session;
+    })();
+    this.#requestBlockingSessions.set(targetInfo.targetId, pending);
+    try {
+      await pending;
+    } catch (error) {
+      this.#requestBlockingSessions.delete(targetInfo.targetId);
+      throw error;
+    }
   }
 
   #mapPatterns(rules?: string[]): Array<{pattern: URLPattern; rule: string}> {
