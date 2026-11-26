@@ -154,7 +154,6 @@ export class ExposableFunction<Args extends unknown[], Ret> {
     using stack = new DisposableStack();
     const args = [];
 
-    let result;
     try {
       using argsHandle = await dataHandle.evaluateHandle(([, , args]) => {
         return args;
@@ -173,7 +172,10 @@ export class ExposableFunction<Args extends unknown[], Ret> {
         // Everything else is passed as the JS value.
         args[+index] = handle.jsonValue();
       }
-      result = await this.#apply(...((await Promise.all(args)) as Args));
+      const result = await this.#apply(...((await Promise.all(args)) as Args));
+      await dataHandle.evaluate(([resolve], result) => {
+        resolve(result);
+      }, result);
     } catch (error) {
       try {
         if (error instanceof Error) {
@@ -198,15 +200,6 @@ export class ExposableFunction<Args extends unknown[], Ret> {
       } catch (error) {
         this.#logger?.(DEBUG_PREFIXES.error)?.(error);
       }
-      return;
-    }
-
-    try {
-      await dataHandle.evaluate(([resolve], result) => {
-        resolve(result);
-      }, result);
-    } catch (error) {
-      this.#logger?.(DEBUG_PREFIXES.error)?.(error);
     }
   };
 
