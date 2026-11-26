@@ -1053,6 +1053,22 @@ describe('Page', function () {
       });
       expect(thrown).toBe(null);
     });
+    it('should reject when the return value cannot be serialized', async () => {
+      const {page} = await getTestState();
+
+      await page.exposeFunction('woof', function () {
+        return {value: BigInt(42)};
+      });
+      const message = await page.evaluate(async () => {
+        try {
+          await (globalThis as any).woof();
+          return;
+        } catch (error) {
+          return (error as Error).message;
+        }
+      });
+      expect(message).toContain('BigInt');
+    });
     it('should be callable from-inside evaluateOnNewDocument', async () => {
       const {page} = await getTestState();
 
