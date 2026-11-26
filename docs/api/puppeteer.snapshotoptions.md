@@ -89,7 +89,7 @@ Prune uninteresting nodes from the tree.
 
 </td><td>
 
-Root node to get the accessibility tree for
+Root node to get the accessibility tree for. With interestingOnly, an uninteresting root is retained if it has multiple promoted descendants.
 
 </td><td>
 
