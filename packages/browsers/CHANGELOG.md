@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.1](https://github.com/puppeteer/puppeteer/compare/browsers-v3.3.0...browsers-v3.3.1) (2026-11-26)
+
+
+### 🛠️ Fixes
+
+* **browsers:** stop following redirects after 20 hops ([#15882](https://github.com/puppeteer/puppeteer/issues/15882)) ([0302b6b](https://github.com/puppeteer/puppeteer/commit/0302b6be16039c6d779c96fe47235ae3ac77b60f))
+
 ## [3.3.0](https://github.com/puppeteer/puppeteer/compare/browsers-v3.2.7...browsers-v3.3.0) (2026-11-25)
 
 
