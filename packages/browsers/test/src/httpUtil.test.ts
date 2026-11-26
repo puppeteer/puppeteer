@@ -205,6 +205,55 @@ describe('downloadFile', function () {
     });
   });
 
+  it('rejects a redirect loop instead of following it forever', async () => {
+    let requests = 0;
+    server.removeAllListeners('request');
+    server.on('request', (_req, res) => {
+      requests++;
+      res.writeHead(302, {Location: '/test'});
+      res.end();
+    });
+
+    await assert.rejects(
+      () => {
+        return downloadFile(serverUrl, path.join(tmpDir, 'download.bin'));
+      },
+      {message: /Too many redirects/},
+    );
+    assert.strictEqual(requests, 21);
+    assert.strictEqual(await headHttpRequest(serverUrl), false);
+  });
+
+  it('follows up to 20 redirects', async () => {
+    server.removeAllListeners('request');
+    server.on('request', (req, res) => {
+      const hop = Number(new URL(req.url!, serverUrl).searchParams.get('hop'));
+      if (hop < 20) {
+        res.writeHead(302, {Location: `/test?hop=${hop + 1}`});
+        res.end();
+        return;
+      }
+      res.writeHead(200);
+      res.end(testContent);
+    });
+
+    assert.strictEqual(await getText(serverUrl), testContent.toString());
+  });
+
+  it('keeps the keep-alive setting when following redirects', async () => {
+    const connections: Array<string | undefined> = [];
+    server.removeAllListeners('request');
+    server.on('request', (req, res) => {
+      connections.push(req.headers.connection);
+      res.writeHead(req.url === '/test' ? 302 : 200, {Location: '/file.bin'});
+      res.end();
+    });
+
+    assert.strictEqual(await headHttpRequest(serverUrl), true);
+    assert.notStrictEqual(connections[1], 'keep-alive');
+    assert.strictEqual(connections[0], connections[1]);
+  });
+
   it('rejects when the redirect location is not a valid URL', async () => {
     server.removeAllListeners('request');
     server.on('request', (_req, res) => {

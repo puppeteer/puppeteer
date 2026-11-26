@@ -33,11 +33,24 @@ export async function headHttpRequest(url: URL): Promise<boolean> {
   });
 }
 
+// Same limit as fetch() in Node.js and browsers.
+const MAX_REDIRECTS = 20;
+
 export async function httpRequest(
   url: URL,
   method: string,
   response: (x: http.IncomingMessage) => void,
   keepAlive = true,
+): Promise<http.ClientRequest> {
+  return await httpRequestWithRedirects(url, method, response, keepAlive, 0);
+}
+
+async function httpRequestWithRedirects(
+  url: URL,
+  method: string,
+  response: (x: http.IncomingMessage) => void,
+  keepAlive: boolean,
+  redirectCount: number,
 ): Promise<http.ClientRequest> {
   let agent: http.Agent | undefined;
   try {
@@ -70,6 +83,13 @@ export async function httpRequest(
       res.resume();
       // Callers only listen for errors on the initial request, so forward
       // errors from the redirect to it.
+      if (redirectCount >= MAX_REDIRECTS) {
+        request.emit(
+          'error',
+          new Error(`Too many redirects (${MAX_REDIRECTS}). URL: ${url}`),
+        );
+        return;
+      }
       let redirectUrl: URL;
       try {
         redirectUrl = new URL(res.headers.location, url);
@@ -77,7 +97,13 @@ export async function httpRequest(
         request.emit('error', error);
         return;
       }
-      httpRequest(redirectUrl, method, response).then(
+      httpRequestWithRedirects(
+        redirectUrl,
+        method,
+        response,
+        keepAlive,
+        redirectCount + 1,
+      ).then(
         redirectRequest => {
           redirectRequest.on('error', error => {
             request.emit('error', error);
