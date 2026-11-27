@@ -53,6 +53,9 @@ To clear all installed browsers, use the `clear` command:
 
 ```bash
 npx @puppeteer/browsers clear
+
+# Keep the newest installed version of each browser and remove the rest.
+npx @puppeteer/browsers clear --keep=1
 ```
 
 To list all installed browsers, use the `list` command:
