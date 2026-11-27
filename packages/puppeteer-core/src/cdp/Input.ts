@@ -40,7 +40,7 @@ type KeyDescription = Required<
  */
 export class CdpKeyboard extends Keyboard {
   #client: CDPSession;
-  #pressedKeys = new Set<string>();
+  #pressedKeys = new Map<string, string>();
 
   _modifiers = 0;
 
@@ -63,7 +63,7 @@ export class CdpKeyboard extends Keyboard {
     const description = this.#keyDescriptionForString(key);
 
     const autoRepeat = this.#pressedKeys.has(description.code);
-    this.#pressedKeys.add(description.code);
+    this.#pressedKeys.set(description.code, description.key);
     this._modifiers |= this.#modifierBit(description.key);
 
     const text = options.text === undefined ? description.text : options.text;
@@ -155,8 +155,11 @@ export class CdpKeyboard extends Keyboard {
   override async up(key: KeyInput): Promise<void> {
     const description = this.#keyDescriptionForString(key);
 
-    this._modifiers &= ~this.#modifierBit(description.key);
     this.#pressedKeys.delete(description.code);
+    this._modifiers = 0;
+    for (const pressedKey of this.#pressedKeys.values()) {
+      this._modifiers |= this.#modifierBit(pressedKey);
+    }
     await this.#client.send('Input.dispatchKeyEvent', {
       type: 'keyUp',
       modifiers: this._modifiers,
