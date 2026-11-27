@@ -45,6 +45,26 @@ describe('ElementHandle specs', function () {
       const box = await elementHandle.boundingBox();
       expect(box).toEqual({x: 28, y: 182, width: 300, height: 18});
     });
+    it('should handle scaled frames', async () => {
+      const {page} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(html`
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+        <iframe
+          style="border: none; transform: scale(2); transform-origin: 0 0"
+          srcdoc="<div style='position: absolute; left: 30px; top: 40px; width: 20px; height: 10px'></div>"
+        ></iframe>
+      `);
+      const frame = page.frames()[1]!;
+      using elementHandle = (await frame.$('div'))!;
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({x: 60, y: 80, width: 40, height: 20});
+    });
     it('should return null for invisible elements', async () => {
       const {page} = await getTestState();
 
@@ -149,6 +169,37 @@ describe('ElementHandle specs', function () {
       expect(box.content[0]).toEqual({
         x: 1 + 4 + 3 + 1 + 2, // frame.left + div.left + div.marginLeft + div.borderLeft + div.paddingLeft
         y: 2 + 5,
+      });
+    });
+
+    it('should work in scaled frames', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(html`
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+        <div style="zoom: 2">
+          <iframe
+            style="border: 5px solid; padding: 10px"
+            srcdoc="<div style='position: absolute; left: 30px; top: 40px; width: 20px; height: 10px'></div>"
+          ></iframe>
+        </div>
+      `);
+      const frame = page.frames()[1]!;
+      using divHandle = (await frame.$('div'))!;
+      const box = (await divHandle.boxModel())!;
+      expect(box.width).toBe(40);
+      expect(box.height).toBe(20);
+      expect(box.border[0]).toEqual({
+        x: (5 + 10 + 30) * 2, // (frame.border + frame.padding + div.left) * zoom
+        y: (5 + 10 + 40) * 2,
+      });
+      expect(box.border[2]).toEqual({
+        x: (5 + 10 + 30 + 20) * 2, // (... + div.width) * zoom
+        y: (5 + 10 + 40 + 10) * 2,
       });
     });
 
@@ -754,6 +805,48 @@ describe('ElementHandle specs', function () {
       ).toEqual({
         x: 20 + 30 + 10, // iframe pos + margin + offset
         y: 20 + 30 + 15, // iframe pos + margin + offset
+      });
+    });
+
+    it('should work for scaled iframes', async () => {
+      const {page} = await getTestState();
+      const srcdoc =
+        "<style>body { margin: 0; }</style><div style='position: absolute; left: 40px; top: 50px; width: 20px; height: 20px'></div>";
+
+      await page.setContent(html`
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+        <div style="zoom: 2">
+          <iframe
+            style="border: 5px solid; padding: 10px"
+            srcdoc="${srcdoc}"
+          ></iframe>
+        </div>
+      `);
+      using zoomed = (await page.frames()[1]!.$('div'))!;
+      expect(await zoomed.clickablePoint()).toEqual({
+        x: (5 + 10 + 40 + 10) * 2, // (border + padding + left + half width) * zoom
+        y: (5 + 10 + 50 + 10) * 2,
+      });
+
+      await page.setContent(html`
+        <style>
+          body {
+            margin: 0;
+          }
+        </style>
+        <iframe
+          style="border: 5px solid; padding: 10px; transform: scale(1.5); transform-origin: 0 0"
+          srcdoc="${srcdoc}"
+        ></iframe>
+      `);
+      using scaled = (await page.frames()[1]!.$('div'))!;
+      expect(await scaled.clickablePoint()).toEqual({
+        x: (5 + 10 + 40 + 10) * 1.5, // (border + padding + left + half width) * scale
+        y: (5 + 10 + 50 + 10) * 1.5,
       });
     });
   });
