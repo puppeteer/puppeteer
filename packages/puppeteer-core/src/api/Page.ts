@@ -1733,6 +1733,11 @@ export abstract class Page extends EventEmitter<PageEvents> {
    * Shortcut for
    * {@link Frame.addScriptTag | page.mainFrame().addScriptTag(options)}.
    *
+   * Rejects only if the page's content security policy blocks an inline
+   * script. If JavaScript is disabled in the page, the call still resolves.
+   * Use {@link Page.setBypassCSP | page.setBypassCSP(true)} to bypass the
+   * page's CSP.
+   *
    * @param options - Options for the script.
    * @returns An {@link ElementHandle | element handle} to the injected
    * `<script>` element.

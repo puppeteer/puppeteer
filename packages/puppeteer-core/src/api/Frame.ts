@@ -921,6 +921,12 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * Adds a `<script>` tag into the page with the desired url or content.
    *
+   * @remarks
+   * Rejects only if the page's content security policy blocks an inline
+   * script. If JavaScript is disabled in the page, the call still resolves.
+   * Use {@link Page.setBypassCSP | page.setBypassCSP(true)} to bypass the
+   * page's CSP.
+   *
    * @param options - Options for the script.
    * @returns An {@link ElementHandle | element handle} to the injected
    * `<script>` element.
@@ -972,8 +978,31 @@ export abstract class Frame extends EventEmitter<FrameEvents> {
               );
               document.head.appendChild(script);
             } else {
+              const abortController = new AbortController();
+              script.addEventListener(
+                'securitypolicyviolation',
+                event => {
+                  if (event.disposition === 'enforce') {
+                    abortController.abort();
+                    reject(
+                      new Error(
+                        `Could not add script tag: the Content Security Policy blocked it (${event.effectiveDirective})`,
+                      ),
+                    );
+                  }
+                },
+                {signal: abortController.signal},
+              );
               document.head.appendChild(script);
-              resolve(script);
+              // A posted message runs after the CSP violation task in Chrome
+              // and Firefox; timers may not run when JavaScript is disabled.
+              const {port1, port2} = new MessageChannel();
+              port1.onmessage = () => {
+                port1.close();
+                abortController.abort();
+                resolve(script);
+              };
+              port2.postMessage(undefined);
             }
           });
         },
