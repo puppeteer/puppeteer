@@ -1418,8 +1418,16 @@ export class CdpPage extends Page {
       waitForFonts,
     } = parsePDFOptions(options);
 
+    await using stack = new AsyncDisposableStack();
     if (omitBackground) {
       await this.#emulationManager.setTransparentBackgroundColor();
+      stack.defer(async () => {
+        await this.#emulationManager
+          .resetDefaultBackgroundColor()
+          .catch(error => {
+            this.logger?.(DEBUG_PREFIXES.error)?.(error);
+          });
+      });
     }
 
     if (waitForFonts) {
@@ -1460,10 +1468,6 @@ export class CdpPage extends Page {
     const result = await firstValueFrom(
       from(printCommandPromise).pipe(raceWith(timeout(ms))),
     );
-
-    if (omitBackground) {
-      await this.#emulationManager.resetDefaultBackgroundColor();
-    }
 
     assert(result.stream, '`stream` is missing from `Page.printToPDF');
     return await getReadableFromProtocolStream(

@@ -7,8 +7,10 @@
 import {readFile, unlink} from 'node:fs/promises';
 
 import expect from 'expect';
+import {PNG} from 'pngjs';
 
 import {getTestState, setupTestBrowserHooks} from '../mocha-utils.js';
+import {html} from '../utils.js';
 
 describe('Page.pdf', () => {
   setupTestBrowserHooks();
@@ -74,5 +76,18 @@ describe('Page.pdf', () => {
     });
     const ptText = new TextDecoder('latin1').decode(ptPdf);
     expect(ptText).toContain('/MediaBox [0 0 72 72]');
+  });
+
+  it('should restore the default background if printing fails', async () => {
+    const {page} = await getTestState();
+
+    await page.setViewport({width: 100, height: 100});
+    await page.setContent(html`<p>one page</p>`);
+    await expect(
+      page.pdf({omitBackground: true, pageRanges: '5'}),
+    ).rejects.toThrow();
+
+    const screenshot = await page.screenshot();
+    expect(PNG.sync.read(Buffer.from(screenshot)).data[3]).toBe(255);
   });
 });
