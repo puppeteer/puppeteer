@@ -220,7 +220,20 @@ export class IsolatedWorld extends Realm {
       backendNodeId: backendNodeId,
       executionContextId: context.id,
     });
-    return this.createCdpHandle(object) as JSHandle<Node>;
+    return this.createCdpHandle(object, backendNodeId) as JSHandle<Node>;
+  }
+
+  async #getBackendNodeId(
+    handle: JSHandle<Node>,
+    objectId?: string,
+  ): Promise<Protocol.DOM.BackendNodeId> {
+    if (handle instanceof CdpElementHandle && handle.client === this.client) {
+      return await handle.backendNodeId();
+    }
+    const {node} = await this.client.send('DOM.describeNode', {
+      objectId,
+    });
+    return node.backendNodeId;
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
@@ -231,10 +244,8 @@ export class IsolatedWorld extends Realm {
         return value;
       })) as unknown as T;
     }
-    const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: handle.id,
-    });
-    return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;
+    const backendNodeId = await this.#getBackendNodeId(handle, handle.id);
+    return (await this.adoptBackendNode(backendNodeId)) as T;
   }
 
   async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
@@ -242,15 +253,12 @@ export class IsolatedWorld extends Realm {
       return handle;
     }
     // Implies it's a primitive value, probably.
-    if (handle.remoteObject().objectId === undefined) {
+    const objectId = handle.remoteObject().objectId;
+    if (objectId === undefined) {
       return handle;
     }
-    const info = await this.client.send('DOM.describeNode', {
-      objectId: handle.remoteObject().objectId,
-    });
-    const newHandle = (await this.adoptBackendNode(
-      info.node.backendNodeId,
-    )) as T;
+    const backendNodeId = await this.#getBackendNodeId(handle, objectId);
+    const newHandle = (await this.adoptBackendNode(backendNodeId)) as T;
     await handle.dispose();
     return newHandle;
   }
@@ -260,9 +268,15 @@ export class IsolatedWorld extends Realm {
    */
   createCdpHandle(
     remoteObject: Protocol.Runtime.RemoteObject,
+    backendNodeId?: Protocol.DOM.BackendNodeId,
   ): JSHandle | ElementHandle<Node> {
     if (remoteObject.subtype === 'node') {
-      return new CdpElementHandle(this, remoteObject, this.#logger);
+      return new CdpElementHandle(
+        this,
+        remoteObject,
+        this.#logger,
+        backendNodeId,
+      );
     }
     return new CdpJSHandle(this, remoteObject, this.#logger);
   }

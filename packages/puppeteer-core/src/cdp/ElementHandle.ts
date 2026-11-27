@@ -16,7 +16,6 @@ import {DEBUG_PREFIXES, type Logger} from '../common/Debug.js';
 import type {AwaitableIterable} from '../common/types.js';
 import {environment} from '../environment.js';
 import {assert} from '../util/assert.js';
-import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import type {CdpFrame} from './Frame.js';
@@ -25,6 +24,7 @@ import type {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 
 const NON_ELEMENT_NODE_ROLES = new Set(['StaticText', 'InlineTextBox']);
+const QUERY_AX_TREE_BATCH_SIZE = 64;
 
 /**
  * The CdpElementHandle extends ElementHandle now to keep compatibility
@@ -44,9 +44,11 @@ export class CdpElementHandle<
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject,
     logger: Logger,
+    backendNodeId?: Protocol.DOM.BackendNodeId,
   ) {
     super(new CdpJSHandle(world, remoteObject, logger), logger);
     this.#logger = logger;
+    this.#backendNodeId = backendNodeId;
   }
 
   override get realm(): IsolatedWorld {
@@ -78,6 +80,7 @@ export class CdpElementHandle<
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
     });
+    this.#backendNodeId ??= nodeInfo.node.backendNodeId;
     if (typeof nodeInfo.node.frameId !== 'string') {
       return null;
     }
@@ -150,11 +153,7 @@ export class CdpElementHandle<
       return;
     }
 
-    const {
-      node: {backendNodeId},
-    } = await this.client.send('DOM.describeNode', {
-      objectId: this.id,
-    });
+    const backendNodeId = await this.backendNodeId();
     await this.client.send('DOM.setFileInputFiles', {
       objectId: this.id,
       files,
@@ -164,10 +163,7 @@ export class CdpElementHandle<
 
   @throwIfDisposed()
   override async autofill(data: AutofillData): Promise<void> {
-    const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: this.handle.id,
-    });
-    const fieldId = nodeInfo.node.backendNodeId;
+    const fieldId = await this.backendNodeId();
     const frameId = this.frame._id;
     await this.client.send('Autofill.trigger', {
       fieldId,
@@ -200,15 +196,49 @@ export class CdpElementHandle<
       return true;
     });
 
-    return yield* AsyncIterableUtil.map(results, node => {
-      return this.realm.adoptBackendNode(node.backendDOMNodeId) as Promise<
-        ElementHandle<Node>
-      >;
-    });
+    if (results.length === 0) {
+      return;
+    }
+
+    // Resolve the first match lazily so single-element queries (queryOne)
+    // do not issue extra DOM.resolveNode RPCs.
+    yield (await this.realm.adoptBackendNode(
+      results[0]!.backendDOMNodeId,
+    )) as ElementHandle<Node>;
+
+    // Pipeline remaining resolutions in bounded batches for multi-element
+    // queries ($$ / $$eval) while disposing unconsumed handles on early exit.
+    for (let i = 1; i < results.length; i += QUERY_AX_TREE_BATCH_SIZE) {
+      const chunk = results.slice(i, i + QUERY_AX_TREE_BATCH_SIZE);
+      const settled = await Promise.allSettled(
+        chunk.map(node => {
+          return this.realm.adoptBackendNode(node.backendDOMNodeId) as Promise<
+            ElementHandle<Node>
+          >;
+        }),
+      );
+      let consumed = 0;
+      try {
+        for (const outcome of settled) {
+          if (outcome.status === 'rejected') {
+            throw outcome.reason;
+          }
+          consumed++;
+          yield outcome.value;
+        }
+      } finally {
+        for (const outcome of settled.slice(consumed)) {
+          if (outcome.status === 'fulfilled') {
+            void outcome.value.dispose();
+          }
+        }
+      }
+    }
   }
 
+  @throwIfDisposed()
   override async backendNodeId(): Promise<number> {
-    if (this.#backendNodeId) {
+    if (this.#backendNodeId !== undefined) {
       return this.#backendNodeId;
     }
     const {node} = await this.client.send('DOM.describeNode', {
