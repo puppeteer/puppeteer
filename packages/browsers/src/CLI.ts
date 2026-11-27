@@ -467,13 +467,36 @@ export class CLI {
           ? 'Removes all installed browsers from the specified cache directory'
           : `Removes all installed browsers from ${this.#cachePath}`,
         yargs => {
-          return this.#definePathParameter(yargs, true);
+          return this.#definePathParameter(yargs, true)
+            .option('keep', {
+              type: 'number',
+              desc: 'Number of the newest versions to keep for each browser and platform. 0 (the default) removes all installed browsers.',
+              default: 0,
+            })
+            .check(argv => {
+              if (
+                argv.keep !== undefined &&
+                (!Number.isInteger(argv.keep) || argv.keep < 0)
+              ) {
+                throw new Error(
+                  'Invalid --keep value: must be a non-negative integer',
+                );
+              }
+              return true;
+            })
+            .example(
+              '$0 clear --keep 1',
+              'Remove all but the newest version of each installed browser',
+            );
         },
         async args => {
           const cacheDir = args.path ?? this.#cachePath;
+          const keep = args.keep ?? 0;
           const rl = this.#rl ?? readline.createInterface({input, output});
           rl.question(
-            `Do you want to permanently and recursively delete the content of ${cacheDir} (yes/No)? `,
+            keep > 0
+              ? `Do you want to permanently delete all but the ${keep} newest version(s) of each browser in ${cacheDir} (yes/No)? `
+              : `Do you want to permanently and recursively delete the content of ${cacheDir} (yes/No)? `,
             answer => {
               rl.close();
               if (!['y', 'yes'].includes(answer.toLowerCase().trim())) {
@@ -481,8 +504,19 @@ export class CLI {
                 return;
               }
               const cache = new Cache(cacheDir);
-              cache.clear();
-              console.log(`${cacheDir} cleared.`);
+              if (keep === 0) {
+                cache.clear();
+                console.log(`${cacheDir} cleared.`);
+                return;
+              }
+              const removed = cache.clearOld(keep);
+              if (removed.length === 0) {
+                console.log('Nothing to remove.');
+              } else {
+                console.log(
+                  `Removed ${removed.length} old installation(s) from ${cacheDir}.`,
+                );
+              }
             },
           );
         },

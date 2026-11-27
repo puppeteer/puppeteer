@@ -229,6 +229,55 @@ export class Cache {
     });
   }
 
+  /**
+   * Removes the installed browsers that are not among the `keep` newest
+   * versions. Browsers are grouped by browser and platform, so each
+   * (browser, platform) pair keeps its own `keep` newest versions.
+   *
+   * @param keep - How many of the newest versions to keep per browser and
+   * platform.
+   * @returns The installations that were removed.
+   *
+   * @internal
+   */
+  clearOld(keep: number): InstalledBrowser[] {
+    if (!Number.isInteger(keep) || keep < 0) {
+      throw new Error(`keep must be a non-negative integer, got ${keep}`);
+    }
+    const groups = new Map<string, InstalledBrowser[]>();
+    for (const installed of this.getInstalledBrowsers()) {
+      const key = `${installed.browser}-${installed.platform}`;
+      const group = groups.get(key);
+      if (group) {
+        group.push(installed);
+      } else {
+        groups.set(key, [installed]);
+      }
+    }
+    const toRemove: InstalledBrowser[] = [];
+    for (const group of groups.values()) {
+      // Only consider versions the comparator can actually order, so that a
+      // directory it cannot parse is left alone rather than being treated as
+      // the oldest and removed. Ordering happens before anything is removed.
+      const ordered = group.filter(installed => {
+        const compare = getVersionComparator(installed.browser);
+        try {
+          return compare(installed.buildId, installed.buildId) === 0;
+        } catch {
+          return false;
+        }
+      });
+      ordered.sort((a, b) => {
+        return getVersionComparator(a.browser)(a.buildId, b.buildId);
+      });
+      toRemove.push(...ordered.slice(0, Math.max(0, ordered.length - keep)));
+    }
+    for (const installed of toRemove) {
+      this.uninstall(installed.browser, installed.platform, installed.buildId);
+    }
+    return toRemove;
+  }
+
   uninstall(
     browser: Browser,
     platform: BrowserPlatform,

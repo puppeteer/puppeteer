@@ -282,6 +282,25 @@ describe('CLI', function () {
       `Expected validation error, got: "${outputNegative}"`,
     );
   });
+
+  it('rejects invalid --keep option values', async () => {
+    for (const value of ['abc', '-1', '1.5']) {
+      const output = await runAndCaptureFailure(
+        new CLI(tmpDir, createMockedReadlineInterface('yes')),
+        [
+          'npx',
+          '@puppeteer/browsers',
+          'clear',
+          `--path=${tmpDir}`,
+          `--keep=${value}`,
+        ],
+      );
+      assert.ok(
+        output.includes('Invalid --keep value: must be a non-negative integer'),
+        `Expected validation error for --keep=${value}, got: "${output}"`,
+      );
+    }
+  });
 });
 
 // Yargs logs the error and exits the process, so both have to be captured.
