@@ -37,6 +37,27 @@ Default
 </th></tr></thead>
 <tbody><tr><td>
 
+<span id="checkcoverage">checkCoverage</span>
+
+</td><td>
+
+`optional`
+
+</td><td>
+
+boolean
+
+</td><td>
+
+Whether to check that the click point is not covered by another element. Set to `false` to skip the check and click even if the click point is covered.
+
+</td><td>
+
+`true`
+
+</td></tr>
+<tr><td>
+
 <span id="debughighlight">debugHighlight</span>
 
 </td><td>

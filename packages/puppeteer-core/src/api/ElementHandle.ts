@@ -101,6 +101,14 @@ export interface ClickOptions extends MouseClickOptions {
    * @experimental
    */
   debugHighlight?: boolean;
+  /**
+   * Whether to check that the click point is not covered by another element.
+   * Set to `false` to skip the check and click even if the click point is
+   * covered.
+   *
+   * @defaultValue `true`
+   */
+  checkCoverage?: boolean;
 }
 
 /**
@@ -730,19 +738,30 @@ export abstract class ElementHandle<
   @throwIfDisposed()
   @bindIsolatedHandle
   async clickablePoint(offset?: Offset): Promise<Point> {
-    const box = await this.#clickableBox();
+    const {x, y} = await this.#clickablePoint(offset, false);
+    return {x, y};
+  }
+
+  async #clickablePoint(
+    offset: Offset | undefined,
+    checkCovered: boolean,
+  ): Promise<Point & {coveredBy: string | null}> {
+    const box = await this.#clickableBox(offset, checkCovered);
     if (!box) {
       throw new Error('Node is either not clickable or not an Element');
     }
+    const {coveredBy} = box;
     if (offset !== undefined) {
       return {
         x: box.x + offset.x,
         y: box.y + offset.y,
+        coveredBy,
       };
     }
     return {
       x: box.x + box.width / 2,
       y: box.y + box.height / 2,
+      coveredBy,
     };
   }
 
@@ -763,6 +782,11 @@ export abstract class ElementHandle<
    * This method scrolls element into view if needed, and then
    * uses {@link Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
+   * If another element covers the click point, the element is scrolled to the
+   * center of the viewport, and the method throws an error if the click point
+   * is still covered. The covered check does not run for elements in child
+   * frames and can be turned off with
+   * {@link ClickOptions.checkCoverage | `options.checkCoverage`}.
    */
   @throwIfDisposed()
   @bindIsolatedHandle
@@ -770,8 +794,32 @@ export abstract class ElementHandle<
     this: ElementHandle<Element>,
     options: Readonly<ClickOptions> = {},
   ): Promise<void> {
+    const checkCovered = options.checkCoverage !== false;
     await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint(options.offset);
+    let {x, y, coveredBy} = await this.#clickablePoint(
+      options.offset,
+      checkCovered,
+    );
+    if (coveredBy) {
+      // Scroll the element to the center of the viewport. scrollIntoView()
+      // cannot be used here: on CDP it calls DOM.scrollIntoViewIfNeeded,
+      // which does not scroll when the element is already in the viewport
+      // even if it is covered by another element.
+      await this.evaluate(element => {
+        element.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          behavior: 'instant',
+        });
+      });
+      ({x, y, coveredBy} = await this.#clickablePoint(
+        options.offset,
+        checkCovered,
+      ));
+      if (coveredBy) {
+        throw new Error(`Node is covered by ${coveredBy} at the click point`);
+      }
+    }
     try {
       await this.frame.page().mouse.click(x, y, options);
     } finally {
@@ -1174,19 +1222,126 @@ export abstract class ElementHandle<
     await this.frame.page().keyboard.press(key, options);
   }
 
-  async #clickableBox(): Promise<BoundingBox | null> {
-    const boxes = await this.evaluate(element => {
-      if (!(element instanceof Element)) {
-        return null;
-      }
-      return [...element.getClientRects()].map(rect => {
-        return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
-      });
-    });
+  async #clickableBox(
+    offset: Offset | undefined,
+    checkCovered: boolean,
+  ): Promise<(BoundingBox & {coveredBy: string | null}) | null> {
+    // The covered check is only reliable when the click point is computed in
+    // the frame of the element itself. For elements in child frames the point
+    // is also clipped by the parent frames, which is not known here.
+    const shouldCheckCovered = checkCovered && !this.frame.parentFrame();
+    const boxes = await this.evaluate(
+      (element, offset, checkCovered) => {
+        if (!(element instanceof Element)) {
+          return null;
+        }
+        const root = element.getRootNode();
+        const viewportWidth = document.documentElement.clientWidth;
+        const viewportHeight = document.documentElement.clientHeight;
+        // Walks the flat tree, i.e. through slots and shadow hosts.
+        const isFlatTreeAncestor = (ancestor: Node, node: Node): boolean => {
+          let current: Node | null = node;
+          while (current) {
+            if (current === ancestor) {
+              return true;
+            }
+            current =
+              current instanceof ShadowRoot
+                ? current.host
+                : ((current instanceof Element ? current.assignedSlot : null) ??
+                  current.parentNode);
+          }
+          // Element.assignedSlot returns null for slots in closed shadow
+          // roots, so the walk cannot see them. The slot assignment can
+          // still be checked from within the tree via assignedNodes.
+          if (ancestor instanceof Element) {
+            for (const slot of ancestor.querySelectorAll('slot')) {
+              if (slot.assignedNodes({flatten: true}).includes(node)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        };
+        const boxes: Array<{
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          coveredBy: string | null;
+        }> = [];
+        for (const rect of element.getClientRects()) {
+          // Clip the rect to the viewport of the frame of the element. The
+          // click point and the covered check are computed from this box.
+          const x = Math.max(rect.x, 0);
+          const y = Math.max(rect.y, 0);
+          const width = Math.max(
+            Math.min(rect.x + rect.width, viewportWidth) - x,
+            0,
+          );
+          const height = Math.max(
+            Math.min(rect.y + rect.height, viewportHeight) - y,
+            0,
+          );
+          const box: (typeof boxes)[number] = {
+            x,
+            y,
+            width,
+            height,
+            coveredBy: null,
+          };
+          boxes.push(box);
+          if (!checkCovered || width < 1 || height < 1) {
+            continue;
+          }
+          // elementFromPoint is only defined on Document and ShadowRoot. For
+          // other roots the covered check cannot run.
+          const topElement =
+            root instanceof Document || root instanceof ShadowRoot
+              ? root.elementFromPoint(
+                  offset ? x + offset.x : x + width / 2,
+                  offset ? y + offset.y : y + height / 2,
+                )
+              : null;
+          if (
+            !topElement ||
+            isFlatTreeAncestor(element, topElement) ||
+            isFlatTreeAncestor(topElement, element)
+          ) {
+            continue;
+          }
+          // A click on a label activates its control and the other way round.
+          if (
+            element instanceof HTMLLabelElement &&
+            element.control === topElement
+          ) {
+            continue;
+          }
+          // A click inside a label activates the labeled control.
+          if (element.closest('label')?.control === topElement) {
+            continue;
+          }
+          if (
+            element instanceof HTMLElement &&
+            'labels' in element &&
+            element.labels instanceof NodeList &&
+            [...element.labels].some(label => {
+              return label.contains(topElement);
+            })
+          ) {
+            continue;
+          }
+          const id = topElement.id ? `#${topElement.id}` : '';
+          box.coveredBy = `<${topElement.localName}${id}>`;
+        }
+        return boxes;
+      },
+      offset,
+      shouldCheckCovered,
+    );
     if (!boxes?.length) {
       return null;
     }
-    await this.#intersectBoundingBoxesWithFrame(boxes);
     let frame = this.frame;
     let parentFrame: Frame | null | undefined;
     while ((parentFrame = frame?.parentFrame())) {
@@ -1233,6 +1388,7 @@ export abstract class ElementHandle<
       y: box.y,
       height: box.height,
       width: box.width,
+      coveredBy: box.coveredBy,
     };
   }
 
