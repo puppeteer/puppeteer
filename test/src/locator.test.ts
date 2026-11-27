@@ -6,6 +6,7 @@
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer-core';
+import type {JSHandle} from 'puppeteer-core/internal/api/JSHandle.js';
 import {
   Locator,
   LocatorEvent,
@@ -1216,6 +1217,25 @@ describe('Locator', function () {
         .setTimeout(2000)
         .hover();
       await expect(result).resolves.toEqual(undefined);
+    });
+    it('should dispose handles rejected by the filter predicate', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div>test</div>`);
+      const handles: JSHandle[] = [];
+      const locator = page
+        .locator('div')
+        .setTimeout(200)
+        .filterHandle(handle => {
+          handles.push(handle);
+          return false;
+        });
+      await expect(locator.waitHandle()).rejects.toThrow();
+      expect(handles.length).toBeGreaterThan(0);
+      expect(
+        handles.every(handle => {
+          return handle.disposed;
+        }),
+      ).toBe(true);
     });
   });
 

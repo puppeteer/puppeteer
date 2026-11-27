@@ -18,7 +18,6 @@ import {
   from,
   identity,
   ignoreElements,
-  map,
   merge,
   mergeMap,
   noop,
@@ -823,19 +822,16 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
     return new FilteredLocator(
       this._clone(),
       async (handle, signal, timeout) => {
-        using element = handle.asElement()?.move();
-        if (!element) {
-          await using jsHandle = handle as JSHandle<T>;
-          const matched = Boolean(await jsHandle.evaluate(predicate, ...args));
-          if (matched) {
-            jsHandle.move();
-          }
-          return matched;
+        const frame = handle.asElement()?.frame;
+        if (!frame) {
+          return Boolean(
+            await (handle as JSHandle<T>).evaluate(predicate, ...args),
+          );
         }
-        await element.frame.waitForFunction(
+        await frame.waitForFunction(
           predicate as Predicate<Node, Node, Args>,
           {signal, timeout},
-          element,
+          handle as ElementHandle<Node>,
           ...args,
         );
         return true;
@@ -1086,12 +1082,15 @@ export class FilteredLocator<From, To extends From> extends DelegatedLocator<
             this.#predicate(handle, options?.signal, this._timeout),
           ),
         ).pipe(
-          filter(value => {
-            return value;
-          }),
-          map(() => {
+          mergeMap(value => {
+            if (!value || options?.signal?.aborted) {
+              void handle.dispose().catch(error => {
+                this.logger?.(DEBUG_PREFIXES.error)?.(error);
+              });
+              return EMPTY;
+            }
             // SAFETY: It passed the predicate, so this is correct.
-            return handle as HandleFor<To>;
+            return of(handle as HandleFor<To>);
           }),
         );
       }),
