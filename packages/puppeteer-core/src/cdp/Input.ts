@@ -116,6 +116,10 @@ export class CdpKeyboard extends Keyboard {
     }
     if (shift && definition.shiftKey) {
       description.key = definition.shiftKey;
+    } else if (shift && description.key.length === 1) {
+      // Single-character keys such as `a` have no `shiftKey`. Upper-case them
+      // like a real keyboard and WebDriver BiDi do.
+      description.key = description.key.toUpperCase();
     }
 
     if (definition.keyCode) {

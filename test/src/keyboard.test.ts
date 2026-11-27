@@ -458,6 +458,23 @@ describe('Keyboard', function () {
     );
     await keyboard.up('Shift');
   });
+  // @see https://github.com/puppeteer/puppeteer/issues/15850
+  it('should type upper case letters while Shift is held', async () => {
+    const {page, server} = await getTestState();
+
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    await page.focus('textarea');
+    await page.keyboard.down('Shift');
+    await page.keyboard.press('a');
+    await page.keyboard.type('bc');
+    await page.keyboard.up('Shift');
+    await page.keyboard.type('d');
+    expect(
+      await page.$eval('textarea', textarea => {
+        return textarea.value;
+      }),
+    ).toBe('ABCd');
+  });
   it('should send the Enter code for Enter', async () => {
     const {page, server} = await getTestState();
 
