@@ -2214,6 +2214,59 @@ describe('Page', function () {
       expect(await page.evaluate('__injected')).toBe(42);
     });
 
+    it('should throw with both enforced and report-only CSP', async () => {
+      const {page, server} = await getTestState();
+
+      server.setRoute('/empty.html', (_req, res) => {
+        res.setHeader('Content-Type', 'text/html');
+        res.setHeader('Content-Security-Policy', "script-src 'self'");
+        res.setHeader(
+          'Content-Security-Policy-Report-Only',
+          "script-src 'self'",
+        );
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      await expect(
+        page.addScriptTag({content: 'window.__injected = 42;'}),
+      ).rejects.toThrow('Content Security Policy');
+      expect(await page.evaluate('window.__injected')).toBe(undefined);
+    });
+
+    it('should remove the violation listener when the promise settles', async () => {
+      const {page, server} = await getTestState();
+      const world = page.mainFrame().isolatedRealm();
+
+      await page.goto(server.EMPTY_PAGE);
+      await world.evaluate(() => {
+        const add = EventTarget.prototype.addEventListener;
+        (globalThis as any).__cspSignals = [] as AbortSignal[];
+        EventTarget.prototype.addEventListener = function (
+          type,
+          listener,
+          options,
+        ) {
+          if (
+            type === 'securitypolicyviolation' &&
+            options &&
+            typeof options === 'object' &&
+            options.signal
+          ) {
+            (globalThis as any).__cspSignals.push(options.signal);
+          }
+          return add.call(this, type, listener, options);
+        };
+      });
+
+      await page.addScriptTag({content: 'window.__injected = 42;'});
+      const aborted = await world.evaluate(() => {
+        return (globalThis as any).__cspSignals.map((signal: AbortSignal) => {
+          return signal.aborted;
+        });
+      });
+      expect(aborted).toEqual([true]);
+    });
+
     it('should not throw when added with JSON content to the CSP page', async () => {
       const {page, server} = await getTestState();
 
