@@ -832,6 +832,20 @@ describe('Accessibility', function () {
         });
         expect(await page.accessibility.snapshot({root: button})).toEqual(null);
       });
+      it('should keep all interesting descendants of an uninteresting root', async () => {
+        const {page} = await getTestState();
+        await page.setContent(html`
+          <button>Outside</button>
+          <div><button>First</button><button>Second</button></div>
+        `);
+        using root = (await page.$('div'))!;
+        const snapshot = await page.accessibility.snapshot({root});
+        expect(snapshot?.role).toBe('generic');
+        expect(snapshot?.children?.map(node => node.name)).toEqual([
+          'First',
+          'Second',
+        ]);
+      });
       it('should support the interestingOnly option', async () => {
         const {page} = await getTestState();
 

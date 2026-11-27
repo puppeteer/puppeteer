@@ -158,7 +158,8 @@ export interface SnapshotOptions {
    */
   includeIframes?: boolean;
   /**
-   * Root node to get the accessibility tree for
+   * Root node to get the accessibility tree for. With interestingOnly, an
+   * uninteresting root is retained if it has multiple promoted descendants.
    * @defaultValue The root node of the entire page.
    */
   root?: ElementHandle<Node>;
@@ -325,7 +326,13 @@ export class Accessibility {
     const interestingNodes = new Set<AXNode>();
     this.collectInterestingNodes(interestingNodes, defaultRoot, false);
 
-    return this.serializeTree(needle, interestingNodes)[0] ?? null;
+    const serializedNodes = this.serializeTree(needle, interestingNodes);
+    if (serializedNodes.length > 1) {
+      const container = needle.serialize();
+      container.children = serializedNodes;
+      return container;
+    }
+    return serializedNodes[0] ?? null;
   }
 
   private serializeTree(
