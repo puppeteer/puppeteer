@@ -648,6 +648,56 @@ describe('Page.webmcp', function () {
     expect(response.exception).toBeUndefined();
   });
 
+  it('should not invoke a replaced tool with the same name', async () => {
+    const {page, httpsServer} = state;
+    await page.goto(httpsServer.EMPTY_PAGE);
+
+    const oldToolAdded = waitEvent(page.webmcp, 'toolsadded');
+    using controllerHandle = await page.evaluateHandle(async () => {
+      const controller = new AbortController();
+      await document.modelContext?.registerTool(
+        {
+          name: 'same-name',
+          description: 'Old tool',
+          execute: () => {
+            return 'old';
+          },
+        },
+        {signal: controller.signal},
+      );
+      return controller;
+    });
+    await oldToolAdded;
+    const [oldTool] = page.webmcp.tools();
+
+    const oldToolRemoved = waitEvent(page.webmcp, 'toolsremoved');
+    await controllerHandle.evaluate(controller => {
+      controller.abort();
+    });
+    await oldToolRemoved;
+
+    const newToolAdded = waitEvent(page.webmcp, 'toolsadded');
+    await page.evaluate(async () => {
+      await document.modelContext?.registerTool({
+        name: 'same-name',
+        description: 'New tool',
+        execute: () => {
+          return 'new';
+        },
+      });
+    });
+    await newToolAdded;
+    const tools = page.webmcp.tools();
+    expect(tools.length).toBe(1);
+    const [newTool] = tools;
+    expect(newTool).not.toBe(oldTool);
+
+    await expect(oldTool!.execute()).rejects.toThrow();
+    const response = await newTool!.execute();
+    expect(response.status).toBe('Completed');
+    expect(response.output).toBe('new');
+  });
+
   it('should cancel tool execution', async () => {
     const {page, httpsServer} = state;
     await page.goto(httpsServer.EMPTY_PAGE);
