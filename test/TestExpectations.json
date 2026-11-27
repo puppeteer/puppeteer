@@ -960,6 +960,13 @@
     "comment": "WebDriver BiDi does not support PDF outline option"
   },
   {
+    "testIdPattern": "[pdf.test] Page.pdf should restore the default background if printing fails",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "WebDriver BiDi does not support omitBackground in Page.pdf"
+  },
+  {
     "testIdPattern": "[prerender.test] Prerender can screencast",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
