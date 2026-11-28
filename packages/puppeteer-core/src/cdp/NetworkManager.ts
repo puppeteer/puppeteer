@@ -880,7 +880,24 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     client: CDPSession,
     event: Protocol.Network.ResponseReceivedEvent,
   ): void {
-    const request = this.#networkEventManager.getRequest(event.requestId);
+    let request = this.#networkEventManager.getRequest(event.requestId);
+    // Requests answered by a service worker never receive Fetch.requestPaused,
+    // so convert the stored requestWillBeSent into an HTTPRequest now.
+    if (!request && event.response.fromServiceWorker) {
+      const requestWillBeSent = this.#networkEventManager.getRequestWillBeSent(
+        event.requestId,
+      );
+      if (requestWillBeSent) {
+        this.#onRequest(
+          requestWillBeSent.client,
+          requestWillBeSent.event,
+          undefined,
+          client,
+          false,
+        );
+        request = this.#networkEventManager.getRequest(event.requestId);
+      }
+    }
     let extraInfo = null;
     if (request && !request._fromMemoryCache && event.hasExtraInfo) {
       extraInfo = this.#networkEventManager
