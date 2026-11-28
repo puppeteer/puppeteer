@@ -1092,6 +1092,12 @@ export class FilteredLocator<From, To extends From> extends DelegatedLocator<
             // SAFETY: It passed the predicate, so this is correct.
             return of(handle as HandleFor<To>);
           }),
+          catchError(error => {
+            void handle.dispose().catch(disposeError => {
+              this.logger?.(DEBUG_PREFIXES.error)?.(disposeError);
+            });
+            throw error;
+          }),
         );
       }),
       throwIfEmpty(),

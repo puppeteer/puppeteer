@@ -1237,6 +1237,25 @@ describe('Locator', function () {
         }),
       ).toBe(true);
     });
+    it('should dispose handles when the filter predicate throws', async () => {
+      const {page} = await getTestState();
+      await page.setContent(html`<div>test</div>`);
+      const handles: JSHandle[] = [];
+      const locator = page
+        .locator('div')
+        .setTimeout(200)
+        .filterHandle(handle => {
+          handles.push(handle);
+          throw new Error('predicate failed');
+        });
+      await expect(locator.waitHandle()).rejects.toThrow();
+      expect(handles.length).toBeGreaterThan(0);
+      expect(
+        handles.every(handle => {
+          return handle.disposed;
+        }),
+      ).toBe(true);
+    });
   });
 
   describe('Locator.prototype.wait', () => {
