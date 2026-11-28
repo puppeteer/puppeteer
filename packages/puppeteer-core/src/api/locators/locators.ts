@@ -18,7 +18,6 @@ import {
   from,
   identity,
   ignoreElements,
-  map,
   merge,
   mergeMap,
   noop,
@@ -46,6 +45,7 @@ import type {
   ElementHandle,
 } from '../ElementHandle.js';
 import type {Frame} from '../Frame.js';
+import type {JSHandle} from '../JSHandle.js';
 import type {Page} from '../Page.js';
 
 /**
@@ -819,15 +819,24 @@ export abstract class Locator<T> extends EventEmitter<LocatorEvents> {
     predicate: Predicate<T, S, Args>,
     ...args: Args
   ): Locator<S> {
-    return new FilteredLocator(this._clone(), async (handle, signal) => {
-      await (handle as ElementHandle<Node>).frame.waitForFunction(
-        predicate,
-        {signal, timeout: this._timeout},
-        handle,
-        ...args,
-      );
-      return true;
-    });
+    return new FilteredLocator(
+      this._clone(),
+      async (handle, signal, timeout) => {
+        const frame = handle.asElement()?.frame;
+        if (!frame) {
+          return Boolean(
+            await (handle as JSHandle<T>).evaluate(predicate, ...args),
+          );
+        }
+        await frame.waitForFunction(
+          predicate as Predicate<Node, Node, Args>,
+          {signal, timeout},
+          handle as ElementHandle<Node>,
+          ...args,
+        );
+        return true;
+      },
+    );
   }
 
   /**
@@ -956,8 +965,16 @@ export type Predicate<
  * @internal
  */
 export type HandlePredicate<From, To extends From = From> =
-  | ((value: HandleFor<From>, signal?: AbortSignal) => value is HandleFor<To>)
-  | ((value: HandleFor<From>, signal?: AbortSignal) => Awaitable<boolean>);
+  | ((
+      value: HandleFor<From>,
+      signal?: AbortSignal,
+      timeout?: number,
+    ) => value is HandleFor<To>)
+  | ((
+      value: HandleFor<From>,
+      signal?: AbortSignal,
+      timeout?: number,
+    ) => Awaitable<boolean>);
 
 /**
  * @internal
@@ -1061,14 +1078,25 @@ export class FilteredLocator<From, To extends From> extends DelegatedLocator<
     return this.delegate._wait(options).pipe(
       mergeMap(handle => {
         return from(
-          Promise.resolve(this.#predicate(handle, options?.signal)),
+          Promise.resolve(
+            this.#predicate(handle, options?.signal, this._timeout),
+          ),
         ).pipe(
-          filter(value => {
-            return value;
-          }),
-          map(() => {
+          mergeMap(value => {
+            if (!value || options?.signal?.aborted) {
+              void handle.dispose().catch(error => {
+                this.logger?.(DEBUG_PREFIXES.error)?.(error);
+              });
+              return EMPTY;
+            }
             // SAFETY: It passed the predicate, so this is correct.
-            return handle as HandleFor<To>;
+            return of(handle as HandleFor<To>);
+          }),
+          catchError(error => {
+            void handle.dispose().catch(disposeError => {
+              this.logger?.(DEBUG_PREFIXES.error)?.(disposeError);
+            });
+            throw error;
           }),
         );
       }),
