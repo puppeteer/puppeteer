@@ -14,7 +14,7 @@ import type {Target} from 'puppeteer-core/internal/api/Target.js';
 import {WebWorkerEvent} from 'puppeteer-core/internal/api/WebWorker.js';
 import type {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {setupSeparateTestBrowserHooks} from '../mocha-utils.js';
+import {launch, setupSeparateTestBrowserHooks} from '../mocha-utils.js';
 import {waitEvent} from '../utils.js';
 
 const extensionWithPagePath = path.join(
@@ -460,6 +460,29 @@ describe('extensions', function () {
         'Request Interception is not enabled!',
       );
     });
+  });
+});
+
+describe('extensions launch option', function () {
+  it('should finish installing extensions before launch resolves', async () => {
+    const {browser, close} = await launch({
+      enableExtensions: [extensionPath],
+    });
+    try {
+      const extensions = await browser.extensions();
+      expect(extensions.size).toBe(1);
+    } finally {
+      await close();
+    }
+  });
+
+  it('should reject when installing an invalid extension', async () => {
+    const invalidPath = path.join(extensionPath, 'non-existent');
+    await expect(
+      launch({
+        enableExtensions: [invalidPath],
+      }),
+    ).rejects.toThrow();
   });
 });
 
