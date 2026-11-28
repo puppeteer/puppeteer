@@ -93,7 +93,7 @@ export type Logger = (prefix: string) => LoggerFunction | undefined;
  * const log = debug(DEBUG_PREFIXES.error);
  *
  * log('new page created')
- * // logs "Page: new page created"
+ * // logs "puppeteer:error: new page created"
  * ```
  *
  * @param prefix - this will be prefixed to each log.
