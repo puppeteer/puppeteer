@@ -3197,4 +3197,91 @@ describe('NetworkManager', () => {
       expect(responses[1]!.encodedDataLength()).toBe(120);
     });
   });
+
+  it('should emit request, response, and requestfinished for service worker responses when interception is enabled', async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = createNetworkManager();
+    await manager.addClient(mockCDPSession);
+    await manager.setRequestInterception(true);
+    mockCDPSession.sent.length = 0;
+
+    const events: string[] = [];
+    let capturedRequest: HTTPRequest | undefined;
+    let capturedResponse: HTTPResponse | undefined;
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
+      events.push('request');
+      capturedRequest = request;
+      void request.continue();
+    });
+    manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+      events.push('response');
+      capturedResponse = response;
+    });
+    manager.on(NetworkManagerEvent.RequestFinished, () => {
+      events.push('requestfinished');
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: 'sw-req-1',
+      loaderId: 'sw-req-1',
+      documentURL: 'https://example.com/',
+      request: {
+        url: 'https://example.com/',
+        method: 'GET',
+        headers: {},
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      timestamp: 1,
+      wallTime: 1,
+      initiator: {type: 'other'},
+      redirectHasExtraInfo: false,
+      type: 'Document',
+      frameId: 'frame-1',
+      hasUserGesture: false,
+    });
+
+    // No Fetch.requestPaused arrives because the service worker responds.
+    expect(events).toEqual([]);
+
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: 'sw-req-1',
+      loaderId: 'sw-req-1',
+      timestamp: 2,
+      type: 'Document',
+      response: {
+        url: 'https://example.com/',
+        status: 200,
+        statusText: 'OK',
+        charset: 'utf-8',
+        headers: {},
+        mimeType: 'text/html',
+        connectionReused: false,
+        connectionId: 0,
+        fromDiskCache: false,
+        fromServiceWorker: true,
+        fromPrefetchCache: false,
+        encodedDataLength: 100,
+        protocol: 'http/1.1',
+        securityState: 'secure',
+      },
+      hasExtraInfo: false,
+      frameId: 'frame-1',
+    });
+    mockCDPSession.emit('Network.loadingFinished', {
+      requestId: 'sw-req-1',
+      timestamp: 3,
+      encodedDataLength: 100,
+    });
+
+    expect(events).toEqual(['request', 'response', 'requestfinished']);
+    expect(capturedRequest?.url()).toBe('https://example.com/');
+    expect(capturedResponse?.fromServiceWorker()).toBe(true);
+    expect(capturedResponse?.status()).toBe(200);
+    expect(
+      mockCDPSession.sent.some(cmd => {
+        return cmd.method.startsWith('Fetch.');
+      }),
+    ).toBe(false);
+  });
 });
